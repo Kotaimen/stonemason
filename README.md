@@ -1,10 +1,35 @@
 # Stonemason
 
+**Stonemason** is a complete rewrite of the unpopular [mason](https://github.com/Kotaimen/mason) tile map toolkit.  
 
-Tile Map Service Toolkit, Mason Reloaded.
+Similar solutions:
+- [TileScache](http://tilestache.org)
+- [TileCache](http://tilecache.org)
+- [Windshaft](https://github.com/CartoDB/Windshaft) 
 
-## Features
 
-TBD.
+## Features (planned)
+
+- Tile map service
+- Render pipeline
+- Mass tile storage
+- Debug and design server
+- [mapnik](http://mapnik.org) as raster render engine 
+- Homebrew high quality DEM terrain relief renderer
+- Supports both zero configuration and distributed deployment
 
 
+## Dependencies
+
+> Geospatial related modules only supports py27
+
+- Python2>=2.7
+- flask>=0.10
+- pillow>=2.6
+- numpy>=1.9, scipy>=0.10.0 (Optional)
+- mapnik>=2.2 (Optional)
+- geos>=3.3, gdal>=1.10 (Optional)
+- imagemagick>=6.0 (Optional)
+- PostgreSQL>=9.1, PostGIS>=2.1 (Optional)
+- redis>=2.8 (Optional)
+- memcached>=1.4

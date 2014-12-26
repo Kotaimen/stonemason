@@ -1,0 +1,2 @@
+# Please update requirements in setup.py
+--editable=.
