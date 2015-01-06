@@ -3,4 +3,5 @@
 __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
+from .tileserver import AppBuilder
 
