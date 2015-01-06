@@ -14,4 +14,4 @@ class TestExample(unittest.TestCase):
 
     def test_app(self):
         resp = self.client.get('/')
-        self.assertEqual('Hello World!', resp.data)
+        self.assertEqual(b'Hello World!', resp.data)
