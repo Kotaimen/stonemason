@@ -94,6 +94,8 @@ def grid_crop(image, stride=1, buffer_size=0):
     width, height = image.size
     assert width == height
     assert buffer_size < width / 2
+    width -= buffer_size * 2
+    height -= buffer_size * 2
     rows, columns = stride, stride
     grid_width = grid_height = width // stride
 
