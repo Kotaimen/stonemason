@@ -1,12 +1,9 @@
-#!/usr/bin/env python
-
-
 import re
 import codecs
 import os
+import sys
 
 from setuptools import setup, find_packages
-
 
 where_am_i = os.path.abspath(os.path.dirname(__file__))
 
@@ -29,8 +26,21 @@ long_description = read('README.md')
 install_requires = [
     'six>=1.8.0',
     'Flask>=0.9',
+    'Pillow>=2.3.0',
+]
+
+install_requires_PY2 = [
     'python-memcached>=1.53',
 ]
+
+install_requires_PY3 = [
+    'python3-memcached>=1.51',
+]
+
+if sys.version_info.major == 3:  # can't use six here
+    install_requires.extend(install_requires_PY3)
+else:
+    install_requires.extend(install_requires_PY2)
 
 tests_require = [
     'nose',
