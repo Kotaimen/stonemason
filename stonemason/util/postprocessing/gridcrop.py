@@ -3,8 +3,15 @@
 __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
-""" Shelve buffer from a rendered map Tile, or crop a rendered MetaTile into Tiles.
-Pillow is required for image IO and image processing.
+"""
+    stonemason.util.postprocessing.gridrop
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Shelve buffer from a rendered map Tile, or crop a rendered MetaTile
+    into Tiles.
+
+    PIL/Pillow is required for image IO and image processing.
+
 """
 
 import io
@@ -28,21 +35,26 @@ def open_image(image):
 def shave(image, buffer_size=0):
     """ Shave buffer pixel from given image.
 
-    Shave buffer pixels from given tile image, returns a
-    `PIL.Image.Image` object. If `buffer_size` is zero, the image
+    Shave buffer pixels from the given tile image, returns a
+    `PIL.Image.Image` object. If `buffer_size` is zero, given image
     is returned without modification.
 
-    The given `image` can be one of:
+    Given image can be one of:
 
-    - PIL/Pillow Image
+    - PIL/Pillow image
     - `bytes` contains a image file data
-    - File handle of a image file
+    - `fp` of a image file (real file or `io.BytesIO`)
 
-    Note the image must be square.
-
-    Due to PIL/Pillow Image internal lazy cropping implement, the
+    Due to PIL/Pillow Image internal lazy cropping implement, given
     `image` object's internal buffer must remain unchanged until
     cropped image is serialized.
+
+    :param image: Image to crop, must be square.
+    :type image: `PIL.Image.Image` or `bytes` or `file`
+    :param buffer_size: Size of the buffer to be shaved each side in pixels,
+                        default is 0, means no buffer is shaved.
+    :return: Cropped image.
+    :returns: `PIL.Image.Image`
     """
     assert buffer_size >= 0
     image = open_image(image)
@@ -62,26 +74,32 @@ def shave(image, buffer_size=0):
 
 
 def grid_crop(image, stride=1, buffer_size=0):
-    """ Crop a image into grids
+    """ Crop given MetaTile image into a grid
 
-    Crop a large image into a `stride x stride` image grid, shave
-    extra buffer pixels during the process  (aka: `MetaTile` fission).
+    Crop a large image into a ``stride x stride`` image grid, shave
+    extra buffer pixels during the process  (aka: MetaTile *fission*).
 
-    The given `image` can be one of:
+    Given image can be one of:
 
-    - PIL/Pillow Image
+    - PIL/Pillow image
     - `bytes` contains a image file data
-    - File handle of a image file
+    - `fp` of a image file (real file or `io.BytesIO`)
 
-    Returns a `dict` of small grid images::
+    Returns a dictionary of small grid images::
 
-        (row, column): Image.Image object
+        (row, column): image
 
-    Note the image must be square.
-
-    Due to PIL/Pillow Image internal lazy cropping implement, the
+    Due to PIL/Pillow Image internal lazy cropping implement, given
     `image` object's internal buffer must remain unchanged until
     cropped image is serialized.
+
+    :param image: Image to crop, must be square.
+    :type image: `PIL.Image.Image` or `bytes` or `file`
+    :param stride: Number of grid images per axis.
+    :param buffer_size: Size of the buffer to be shaved each side in pixels,
+                        default is 0, means no buffer is shaved.
+    :return: A dictionary of cropped image.
+    :returns: dict
     """
 
     assert stride >= 1

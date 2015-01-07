@@ -3,4 +3,11 @@
 __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
+"""
+    stonemason.util.postprocessing
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Image postprocessing utilities.
+
+"""
 
