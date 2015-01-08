@@ -14,9 +14,9 @@ from stonemason.service.tileserver import AppBuilder
 
 class TestExample(unittest.TestCase):
     def setUp(self):
-        os.environ['EXAMPLE_APP_ENV'] = 'dev'
+        os.environ['EXAMPLE_APP_MODE'] = 'development'
 
-        app = AppBuilder().build()
+        app = AppBuilder().build(config='settings.py')
         self.client = app.test_client()
 
     def test_app(self):
