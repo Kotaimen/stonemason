@@ -1,4 +1,11 @@
 # -*- encoding: utf-8 -*-
+"""
+    tests.stonemason.service.tileserver.test_tileserver
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Test interfaces of the tile server application.
+
+"""
 
 import os
 import unittest

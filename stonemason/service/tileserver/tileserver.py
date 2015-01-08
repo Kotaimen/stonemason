@@ -1,5 +1,11 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.service.tileserver.tileserver
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    Implements the tile server for Stonemason.
+
+"""
 import os
 from flask import Flask
 
