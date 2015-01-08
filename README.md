@@ -21,11 +21,10 @@ Similar solutions:
 
 ## Dependencies
 
-> Geospatial related modules only supports py27
-
 - Python2>=2.7
-- flask>=0.10
-- pillow>=2.6
+- Python3>=3.3 (Geospatial related modules only supports py27)
+- flask>=0.9
+- pillow>=2.3
 - numpy>=1.9, scipy>=0.10.0 (Optional)
 - mapnik>=2.2 (Optional)
 - geos>=3.3, gdal>=1.10 (Optional)
