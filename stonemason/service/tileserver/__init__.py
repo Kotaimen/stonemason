@@ -1,7 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.service.tileserver
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-__author__ = 'kotaimen'
-__date__ = '1/5/15'
+    A high performance tile server WSGI application based on Flask.
+"""
 
 from .tileserver import AppBuilder
 
