@@ -4,7 +4,24 @@ import os
 import sys
 
 from setuptools import setup, find_packages
+from distutils.extension import Extension
+from distutils.command.sdist import sdist as sdist_
 
+# Can't use six here
+IS_PY3 = sys.version_info.major == 3
+
+# Check Cython availability
+try:
+    from Cython.Distutils import build_ext
+except ImportError:
+    HAS_CYTHON = False
+else:
+    HAS_CYTHON = True
+
+
+#
+# Find package version
+#
 where_am_i = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -23,30 +40,29 @@ def find_version(*file_paths):
 
 long_description = read('README.md')
 
+#
+# Requirements
+#
 install_requires = [
     'six>=1.8.0',
     'Flask>=0.9',
     'Pillow>=2.3.0',
+    'pylibmc>=1.4.1',
 ]
 
-install_requires_PY2 = [
-    'python-memcached>=1.53',
-]
 
-install_requires_PY3 = [
-    'python3-memcached>=1.51',
-]
-
-if sys.version_info.major == 3:  # can't use six here
-    install_requires.extend(install_requires_PY3)
+# Memcached have a different name under python 3
+if not IS_PY3:
+    install_requires += ['python-memcached>=1.53', ]
 else:
-    install_requires.extend(install_requires_PY2)
+    install_requires += ['python3-memcached>=1.51', ]
 
 tests_require = [
     'nose',
     'coverage',
     'virtualenv>=1.10',
     'mock',
+    'Cython>=0.17.0'
 ]
 
 find_excludes = [
@@ -56,9 +72,45 @@ find_excludes = [
 
 py_modules = []
 
+
+#
+# Cython extension modules
+#
+
+ext_modules = []
+
+cmdclass = {}
+
+if HAS_CYTHON:
+    # Build c and .so from pyx
+    ext_modules += [
+        Extension('stonemason.util.geo._hilbert',
+                  ['stonemason/util/geo/_hilbert.pyx'])
+    ]
+    cmdclass['build_ext'] = build_ext
+
+    class sdist(sdist_):
+        def run(self):
+            # Force build c source for sdist
+            from Cython.Build import cythonize
+
+            cythonize(['stonemason/util/geo/_hilbert.pyx'],
+                      force=True)
+            sdist_.run(self)
+
+    cmdclass['sdist'] = sdist
+
+else:
+    # No Cython, assuming build using sdist, just build .so from c
+    ext_modules += [
+        Extension('stonemason.util.geo._hilbert',
+                  ['stonemason/util/geo/_hilbert.c'])
+    ]
+
 package_data = {}
 
 setup(
+
     name='stonemason',
     version=find_version('stonemason', '__init__.py'),
     description='Map tile service toolkit.',
@@ -72,6 +124,7 @@ setup(
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Multimedia :: Graphics',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Server',
+        'Programming Language :: Cython',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
@@ -83,13 +136,18 @@ setup(
     author_email='kotaimen.c@gmail.com, gliese.q@gmail.com',
     url='http://github.com/kotaimen/stonemason',
     license='MIT',
+
     py_modules=py_modules,
+    ext_modules=ext_modules,
     packages=find_packages(exclude=find_excludes),
     package_data=package_data,
+
     install_requires=install_requires,
     tests_require=tests_require,
     test_suite='tests',
     zip_safe=False,
+    cmdclass=cmdclass,
+
     extras_require={
         'testing': tests_require,
     }
