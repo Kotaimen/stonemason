@@ -106,7 +106,7 @@ else:
         Extension('stonemason.util.geo._hilbert',
                   ['stonemason/util/geo/_hilbert.c'])
     ]
-
+    
 package_data = {}
 
 setup(
@@ -141,14 +141,16 @@ setup(
     ext_modules=ext_modules,
     packages=find_packages(exclude=find_excludes),
     package_data=package_data,
+    entry_points=entry_points,
 
     install_requires=install_requires,
     tests_require=tests_require,
     test_suite='tests',
-    zip_safe=False,
+#    zip_safe=False,
     cmdclass=cmdclass,
 
     extras_require={
         'testing': tests_require,
     }
+    
 )
