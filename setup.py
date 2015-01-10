@@ -6,6 +6,9 @@ import sys
 from setuptools import setup, find_packages
 from distutils.extension import Extension
 from distutils.command.sdist import sdist as sdist_
+from distutils.command.clean import clean as clean_
+from distutils import log
+
 
 # Can't use six here
 IS_PY3 = sys.version_info.major == 3
@@ -61,7 +64,7 @@ tests_require = [
     'nose',
     'coverage',
     'virtualenv>=1.10',
-    'mock',
+    # 'mock',
     'Cython>=0.17.0'
 ]
 
@@ -79,35 +82,70 @@ py_modules = []
 
 ext_modules = []
 
+cython_modules = [
+    ('stonemason.util.geo._hilbert',
+     ['stonemason/util/geo/_hilbert.pyx', ]),
+]
+
+entry_points = {}
+
+#
+# Custom commands
+#
+
 cmdclass = {}
 
 if HAS_CYTHON:
-    # Build c and .so from pyx
-    ext_modules += [
-        Extension('stonemason.util.geo._hilbert',
-                  ['stonemason/util/geo/_hilbert.pyx'])
-    ]
+
+    # Build cython file when doing build_ext command
+    for module, sources in cython_modules:
+        ext_modules.append(Extension(module, sources))
+
     cmdclass['build_ext'] = build_ext
 
     class sdist(sdist_):
+        """ Build c source from Cython source for sdist """
+
         def run(self):
-            # Force build c source for sdist
             from Cython.Build import cythonize
 
-            cythonize(['stonemason/util/geo/_hilbert.pyx'],
-                      force=True)
+            for ext in self.distribution.ext_modules:
+                sources = list(s for s in ext.sources if s.endswith('.pyx'))
+                cythonize(sources)
+
             sdist_.run(self)
 
     cmdclass['sdist'] = sdist
 
+    class clean(clean_):
+        """ Removes all Cython generated C files """
+
+        def run(self):
+            clean_.run(self)
+            for ext in self.distribution.ext_modules:
+                sources = list(s for s in ext.sources if s.endswith('.pyx'))
+                for source in sources:
+                    try:
+                        log.info("removing '%s'" % source[:-3] + 'c')
+                        os.unlink(source[:-3] + 'c')
+                        log.info("removing '%s'" % source[:-3] + 'so')
+                        os.unlink(source[:-3] + 'so')
+                    except OSError:
+                        pass
+
+    cmdclass['clean'] = clean
+
 else:
     # No Cython, assuming build using sdist, just build .so from c
-    ext_modules += [
-        Extension('stonemason.util.geo._hilbert',
-                  ['stonemason/util/geo/_hilbert.c'])
-    ]
-    
+    for module, sources in cython_modules:
+        c_sources = list(source[:-3] + 'c' for source in sources)
+        ext_modules.append(Extension(module, c_sources))
+
 package_data = {}
+
+#
+# Setup
+#
 
 setup(
 
@@ -146,11 +184,11 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     test_suite='tests',
-#    zip_safe=False,
+    # zip_safe=False,
     cmdclass=cmdclass,
 
     extras_require={
         'testing': tests_require,
     }
-    
+
 )

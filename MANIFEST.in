@@ -1,1 +1,2 @@
 include CHANGES LICENSE AUTHORS README.md
+recursive-include stonemason *.c
