@@ -48,7 +48,7 @@ long_description = read('README.md')
 #
 install_requires = [
     'six>=1.8.0',
-    'Flask>=0.9',
+    'Flask>=0.10',
     'Pillow>=2.3.0',
     'pylibmc>=1.4.1',
 ]
@@ -63,9 +63,7 @@ else:
 tests_require = [
     'nose',
     'coverage',
-    'virtualenv>=1.10',
-    # 'mock',
-    'Cython>=0.17.0'
+    'mock',
 ]
 
 find_excludes = [

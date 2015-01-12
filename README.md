@@ -23,8 +23,9 @@ Similar solutions:
 
 - Python2>=2.7
 - Python3>=3.3 (Geospatial related modules only supports py27)
-- flask>=0.9
+- flask>=0.10
 - pillow>=2.3
+- Cython>=0.19.0
 - numpy>=1.9, scipy>=0.10.0 (Optional)
 - mapnik>=2.2 (Optional)
 - geos>=3.3, gdal>=1.10 (Optional)
@@ -32,3 +33,4 @@ Similar solutions:
 - PostgreSQL>=9.1, PostGIS>=2.1 (Optional)
 - redis>=2.8 (Optional)
 - memcached>=1.4
+

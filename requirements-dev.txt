@@ -1,0 +1,4 @@
+nose
+coverage
+tox
+Cython>=0.19
