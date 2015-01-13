@@ -53,13 +53,6 @@ install_requires = [
     'pylibmc>=1.4.1',
 ]
 
-
-# Memcached have a different name under python 3
-if not IS_PY3:
-    install_requires += ['python-memcached>=1.53', ]
-else:
-    install_requires += ['python3-memcached>=1.51', ]
-
 tests_require = [
     'nose',
     'coverage',
