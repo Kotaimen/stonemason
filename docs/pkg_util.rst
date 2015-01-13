@@ -1,6 +1,7 @@
 Utilities
 =========
 
+Utility functions and classes.
 
 Geo
 ---

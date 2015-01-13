@@ -31,7 +31,8 @@ sys.path.append(os.path.abspath('..'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'alabaster', 'sphinx.ext.intersphinx'
+    'sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.mathjax',
+    'alabaster',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -69,7 +70,7 @@ version = release.split('-dev')[0]
 # non-false value, then it is used:
 # today = ''
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = '%B %d, %Y'
+# today_fmt = '%B %d, %Y'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -77,10 +78,10 @@ exclude_patterns = ['_build']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
-#default_role = None
+# default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
+# add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
@@ -251,8 +252,10 @@ man_pages = [
 # If true, show URL addresses after external links.
 #man_show_urls = False
 
-intersphinx_mapping = {'http://docs.python.org/': None}
+intersphinx_mapping = {'python': ('http://docs.python.org/', None),
+                       'PIL': ('https://pillow.readthedocs.org/', None)}
 
+autodoc_member_order ='bysource'
 
 # -- Options for Texinfo output -------------------------------------------
 

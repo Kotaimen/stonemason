@@ -20,18 +20,20 @@ class TileNotFound(Exception):
 
 
 class TileCache(object):
-    """A cache for Tiles
+    """A cache for Tiles.
 
     Cache recent or frequently visited tiles for fast access, also works
-    as a intermediate temporary storage for Tiles retrieved from TileStorage.
+    as a intermediate temporary storage for tiles retrieved from `TileStorage`.
 
-    A `Tile` in the cache is identified by its *tag* and `TileIndex`.
-    `tag` must be a string  matching regular expression ``"[a-zA-Z][a-zA-Z0-9_-%]+"``.
-    While `index` must be an TileIndex object.
+    A tile in the cache is identified by its `tag` and `index`.
+    `tag` must be a string  matching regular expression
+    ``'[a-zA-Z][a-zA-Z0-9_-%]+``, while `index` must be an
+    :class:`~stonemason.provider.pyramid.TileIndex` object.
 
-    Note: The cache object designed to be shared between all themes and layers.
-          Being a thin wrapper layer, CAP model is dependent on the actual
-          cache system implement.
+    .. note::
+        The cache object designed to be shared between all themes and layers.
+        Being a thin wrapper layer, CAP model is dependent on the actual
+        cache system implement.
     """
 
     def __init__(self):
@@ -44,12 +46,12 @@ class TileCache(object):
         return '%s/%s' % (tag, '/' % index)
 
     def get(self, tag, index):
-        """ Retrieve a Tile from cache, return `None` on miss.
+        """ Retrieve a tile from cache, return `None` on miss.
 
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: TileIndex
+        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :return: `Tile` object on hit, `None` on miss.
         :returns: `Tile` or `None`
         """
@@ -64,7 +66,7 @@ class TileCache(object):
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: TileIndex
+        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :return: Whether the tile exists in the cache.
         :returns: bool
         """
@@ -79,7 +81,7 @@ class TileCache(object):
         :param tag: Tag of the tile.
         :type tag: str
         :param tile: Tile to put.
-        :type tile: Tile
+        :type tile: :class:`~stonemason.provider.pyramid.Tile`
         :param ttl: Number of seconds before expiration, `0` means never.
         :type ttl: int
         :return: None
@@ -94,7 +96,7 @@ class TileCache(object):
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: TileIndex
+        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :return: None
         """
         pass
@@ -125,7 +127,7 @@ class TileCache(object):
 
         :param tag: Tag of the tile.
         :type tag: str
-        :param indexes: A iterable of tiles to put.
+        :param indexes: A list of tiles to put.
         :type indexes: list
         :return: Whether all given tiles exist in the cache.
         """
@@ -142,7 +144,7 @@ class TileCache(object):
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: TileIndex
+        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :param ttl: Number of seconds before lock expiration.
         :type ttl: int
         :return: CAS on success or zero when tile is already locked.
@@ -158,7 +160,7 @@ class TileCache(object):
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: ::calTileIndex.
+        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :param cas: CAS value of the tile.
         :type cas: int
         :return: `True` if unlock is successful, `False` otherwise.

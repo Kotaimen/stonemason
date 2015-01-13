@@ -15,7 +15,7 @@ Install system package dependency:
     sudo apt-get install libjpeg-dev libz-dev libtiff-dev libfreetype6-dev libwebp-dev liblcms-dev liblcms2-dev libmemcached-dev
 
 
-Clone:
+Clone the code:
     
 .. code-block:: console
 
@@ -32,3 +32,18 @@ Install python dependency:
     sudo pip3 install -rrequirements.txt
 
 
+Run nose:
+
+.. code-block:: console
+    
+    python setup.py build_ext --inplace
+    nosetests
+
+Run tox:
+
+.. code-block:: console
+
+    tox
+    
+    
+    

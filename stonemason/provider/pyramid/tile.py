@@ -53,6 +53,8 @@ class TileIndex(collections.namedtuple('_TileIndex', 'z x y')):
 
 
 class Tile(collections.namedtuple('_Tile', 'index data mimetype mtime')):
+    """ A Tile
+    """
     def __init__(self, index=None, data=None, mimetype=None, mtime=None):
         if index is None:
             index = TileIndex()
@@ -71,4 +73,3 @@ class Tile(collections.namedtuple('_Tile', 'index data mimetype mtime')):
     def __repr__(self):
         return 'Tile(%d/%d/%d)' % self.index
 
-    

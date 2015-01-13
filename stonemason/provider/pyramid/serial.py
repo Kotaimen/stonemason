@@ -16,6 +16,9 @@ import stonemason.util.geo.hilbert as hilbert
 
 
 class Hilbert(object):
+
+    """ Calculate serial using Hilbert curve """
+
     @staticmethod
     def coord2serial(z, x, y):
         """ Convert tile coordinate to a unique serial
@@ -56,24 +59,28 @@ class Hilbert(object):
 class Legacy(object):
     """ Legacy serial used in Mason and older Pathologist systems.
 
-    Copied code, works fine but is not cool anymore (besides stupid and slow).
+    Works fine but is not cool anymore (besides being stupid and slow).
     """
 
     @staticmethod
     def coord2serial(z, x, y):
         """ Convert tile coordinate to an integer serial
 
-        Flatten tile coordinate (z, x, y) to a serial by::
+        Flatten tile coordinate `(z, x, y)` to a serial by:
 
-            (4^(z)-1) / 3 + 2^z * y + x
+        .. math::
 
-        This formula is calculated form total number of tiles of layer 0~k::
+            (4^z - 1) / 3 + 2^z * y + x
 
-            Sum[4^n, {n, 0, k}] = (4^(k+1)-1) / 3
+        This formula is calculated form total number of tiles of layer `0~k`:
+
+        .. math::
+
+            Sum[4^n, {n, 0, k}] = (4 ^ k + 1) - 1) / 3
 
 
-        For a 32 bit integer serial, the largest supported tile layer is 15.
-        For a 64 bit integer serial, the largest supported tile layer is 31.
+        For a 32 bit integer serial, the largest supported tile layer is ``15``.
+        For a 64 bit integer serial, the largest supported tile layer is ``31``.
         """
 
         # Limit serial to 64 bit signed integer
@@ -89,9 +96,9 @@ class Legacy(object):
 
         """ Return a directory name list for a given tile coordinate
 
-        Groups adjacent m*m tiles in a sub directory to improve file system
+        Groups adjacent `m*m` tiles in a sub directory to improve file system
         performance.  Returns a list of directory names, to create a
-        directory str, use os.path.join(*list)
+        directory string, use ``os.path.join(*list)``.
         """
 
         assert 0 <= z <= 31

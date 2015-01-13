@@ -16,11 +16,14 @@ from . import _hilbert
 
 
 def hil_xy_from_s(s, n):
-    """ Compute coordinate from given Hilbert curve length.
+    """ Compute point coordinate from given Hilbert curve length.
+
+    Given the order `n` of a Hilbert curve, compute point coordinate `(x, y)`
+    using length `n`.  This is the reverse operation of :func:`hil_s_from_xy`
 
     :param s: Length of the Hilbert curve.
     :param n: Order of the Hilbert curve
-    :return: Coordinate as a tuple (x, y).
+    :return: Coordinate as a tuple `(x, y)`.
     :returns: tuple
     """
     assert n < 64
@@ -29,15 +32,16 @@ def hil_xy_from_s(s, n):
 
 
 def hil_s_from_xy(x, y, n):
-    """ Compute Hilbert curve length from given coordinate
+    """ Compute Hilbert curve length from given point coordinate.
 
-    Given the "order" n of a Hilbert curve and coordinates x and y,
-    computes the length s of the curve from the origin to (x, y).
+    Given the order `n` of a Hilbert curve and coordinates `x` and `y`,
+    computes the length `s` of the curve from the origin to `(x, y)`.
 
     :param x: x coordinate.
     :param y: y coordinate.
-    :param n: Order of the Hilbert curve
-    :return: Hilbert curve length
+    :param n: Order of the Hilbert curve.
+    :type n: int
+    :return: Hilbert curve length.
     :returns: int
     """
     assert n < 64
