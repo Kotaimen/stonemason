@@ -10,3 +10,6 @@ __date__ = '12/26/14'
 
     Logic of the quad-tree (aka: pyramid) tile map system.
 """
+
+from .tile import TileIndex, Tile
+from .serial import Hilbert, Legacy
