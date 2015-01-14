@@ -54,7 +54,7 @@ def shave(image, buffer_size=0):
     :param buffer_size: Size of the buffer to be shaved each side in pixels,
                         default is ``0``, which means no buffer is shaved.
     :return: Cropped image.
-    :returns: :class:`PIL.Image.Image`
+    :rtype: :class:`PIL.Image.Image`
     """
     assert buffer_size >= 0
     image = open_image(image)
@@ -97,7 +97,7 @@ def grid_crop(image, stride=1, buffer_size=0):
     :param buffer_size: Size of the buffer to be shaved each side in pixels,
                         default is 0, means no buffer is shaved.
     :return: A dictionary of cropped image.
-    :returns: dict
+    :rtype: dict
     """
 
     assert stride >= 1

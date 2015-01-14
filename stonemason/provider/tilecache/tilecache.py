@@ -53,7 +53,7 @@ class TileCache(object):
         :param index: Index of the tile.
         :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :return: `Tile` object on hit, `None` on miss.
-        :returns: `Tile` or `None`
+        :rtype: `Tile` or `None`
         """
         return None
 
@@ -68,7 +68,7 @@ class TileCache(object):
         :param index: Index of the tile.
         :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :return: Whether the tile exists in the cache.
-        :returns: bool
+        :rtype: bool
         """
         return self.get(tag, index) is not None
 
@@ -155,7 +155,7 @@ class TileCache(object):
     def unlock(self, tag, index, cas):
         """ Unlock a particular tile using given `cas`.
 
-        The tile must have been must have been locked with the specified `cas`.
+        The tile must have been locked with the specified `cas`.
 
         :param tag: Tag of the tile.
         :type tag: str
@@ -164,7 +164,7 @@ class TileCache(object):
         :param cas: CAS value of the tile.
         :type cas: int
         :return: `True` if unlock is successful, `False` otherwise.
-        :returns: bool
+        :rtype: bool
         """
         return True
 

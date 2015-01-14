@@ -24,7 +24,7 @@ def hil_xy_from_s(s, n):
     :param s: Length of the Hilbert curve.
     :param n: Order of the Hilbert curve
     :return: Coordinate as a tuple `(x, y)`.
-    :returns: tuple
+    :rtype: tuple
     """
     assert n < 64
     assert s < 4 ** n
@@ -42,7 +42,7 @@ def hil_s_from_xy(x, y, n):
     :param n: Order of the Hilbert curve.
     :type n: int
     :return: Hilbert curve length.
-    :returns: int
+    :rtype: int
     """
     assert n < 64
     return _hilbert.hil_s_from_xy(x, y, n)
