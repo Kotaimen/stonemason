@@ -31,7 +31,8 @@ sys.path.append(os.path.abspath('..'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.mathjax',
+    'sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
+    'sphinx.ext.doctest', 'sphinx.ext.mathjax',
     'alabaster',
 ]
 
@@ -85,11 +86,11 @@ exclude_patterns = ['_build']
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+# add_module_names = True
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
-#show_authors = False
+# show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
 # pygments_style = 'sphinx'
@@ -253,9 +254,11 @@ man_pages = [
 #man_show_urls = False
 
 intersphinx_mapping = {'python': ('http://docs.python.org/', None),
-                       'PIL': ('https://pillow.readthedocs.org/', None)}
+                       'PIL': ('https://pillow.readthedocs.org/', None),
+                       'pylibmc': (
+                           'http://sendapatch.se/projects/pylibmc/', None)}
 
-autodoc_member_order ='bysource'
+autodoc_member_order = 'bysource'
 
 # -- Options for Texinfo output -------------------------------------------
 

@@ -13,3 +13,13 @@ Tile
 .. autoclass:: stonemason.provider.pyramid.Tile
     :members:
 
+
+
+Serial
+------
+
+.. autoclass:: stonemason.provider.pyramid.Hilbert
+    :members:
+
+.. autoclass:: stonemason.provider.pyramid.Legacy
+    :members:

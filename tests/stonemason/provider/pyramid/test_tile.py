@@ -59,7 +59,7 @@ class TestTile(unittest.TestCase):
         self.assertEqual(tile.data, b'a tile')
         self.assertEqual(tile.mimetype, 'text/plain')
         self.assertGreater(tile.mtime, 0.)
-        self.assertEqual(tile.etag, hashlib.md5(b'a tile').digest())
+        self.assertEqual(tile.etag, 'c37ee78cb8b04fa64e295342b3e229cd')
 
     def test_hash(self):
         tile = Tile(TileIndex(3, 4, 5))

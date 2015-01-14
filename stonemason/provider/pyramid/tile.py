@@ -28,9 +28,7 @@ class TileIndex(_TileIndex):
     Coordinate (aka: index) of a map :class:`~stonemason.provider.pyramid.Tile`
     using GoogleMaps style tile map system.
 
-    .. note::
-
-        `TileIndex` is a `tuple` and thus is immutable once created.
+    `TileIndex` is a `tuple` and thus is immutable once created.
 
 
     >>> from stonemason.provider.pyramid import TileIndex
@@ -106,6 +104,23 @@ class Tile(_Tile):
         given in the constructor.
 
 
+    Sample:
+
+    >>> from stonemason.provider.pyramid import Tile, TileIndex
+    >>> tile = Tile(index=TileIndex(2, 3, 4),
+    ...             data=b'a tile',
+    ...             mimetype='text/plain',
+    ...             mtime=1234.)
+    >>> tile
+    Tile(2/3/4)
+    >>> tile.data
+    'a tile'
+    >>> tile.mimetype
+    'text/plain'
+    >>> tile.etag
+    'c37ee78cb8b04fa64e295342b3e229cd'
+
+
     :param index: Tile index.
     :type index: :class:`~stonemason.provider.pyramid.TileIndex`.
     :param data: Tile data.
@@ -130,7 +145,7 @@ class Tile(_Tile):
         if mtime is None:
             mtime = time.time()
         if etag is None:
-            etag = hashlib.md5(data).digest()
+            etag = hashlib.md5(data).hexdigest()
 
         assert isinstance(index, TileIndex)
         assert isinstance(data, bytes)
