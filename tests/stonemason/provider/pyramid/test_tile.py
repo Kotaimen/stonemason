@@ -48,7 +48,7 @@ class TestTile(unittest.TestCase):
         self.assertEqual(tile.data, b'')
         self.assertEqual(tile.mimetype, 'application/data')
         self.assertGreater(tile.mtime, 0)
-        self.assertEqual(tile.etag, hashlib.md5(b'').digest())
+        self.assertEqual(tile.etag, hashlib.md5(b'').hexdigest())
 
     def test_init2(self):
         tile = Tile(index=TileIndex(2, 3, 4),
