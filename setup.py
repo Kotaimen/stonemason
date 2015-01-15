@@ -50,7 +50,7 @@ install_requires = [
     'six>=1.8.0',
     'Flask>=0.10',
     'Pillow>=2.3.0',
-    'pylibmc>=1.4.1',
+    'pylibmc>=1.4.0',
 ]
 
 tests_require = [

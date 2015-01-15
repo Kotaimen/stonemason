@@ -151,7 +151,7 @@ class Tile(_Tile):
         assert isinstance(data, bytes)
         assert isinstance(mimetype, six.string_types)
         assert isinstance(mtime, float)
-        assert isinstance(etag, six.binary_type)
+        assert isinstance(etag, six.string_types)
 
         return _Tile.__new__(cls, index, data, mimetype, mtime, etag)
 
