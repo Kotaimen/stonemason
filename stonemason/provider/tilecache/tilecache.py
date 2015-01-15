@@ -7,7 +7,7 @@ __date__ = '1/6/15'
     stonemason.provider.tilecache.tilecache
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    A do nothing tile cache as interface.
+    A do nothing tile cache.
 """
 
 import re
@@ -15,7 +15,11 @@ import re
 from stonemason.provider.pyramid import TileIndex, Tile
 
 
-class TileNotFound(Exception):
+class TileCacheError(Exception):
+    pass
+
+
+class TileNotFound(TileCacheError):
     pass
 
 
@@ -30,23 +34,20 @@ class TileCache(object):
     ``'[a-zA-Z][a-zA-Z0-9_-%]+``, while `index` must be an
     :class:`~stonemason.provider.pyramid.TileIndex` object.
 
+    `TileCache` is designed to be shared between all `themes` and `layers` in
+    a particular deployment.
+
     .. note::
-        The cache object designed to be shared between all themes and layers.
+
         Being a thin wrapper layer, CAP model is dependent on the actual
-        cache system implement.
+        cache system implement, check implement for details.
     """
 
     def __init__(self):
         pass
 
-    def _make_key(self, tag, index):
-        # tag/z/x/y
-        assert re.match(r'[a-zA-Z][a-zA-Z0-9_-%]+', tag)
-        assert isinstance(index, TileIndex)
-        return '%s/%s' % (tag, '/' % index)
-
     def get(self, tag, index):
-        """ Retrieve a tile from cache, return `None` on miss.
+        """Retrieve a tile from cache, return `None` on miss.
 
         :param tag: Tag of the tile.
         :type tag: str
@@ -58,7 +59,7 @@ class TileCache(object):
         return None
 
     def has(self, tag, index):
-        """ Check whether give tag&index exists in the cache.
+        """Check whether give tag&index exists in the cache.
 
         Implement may provide a better to check existence instead of actually
         retrieve tile data.
@@ -73,7 +74,7 @@ class TileCache(object):
         return self.get(tag, index) is not None
 
     def put(self, tag, tile, ttl=0):
-        """ Put a tile into the cache with given tag.
+        """Put a tile into the cache with given tag.
 
         Put a tile object into the cache, overwriting any existing one, the
         tile will be expired after given `ttl`.
@@ -85,11 +86,12 @@ class TileCache(object):
         :param ttl: Number of seconds before expiration, `0` means never.
         :type ttl: int
         :return: None
+        :raise: :class:`~stonemason.provider.tilecache.TileCacheError` when fail.
         """
         pass
 
     def retire(self, tag, index):
-        """ Delete tile with given tag&index from cache.
+        """Delete tile with given tag&index from cache.
 
         If `tile` does not present in cache, this operation has no effect.
 
@@ -102,7 +104,7 @@ class TileCache(object):
         pass
 
     def put_multi(self, tag, tiles, ttl=0):
-        """ Put many tiles of with same tag in one call.
+        """Put many tiles of with same tag in one call.
 
         Usually this operation is much faster if batching is supported by
         underlying driver. Note usually `put_multi` is *not* atomic.
@@ -120,7 +122,7 @@ class TileCache(object):
             self.put(tag, tile, ttl=ttl)
 
     def has_all(self, tag, indexes):
-        """ Check whether all given tag and tile indexes exist in the cache
+        """Check whether all given tag and tile indexes exist in the cache
 
         Usually this operation is much faster if batching is supported by
         underlying driver.
@@ -135,7 +137,7 @@ class TileCache(object):
         return all(self.has(tag, index) for index in indexes)
 
     def lock(self, tag, index, ttl=0.1):
-        """ Mark a particular tile as locked for a specified amount of time.
+        """Mark a particular tile as locked for a specified amount of time.
 
         Mark a tile with given tag and index as locked until ttl expires.
         Return a CAS integer which can be used to unlock the tile.
@@ -153,7 +155,7 @@ class TileCache(object):
         return 0xfeed
 
     def unlock(self, tag, index, cas):
-        """ Unlock a particular tile using given `cas`.
+        """Unlock a particular tile using given `cas`.
 
         The tile must have been locked with the specified `cas`.
 
@@ -169,5 +171,9 @@ class TileCache(object):
         return True
 
     def flush(self):
-        """ Delete everything in the cache. """
+        """Delete everything in the cache."""
+        pass
+
+    def close(self):
+        """Release any underlying resources."""
         pass

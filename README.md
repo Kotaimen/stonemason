@@ -32,5 +32,5 @@ Similar solutions:
 - imagemagick>=6.0 (Optional)
 - PostgreSQL>=9.1, PostGIS>=2.1 (Optional)
 - redis>=2.8 (Optional)
-- memcached>=1.4
+- pyblibmc
 

@@ -10,4 +10,6 @@ __date__ = '12/26/14'
     A cache of tiles.
 """
 
-from .tilecache import TileCache
+from .tilecache import TileCache, TileCacheError
+from .memcache_ import MemTileCache
+
