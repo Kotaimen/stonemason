@@ -55,7 +55,7 @@ class Config(dict):
 
         :param filename: The name of the config file.
         :type filename: str
-        :return: return true if succeed.
+        :return: Return true if succeed.
         :returns: bool
         """
         if not os.path.exists(filename):
@@ -64,27 +64,25 @@ class Config(dict):
         with open(filename) as fp:
             return self.read_from_stream(fp)
 
-
-    def read_from_stream(self, fp):
+    def read_from_stream(self, stream):
         """Read config from stream.
 
         Read config from a file-like object and return true if succeed.
 
-        :param fp: A file-like object.
-        :type fp: FileIO
-        :return: return true if succeed.
+        :param stream: A file-like object.
+        :type stream: FileIO
+        :return: Return true if succeed.
         :returns: bool
         """
 
         p = ConfigParser()
         try:
-            properties = p.parse(fp.read())
+            properties = p.parse(stream.read())
         except ConfigParserError:
             raise InvalidConfig
 
         self.update(properties)
         return True
-
 
     def read_from_object(self, obj):
         """Read config from a python object.
