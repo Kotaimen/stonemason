@@ -36,8 +36,9 @@ before_install:
   - mapnik-config --version
 
 install:
-  - pip install -r requirements-dev.txt
-  - pip install .
+  - pip install -q -r requirements-dev.txt
+  - pip install -q .
+  - python setup.py build_ext --inplace
 
 services:
   - memcached
