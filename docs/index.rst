@@ -24,6 +24,7 @@ References
 .. toctree::
     :maxdepth: 2
 
+    pkg_config
     pkg_pyramid
     pkg_tilecache
     pkg_util
