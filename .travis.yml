@@ -1,0 +1,73 @@
+#Travis-ci config file
+
+language: python
+python:
+  - "2.7"
+
+# Use system package so we can access geos/gdal/mapnik bindings
+virtualenv:
+  system_site_packages: true
+
+before_install:
+  # Add ubuntugis and mapnik stable PPA
+  - sudo apt-get install -qq python-software-properties
+  - sudo add-apt-repository -y ppa:ubuntugis/ppa
+  - sudo add-apt-repository -y ppa:mapnik/v2.2.0
+  - sudo apt-get update -qq
+  
+  # Install pillow binary requests
+  - sudo apt-get install -qq libjpeg-dev libz-dev libtiff-dev libfreetype6-dev liblcms-dev libwebp-dev libopenjpeg-dev
+  
+  # Install numpy/scipy (12.04 comes with very old scipy, but build from source
+  # takes too much time, hopefully we don't need new version during development)
+#  - sudo apt-get install -qq gcc g++ gfortran libblas-dev liblapack-dev
+#  - sudo pip install -q numpy
+#  - sudo pip install -q scipy
+  - sudo apt-get install -qq python-numpy python-scipy
+  
+  # Install  Mapnik
+  - sudo apt-get install -qq libgeos-dev libgdal-dev gdal-bin python-gdal 
+  - sudo apt-get install -qq python-mapnik
+  
+  # Check installed packages
+  - geos-config --version
+  - ogrinfo --version
+  - ogrinfo --formats
+  - mapnik-config --version
+
+install:
+  - pip install -q -r requirements-dev.txt
+  - pip install -q .
+  - python setup.py build_ext --inplace
+
+services:
+  - memcached
+#  - redis-server
+  
+#addons:
+#  postgresql: "9.3"
+
+# whitelist
+branches:
+  only:
+    - master
+    - develop
+    - feature/travis
+
+before_script:
+#  - psql -U postgres -c 'create database travis_ci_test;'
+#  - psql -U postgres -d travis_ci_test -c "create extension postgis;"
+
+script:
+  - nosetests
+  - cd docs
+  - make doctest
+  - make html
+
+notifications:
+  email:
+    recipients:
+      - gliese.q@gmail.com
+      - kotaimen.c@gmail.com
+
+
