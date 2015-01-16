@@ -52,7 +52,6 @@ branches:
   only:
     - master
     - develop
-    - feature/travis
 
 before_script:
 #  - psql -U postgres -c 'create database travis_ci_test;'
