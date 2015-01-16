@@ -46,10 +46,13 @@ services:
 #addons:
 #  postgresql: "9.3"
 
+# whitelist
 branches:
   only:
     - master
-    
+    - develop
+    - feature/travis
+
 before_script:
 #  - psql -U postgres -c 'create database travis_ci_test;'
 #  - psql -U postgres -d travis_ci_test -c "create extension postgis;"
