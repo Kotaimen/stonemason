@@ -18,6 +18,10 @@ from .tilecache import TileCache, TileCacheError
 from stonemason.provider.pyramid import Tile, TileIndex
 
 
+class MemTileCacheError(TileCacheError):
+    pass
+
+
 class MemTileCache(TileCache):
     """A tile cache based on `memcached` protocol backend.
 
@@ -48,11 +52,13 @@ class MemTileCache(TileCache):
         .. seealso:: `pylibmc` `behaviours <http://sendapatch.se/projects/pylibmc/behaviors.html>`_.
 
     :param servers: A sequence of strings specifying the servers to use.
-    :param binary: Whether to use `memcached` binary protocol, default is ``False``.
+    :param binary: Whether to use `memcached` binary protocol, default is ``True``.
     :param behaviors: `pylibmc` behaviors.
     """
 
-    def __init__(self, servers=('localhost:11211', ), binary=False,
+    def __init__(self, servers=('localhost:11211', ),
+                 binary=True,
+                 min_compress_len=0,
                  behaviors=None):
         super(TileCache, self).__init__()
         if behaviors is None:
@@ -61,7 +67,10 @@ class MemTileCache(TileCache):
         self.connection = pylibmc.Client(servers, binary=binary,
                                          behaviors=behaviors)
         # Verify connection
-        self.connection.get_stats()
+        try:
+            self.connection.get_stats()
+        except pylibmc.Error:
+            raise MemTileCacheError("Can't connect to memcache servers.")
 
 
     def _make_key(self, tag, index):
@@ -116,7 +125,7 @@ class MemTileCache(TileCache):
         try:
             mimetype, mtime, etag = self._load_metadata(metadata)
         except ValueError:
-            raise TileCacheError('Invalid metadata: "%s"' % metadata_key)
+            raise MemTileCacheError('Invalid metadata: "%s"' % metadata_key)
 
         return Tile(index, data, mimetype, mtime, etag)
 
@@ -128,12 +137,12 @@ class MemTileCache(TileCache):
 
         failed = self.connection.set_multi(data, time=ttl)
         if len(failed) > 0:
-            raise TileCacheError('Tile not successfully writen: "%s"' % failed)
+            raise MemTileCacheError('Tile not writen: "%s"' % failed)
 
     def has(self, tag, index):
-        key, _, _ = self._make_key(tag, index)
+        _, metadata_key, _ = self._make_key(tag, index)
+        return self.connection.get(metadata_key) is not None
 
-        return self.connection.touch(key)
 
     def retire(self, tag, index):
         key, metadata_key, _ = self._make_key(tag, index)
@@ -142,17 +151,30 @@ class MemTileCache(TileCache):
 
     def put_multi(self, tag, tiles, ttl=0):
         data = {}
-        for tile in tiles:
+        for n, tile in enumerate(tiles):
             key, metadata_key, _ = self._make_key(tag, tile.index)
             data[key] = tile.data
             data[metadata_key] = self._make_metadata(tile)
+        else:
+            assert len(data) == (n + 1) * 2
 
         failed = self.connection.set_multi(data, time=ttl)
         if len(failed) > 0:
-            raise TileCacheError('Tile not successfully writen: "%s"' % failed)
+            raise MemTileCacheError(
+                'Tile not writen: "%s"' % failed)
+
+    def lock(self, tag, index, ttl=0.1):
+        # XXX: memcache only supports integer ttl...
+        raise NotImplementedError
+
+    def unlock(self, tag, index, cas):
+        raise NotImplementedError
 
     def close(self):
         self.connection.disconnect_all()
 
     def flush(self):
         self.connection.flush_all()
+
+    def stats(self):
+        return dict(self.connection.get_stats())

@@ -139,6 +139,7 @@ class TileCache(object):
     def lock(self, tag, index, ttl=0.1):
         """Mark a particular tile as locked for a specified amount of time.
 
+        Implement pessimistic locking.
         Mark a tile with given tag and index as locked until ttl expires.
         Return a CAS integer which can be used to unlock the tile.
         If the tile is already locked, returns 0.
@@ -175,5 +176,9 @@ class TileCache(object):
         pass
 
     def close(self):
-        """Release any underlying resources."""
+        """Release any underlying resources.
+
+        .. Warning::
+            This will clear everything, include data not stored by TileCache.
+        """
         pass
