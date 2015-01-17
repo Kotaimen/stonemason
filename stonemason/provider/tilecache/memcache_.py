@@ -13,6 +13,7 @@ __date__ = '1/12/15'
 import re
 import json
 import pylibmc
+import random
 
 from .tilecache import TileCache, TileCacheError
 from stonemason.provider.pyramid import Tile, TileIndex
@@ -47,9 +48,31 @@ class MemTileCache(TileCache):
 
     `behaviors`
 
-        Set `pylibmc` client behaviours, default is ``{'tcp_nodelay': True, 'ketama': True}``.
+        Set `pylibmc` client behavior, default value is:
+
+        .. code-block:: python
+
+            {
+                'tcp_nodelay': True,
+                'ketama': True,
+                'cas': True,
+            }
 
         .. seealso:: `pylibmc` `behaviours <http://sendapatch.se/projects/pylibmc/behaviors.html>`_.
+
+    Sample:
+
+    >>> from stonemason.provider.pyramid import Tile,TileIndex
+    >>> from stonemason.provider.tilecache import MemTileCache
+    >>> cache = MemTileCache(servers=['localhost:11211',])
+    >>> cache.put('layer', Tile(TileIndex(2, 3, 4), b'tile'))
+    >>> cache.has('layer', TileIndex(2, 3, 4))
+    True
+    >>> cache.get('layer', TileIndex(2, 3, 4))
+    Tile(2/3/4)
+    >>> cache.retire('layer', TileIndex(2, 3, 4))
+    >>> cache.has('layer', TileIndex(2, 3, 4))
+    False
 
     :param servers: A sequence of strings specifying the servers to use.
     :param binary: Whether to use `memcached` binary protocol, default is ``True``.
@@ -63,7 +86,8 @@ class MemTileCache(TileCache):
         super(TileCache, self).__init__()
         if behaviors is None:
             behaviors = {'tcp_nodelay': True,
-                         'ketama': True}
+                         'ketama': True,
+                         'cas': True}
         self.connection = pylibmc.Client(servers, binary=binary,
                                          behaviors=behaviors)
         # Verify connection
@@ -150,6 +174,7 @@ class MemTileCache(TileCache):
         self.connection.delete_multi([key, metadata_key])
 
     def put_multi(self, tag, tiles, ttl=0):
+        assert tiles
         data = {}
         for n, tile in enumerate(tiles):
             key, metadata_key, _ = self._make_key(tag, tile.index)
@@ -160,15 +185,43 @@ class MemTileCache(TileCache):
 
         failed = self.connection.set_multi(data, time=ttl)
         if len(failed) > 0:
-            raise MemTileCacheError(
-                'Tile not writen: "%s"' % failed)
+            raise MemTileCacheError('Tile not writen: "%s"' % failed)
 
     def lock(self, tag, index, ttl=0.1):
-        # XXX: memcache only supports integer ttl...
-        raise NotImplementedError
+        # memcache only supports integer ttl...
+        ttl = int(round(ttl, 0))
+        # never allow ttl=0 since it means lock forever
+        if ttl <= 0:
+            ttl = 1
+
+        _, _, lock_key = self._make_key(tag, index)
+
+        # check lock
+
+        if self.connection.get(lock_key) is not None:
+            # already locked
+            return 0
+        else:
+            # XXX: potential random collision
+            cas = random.getrandbits(31)
+            self.connection.set(lock_key, cas, time=ttl)
+            return cas
 
     def unlock(self, tag, index, cas):
-        raise NotImplementedError
+        _, _, lock_key = self._make_key(tag, index)
+
+        value = self.connection.get(lock_key)
+        if value is None:
+            # already unlocked
+            return True
+        if value != cas:
+            # cas mismatch
+            return False
+        else:
+            # XXX: need "compare and delete" lock flag, potential inconsistency
+            # delete the lock flag
+            self.connection.delete(lock_key)
+        return True
 
     def close(self):
         self.connection.disconnect_all()

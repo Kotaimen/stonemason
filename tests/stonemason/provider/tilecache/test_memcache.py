@@ -13,6 +13,9 @@ from stonemason.provider.tilecache import MemTileCache
 class TestMemTileCache(unittest.TestCase):
     def setUp(self):
         self.cache = MemTileCache(binary=False)
+
+        self.cache.flush()
+
         self.cache.connection.set('layer/2/3/4',
                                   b'tile')
         self.cache.connection.set('layer/2/3/4~metadata',
@@ -22,6 +25,7 @@ class TestMemTileCache(unittest.TestCase):
                                   b'a tile')
         self.cache.connection.set('layer/3/4/5~metadata',
                                   '["text/plain", 1234.56, "ABCD"]')
+
 
     def tearDown(self):
         self.cache.close()
@@ -66,8 +70,17 @@ class TestMemTileCache(unittest.TestCase):
         tile = Tile(index, b'another tile', 'text/plain', timestamp)
         self.cache.put('ttl-test-layer', tile, 1)
         self.assertTrue(self.cache.has('ttl-test-layer', TileIndex(2, 3, 4)))
-        time.sleep(1)
+        time.sleep(1.1)
         self.assertFalse(self.cache.has('ttl-test-layer', TileIndex(2, 3, 4)))
+
+    def test_lock(self):
+        index = TileIndex(2, 3, 4)
+        cas = self.cache.lock('lock-test-layer', index, 0.1)
+        self.assertNotEqual(cas, 0)
+        self.assertEqual(self.cache.lock('lock-test-layer', index, 1), 0)
+        self.assertFalse(self.cache.unlock('lock-test-layer', index, 1234))
+        self.assertTrue(self.cache.unlock('lock-test-layer', index, cas))
+        self.assertTrue(self.cache.unlock('lock-test-layer', index, cas))
 
 
     def test_stats(self):

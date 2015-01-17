@@ -166,7 +166,7 @@ class TileCache(object):
         :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :param cas: CAS value of the tile.
         :type cas: int
-        :return: `True` if unlock is successful, `False` otherwise.
+        :return: `True` if unlock is successful or no lock is present, `False` otherwise.
         :rtype: bool
         """
         return True
