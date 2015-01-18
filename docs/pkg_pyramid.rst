@@ -1,7 +1,7 @@
 Pyramid
 =======
 
-Tile related data types and algorithms.
+Tile system package.
 
 
 Tile
@@ -14,6 +14,14 @@ Tile
     :members:
 
 
+MetaTile
+--------
+
+.. autoclass:: stonemason.provider.pyramid.MetaTileIndex
+    :members:
+
+.. autoclass:: stonemason.provider.pyramid.MetaTile
+    :members:
 
 Serial
 ------

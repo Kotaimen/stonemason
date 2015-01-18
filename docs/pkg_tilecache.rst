@@ -2,6 +2,10 @@ Tile Cache
 ==========
 
 
+TileCache
+---------
+
+
 .. autoclass:: stonemason.provider.tilecache.TileCache
    :members:
 

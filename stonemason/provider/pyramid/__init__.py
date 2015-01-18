@@ -3,7 +3,6 @@
 __author__ = 'kotaimen'
 __date__ = '12/26/14'
 
-
 """
     stonemason.provider.pyramid
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -12,4 +11,6 @@ __date__ = '12/26/14'
 """
 
 from .tile import TileIndex, Tile
+from .metatile import MetaTileIndex, MetaTile
 from .serial import Hilbert, Legacy
+from .pyramid import Pyramid
