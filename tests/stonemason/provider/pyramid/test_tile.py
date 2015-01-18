@@ -15,14 +15,14 @@ class TestTileIndex(unittest.TestCase):
         self.assertEqual(index1.x, 0)
         self.assertEqual(index1.y, 0)
         self.assertEqual(index1.z, 0)
-        index2 = TileIndex(2, 3, 4)
-        self.assertEqual(index2.x, 3)
-        self.assertEqual(index2.y, 4)
+        index2 = TileIndex(2, 2, 3)
+        self.assertEqual(index2.x, 2)
+        self.assertEqual(index2.y, 3)
         self.assertEqual(index2.z, 2)
 
     def test_repr(self):
-        index = TileIndex(2, 3, 4)
-        self.assertEqual(str(index), 'TileIndex(2/3/4)')
+        index = TileIndex(2, 2, 3)
+        self.assertEqual(str(index), 'TileIndex(2/2/3)')
 
     def test_serial(self):
         index = TileIndex(3, 4, 5)
@@ -51,11 +51,11 @@ class TestTile(unittest.TestCase):
         self.assertEqual(tile.etag, hashlib.md5(b'').hexdigest())
 
     def test_init2(self):
-        tile = Tile(index=TileIndex(2, 3, 4),
+        tile = Tile(index=TileIndex(2, 2, 3),
                     data=b'a tile',
                     mimetype='text/plain',
                     mtime=1234.)
-        self.assertEqual(tile.index, (2, 3, 4))
+        self.assertEqual(tile.index, (2, 2, 3))
         self.assertEqual(tile.data, b'a tile')
         self.assertEqual(tile.mimetype, 'text/plain')
         self.assertGreater(tile.mtime, 0.)

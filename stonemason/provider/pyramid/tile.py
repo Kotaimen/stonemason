@@ -6,7 +6,7 @@ __date__ = '1/8/15'
 """
     stonemason.provider.pyramid.tile
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Tile and its index.
+    Square area in a map.
 
 """
 
@@ -23,7 +23,7 @@ _TileIndex = collections.namedtuple('_TileIndex', 'z x y')
 
 
 class TileIndex(_TileIndex):
-    """ Coordinate of a map Tile.
+    """Coordinate of a map Tile.
 
     Coordinate (aka: index) of a map :class:`~stonemason.provider.pyramid.Tile`
     using GoogleMaps style tile map system.
@@ -32,13 +32,15 @@ class TileIndex(_TileIndex):
 
 
     >>> from stonemason.provider.pyramid import TileIndex
-    >>> index = TileIndex(2, 3, 4)
+    >>> index = TileIndex(3, 4, 5)
+    >>> index
+    TileIndex(3/4/5)
     >>> index.z
-    2
-    >>> index.x
     3
-    >>> index.y
+    >>> index.x
     4
+    >>> index.y
+    5
 
     :param z: Zoom level.
     :type z: int
@@ -49,8 +51,9 @@ class TileIndex(_TileIndex):
     """
 
     def __new__(cls, z=0, x=0, y=0):
-        assert 0 <= x <= 2 ** z
-        assert 0 <= y <= 2 ** z
+        assert z >= 0
+        assert 0 <= x < 2 ** z
+        assert 0 <= y < 2 ** z
         return _TileIndex.__new__(cls, z, x, y)
 
     @property
@@ -68,9 +71,9 @@ _Tile = collections.namedtuple('_Tile', 'index data mimetype mtime etag')
 
 
 class Tile(_Tile):
-    """ A piece of square area in a map.
+    """A piece of square area in a map.
 
-    A `Tile` is a piece of square area in a rendered digital map, sliced
+    A `tile` is a piece of square area in a rendered digital map, sliced
     using quad-tree grid system, called :class:`~stonemason.provider.pyramid.Pyramid`.
 
     Tile is uniquely referenced by its :class:`~stonemason.provider.pyramid.TileIndex`.
@@ -79,7 +82,7 @@ class Tile(_Tile):
 
     `index`
 
-        Tile index.
+        :class:`~stonemason.provider.pyramid.TileIndex`.
 
     `data`
 
@@ -107,12 +110,12 @@ class Tile(_Tile):
     Sample:
 
     >>> from stonemason.provider.pyramid import Tile, TileIndex
-    >>> tile = Tile(index=TileIndex(2, 3, 4),
+    >>> tile = Tile(index=TileIndex(3, 4, 5),
     ...             data=b'a tile',
     ...             mimetype='text/plain',
     ...             mtime=1234.)
     >>> tile
-    Tile(2/3/4)
+    Tile(3/4/5)
     >>> tile.data
     'a tile'
     >>> tile.mimetype
@@ -138,12 +141,16 @@ class Tile(_Tile):
                 etag=None):
         if index is None:
             index = TileIndex()
+
         if data is None:
             data = bytes()
+
         if mimetype is None:
             mimetype = 'application/data'
+
         if mtime is None:
             mtime = time.time()
+
         if etag is None:
             etag = hashlib.md5(data).hexdigest()
 
