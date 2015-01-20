@@ -5,7 +5,7 @@ __date__ = '1/5/15'
 
 import unittest
 import os
-import tempfile
+import io
 
 from distutils.version import StrictVersion
 
@@ -65,14 +65,14 @@ class TestPIL(unittest.TestCase):
 
 
     def test_grid_crop(self):
-        grids = gridcrop.grid_crop(self.grid_data, stride=2,
-                                   buffer_size=256)
+        grids = dict(gridcrop.grid_crop(self.grid_data, stride=2,
+                                        buffer_size=256))
         # visual confirm
         # for (row, column), image in six.iteritems(grids):
         # filename = os.path.join(tempfile.gettempdir(),
-        #                             '%d-%d.png' % (row, column))
-        #     six.print_(filename)
-        #     image.save(filename)
+        # '%d-%d.png' % (row, column))
+        # six.print_(filename)
+        # image.save(filename)
 
         self.assertImageEqual(grids[(0, 0)],
                               self.grid_image.crop((256, 256, 512, 512)))
@@ -82,6 +82,17 @@ class TestPIL(unittest.TestCase):
 
         self.assertImageEqual(grids[(1, 0)],
                               self.grid_image.crop((512, 256, 768, 512)))
+
+    def test_grid_crop_into_data(self):
+
+        grids = dict(gridcrop.grid_crop_into_data(self.grid_data,
+                                                  stride=2,
+                                                  buffer_size=256,
+                                                  format='PNG'
+                                                  ))
+
+        self.assertImageEqual(Image.open(io.BytesIO(grids[(0, 0)])),
+                              self.grid_image.crop((256, 256, 512, 512)))
 
 
 if __name__ == '__main__':
