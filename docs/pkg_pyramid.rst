@@ -3,6 +3,10 @@ Pyramid
 
 Tile system package.
 
+Contains definitions of `tiles`, `metatile` and the quad tree `pyramid`.
+
+All classes in this package is implemented using :class:`collections.namedtuple`
+thus is immutable and pickle serializable.
 
 Tile
 ----
