@@ -182,3 +182,8 @@ class TileCache(object):
             This will clear everything, include data not stored by TileCache.
         """
         pass
+
+
+class NullTileCache(TileCache):
+    """A cache that caches nothing."""
+    pass

@@ -10,12 +10,20 @@ TileCache has no persistence and depends on a distributed cache.
 Currently there is only `memcached` cache.
 The interface `TileCache` class can be used as a *null* cache.
 
+Exception
+---------
+
+.. autoclass:: stonemason.provider.tilecache.TileCacheError
+    :members:
+
 TileCache
 ---------
 
 .. autoclass:: stonemason.provider.tilecache.TileCache
    :members:
 
+.. autoclass:: stonemason.provider.tilecache.NullTileCache
+   :members:
 
 Memcached
 ---------
