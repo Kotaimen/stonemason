@@ -106,16 +106,13 @@ class MetaTile(_MetaTile):
     so metatile is the basic unit of storage and map rendering.
 
     `mimetype`
-
         Type of the metatile data in mimetypes format, default to
         ``application/data``.
 
     `etag`
-
         Hash of the tile data.
 
     `buffer`
-
         Size of extra pixels around the metatile, only meaningful for raster
         image metatiles, default is `0`, which means no buffering.
 

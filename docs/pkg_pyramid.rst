@@ -1,11 +1,10 @@
-Pyramid
-=======
+Tile System
+===========
 
-Tile system package.
+:mod:`stonemason.provider.pyramid` contains definitions of `tiles`, `metatile` 
+and the quad tree `pyramid`.
 
-Contains definitions of `tiles`, `metatile` and the quad tree `pyramid`.
-
-All classes in this package is implemented using :class:`collections.namedtuple`
+All classes in this package is implemented using :func:`collections.namedtuple`
 thus is immutable and pickle serializable.
 
 Tile

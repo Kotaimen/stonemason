@@ -81,28 +81,23 @@ class Tile(_Tile):
     A tile object is immutable once created and has following attributes:
 
     `index`
-
         :class:`~stonemason.provider.pyramid.TileIndex`.
 
     `data`
-
         Arbitrary binary or textual data, though its usually a rendered
         raster map image, or geo referenced features.
 
     `mimetype`
-
         Type of the tile data in mimetypes format, default to
         ``application/data``.  `Tile` will never check whether `mimetype`
         matches actual tile data format.
 
     `mtime`
-
         Modify time of the tile since EPOCH in seconds, if its not given in
         the constructor, current time is used by calling :func:`time.time()`
 
 
     `etag`
-
         Hash of the tile data, calculated using class:`hashlib:md5` if is not
         given in the constructor.
 

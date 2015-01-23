@@ -1,5 +1,6 @@
-StoneMason Config
-=================
+Configuration
+=============
+
 
 
 

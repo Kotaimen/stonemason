@@ -1,7 +1,7 @@
 Utilities
 =========
 
-Utility functions and classes.
+:mod:`stonemason.util` contains utility functions and classes.
 
 Geo
 ---

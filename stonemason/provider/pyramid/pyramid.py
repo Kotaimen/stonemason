@@ -27,28 +27,23 @@ class Pyramid(_Pyramid):
 
 
     `levels`
-
         Zoom levels of the pyramid, must be a list of integers, default
         value is ``0-22``.
 
     `stride`
-
         Stride of the MetaTile in this pyramid, default value is ``1``.
 
     `crs`
-
         Coordinate Reference System (Geographic Coordinate System) of the
         map data.  default value is ``EPSG:4326``, which is the common
         WGS84 datum.
 
     `proj`
-
         Projected coordinate system of the map, default value is ``EPSG:3857``,
         which is Mercator projection used by GoogleMaps and most web map
         services.
 
     `boundary`
-
         Map boundary in specified `crs`, only simple bounding box is supported
         as of now, in the form of ``(left, top, right, bottom)``.
 
@@ -66,7 +61,7 @@ class Pyramid(_Pyramid):
 
     `Pyramid` does not verify projection strings.
 
-    .. _OSRSetFromUserInput: <http://www.gdal.org/ogr__srs__api_8h.html#a927749db01cec3af8aa5e577d032956b>
+    .. _OSRSetFromUserInput: http://www.gdal.org/ogr__srs__api_8h.html#a927749db01cec3af8aa5e577d032956b
 
 
     >>> from stonemason.provider.pyramid import Pyramid

@@ -40,14 +40,12 @@ class MemTileCache(TileCache):
     .. _nutcracker:  <https://github.com/twitter/twemproxy>
 
     `servers`
-
         A list of servers, the list is sent to :class:`pylibmc.Client`, default
         value is ``['localhost:11211',]``.
 
         .. seealso:: `pylibmc` `example <http://sendapatch.se/projects/pylibmc/index.html>`_.
 
     `behaviors`
-
         Set `pylibmc` client behavior, default value is:
 
         .. code-block:: python
