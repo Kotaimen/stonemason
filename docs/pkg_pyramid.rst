@@ -35,3 +35,10 @@ Serial
 
 .. autoclass:: stonemason.provider.pyramid.Legacy
     :members:
+
+
+Pyramid
+-------
+
+.. autoclass:: stonemason.provider.pyramid.Pyramid
+    :members:
