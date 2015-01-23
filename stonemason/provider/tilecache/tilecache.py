@@ -43,9 +43,6 @@ class TileCache(object):
         cache system implement, check implement for details.
     """
 
-    def __init__(self):
-        pass
-
     def get(self, tag, index):
         """Retrieve a tile from cache, return `None` on miss.
 
@@ -56,7 +53,7 @@ class TileCache(object):
         :return: `Tile` object on hit, `None` on miss.
         :rtype: `Tile` or `None`
         """
-        return None
+        raise NotImplementedError
 
     def has(self, tag, index):
         """Check whether give tag&index exists in the cache.
@@ -88,7 +85,7 @@ class TileCache(object):
         :return: None
         :raise: :class:`~stonemason.provider.tilecache.TileCacheError` when fail.
         """
-        pass
+        raise NotImplementedError
 
     def retire(self, tag, index):
         """Delete tile with given tag&index from cache.
@@ -101,7 +98,7 @@ class TileCache(object):
         :type index: :class:`~stonemason.provider.pyramid.TileIndex`
         :return: None
         """
-        pass
+        raise NotImplementedError
 
     def put_multi(self, tag, tiles, ttl=0):
         """Put many tiles of with same tag in one call.
@@ -173,7 +170,7 @@ class TileCache(object):
 
     def flush(self):
         """Delete everything in the cache."""
-        pass
+        raise NotImplementedError
 
     def close(self):
         """Release any underlying resources.
@@ -181,9 +178,38 @@ class TileCache(object):
         .. Warning::
             This will clear everything, include data not stored by TileCache.
         """
-        pass
+        raise NotImplementedError
 
 
 class NullTileCache(TileCache):
     """A cache that caches nothing."""
-    pass
+
+    def get(self, tag, index):
+        return None
+
+    def has(self, tag, index):
+        return False
+
+    def put(self, tag, tile, ttl=0):
+        return
+
+    def retire(self, tag, index):
+        return
+
+    def put_multi(self, tag, tiles, ttl=0):
+        return
+
+    def has_all(self, tag, indexes):
+        return False
+
+    def lock(self, tag, index, ttl=0.1):
+        return 0xfeed
+
+    def unlock(self, tag, index, cas):
+        return True
+
+    def flush(self):
+        return
+
+    def close(self):
+        return
