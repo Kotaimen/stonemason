@@ -30,7 +30,6 @@ User's Guide
     quickstart
     config
     themes
-    storages
 
 API Reference
 =============
@@ -52,6 +51,7 @@ Tile Providers
 
     pkg_pyramid
     pkg_tilecache
+    pkg_tilestorage
 
 
 Utilties

@@ -105,12 +105,21 @@ class MetaTile(_MetaTile):
     Group tiles into metatile greatly reduces number of operations,
     so metatile is the basic unit of storage and map rendering.
 
+    `index`
+        Index of the metatile.
+
+    `data`
+        Arbitrary binary or textual data.
+
     `mimetype`
         Type of the metatile data in mimetypes format, default to
         ``application/data``.
 
+    `mtime`
+        Modify time of the metatile since EPOCH in seconds.
+
     `etag`
-        Hash of the tile data.
+        Hash of the metatile data.
 
     `buffer`
         Size of extra pixels around the metatile, only meaningful for raster
