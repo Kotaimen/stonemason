@@ -131,7 +131,7 @@ def guess_mimetype(extension):
     """Guess mimetype from extension, return ``application/data`` on failure.
     """
 
-    if extension is None:
+    if extension is None or extension == '.dat':
         return 'application/data'
 
     mimetype, encoding = mimetypes.guess_type('foo' + extension)
