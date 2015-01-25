@@ -7,9 +7,7 @@
 
 """
 
-from collections import namedtuple
-
-_ThemeElement = namedtuple('_Foo', 'prototype parameters')
+from .themeblock import MetadataBlock, DesignBlock, CacheBlock, StorageBlock
 
 
 class ThemeError(Exception):
@@ -17,51 +15,9 @@ class ThemeError(Exception):
     pass
 
 
-class Validator(object):
-    """Validator Interface
-
-    A validator subclass should implement the detail of the validation.
-    """
-
-    def validate(self):
-        """Return true if is valid"""
-        raise NotImplementedError
-
-
-class ThemeElement(_ThemeElement, Validator):
-    """Theme Element
-
-    Each element in a theme has a property called `prototype`, which is
-    used to specify the type of the element a provider will use. And a
-    `parameters` property determines how to create this element.
-
-    `prototype`
-
-        Type of the element a provider will use.
-
-    `parameters`
-
-        Parameters of the element.
-
-    """
-
-    def validate(self):
-        raise NotImplementedError
-
-
-class ThemeCache(ThemeElement):
-    def validate(self):
-        return False
-
-
-class ThemeStorage(ThemeElement):
-    def validate(self):
-        return False
-
-
-class ThemeDesign(ThemeElement):
-    def validate(self):
-        return False
+class ModeNotSupported(ThemeError):
+    """Unsupported theme mode"""
+    pass
 
 
 class Theme(object):
@@ -80,29 +36,26 @@ class Theme(object):
     def __init__(self, config):
         self._name = config.get('name')
 
-        conf = config.get('cache')
-        if conf is not None:
-            self._cache = ThemeCache(conf['prototype'], conf['parameters'])
-            self._cache.validate()
-
-        conf = config.get('storage')
-        if conf is not None:
-            self._storage = ThemeStorage(conf['prototype'], conf['parameters'])
-            self._storage.validate()
-
-        conf = config.get('design')
-        if conf is not None:
-            self._design = ThemeDesign(conf['prototype'], conf['parameters'])
-            self._design.validate()
-
-        self._metadata = config.get('metadata', dict())
+        conf = config.get('metadata', dict())
         if not isinstance(self._metadata, dict):
-            self._metadata = dict()
+            raise ThemeError('A metadata should be a dict of options!')
+        self._metadata = MetadataBlock(**conf)
+
+        self._mode = None
+        self._design = None
+        self._cache = None
+        self._storage = None
+
 
     @property
     def name(self):
         """Name of the theme"""
         return self._name
+
+    @property
+    def mode(self):
+        """Provider mode"""
+        return self._mode
 
     @property
     def metadata(self):
