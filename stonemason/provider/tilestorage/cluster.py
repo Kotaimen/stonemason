@@ -331,7 +331,7 @@ class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
             index = collections.OrderedDict([
                 ('version', CLUSTER_ZIP_VERSION),
                 ('tiles', dedup),
-                ('datas', mapping.keys()),
+                ('datas', list(six.iterkeys(mapping))),
                 ('extension', extension),
                 ('mimetype', sample_tile.mimetype),
                 ('stride', self.index.stride),

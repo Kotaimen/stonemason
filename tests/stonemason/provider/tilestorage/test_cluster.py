@@ -167,7 +167,7 @@ class TxtSplitter(Splitter):
     def __call__(self, data, stride, buffer):
         for x in range(stride):
             for y in range(stride):
-                yield (x, y), 'tile_data'
+                yield (x, y), b'tile_data'
 
 
 class TestSaveClusterAsZipFile(unittest.TestCase):
