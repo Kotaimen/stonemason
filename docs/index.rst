@@ -42,6 +42,7 @@ Mason
     :maxdepth: 2
 
     pkg_config
+    pkg_theme
 
 Tile Providers
 --------------

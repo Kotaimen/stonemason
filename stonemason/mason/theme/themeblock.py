@@ -13,19 +13,24 @@ import json
 
 
 class ThemeBlockError(Exception):
-    """Theme Block Error Base
+    """Theme Block Error Base Class
     """
     pass
 
 
 class MetadataValueError(ThemeBlockError):
-    """Invalid attribute value
+    """Invalid metadata value
     """
     pass
 
 
+class ModeValueError(ThemeBlockError):
+    """Invalid mode value
+    """
+
+
 class ThemeBlock(object):
-    """Theme Block Base
+    """Theme Block Base Class
     """
     pass
 
@@ -44,38 +49,47 @@ class MetadataBlock(ThemeBlock):
     `name`
 
         A string literal that uniquely identify a theme. Different theme
-        should have different names.
+        should have different names. The default value is 'default'.
+
 
     `crs`
 
         A coordinate reference system(CRS) defines a specific map projection,
         as well as transformations between different spatial reference systems.
-        Validation is delayed to backend.
+        Validation is delayed to backend. The default value is 'epsg:3857'.
+
 
     `scale`
 
-        A positive integer represents a proportional ratio to a projected map
-        on a 72dpi device, for example, 2, 3, 4. If you are rendering maps for
-        a retina display, you should probably use scale factor 2.
-        Range [1, 5).
+        A positive integer number which scales, or multiplies element size
+        throughout the map rendering process for display on high resolution
+        device. If you are rendering maps for a retina display, you should
+        probably use scale 2.
+        Range [1, 5). The default value is 1.
+
 
     `buffer`
 
         The padding space on all sides of a `metatile`. It will be
-        multiplied by the `scale` factor.
+        multiplied by the `scale` factor. The default value is 0.
+
 
     `stride`
 
-        The number of steps along the x/y axis of a `metatile` grid. For a 1x1
-        metatile, the stride is 1.
+        The number of steps along the axis of a `metatile` grid. It must be a
+        positive integer powers of 2. For a 2x2 metatile, the stride is 2.
+        The default value is 1.
+
 
     `format`
 
-        Specifies the output format.
+        Output format. The default value is 'png'.
+
 
     `format_options`
 
-        Parameters for the output format
+        Options of Output format.
+
 
     `attribution`
 
@@ -109,8 +123,8 @@ class MetadataBlock(ThemeBlock):
                  format='png',
                  format_options=None,
                  attribution=''):
-        if not isinstance(name, six.string_types) or \
-                not re.match('^[a-zA-Z]+[a-zA-Z0-9]*$', name):
+        if not isinstance(name, six.string_types) \
+                or not re.match('^[a-zA-Z]+[a-zA-Z0-9]*$', name):
             raise MetadataValueError(
                 'Name should be a string literal with ONLY ascii alpha '
                 'characters!')
@@ -129,13 +143,13 @@ class MetadataBlock(ThemeBlock):
                 'Zero or a positive integer.')
 
         # check if stride is power of 2
-        if not isinstance(stride, int) or \
-                ((stride & (stride - 1)) != 0) or stride <= 0:
+        if not isinstance(stride, int) \
+                or ((stride & (stride - 1)) != 0) or stride <= 0:
             raise MetadataValueError(
                 'A positive integer powers of 2 is required!')
 
-        if not isinstance(format, six.string_types) or \
-                        format not in ('png', 'jpeg', 'geojson'):
+        if not isinstance(format, six.string_types) \
+                or format not in ('png', 'jpeg', 'geojson'):
             raise MetadataValueError(
                 'Available Output format includes raster format like png, jpeg '
                 'or vector format geojson.')
@@ -212,7 +226,27 @@ class MetadataBlock(ThemeBlock):
 
 
 class ModeBlock(ThemeBlock):
-    pass
+    """Theme Mode
+
+    Controls the running mode of a provider .
+
+    `mode`
+
+        The following modes are supported now:
+
+        ``
+    """
+
+    def __init__(self, mode):
+        if not isinstance(mode, six.string_types) \
+                or mode not in ('storage-only', 'hybrid'):
+            raise ModeValueError('Only support "storage-only", "hybrid" mode!')
+
+        self._mode = mode
+
+    @property
+    def mode(self):
+        return self._mode
 
 
 class CacheBlock(ThemeBlock):
