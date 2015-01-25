@@ -23,7 +23,7 @@ class TileNotFound(TileCacheError):
     pass
 
 
-class TileCache(object):
+class TileCache(object):  # pragma: no cover
     """A cache for Tiles.
 
     Cache recent or frequently visited tiles for fast access, also works

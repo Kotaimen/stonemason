@@ -7,7 +7,7 @@ import unittest
 import time
 
 from stonemason.provider.pyramid import Tile, TileIndex
-from stonemason.provider.tilecache import MemTileCache
+from stonemason.provider.tilecache import MemTileCache, TileCacheError
 
 
 class TestMemTileCache(unittest.TestCase):
@@ -23,8 +23,14 @@ class TestMemTileCache(unittest.TestCase):
 
         self.cache.connection.set('layer/3/4/5',
                                   b'a tile')
+
         self.cache.connection.set('layer/3/4/5~metadata',
                                   '["text/plain", 1234.56, "ABCD"]')
+
+        self.cache.connection.set('badlayer/0/0/0',
+                                  b'bad metadata')
+        self.cache.connection.set('badlayer/0/0/0~metadata',
+                                  'bad metadata')
 
 
     def tearDown(self):
@@ -43,6 +49,12 @@ class TestMemTileCache(unittest.TestCase):
         self.assertEqual(tile.mimetype, 'text/plain')
         self.assertEqual(tile.mtime, 1234.56)
         self.assertEqual(tile.etag, 'ABCD')
+
+        self.assertIsNone(self.cache.get('layer', TileIndex(0, 0, 0)))
+
+        self.assertRaises(TileCacheError,
+                          self.cache.get,
+                          'badlayer', TileIndex(0, 0, 0))
 
     def test_has(self):
         self.assertTrue(self.cache.has('layer', TileIndex(3, 4, 5)))
@@ -85,6 +97,13 @@ class TestMemTileCache(unittest.TestCase):
 
     def test_stats(self):
         self.assertTrue(self.cache.stats())
+
+
+class TestMemTileCacheConnectionFailure(unittest.TestCase):
+    def test_conn_fail(self):
+        self.assertRaises(TileCacheError,
+                          MemTileCache,
+                          servers=['0.0.0.0:80'])
 
 
 if __name__ == '__main__':
