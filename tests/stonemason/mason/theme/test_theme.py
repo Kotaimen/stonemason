@@ -24,11 +24,11 @@ class TestMetadataBlock(unittest.TestCase):
     def test_crs(self):
         # test default crs
         metadata = MetadataBlock()
-        self.assertEqual('epsg:3857', metadata.crs)
+        self.assertEqual('EPSG:3857', metadata.crs)
 
         # test specified crs
-        metadata = MetadataBlock(crs='wgs84')
-        self.assertEqual('wgs84', metadata.crs)
+        metadata = MetadataBlock(crs='WGS84')
+        self.assertEqual('WGS84', metadata.crs)
 
         # test bad crs
         self.assertRaises(MetadataValueError, MetadataBlock, crs=1)
@@ -41,6 +41,9 @@ class TestMetadataBlock(unittest.TestCase):
         # test specified scale
         metadata = MetadataBlock(scale=3)
         self.assertEqual(3, metadata.scale)
+
+        metadata = MetadataBlock(scale=[1, 2])
+        self.assertEqual([1, 2], metadata.scale)
 
         # test bad scale
         self.assertRaises(MetadataValueError, MetadataBlock, scale='blabla')
@@ -101,7 +104,8 @@ class TestMetadataBlock(unittest.TestCase):
 
         # test bad format options
         self.assertRaises(MetadataValueError, MetadataBlock, format_options=1)
-        self.assertRaises(MetadataValueError, MetadataBlock, format_options='1')
+        self.assertRaises(MetadataValueError, MetadataBlock,
+                          format_options='1')
 
     def test_attribution(self):
         # test default attribution
@@ -115,20 +119,11 @@ class TestMetadataBlock(unittest.TestCase):
         # test bad attribution
         self.assertRaises(MetadataValueError, MetadataBlock, attribution=1)
 
-    def test_tag(self):
-        # test default tag
-        metadata = MetadataBlock()
-        self.assertEqual('default', metadata.tag)
-
-        metadata = MetadataBlock(name='bob', scale=2)
-        self.assertEqual('bob@2x', metadata.tag)
-
     def test_to_json(self):
-
         metadata = MetadataBlock()
 
         expected = {
-            "crs": "epsg:3857",
+            "crs": "EPSG:3857",
             "scale": 1,
             "attribution": "",
             "name": "default",
@@ -139,14 +134,14 @@ class TestMetadataBlock(unittest.TestCase):
         }
 
         import json
+
         self.assertDictEqual(expected, json.loads(metadata.to_json()))
 
     def test_repr(self):
-
         metadata = MetadataBlock()
 
-        expected = "MetadataBlock(name='default', crs='epsg:3857', scale=1, " \
-            "buffer=0, stride=1, format='png', format_options=None, " \
-            "attribution='')"
+        expected = "MetadataBlock(name='default', crs='EPSG:3857', scale=1, " \
+                   "buffer=0, stride=1, format='png', format_options=None, " \
+                   "attribution='')"
 
         self.assertEqual(expected, repr(metadata))
