@@ -18,21 +18,138 @@ class ThemeBlockError(Exception):
     pass
 
 
-class MetadataValueError(ThemeBlockError):
-    """Invalid metadata value
+class ThemeBlockTypeError(ThemeBlockError):
+    """Raise when `BlockField` type is invalid.
     """
     pass
 
 
-class ModeValueError(ThemeBlockError):
-    """Invalid mode value
+class ValidationError(ThemeBlockError):
+    """Raise when validation failed.
     """
+    pass
 
 
 class ThemeBlock(object):
     """Theme Block Base Class
     """
-    pass
+
+    def to_json(self):
+        """Dumps into json format"""
+        raise NotImplementedError
+
+
+class BlockField(object):
+    def __init__(self, key, value):
+        self._key = key
+        self._value = value
+
+    @property
+    def key(self):
+        return self._key
+
+    @property
+    def value(self):
+        return self._value
+
+    def validate(self, *validators):
+        for v in validators:
+            v(self.value)
+
+    def __repr__(self):
+        return "%s(key=%r, value=%r)" % (
+            self.__class__.__name__, self._key, self._value)
+
+
+class IntegerBlockField(BlockField):
+    def __init__(self, key, value):
+        if not isinstance(value, six.integer_types):
+            raise ThemeBlockTypeError('Field %s should be a integer!' % key)
+        BlockField.__init__(self, key, value)
+
+
+class StringBlockField(BlockField):
+    def __init__(self, key, value):
+        if not isinstance(value, six.string_types):
+            raise ThemeBlockTypeError('Field %s should be a string!' % key)
+        BlockField.__init__(self, key, value)
+
+
+class ListBlockField(BlockField):
+    def __init__(self, key, value):
+        if not isinstance(value, list):
+            raise ThemeBlockTypeError('Field %s should be a list!' % key)
+        BlockField.__init__(self, key, value)
+
+    def validate(self, *validators):
+        for item in self._value:
+            for v in validators:
+                v(item)
+
+
+class DictBlockField(BlockField):
+    def __init__(self, key, value):
+        if not isinstance(value, dict):
+            raise ThemeBlockTypeError('Field %s should be a dict!' % key)
+        BlockField.__init__(self, key, value)
+
+    def validate(self, *validators):
+        for item in six.iteritems(self._value):
+            for v in validators:
+                v(item)
+
+
+class Validator(object):
+    def __call__(self, value):
+        raise NotImplementedError
+
+
+class RegxValidator(Validator):
+    def __init__(self, regx):
+        self._regx = regx
+
+    def __call__(self, value):
+        assert isinstance(value, six.string_types)
+        if not re.match(self._regx, value):
+            raise ValidationError(
+                '%r should match regular expression %r!' % (value, self._regx))
+
+
+class IntegerValidator(Validator):
+    def __call__(self, value):
+        if not isinstance(value, six.integer_types):
+            raise ValidationError(
+                '%r is not a integer!' % value)
+
+
+class MaxValueValidator(Validator):
+    def __init__(self, max_value):
+        self._max_value = max_value
+
+    def __call__(self, value):
+        assert isinstance(value, (six.integer_types, float))
+        if value > self._max_value:
+            raise ValidationError(
+                '%r should be less than %s!' % (value, self._max_value))
+
+
+class MinValueValidator(Validator):
+    def __init__(self, min_value):
+        self._min_value = min_value
+
+    def __call__(self, value):
+        assert isinstance(value, (six.integer_types, float))
+        if value < self._min_value:
+            raise ValidationError(
+                '%r should be greater than %s!' % (value, self._min_value))
+
+
+class Power2Validator(Validator):
+    def __call__(self, value):
+        assert isinstance(value, six.integer_types)
+        if ((value & (value - 1)) != 0) or value <= 0:
+            raise ValidationError(
+                '%r should be powers of 2!' % value)
 
 
 def is_integer(val):
@@ -143,59 +260,49 @@ class MetadataBlock(ThemeBlock):
                  format='png',
                  format_options=None,
                  attribution=''):
-        if not is_string(name) \
-                or not re.match('^[a-zA-Z]+[a-zA-Z0-9]*$', name):
-            raise MetadataValueError(
-                'Name should be a string literal with ONLY ascii alpha '
-                'characters!')
 
-        if not is_string(crs):
-            raise MetadataValueError(
-                'CRS could be a projection string, a spatial reference system '
-                'identifier(SRID), or a conventional name(WGS84)!')
+        field_name = StringBlockField('name', name)
+        field_name.validate(RegxValidator('^[a-zA-Z]+[a-zA-Z0-9]*$'))
 
-        if is_integer(scale) and is_integer_in_range(scale, 1, 5):
-            pass
-        elif is_list(scale):
-            for s in scale:
-                if is_integer(s) and is_integer_in_range(s, 1, 5):
-                    pass
-        else:
-            raise MetadataValueError(
-                'A single or a list of positive integers ranging from '
-                '1 to 4(included) is required.')
+        field_crs = StringBlockField('crs', crs)
 
-        if not is_integer(buffer) or buffer < 0:
-            raise MetadataValueError(
-                'Zero or a positive integer.')
+        if isinstance(scale, six.integer_types):
+            scale = [scale]
 
-        # check if stride is power of 2
-        if not is_integer(stride) or not is_powers_of_2(stride):
-            raise MetadataValueError(
-                'A positive integer powers of 2 is required!')
+        field_scale = ListBlockField('scale', scale)
+        field_scale.validate(
+            IntegerValidator(),
+            MinValueValidator(1),
+            MaxValueValidator(4)
+        )
 
-        if not is_string(format) or format not in ('png', 'jpeg', 'geojson'):
-            raise MetadataValueError(
-                'Available Output format includes raster format like png, jpeg '
-                'or vector format geojson.')
+        field_buffer = IntegerBlockField('buffer', buffer)
+        field_buffer.validate(MinValueValidator(0))
 
-        if format_options and not is_dict(format_options):
-            raise MetadataValueError(
-                'A dict object of parameters of the format is required.')
+        field_stride = IntegerBlockField('stride', stride)
+        field_stride.validate(Power2Validator())
 
-        if not is_string(attribution):
-            raise MetadataValueError(
-                'Attribution Should be a string literal.')
+        field_format = StringBlockField('format', format)
+        field_format.validate(
+            RegxValidator('^png|jpeg|geojson$')
+        )
+
+        if format_options is None:
+            format_options = dict()
+
+        field_format_options = DictBlockField('format_options', format_options)
+
+        field_attribution = StringBlockField('attribution', attribution)
 
         self._metadata = dict(
-            name=name,
-            crs=crs,
-            scale=scale,
-            buffer=buffer,
-            stride=stride,
-            format=format,
-            format_options=format_options,
-            attribution=attribution,
+            name=field_name.value,
+            crs=field_crs.value,
+            scale=field_scale.value,
+            buffer=field_buffer.value,
+            stride=field_stride.value,
+            format=field_format.value,
+            format_options=field_format_options.value,
+            attribution=field_attribution.value,
         )
 
     @property
@@ -212,11 +319,6 @@ class MetadataBlock(ThemeBlock):
     def scale(self):
         """Returns the scale factor"""
         return self._metadata['scale']
-
-    @property
-    def buffer(self):
-        """Padding size, multiplied by the scale factor"""
-        return self._metadata['buffer'] * self._metadata['scale']
 
     @property
     def stride(self):
@@ -238,6 +340,9 @@ class MetadataBlock(ThemeBlock):
         """Copyright and Author information"""
         return self._metadata['attribution']
 
+    def buffer(self, scale=1):
+        """Padding size, multiplied by the scale factor"""
+        return self._metadata['buffer'] * scale
 
     def to_json(self):
         """Returns a json string contains all metadata"""
@@ -252,7 +357,55 @@ class MetadataBlock(ThemeBlock):
 
 
 class CacheBlock(ThemeBlock):
-    pass
+    """Configurations for `TileCache`
+
+    The `CacheBlock` contains setup information to create a `TileCache` to use
+    in a `Provider`.
+
+    `prototype`
+
+        A string literal represents the type of `TileCache` to create. For now,
+        only `memcache` is supported. Default to None.
+
+    `parameters`
+
+        A dict object contains options used to create `TileCache`. Default to
+        None. The validation of these option values is delayed to the creation
+        of `TileCache` object.
+
+    :param prototype: Type of `TileCache`.
+    :type prototype: str
+    :param parameters: Options used to create `TileCache`.
+    :type parameters: dict
+
+    """
+
+    def __init__(self, prototype, parameters):
+        field_prototype = StringBlockField('prototype', prototype)
+        field_prototype.validate(
+            RegxValidator('^memcache$')
+        )
+
+        field_parameters = DictBlockField('parameters', parameters)
+
+        self._cache = dict(
+            prototype=field_prototype.value,
+            parameters=field_parameters.value
+        )
+
+    @property
+    def prototype(self):
+        return self._cache['prototype']
+
+    @property
+    def parameters(self):
+        return self._cache['parameters']
+
+    def to_json(self):
+        return json.dumps(self._cache)
+
+    def __repr__(self):
+        return "CacheBlock(prototype=%(prototype)r, parameters=%(parameters)r)" % self._cache
 
 
 class StorageBlock(ThemeBlock):
@@ -276,23 +429,36 @@ class ModeBlock(ThemeBlock):
 
         Read tile from the `TileStorage` and cache them in `TileCache`.
 
+    :param mode: Running behavior of a `Provider`.
+    :type mode: str
+
     """
 
     MODE_STORAGE_ONLY = 'storage-only'
 
     MODE_HYBRID = 'hybrid'
 
+    MODES = [MODE_STORAGE_ONLY, MODE_HYBRID]
 
-    def __init__(self, mode):
-        if not isinstance(mode, six.string_types) \
-                or mode not in (self.MODE_STORAGE_ONLY, self.MODE_HYBRID):
-            raise ModeValueError('Only support "storage-only", "hybrid" mode!')
+    def __init__(self, mode=MODE_STORAGE_ONLY):
+        field_mode = StringBlockField('mode', mode)
+        field_mode.validate(
+            RegxValidator('^storage-only|hybrid$')
+        )
 
-        self._mode = mode
+        self._modes = dict(
+            mode=mode
+        )
 
     @property
     def mode(self):
-        return self._mode
+        return self._modes['mode']
+
+    def to_json(self):
+        return json.dumps(self._modes)
+
+    def __repr__(self):
+        return "ModeBlock(mode=%(mode)r)" % self._modes
 
 
 class DesignBlock(ThemeBlock):

@@ -8,10 +8,10 @@ Theme Definition
 Exceptions
 ~~~~~~~~~~
 
-.. autoclass:: stonemason.mason.theme.ThemeBlockError
+.. autoclass:: stonemason.mason.theme.ThemeBlockTypeError
     :members:
 
-.. autoclass:: stonemason.mason.theme.MetadataValueError
+.. autoclass:: stonemason.mason.theme.ValidationError
     :members:
 
 

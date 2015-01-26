@@ -42,5 +42,5 @@
 
 
 
-from .themeblock import MetadataBlock
-from .themeblock import MetadataValueError, ThemeBlockError
+from .themeblock import MetadataBlock, CacheBlock, ModeBlock
+from .themeblock import ValidationError, ThemeBlockTypeError, ThemeBlockError
