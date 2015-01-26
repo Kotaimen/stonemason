@@ -72,9 +72,10 @@ def guess_mimetype(extension):
         return DEFAULT_TYPE
 
     try:
-        mimetype = TYPE2EXT[extension]
+        mimetype = EXT2TYPE[extension]
     except KeyError:
         mimetype, encoding = mimetypes.guess_type('foo' + extension)
         if mimetype is None:
             mimetype = DEFAULT_TYPE
-        return mimetype
+
+    return mimetype
