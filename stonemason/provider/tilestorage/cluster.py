@@ -20,7 +20,7 @@ import math
 import six
 
 from stonemason.util.postprocessing.gridcrop import grid_crop_into_data
-
+from stonemason.util.guesstypes import guess_mimetype, guess_extension
 from stonemason.provider.pyramid import Tile, TileIndex, MetaTile, \
     MetaTileIndex
 
@@ -95,57 +95,32 @@ CLUSTER_ZIP_INDEX_LEGACY = 'tiles.json'
 CLUSTER_ZIP_VERSION = 1
 
 
-def guess_extension(mimetype):
-    """Guess extension from mimetype, return empty string on failure.
-
-    :func:`mimetype.guess_extension` sometimes returns different value on
-    python2 and python3::
-
-        $ python -c 'import mimetypes; print(mimetypes.guess_extension("image/tiff"))'
-        .tif
-        $ python3 -c 'import mimetypes; print(mimetypes.guess_extension("image/tiff"))'
-        .tiff
-
-    """
-    if mimetype is None:
-        return ''
-
-    if mimetype == 'application/data':
-        return '.dat'
-    elif mimetype in ['image/jpg', 'image/jpeg']:
-        return '.jpg'
-    elif mimetype == 'image/tiff':
-        return '.tif'
-    elif mimetype == 'text/plain':
-        return '.txt'
-
-    ext = mimetypes.guess_extension(mimetype)
-
-    if ext is None:
-        return ''
-    else:
-        return ext
-
-
-def guess_mimetype(extension):
-    """Guess mimetype from extension, return ``application/data`` on failure.
-    """
-
-    if extension is None or extension == '.dat':
-        return 'application/data'
-
-    mimetype, encoding = mimetypes.guess_type('foo' + extension)
-
-    if mimetype is None:
-        return 'application/data'
-    else:
-        return mimetype
-
-
 class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
     """A cluster of `Tiles` split from  a `MetaTile`.
 
-    `TileCluster` is the base storage unit of `ClusterStorage`.
+    `TileCluster` can be loaded from a clustered zip file or created from
+    `MetaTile`.
+
+
+    >>> from stonemason.provider.tilestorage import TileCluster
+    >>> from stonemason.provider.pyramid import MetaTile, MetaTileIndex
+    >>> from PIL import Image
+    >>> import io
+    >>> image = Image.new('RGB', (1024, 1024))
+    >>> buffer = io.BytesIO()
+    >>> image.save(buffer, 'JPEG')
+    >>> image_data = buffer.getvalue()
+    >>> metatile = MetaTile(MetaTileIndex(4, 4, 8, 2),
+    ...                     data=image_data,
+    ...                     mimetype='image/jpeg',
+    ...                     mtime=1.,
+    ...                     buffer=256)
+    >>> cluster = TileCluster.from_metatile(metatile)
+    >>> cluster.index
+    MetaTileIndex(4/4/8@2)
+    >>> cluster.tiles
+    [Tile(4/4/8), Tile(4/4/9), Tile(4/5/8), Tile(4/5/9)]
+
 
     Properties:
 
@@ -153,7 +128,7 @@ class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
         :class:`~stonemason.provider.MetaTileIndex` of this cluster.
 
     `tiles`
-        List of :class:`~stonemason.provider.Tile`s in this cluster.
+        List of :class:`~stonemason.provider.Tile` in this cluster.
     """
 
     @staticmethod
@@ -269,7 +244,7 @@ class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
             stride = load_optional_field('stride')
             if stride is None:
                 stride = int(math.sqrt(len(tile_indexes)))
-            assert stride & ( stride - 1 ) == 0
+            assert stride & (stride - 1) == 0
 
             # recreate the metatile index from any tile
             sample_tile = tiles[0]
