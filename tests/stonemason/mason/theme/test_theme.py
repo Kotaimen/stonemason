@@ -3,8 +3,7 @@
 import json
 import unittest
 
-from stonemason.mason.theme import MetadataBlock, CacheBlock, ModeBlock
-from stonemason.mason.theme import ThemeBlockTypeError, ValidationError
+from stonemason.mason.theme import *
 
 
 class TestMetadataBlock(unittest.TestCase):
@@ -18,7 +17,7 @@ class TestMetadataBlock(unittest.TestCase):
         self.assertEqual('test', metadata.name)
 
         # test bad names
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock, name=1)
+        self.assertRaises(FieldTypeError, MetadataBlock, name=1)
         self.assertRaises(ValidationError, MetadataBlock, name='4d')
         self.assertRaises(ValidationError, MetadataBlock, name='d~~~')
 
@@ -32,7 +31,7 @@ class TestMetadataBlock(unittest.TestCase):
         self.assertEqual('WGS84', metadata.crs)
 
         # test bad crs
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock, crs=1)
+        self.assertRaises(FieldTypeError, MetadataBlock, crs=1)
 
     def test_scale(self):
         # test default scale
@@ -47,7 +46,7 @@ class TestMetadataBlock(unittest.TestCase):
         self.assertEqual([1, 2], metadata.scale)
 
         # test bad scale
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock, scale='bla')
+        self.assertRaises(FieldTypeError, MetadataBlock, scale='bla')
         self.assertRaises(ValidationError, MetadataBlock, scale=6)
         self.assertRaises(ValidationError, MetadataBlock, scale=0)
 
@@ -65,7 +64,7 @@ class TestMetadataBlock(unittest.TestCase):
         self.assertEqual(64, metadata.buffer(scale=2))
 
         # test bad buffer
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock, buffer='bla')
+        self.assertRaises(FieldTypeError, MetadataBlock, buffer='bla')
         self.assertRaises(ValidationError, MetadataBlock, buffer=-1)
 
     def test_stride(self):
@@ -78,7 +77,7 @@ class TestMetadataBlock(unittest.TestCase):
         self.assertEqual(2, metadata.stride)
 
         # test bad stride
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock, stride='1')
+        self.assertRaises(FieldTypeError, MetadataBlock, stride='1')
         self.assertRaises(ValidationError, MetadataBlock, stride=3)
 
     def test_format(self):
@@ -91,7 +90,7 @@ class TestMetadataBlock(unittest.TestCase):
         self.assertEqual('jpeg', metadata.format)
 
         # test bad format
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock, format=1)
+        self.assertRaises(FieldTypeError, MetadataBlock, format=1)
         self.assertRaises(ValidationError, MetadataBlock, format='abc')
 
     def test_format_options(self):
@@ -104,10 +103,8 @@ class TestMetadataBlock(unittest.TestCase):
         self.assertEqual(dict(quality=85), metadata.format_options)
 
         # test bad format options
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock,
-                          format_options=1)
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock,
-                          format_options='1')
+        self.assertRaises(FieldTypeError, MetadataBlock, format_options=1)
+        self.assertRaises(FieldTypeError, MetadataBlock, format_options='1')
 
     def test_attribution(self):
         # test default attribution
@@ -119,7 +116,7 @@ class TestMetadataBlock(unittest.TestCase):
         self.assertEqual('copyright@stonemason', metadata.attribution)
 
         # test bad attribution
-        self.assertRaises(ThemeBlockTypeError, MetadataBlock, attribution=1)
+        self.assertRaises(FieldTypeError, MetadataBlock, attribution=1)
 
     def test_to_json(self):
         metadata = MetadataBlock()
@@ -157,7 +154,7 @@ class TestModeBlock(unittest.TestCase):
         self.assertEqual(ModeBlock.MODE_HYBRID, mode.mode)
 
         # test bad values
-        self.assertRaises(ThemeBlockTypeError, ModeBlock, mode=1)
+        self.assertRaises(FieldTypeError, ModeBlock, mode=1)
 
     def test_to_json(self):
         mode = ModeBlock()

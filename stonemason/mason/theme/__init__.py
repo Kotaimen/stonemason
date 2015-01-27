@@ -43,4 +43,6 @@
 
 
 from .themeblock import MetadataBlock, CacheBlock, ModeBlock
-from .themeblock import ValidationError, ThemeBlockTypeError, ThemeBlockError
+from .themeblock import ThemeBlockError
+from .validator import ValidationError
+from .field import FieldTypeError

@@ -7,9 +7,23 @@
 
 """
 
-import re
 import six
 import json
+
+from .validator import (
+    MinValueValidator,
+    MaxValueValidator,
+    Power2Validator,
+    ExprValidator,
+    ChoiceValidator
+)
+
+from .field import (
+    IntegerBlockField,
+    StringBlockField,
+    ListBlockField,
+    DictBlockField,
+)
 
 
 class ThemeBlockError(Exception):
@@ -24,156 +38,13 @@ class ThemeBlockTypeError(ThemeBlockError):
     pass
 
 
-class ValidationError(ThemeBlockError):
-    """Raise when validation failed.
-    """
-    pass
-
-
-class ThemeBlock(object):
+class ThemeBlock(object):  # pragma: no cover
     """Theme Block Base Class
     """
 
     def to_json(self):
         """Dumps into json format"""
         raise NotImplementedError
-
-
-class BlockField(object):
-    def __init__(self, key, value):
-        self._key = key
-        self._value = value
-
-    @property
-    def key(self):
-        return self._key
-
-    @property
-    def value(self):
-        return self._value
-
-    def validate(self, *validators):
-        for v in validators:
-            v(self.value)
-
-    def __repr__(self):
-        return "%s(key=%r, value=%r)" % (
-            self.__class__.__name__, self._key, self._value)
-
-
-class IntegerBlockField(BlockField):
-    def __init__(self, key, value):
-        if not isinstance(value, six.integer_types):
-            raise ThemeBlockTypeError('Field %s should be a integer!' % key)
-        BlockField.__init__(self, key, value)
-
-
-class StringBlockField(BlockField):
-    def __init__(self, key, value):
-        if not isinstance(value, six.string_types):
-            raise ThemeBlockTypeError('Field %s should be a string!' % key)
-        BlockField.__init__(self, key, value)
-
-
-class ListBlockField(BlockField):
-    def __init__(self, key, value):
-        if not isinstance(value, list):
-            raise ThemeBlockTypeError('Field %s should be a list!' % key)
-        BlockField.__init__(self, key, value)
-
-    def validate(self, *validators):
-        for item in self._value:
-            for v in validators:
-                v(item)
-
-
-class DictBlockField(BlockField):
-    def __init__(self, key, value):
-        if not isinstance(value, dict):
-            raise ThemeBlockTypeError('Field %s should be a dict!' % key)
-        BlockField.__init__(self, key, value)
-
-    def validate(self, *validators):
-        for item in six.iteritems(self._value):
-            for v in validators:
-                v(item)
-
-
-class Validator(object):
-    def __call__(self, value):
-        raise NotImplementedError
-
-
-class RegxValidator(Validator):
-    def __init__(self, regx):
-        self._regx = regx
-
-    def __call__(self, value):
-        assert isinstance(value, six.string_types)
-        if not re.match(self._regx, value):
-            raise ValidationError(
-                '%r should match regular expression %r!' % (value, self._regx))
-
-
-class IntegerValidator(Validator):
-    def __call__(self, value):
-        if not isinstance(value, six.integer_types):
-            raise ValidationError(
-                '%r is not a integer!' % value)
-
-
-class MaxValueValidator(Validator):
-    def __init__(self, max_value):
-        self._max_value = max_value
-
-    def __call__(self, value):
-        assert isinstance(value, (six.integer_types, float))
-        if value > self._max_value:
-            raise ValidationError(
-                '%r should be less than %s!' % (value, self._max_value))
-
-
-class MinValueValidator(Validator):
-    def __init__(self, min_value):
-        self._min_value = min_value
-
-    def __call__(self, value):
-        assert isinstance(value, (six.integer_types, float))
-        if value < self._min_value:
-            raise ValidationError(
-                '%r should be greater than %s!' % (value, self._min_value))
-
-
-class Power2Validator(Validator):
-    def __call__(self, value):
-        assert isinstance(value, six.integer_types)
-        if ((value & (value - 1)) != 0) or value <= 0:
-            raise ValidationError(
-                '%r should be powers of 2!' % value)
-
-
-def is_integer(val):
-    return isinstance(val, int)
-
-
-def is_integer_in_range(val, start, end):
-    return isinstance(val, int) and val in range(start, end)
-
-
-def is_powers_of_2(val):
-    return ((val & (val - 1)) == 0) and val > 0
-
-
-def is_string(val):
-    return isinstance(val, six.string_types)
-
-
-def is_list(val):
-    return isinstance(val, list)
-
-
-def is_dict(val):
-    return isinstance(val, dict)
 
 
 class MetadataBlock(ThemeBlock):
@@ -262,19 +133,14 @@ class MetadataBlock(ThemeBlock):
                  attribution=''):
 
         field_name = StringBlockField('name', name)
-        field_name.validate(RegxValidator('^[a-zA-Z]+[a-zA-Z0-9]*$'))
+        field_name.validate(ExprValidator('^[a-zA-Z]+[a-zA-Z0-9]*$'))
 
         field_crs = StringBlockField('crs', crs)
 
         if isinstance(scale, six.integer_types):
             scale = [scale]
-
         field_scale = ListBlockField('scale', scale)
-        field_scale.validate(
-            IntegerValidator(),
-            MinValueValidator(1),
-            MaxValueValidator(4)
-        )
+        field_scale.validate(MinValueValidator(1), MaxValueValidator(4))
 
         field_buffer = IntegerBlockField('buffer', buffer)
         field_buffer.validate(MinValueValidator(0))
@@ -283,9 +149,7 @@ class MetadataBlock(ThemeBlock):
         field_stride.validate(Power2Validator())
 
         field_format = StringBlockField('format', format)
-        field_format.validate(
-            RegxValidator('^png|jpeg|geojson$')
-        )
+        field_format.validate(ChoiceValidator(['png', 'jpeg', 'geojson']))
 
         if format_options is None:
             format_options = dict()
@@ -359,8 +223,8 @@ class MetadataBlock(ThemeBlock):
 class CacheBlock(ThemeBlock):
     """Configurations for `TileCache`
 
-    The `CacheBlock` contains setup information to create a `TileCache` to use
-    in a `Provider`.
+    The `CacheBlock` contains setup information to create a `TileCache` in a
+    `Provider`.
 
     `prototype`
 
@@ -371,7 +235,7 @@ class CacheBlock(ThemeBlock):
 
         A dict object contains options used to create `TileCache`. Default to
         None. The validation of these option values is delayed to the creation
-        of `TileCache` object.
+        of `TileCache`.
 
     :param prototype: Type of `TileCache`.
     :type prototype: str
@@ -382,9 +246,7 @@ class CacheBlock(ThemeBlock):
 
     def __init__(self, prototype, parameters):
         field_prototype = StringBlockField('prototype', prototype)
-        field_prototype.validate(
-            RegxValidator('^memcache$')
-        )
+        field_prototype.validate(ChoiceValidator(['memcache']))
 
         field_parameters = DictBlockField('parameters', parameters)
 
@@ -409,7 +271,53 @@ class CacheBlock(ThemeBlock):
 
 
 class StorageBlock(ThemeBlock):
-    pass
+    """Configurations for `TileStorage`
+
+    The `StorageBlock` contains setup information to create a `TileStorage`
+    in a `Provider`.
+
+    `prototype`
+
+        A string literal represents the type of `TileStorage` to create. For
+        now, only `clusterstorage` is supported. Default to None.
+
+    `parameters`
+
+        A dict object contains options used to create `TileStorage`. Default to
+        None. The validation of these option values is delayed to the creation
+        of `TileStorage`.
+
+    :param prototype: Type of `TileStorage`.
+    :type prototype: str
+    :param parameters: Options used to create `TileStorage`.
+    :type parameters: dict
+
+    """
+
+    def __init__(self, prototype, parameters):
+        field_prototype = StringBlockField('prototype', prototype)
+        field_prototype.validate(ChoiceValidator(['cluster-storage']))
+
+        field_parameters = DictBlockField('parameters', parameters)
+
+        self._storage = dict(
+            prototype=field_prototype.value,
+            parameters=field_parameters.value
+        )
+
+    @property
+    def prototype(self):
+        return self._storage['prototype']
+
+    @property
+    def parameters(self):
+        return self._storage['parameters']
+
+    def to_json(self):
+        return json.dumps(self._storage)
+
+    def __repr__(self):
+        return "StorageBlock(prototype=%(prototype)r, parameters=%(parameters)r)" % self._storage
 
 
 class ModeBlock(ThemeBlock):
@@ -442,9 +350,7 @@ class ModeBlock(ThemeBlock):
 
     def __init__(self, mode=MODE_STORAGE_ONLY):
         field_mode = StringBlockField('mode', mode)
-        field_mode.validate(
-            RegxValidator('^storage-only|hybrid$')
-        )
+        field_mode.validate(ChoiceValidator(self.MODES))
 
         self._modes = dict(
             mode=mode
