@@ -3,12 +3,12 @@ Utilities
 
 :mod:`stonemason.util` contains utility functions and classes.
 
-Mimetypes
----------
 
 .. automodule:: stonemason.util.guesstypes
     :members:
 
+.. automodule:: stonemason.util.tempfn
+    :members:
 
 Geo
 ---
