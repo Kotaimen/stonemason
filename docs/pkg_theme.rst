@@ -8,7 +8,7 @@ Theme Definition
 Exceptions
 ~~~~~~~~~~
 
-.. autoclass:: stonemason.mason.theme.ThemeBlockTypeError
+.. autoclass:: stonemason.mason.theme.FieldTypeError
     :members:
 
 .. autoclass:: stonemason.mason.theme.ValidationError
