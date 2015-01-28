@@ -11,7 +11,7 @@ import six
 
 
 class FieldTypeError(Exception):
-    """Field Type Error"""
+    """Field type error"""
     pass
 
 
