@@ -16,4 +16,4 @@ from .cluster import Splitter, ImageSplitter, TileCluster, \
 from .tilestorage import ClusterStorage, MetaTileStorage, \
     NullClusterStorage, NullMetaTileStorage, \
     TileStorageError, InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
-from .disk import DiskClusterStorage
+from .disk import DiskClusterStorage, DiskMetaTileStorage

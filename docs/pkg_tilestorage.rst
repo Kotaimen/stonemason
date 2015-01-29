@@ -136,3 +136,6 @@ MetaTile Storage
 
 .. autoclass:: stonemason.provider.tilestorage.NullMetaTileStorage
     :members:
+
+.. autoclass:: stonemason.provider.tilestorage.DiskMetaTileStorage
+    :members:
