@@ -31,7 +31,7 @@ class TileCache(object):  # pragma: no cover
 
     A tile in the cache is identified by its `tag` and `index`.
     `tag` must be a string  matching regular expression
-    ``'[a-zA-Z][a-zA-Z0-9_-%]+``, while `index` must be an
+    :regexp:`[a-zA-Z][a-zA-Z0-9_-%]+`, while `index` must be an
     :class:`~stonemason.provider.pyramid.TileIndex` object.
 
     `TileCache` is designed to be shared between all `themes` and `layers` in

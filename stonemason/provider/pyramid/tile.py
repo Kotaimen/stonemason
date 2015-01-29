@@ -89,16 +89,15 @@ class Tile(_Tile):
 
     `mimetype`
         Type of the tile data in mimetypes format, default to
-        ``application/data``.  `Tile` will never check whether `mimetype`
+        :mimetype:`application/data`.  `Tile` will never check whether `mimetype`
         matches actual tile data format.
 
     `mtime`
         Modify time of the tile since EPOCH in seconds, if its not given in
         the constructor, current time is used by calling :func:`time.time()`
 
-
     `etag`
-        Hash of the tile data, calculated using class:`hashlib:md5` if is not
+        Hash of the tile data, calculated using :class:`hashlib:md5` if is not
         given in the constructor.
 
 

@@ -113,7 +113,7 @@ class MetaTile(_MetaTile):
 
     `mimetype`
         Type of the metatile data in mimetypes format, default to
-        ``application/data``.
+        :mimetype:`application/data`.
 
     `mtime`
         Modify time of the metatile since EPOCH in seconds.
