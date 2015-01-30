@@ -1,6 +1,2 @@
 Theme Management
 ================
-
-
-
-

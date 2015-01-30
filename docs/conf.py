@@ -33,7 +33,7 @@ sys.path.append(os.path.abspath('..'))
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
     'sphinx.ext.doctest', 'sphinx.ext.mathjax',
-    'alabaster',
+    'alabaster', 'sphinxcontrib.httpdomain'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -94,7 +94,7 @@ exclude_patterns = ['_build']
 
 # The name of the Pygments (syntax highlighting) style to use.
 # pygments_style = 'sphinx'
-pygments_style = 'tango'
+pygments_style = 'friendly'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
