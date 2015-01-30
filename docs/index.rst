@@ -54,6 +54,14 @@ Tile Providers
     pkg_tilecache
     pkg_tilestorage
 
+Service
+-------
+
+.. toctree::
+    :maxdepth: 2
+
+    pkg_service
+
 
 Utilties
 --------
@@ -63,13 +71,15 @@ Utilties
 
     pkg_util
 
-REST API Reference
-==================
+
+
+Services
+========
 
 .. toctree::
     :maxdepth: 2
 
-    restapi
+    service_tileserver
 
 -------------------------------------------------------------------------------
 

@@ -7,18 +7,31 @@
 
 """
 
-import os
+import json
 import unittest
-from stonemason.service.tileserver import AppBuilder
+from stonemason.service.tileserver import StoneMasonApp
 
 
-class TestExample(unittest.TestCase):
+class TestStoneMasonApp(unittest.TestCase):
     def setUp(self):
-        os.environ['EXAMPLE_APP_MODE'] = 'development'
+        app = StoneMasonApp()
+        app.config['DEBUG'] = True
+        app.config['TESTING'] = True
 
-        app = AppBuilder().build(config='settings.py')
         self.client = app.test_client()
 
-    def test_app(self):
-        resp = self.client.get('/')
-        self.assertEqual(b'Hello World!', resp.data)
+    def test_get_theme(self):
+        resp = self.client.get('/themes/brick')
+        self.assertDictEqual(
+            {"result": {"name": "brick"}}, json.loads(resp.data))
+
+    def test_list_themes(self):
+        resp = self.client.get('/themes')
+        self.assertDictEqual({"result": []}, json.loads(resp.data))
+
+    def test_get_tile(self):
+        resp = self.client.get('/tile/brick/0/0/0.png')
+        self.assertEqual("Tile(brick, 0, 0, 0, 1x, png)", resp.data)
+
+        resp = self.client.get('/tile/brick/0/0/0@2x.png')
+        self.assertEqual("Tile(brick, 0, 0, 0, 2x, png)", resp.data)

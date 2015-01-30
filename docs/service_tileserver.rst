@@ -1,15 +1,15 @@
 Tile Map Service
 ================
 
-*TMS* (Tile Map Service).
+*TMS(Tile Map Service) REST API*
 
 
 Retrieve Theme Info
 -------------------
 
-.. http:get:: /themes/(theme)
+.. http:get:: /themes/(tag)
 
-    Get information of a theme with its name.
+    Get information of a theme with its tag.
 
     **Example request**:
 
@@ -33,14 +33,15 @@ Retrieve Theme Info
                 "levels": [1, 2, 3, 4, 5, 6, 7, 8]
             }
 
-    :param theme: name of the theme, *required*.
+    :param tag: Name of the theme, *required*.
+    :type tag: str
 
-    :resheader Content-Type: a json object describes metadata of a theme.
-    :resheader Cache-Control: default max age is 300 seconds.
+    :resheader Content-Type: A json object describes metadata of a theme.
+    :resheader Cache-Control: Default max age is 300 seconds.
 
     :status 200: No error.
-    :status 404: when theme doesn't exist.
-    :status 400: when request is not valid.
+    :status 404: When theme doesn't exist.
+    :status 400: When request is not valid.
 
 
 List Theme Info
@@ -81,17 +82,17 @@ List Theme Info
                 }
             ]
 
-    :resheader Content-Type: a json object contains list of theme metadata.
-    :resheader Cache-Control: default max age is 300 seconds.
+    :resheader Content-Type: A json object contains list of theme metadata.
+    :resheader Cache-Control: Default max age is 300 seconds.
 
-    :status 200: no error.
-    :status 400: when request is not valid.
+    :status 200: No error.
+    :status 400: When request is not valid.
 
 
 Retrieve Tile
 -------------
 
-.. http:get:: /tile/(tag)/(int:z)/(int:x)/(int:y).(ext)
+.. http:get:: /tiles/(tag)/(int:z)/(int:x)/(int:y)@(scale).(ext)
 
     Get a tile with a theme tag, a zoom level and  a (x, y) coordinate.
 
@@ -100,7 +101,7 @@ Retrieve Tile
 
         .. code-block:: http
 
-            GET /brick/0/0/0.png HTTP/1.1
+            GET /brick/0/0/0@2x.png HTTP/1.1
             Host: example.com
             Accept: image/png, image/jpeg, image/geojson
 
@@ -116,20 +117,28 @@ Retrieve Tile
 
             Image Data
 
-    :param tag: tag of the theme, *required*.
-    :param z: zoom level, *required*.
+    :param tag: Tag of the theme, *required*.
+    :type tag: str
+    :param z: Zoom level, *required*.
     :type z: int
-    :param x: x coordinate, *required*.
+    :param x: The x coordinate, *required*.
     :type x: int
-    :param y: y coordinate, *required*.
+    :param y: The y coordinate, *required*.
     :type y: int
-    :param ext: tile format, could be png, jpeg, jpg, geojson, *required*.
+    :param scale: Scale Factor, *required*.
+    :type scale: str
+    :param ext: Tile format, could be png, jpeg, jpg, geojson, *required*.
+    :type ext: str
 
-    :resheader Content-Type: image format of a tile.
-    :resheader Cache-Control: default max age is 86400 seconds.
-    :resheader ETag: unique identifier for a tile.
-    :resheader Last-Modified: modified time of a tile.
+    :resheader Content-Type: Image format of a tile.
+    :resheader Cache-Control: Default max age is 86400 seconds.
+    :resheader ETag: Unique identifier for a tile.
+    :resheader Last-Modified: Modified time of a tile.
 
-    :status 200: no error.
-    :status 404: when tile not found.
-    :status 400: when request is not valid.
+    :status 200: No error.
+    :status 404: When tile not found.
+    :status 400: When request is not valid.
+
+.. http:get:: /tiles/(tag)/(int:z)/(int:x)/(int:y).(ext)
+
+    Short way for retrieving a tile of scale 1.
