@@ -115,6 +115,22 @@ JSON fields:
     cluster will always write these fields.
 
 
+MetaTile Storage
+----------------
+
+.. autoclass:: stonemason.provider.tilestorage.MetaTileStorage
+    :members:
+
+.. autoclass:: stonemason.provider.tilestorage.NullMetaTileStorage
+    :members:
+
+.. autoclass:: stonemason.provider.tilestorage.DiskMetaTileStorage
+    :members:
+
+.. autoclass:: stonemason.provider.tilestorage.S3MetaTileStorage
+    :members:
+
+
 Cluster Storage
 ---------------
 
@@ -127,15 +143,5 @@ Cluster Storage
 .. autoclass:: stonemason.provider.tilestorage.DiskClusterStorage
     :members:
 
-
-MetaTile Storage
-----------------
-
-.. autoclass:: stonemason.provider.tilestorage.MetaTileStorage
-    :members:
-
-.. autoclass:: stonemason.provider.tilestorage.NullMetaTileStorage
-    :members:
-
-.. autoclass:: stonemason.provider.tilestorage.DiskMetaTileStorage
+.. autoclass:: stonemason.provider.tilestorage.S3ClusterStorage
     :members:

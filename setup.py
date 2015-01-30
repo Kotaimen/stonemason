@@ -51,12 +51,14 @@ install_requires = [
     'Flask>=0.10',
     'Pillow>=2.3.0',
     'pylibmc>=1.4.0',
+    'boto>=2.35.0'
 ]
 
 tests_require = [
     'nose',
     'coverage',
-    'mock',
+    # 'mock',
+    'moto>=0.3.9',
 ]
 
 find_excludes = [

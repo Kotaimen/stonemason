@@ -254,9 +254,10 @@ man_pages = [
 #man_show_urls = False
 
 intersphinx_mapping = {'python': ('http://docs.python.org/', None),
-                       'PIL': ('https://pillow.readthedocs.org/', None),
+                       'PIL': ('http://pillow.readthedocs.org/', None),
                        'pylibmc': (
-                           'http://sendapatch.se/projects/pylibmc/', None)}
+                           'http://sendapatch.se/projects/pylibmc/', None),
+                       'boto': ('http://boto.readthedocs.org/en/latest',None)}
 
 autodoc_member_order = 'bysource'
 

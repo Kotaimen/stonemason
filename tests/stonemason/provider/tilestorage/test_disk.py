@@ -29,7 +29,7 @@ class TestDiskClusterStorage(unittest.TestCase):
     def test_basic(self):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='image/png')
         storage.put(self.metatile)
 
@@ -42,12 +42,15 @@ class TestDiskClusterStorage(unittest.TestCase):
     def test_putfail(self):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='text/plain')
 
         self.assertRaises(InvalidMetaTileIndex,
                           storage.put,
                           MetaTile(MetaTileIndex(3, 4, 5, 2)))
+        self.assertRaises(InvalidMetaTileIndex,
+                          storage.put,
+                          MetaTile(MetaTileIndex(100, 4, 5, 2)))
         self.assertRaises(InvalidMetaTile,
                           storage.put,
                           self.metatile)
@@ -55,17 +58,18 @@ class TestDiskClusterStorage(unittest.TestCase):
     def test_readonly(self):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='image/png',
             readonly=True)
         self.assertRaises(ReadonlyStorage, storage.put, self.metatile)
+        self.assertRaises(ReadonlyStorage, storage.retire, self.metatile.index)
 
     def test_pathmode_simple(self):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='image/png',
-            pathmode='simple')
+            dir_mode='simple')
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,
                                                     '19',
@@ -76,9 +80,9 @@ class TestDiskClusterStorage(unittest.TestCase):
     def test_pathmode_legacy(self):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='image/png',
-            pathmode='legacy')
+            dir_mode='legacy')
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,
                                                     '19', '01', '9E', 'BB',
@@ -88,9 +92,9 @@ class TestDiskClusterStorage(unittest.TestCase):
     def test_pathmode_hilbert(self):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='image/png',
-            pathmode='hilbert')
+            dir_mode='hilbert')
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,
                                                     '19', '03', '35', 'B0',
@@ -114,7 +118,7 @@ class TestDiskMetaTileStorage(unittest.TestCase):
     def test_basic(self):
         storage = DiskMetaTileStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='image/png')
         storage.put(self.metatile)
 
@@ -127,9 +131,9 @@ class TestDiskMetaTileStorage(unittest.TestCase):
     def test_gzip(self):
         storage = DiskMetaTileStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='image/png',
-            pathmode='simple',
+            dir_mode='simple',
             gzip=True)
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,
@@ -141,9 +145,9 @@ class TestDiskMetaTileStorage(unittest.TestCase):
     def test_extension(self):
         storage = DiskMetaTileStorage(
             pyramid=self.pyramid,
-            prefix=self.root,
+            root=self.root,
             mimetype='image/png',
-            pathmode='simple',
+            dir_mode='simple',
             extension='.dat')
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,

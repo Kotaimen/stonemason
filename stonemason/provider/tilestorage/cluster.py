@@ -14,7 +14,6 @@ __date__ = '1/18/15'
 import collections
 import zipfile
 import json
-import mimetypes
 import math
 
 import six
@@ -24,11 +23,7 @@ from stonemason.util.guesstypes import guess_mimetype, guess_extension
 from stonemason.provider.pyramid import Tile, TileIndex, MetaTile, \
     MetaTileIndex
 
-from .tilestorage import TileStorageError
-
-
-class TileClusterError(TileStorageError):
-    pass
+from .exceptions import TileClusterError
 
 
 class Splitter(object):  # pragma: no cover
@@ -174,6 +169,11 @@ class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
             tiles.append(tile)
 
         return TileCluster(metatile.index, tiles)
+
+    @staticmethod
+    def from_image(index, image, metadata, splitter=None, buffer=0):
+        # XXX not necessary till we have real rendering
+        raise NotImplementedError
 
     @staticmethod
     def from_zip(zip_file, metadata=None):

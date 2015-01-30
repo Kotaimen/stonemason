@@ -1,5 +1,6 @@
 nose
 coverage
+moto>=0.3.9
 tox>=1.8
 Cython>=0.19
 Pygments>=1.6

@@ -10,61 +10,23 @@ __date__ = '1/23/15'
 
 """
 
-# TODO: Refactor this after s3 storage is completed.
-
 import os
-import io
-import gzip
 import errno
 import sys
 
 import six
 
-from stonemason.provider.pyramid import MetaTileIndex, MetaTile, \
-    Hilbert, Legacy, Pyramid
-
-from stonemason.util.guesstypes import guess_extension, guess_mimetype
 from stonemason.util.tempfn import generate_temp_filename
 
-from .cluster import TileCluster
 from .tilestorage import ClusterStorage, MetaTileStorage, \
-    TileStorageError, InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
+    PersistenceStorageConcept, create_key_mode, MetaTileSerializer, \
+    TileClusterSerializer, StorageMixin
 
 
-def hilbert_path_mode(prefix, index, extension):
-    dirs = [prefix]
-    dirs.extend(Hilbert.coord2dir(index.z, index.x, index.y))
-    dirs.append('%d-%d-%d@%d%s' % (index.z, index.x, index.y,
-                                   index.stride, extension))
-    return os.sep.join(dirs)
-
-
-def legacy_path_mode(prefix, index, extension):
-    dirs = [prefix]
-    dirs.extend(Legacy.coord2dir(index.z, index.x, index.y))
-    dirs.append('%d-%d-%d@%d%s' % (index.z, index.x, index.y,
-                                   index.stride, extension))
-    return os.sep.join(dirs)
-
-
-def simple_path_mode(prefix, index, extension):
-    dirs = [prefix]
-    dirs.extend([str(index.z), str(index.x), str(index.y)])
-    dirs.append('%d-%d-%d@%d%s' % (index.z, index.x, index.y,
-                                   index.stride, extension))
-    return os.sep.join(dirs)
-
-
-PATH_MODES = dict(
-    simple=simple_path_mode,
-    legacy=legacy_path_mode,
-    hilbert=hilbert_path_mode,
-)
-
-
-def safe_makedirs(name, mode=0o0777):
+def safe_makedirs(name):
     try:
-        os.makedirs(name, mode)
+        # exist_ok option only available on python3
+        os.makedirs(name)
     except OSError as e:
         if e.errno == errno.EEXIST:
             # Ignore "already exists" error because os.makedirs
@@ -74,63 +36,32 @@ def safe_makedirs(name, mode=0o0777):
             raise
 
 
-class DiskStorageMixin(object):
-    """Implement common disk storage features."""
+class DiskStorage(PersistenceStorageConcept):
+    """Use regular filesystem as persistence backend."""
 
-    def __init__(self,
-                 pyramid=None,
-                 mimetype='application/data',
-                 extension=None,
-                 pathmode='hilbert',
-                 gzip=False,
-                 readonly=False,
-                 prefix='.'):
+    def __init__(self):
+        pass
 
-        # prefix
-        assert isinstance(prefix, six.string_types)
-        assert os.path.isabs(prefix)
-        self._prefix = prefix
-
-        # tile pyramid
-        assert isinstance(pyramid, Pyramid)
-        self._pyramid = pyramid
-
-        # guess extension from mimetype
-        if extension is None:
-            self._extension = guess_extension(mimetype)
-        else:
-            assert extension.startswith('.')
-            self._extension = extension
-        self._mimetype = mimetype
-
-        # select pathmode
-        self._pathmode = PATH_MODES[pathmode]
-
-        self._readonly = readonly
-
-        self._use_gzip = gzip
-        if self._use_gzip:  # append '.gz' to extension
-            self._extension = self._extension + '.gz'
-
-
-    def _retrieve(self, pathname):
+    def retrieve(self, key):
+        pathname = key
         if not os.path.exists(pathname):
             # not exist
             return None, None
 
-        if self._use_gzip:
-            fp = gzip.GzipFile(pathname, 'rb')
-        else:
-            fp = open(pathname, 'rb')
-        with fp:
+        with open(pathname, 'rb') as fp:
             blob = fp.read()
-
         mtime = os.stat(pathname).st_mtime
+
         return blob, dict(mimetype=None, mtime=mtime, etag=None)
 
-    def _store(self, pathname, blob, metadata):
-        if self._readonly:
-            raise ReadonlyStorage
+    def store(self, key, blob, metadata):
+        assert isinstance(key, six.string_types)
+        assert isinstance(blob, bytes)
+        assert isinstance(metadata, dict)
+        assert 'mtime' in metadata
+
+        pathname = key
+
         dirname, basename = os.path.split(pathname)
 
         # create directory first
@@ -140,24 +71,24 @@ class DiskStorageMixin(object):
         # generate temp file name
         tempname = generate_temp_filename(dirname, prefix=basename)
 
-        # write the file
-        if self._use_gzip:
-            with gzip.GzipFile(tempname, 'wb') as fp:
-                fp.write(blob)
-        else:
-            with open(tempname, 'wb') as fp:
-                fp.write(blob)
+        with open(tempname, 'wb') as fp:
+            fp.write(blob)
+
+        # set file time to tile timestamp
+        mtime = metadata['mtime']
+        if mtime:
+            os.utime(tempname, (mtime, mtime))
 
         # move it into place
         if sys.platform == 'win32':
             if os.path.exists(pathname):
                 # os.rename is not atomic on windows
                 os.remove(pathname)
+
         os.rename(tempname, pathname)
 
-    def _delete(self, pathname):
-        if self._readonly:
-            raise ReadonlyStorage
+    def delete(self, key):
+        pathname = key
         try:
             os.unlink(pathname)
         except OSError as e:
@@ -168,23 +99,15 @@ class DiskStorageMixin(object):
                 raise
 
 
-class DiskClusterStorage(ClusterStorage, DiskStorageMixin):
-    """Store TileCluster on a filesystem (disk).
+class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
+    """ Store `MetaTile` on a file system.
 
+    :param root: Required, root directory of the storage, must be a
+        absolute os path.
+    :type root: str
 
-    Parameters:
-
-    `pyramid`
-        The :class:`~stonemason.provider.pyramid.Pyramid` of the storage
-        describes tile pyramid model.
-
-    `mimetype`
-        Mimetype of MetaTiles stored in this storage, default value is
-        ``application/data``.  MetaTiles put into the storage must match
-        storage mimetype.
-
-    `pathmode`
-        How directories names are calculated from metatile coordinate.
+    :param dir_mode: Specifies how the directory names is calculated from
+        metatile index, possible values are:
 
         `simple`
             Same as the tile api url schema, ``z/x/y.ext``.
@@ -195,203 +118,118 @@ class DiskClusterStorage(ClusterStorage, DiskStorageMixin):
         `legacy`
             Path mode used by old `mason` codebase.
 
-        `legacy` and `hilbert` will limit files and subdirs under a directory
-        by calculating a "hash" string from tile coordinate.
+        `legacy` and `hilbert` mode will limit files and subdirs under a
+        directory by calculating a "hash" string from tile coordinate.
         The directory tree structure also groups adjacent geographical
-        items together, improves filesystem cache performance.
+        items together, improves filesystem cache performance, default
+        value is ``hilbert``.
+    :type dir_mode: str
 
-    `readonly`
-        Whether to set the storage in readonly mode, default is ``False``.
-
-    `prefix`
-        Root directory of the storage, will be created if its not already exists.
-        Must be a writable path if the storage is not in `readonly` mode.
-
-    `compressed`
-        Whether the cluster zip file will be compressed, default is ``False``.
-
-    `splitter`
-        :class:`~stonemason.provider.tilestorage.Splitter` used to split meta
-        tile data, default is to use :class:`~stonemason.provider.tilestorage.ImageSplitter`
-        if `mimetype` is a raster image.
-
-    :param pyramid: Pyramid model of the storage.
+    :param pyramid: The :class:`~stonemason.provider.pyramid.Pyramid` of the
+        storage describes tile pyramid model.
     :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
-    :param mimetype: Mimetype of meta tile.
+
+    :param mimetype: Mimetype of the `MetaTile` stored in this storage,
+        default is ``application/data``.
     :type mimetype: str
-    :param pathmode: How pathname is calculated from tile coordinate.
-    :type pathmode: str
-    :param readonly: Whether the storage is read only.
+
+    :param extension: File extension used by storage, by default, its
+        guessed from `mimetype`.  Note if `gzip` option is set to ``True``,
+        ``.gz`` is appended to extension.
+    :type extension: str or None
+
+    :param readonly: Whether the storage is created in read only mode, default
+        is ``False``, :meth:`put` and :meth:`retire` always raises
+        :exc:`ReadOnlyStorage` if `readonly` is set.
     :type readonly: bool
-    :param prefix: Root directory of the storage.
-    :type prefix: str
-    :param compressed: Whether to compress the zip file.
+
+    :param gzip: Whether the metatile file stored on filesystem will be gzipped,
+        default is ``False``.  Note when `gzip` is enabled, ``.gz`` is
+        automatically appended to `extension`.
+    :type gzip: bool
+    """
+
+    def __init__(self, root='.', dir_mode='hilbert', pyramid=None,
+                 mimetype='application/data', extension=None,
+                 readonly=False, gzip=False):
+        assert isinstance(root, six.string_types)
+        # Make sure absolute path is used since relative path creates lots of
+        # confusion during deployment.
+        assert os.path.isabs(root)
+
+        storage = DiskStorage()
+
+        key_mode = create_key_mode(dir_mode, sep=os.sep)
+
+        object_persistence = MetaTileSerializer()
+
+        StorageMixin.__init__(self, storage, object_persistence, key_mode,
+                              pyramid=pyramid, prefix=root,
+                              mimetype=mimetype, extension=extension,
+                              gzip=gzip, readonly=readonly)
+
+
+class DiskClusterStorage(StorageMixin, MetaTileStorage):
+    """ Store `TileCluster` on a file system.
+
+    :param root: Required, root directory of the storage, must be a
+        absolute os path.
+    :type root: str
+
+    :param dir_mode: Specifies how the directory names is calculated from
+        metatile index, possible values are:
+
+        `simple`
+            Same as the tile api url schema, ``z/x/y.ext``.
+
+        `hilbert`
+            Generate a hashed directory tree using Hilbert Curve.
+
+        `legacy`
+            Path mode used by old `mason` codebase.
+
+        `legacy` and `hilbert` mode will limit files and subdirs under a
+        directory by calculating a "hash" string from tile coordinate.
+        The directory tree structure also groups adjacent geographical
+        items together, improves filesystem cache performance, default
+        value is ``hilbert``.
+    :type dir_mode: str
+
+    :param pyramid: The :class:`~stonemason.provider.pyramid.Pyramid` of the
+        storage describes tile pyramid model.
+    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+
+    :param mimetype: Mimetype of the `MetaTile` stored in this storage,
+        default is ``application/data``.
+    :type mimetype: str
+
+    :param readonly: Whether the storage is created in read only mode, default
+        is ``False``, :meth:`put` and :meth:`retire` always raises
+        :exc:`ReadOnlyStorage` if `readonly` is set.
+    :type readonly: bool
+
+    :param compressed: Whether to compress generated cluster zip file, file
+        stored on filesystem will be gzipped, default is ``False``.
     :type compressed: bool
-    :param splitter: meta tile splitter.
+
+    :param splitter: A :class:`~stonemason.provider.tilestorage.Splitter` instance
+        to split `MetaTile` data into `Tile` data.
     :type splitter: :class:`~stonemason.provider.tilestorage.Splitter`
     """
 
-    def __init__(self,
-                 pyramid=None,
+    def __init__(self, root='.', dir_mode='hilbert', pyramid=None,
                  mimetype='application/data',
-                 pathmode='hilbert',
-                 readonly=False,
-                 prefix='.',
-                 compressed=False,
-                 splitter=None):
-        DiskStorageMixin.__init__(self,
-                                  pyramid=pyramid,
-                                  mimetype=mimetype,
-                                  extension=None,
-                                  pathmode=pathmode,
-                                  gzip=False,
-                                  readonly=readonly,
-                                  prefix=prefix)
-        self._extension = '.zip'  # force use zip as extension
-        self._splitter = splitter
-        self._compressed = compressed
+                 readonly=False, compressed=False, splitter=None):
+        assert isinstance(root, six.string_types)
+        assert os.path.isabs(root)
 
-    def get(self, index):
-        assert isinstance(index, MetaTileIndex)
-        pathname = self._pathmode(self._prefix, index, self._extension)
-        blob, metadata = self._retrieve(pathname)
-        if blob is None:
-            return None
-        else:
-            # XXX: Its ugly to wrap blob with BytesIO, considering passing fp here?
-            return TileCluster.from_zip(io.BytesIO(blob), metadata=metadata)
+        storage = DiskStorage()
 
-    def put(self, metatile):
-        assert isinstance(metatile, MetaTile)
-        if metatile.index.z not in self._pyramid.levels:
-            raise InvalidMetaTileIndex('MetaTile level not defined in Pyramid.')
-        if metatile.index.stride != self._pyramid.stride:
-            raise InvalidMetaTileIndex(
-                'MetaTile stride incompatible with storage.')
+        key_mode = create_key_mode(dir_mode, sep=os.sep)
+        object_persistence = TileClusterSerializer(compressed=compressed,
+                                                   splitter=splitter)
 
-        if metatile.mimetype != self._mimetype:
-            raise InvalidMetaTile('MetaTile mimetype inconsistent with storage')
-
-        pathname = self._pathmode(self._prefix, metatile.index, self._extension)
-        metadata = dict(mimetype=metatile.mimetype,
-                        mtime=metatile.mtime,
-                        etag=metatile.etag)
-
-        cluster = TileCluster.from_metatile(metatile, self._splitter)
-        buf = io.BytesIO()
-        cluster.save_as_zip(buf, compressed=self._compressed)
-        self._store(pathname, buf.getvalue(), metadata)
-
-    def retire(self, index):
-        pathname = self._pathmode(self._prefix, index, self._extension)
-        self._delete(pathname)
-
-
-class DiskMetaTileStorage(MetaTileStorage, DiskStorageMixin):
-    """Store MetaTile on a filesystem (disk).
-
-    Parameters:
-
-    `pyramid`
-        The :class:`~stonemason.provider.pyramid.Pyramid` of the storage
-        describes tile pyramid model.
-
-    `mimetype`
-        Mimetype of MetaTiles stored in this storage, default value is
-        ``application/data``.  MetaTiles put into the storage must match
-        storage mimetype.
-
-    `extension`
-        Filename extension used by storage, by default, its guessed from
-        `mimetype`.
-
-    `pathmode`
-        How directories names are calculated from metatile coordinate.
-
-        `simple`
-            Same as the tile api url schema, ``z/x/y.ext``.
-
-        `hilbert`
-            Generate a hashed directory tree using Hilbert Curve.
-
-        `legacy`
-            Path mode used by old `mason` codebase.
-
-        `legacy` and `hilbert` will limit files and subdirs under a directory
-        by calculating a "hash" string from tile coordinate.
-        The directory tree structure also groups  adjacent geographical
-        items together, improves filesystem cache performance.
-
-    `gzip`
-        Whether to use gzip to compress written data, default is ``False``.
-        Note if `gzip` is enabled, ``.gz`` will be appended to `extension`.
-
-    `readonly`
-        Whether set the storage in readonly mode, default is ``False``.
-
-    `prefix`
-        Root directory of the storage, will be created if its not already exists.
-        Must be a writable path if the storage is not in `readonly` mode.
-
-    :param pyramid: Pyramid model of the storage.
-    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
-    :param mimetype: Mimetype of meta tile.
-    :type mimetype: str
-    :param extension: Optional file extension in ``.ext``.
-    :type extension: str
-    :param pathmode: How pathname is calculated from tile coordinate.
-    :type pathmode: str
-    :param readonly: Whether the storage is read only.
-    :type readonly: bool
-    :param gzip: Whether write data as a gzip file.
-    :type gzip: bool
-    :param prefix: Root directory of the storage.
-    :type prefix: str
-    """
-
-    def __init__(self,
-                 pyramid=None,
-                 mimetype='application/data',
-                 extension=None,
-                 pathmode='hilbert',
-                 gzip=False,
-                 readonly=False,
-                 prefix='.', ):
-        DiskStorageMixin.__init__(self,
-                                  pyramid=pyramid,
-                                  mimetype=mimetype,
-                                  extension=extension,
-                                  pathmode=pathmode,
-                                  gzip=gzip,
-                                  readonly=readonly,
-                                  prefix=prefix)
-
-    def get(self, index):
-        assert isinstance(index, MetaTileIndex)
-        pathname = self._pathmode(self._prefix, index, self._extension)
-        blob, metadata = self._retrieve(pathname)
-        if blob is None:
-            return None
-        return MetaTile(index,
-                        data=blob,
-                        **metadata)
-
-    def put(self, metatile):
-        assert isinstance(metatile, MetaTile)
-        if metatile.index.z not in self._pyramid.levels:
-            raise InvalidMetaTileIndex('MetaTile level not defined in Pyramid.')
-        if metatile.index.stride != self._pyramid.stride:
-            raise InvalidMetaTileIndex(
-                'MetaTile stride incompatible with storage.')
-        if metatile.mimetype != self._mimetype:
-            raise InvalidMetaTile('MetaTile mimetype inconsistent with storage')
-
-        pathname = self._pathmode(self._prefix, metatile.index, self._extension)
-        metadata = dict(mimetype=metatile.mimetype,
-                        mtime=metatile.mtime,
-                        etag=metatile.etag)
-        self._store(pathname, metatile.data, metadata)
-
-    def retire(self, index):
-        pathname = self._pathmode(self._prefix, index, self._extension)
-        self._delete(pathname)
+        StorageMixin.__init__(self, storage, object_persistence, key_mode,
+                              pyramid=pyramid, prefix=root,
+                              mimetype=mimetype, extension='.zip',
+                              gzip=False, readonly=readonly)

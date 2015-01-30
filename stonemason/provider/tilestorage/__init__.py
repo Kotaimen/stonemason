@@ -17,3 +17,4 @@ from .tilestorage import ClusterStorage, MetaTileStorage, \
     NullClusterStorage, NullMetaTileStorage, \
     TileStorageError, InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
 from .disk import DiskClusterStorage, DiskMetaTileStorage
+from .s3 import S3ClusterStorage, S3MetaTileStorage
