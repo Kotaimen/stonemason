@@ -13,6 +13,9 @@ import six
 def generate_temp_filename(dirname=None, prefix='tmp', suffix=''):
     """Generate a temporary file name with specified suffix and prefix.
 
+    >>> from stonemason.util.tempfn import generate_temp_filename
+    >>> generate_temp_filename('/tmp', prefix='hello-', suffix='.tmp') #doctest: +ELLIPSIS
+    '/tmp/hello-....tmp'
 
     :param dirname: Base temp directory, default is system temp dir.
     :type dirname: str

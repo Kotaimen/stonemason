@@ -45,10 +45,13 @@ class MetaTileIndex(_MetaTileIndex):
 
     :param z: z zoom level
     :type z: int
+
     :param x: x coordinate
     :type x: int
+
     :param y: y coordinate
     :type y: int
+
     :param stride: number of `tiles` per axis
     :type stride: int
     """
@@ -105,26 +108,6 @@ class MetaTile(_MetaTile):
     Group tiles into metatile greatly reduces number of operations,
     so metatile is the basic unit of storage and map rendering.
 
-    `index`
-        Index of the metatile.
-
-    `data`
-        Arbitrary binary or textual data.
-
-    `mimetype`
-        Type of the metatile data in mimetypes format, default to
-        :mimetype:`application/data`.
-
-    `mtime`
-        Modify time of the metatile since EPOCH in seconds.
-
-    `etag`
-        Hash of the metatile data.
-
-    `buffer`
-        Size of extra pixels around the metatile, only meaningful for raster
-        image metatiles, default is `0`, which means no buffering.
-
     >>> from stonemason.provider.pyramid import MetaTileIndex, MetaTile
     >>> metatile = MetaTile(MetaTileIndex(2, 0, 0, 2),
     ...                     data=b'a metatile',
@@ -136,17 +119,24 @@ class MetaTile(_MetaTile):
     >>> metatile.buffer
     16
 
-    :param index: Metatile index.
-    :type index: :class:`~stonemason.provider.pyramid.MetaTileIndex`.
-    :param data: Tile data.
+    :param index: Index of the metatile.
+    :type index: :class:`~stonemason.provider.pyramid.MetaTileIndex`
+
+    :param data: Arbitrary binary or textual data.
     :type data: bytes
-    :param mimetype: Mimetype of the metatile data.
+
+    :param mimetype: Type of the metatile data in mimetypes format, default to
+        :mimetype:`application/data`.
     :type mimetype: str
-    :param mtime: Timestamp of the metatile.
+
+    :param mtime: Modify time of the metatile since EPOCH in seconds.
     :type mtime: float
+
     :param etag: Hash of the metatile data.
-    :type etag: bytes
-    :param buffer: Pixel size of buffer around the metatile.
+    :type etag: str
+
+    :param buffer: Size of extra pixels around the metatile, only meaningful
+         for raster image metatiles, default is `0`, which means no buffering.
     :type buffer: int
     """
 

@@ -10,9 +10,6 @@ Stonemason
 
 *Stonemason* is a tile map service toolkit developed in Python.
 
-**TODO**
-
--------------------------------------------------------------------------------
 
 Synopsis
 ========
@@ -37,15 +34,14 @@ API Reference
 Mason
 -----
 
-
 .. toctree::
     :maxdepth: 2
 
     pkg_config
     pkg_theme
 
-Tile Providers
---------------
+Providers
+---------
 
 .. toctree::
     :maxdepth: 2
@@ -54,8 +50,8 @@ Tile Providers
     pkg_tilecache
     pkg_tilestorage
 
-Service
--------
+Backends
+--------
 
 .. toctree::
     :maxdepth: 2
@@ -72,7 +68,6 @@ Utilties
     pkg_util
 
 
-
 Services
 ========
 
@@ -80,8 +75,6 @@ Services
     :maxdepth: 2
 
     service_tileserver
-
--------------------------------------------------------------------------------
 
 
 Indices and tables

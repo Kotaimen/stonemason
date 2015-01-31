@@ -44,8 +44,10 @@ class TileIndex(_TileIndex):
 
     :param z: Zoom level.
     :type z: int
+
     :param x: Coordinate at x axis.
     :type x: int
+
     :param y: Coordinate at y axis.
     :type y: int
     """
@@ -80,29 +82,6 @@ class Tile(_Tile):
 
     A tile object is immutable once created and has following attributes:
 
-    `index`
-        :class:`~stonemason.provider.pyramid.TileIndex`.
-
-    `data`
-        Arbitrary binary or textual data, though its usually a rendered
-        raster map image, or geo referenced features.
-
-    `mimetype`
-        Type of the tile data in mimetypes format, default to
-        :mimetype:`application/data`.  `Tile` will never check whether `mimetype`
-        matches actual tile data format.
-
-    `mtime`
-        Modify time of the tile since EPOCH in seconds, if its not given in
-        the constructor, current time is used by calling :func:`time.time()`
-
-    `etag`
-        Hash of the tile data, calculated using :class:`hashlib:md5` if is not
-        given in the constructor.
-
-
-    Sample:
-
     >>> from stonemason.provider.pyramid import Tile, TileIndex
     >>> tile = Tile(index=TileIndex(3, 4, 5),
     ...             data=b'a tile',
@@ -117,17 +96,26 @@ class Tile(_Tile):
     >>> tile.etag
     'c37ee78cb8b04fa64e295342b3e229cd'
 
-
-    :param index: Tile index.
+    :param index: Index of the tile.
     :type index: :class:`~stonemason.provider.pyramid.TileIndex`.
-    :param data: Tile data.
+
+    :param data: Arbitrary binary or textual data, though its usually
+        a rendered raster map image, or geo referenced features.
     :type data: bytes
-    :param mimetype: Mimetype of the tile data.
+
+    :param mimetype: Type of the tile data in mimetypes format, default to
+        :mimetype:`application/data`.  Note `Tile` will never check whether
+        `mimetype` matches actual tile data format.
     :type mimetype: str
-    :param mtime: Timestamp of the tile.
+
+    :param mtime: Modify time of the tile since EPOCH in seconds, if it is
+        not given, current time is used by calling :func:`time.time()`
     :type mtime: float
-    :param etag: Hash of the tile data.
-    :type etag: bytes
+
+    :param etag: Hash of the tile data, calculated using :class:`hashlib:md5`
+        if is not given.
+    :type etag: str
+
     """
 
     def __new__(cls, index=None, data=None,

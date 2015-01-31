@@ -2,21 +2,26 @@
 
 [![Build Status](https://travis-ci.org/Kotaimen/stonemason.svg?branch=develop)](https://travis-ci.org/Kotaimen/stonemason)
 
-**Stonemason** is a complete rewrite of the unpopular [mason](https://github.com/Kotaimen/mason) tile map toolkit.  
+*Stonemason* is a tile map service toolkit in Python.
 
-Similar solutions:
+Inspired by:
 
 - [TileScache](http://tilestache.org)
 - [TileCache](http://tilecache.org)
-- [Windshaft](https://github.com/CartoDB/Windshaft) 
+- [Windshaft](https://github.com/CartoDB/Windshaft)
+- [Mapbox](http://www.mapbox.com)
+- [Open Street Map](http://wiki.openstreetmap.org/wiki/Renderers)
+- MapQuest Render Stack (not available anymore)
 
-
-## Features (planned)
+Features:
 
 - Tile map service.
-- Render pipeline.
-- Mass tile storage.
-- Debug and design server.
-- Mapnik as raster render engine.
-- High quality DEM terrain relief renderer.
-- Supports both zero configuration and distributed deployment.
+- Distributed render backend.
+- Tile caching and permanent storage.
+- Debug server for map design.
+- Mapnik as raster renderer.
+- High quality relief renderer.
+- Image composer based on PIL and imagemagick.
+- Zero configuration deployment.
+
+> TODO: Add a demo page here.

@@ -23,34 +23,7 @@ _Pyramid = collections.namedtuple('_Pyramid',
 class Pyramid(_Pyramid):
     """Quad-tree grid system of a `tile` map.
 
-    .. warning:: Attributes of Pyramid is subject to change before design stabilizes.
-
-
-    `levels`
-        Zoom levels of the pyramid, must be a list of integers, default
-        value is ``0-22``.
-
-    `stride`
-        Stride of the MetaTile in this pyramid, default value is ``1``.
-
-    `crs`
-        Coordinate Reference System (Geographic Coordinate System) of the
-        map data.  default value is ``EPSG:4326``, which is the common
-        WGS84 datum.
-
-    `proj`
-        Projected coordinate system of the map, default value is ``EPSG:3857``,
-        which is Mercator projection used by GoogleMaps and most web map
-        services.
-
-    `boundary`
-        Map boundary in specified `crs`, only simple bounding box is supported
-        as of now, in the form of ``(left, top, right, bottom)``.
-
-        Default value is ``(-180,-85.0511,180,85.0511)``, which is the default
-        coverage of Google Maps
-
-    **About Projection**
+    **Projection**
 
     `crs` and `proj` accepts projection string formats supported by
     `OSRSetFromUserInput`_, which includes:
@@ -59,7 +32,11 @@ class Pyramid(_Pyramid):
      - EPSG Code, eg: ``EPSG:3857``
      - PROJ.4 definitions, eg: ``+proj=longlat +datum=WGS84 +no_defs``
 
-    `Pyramid` does not verify projection strings.
+    Note `Pyramid` does not verify projection strings.
+
+
+    .. warning:: Attributes of Pyramid is subject to change before design
+        stabilizes.
 
     .. _OSRSetFromUserInput: http://www.gdal.org/ogr__srs__api_8h.html#a927749db01cec3af8aa5e577d032956b
 
@@ -71,15 +48,30 @@ class Pyramid(_Pyramid):
     >>> pyramid
     Pyramid(levels=[4, 5, 6], stride=4, crs='EPSG:4326', proj='EPSG:3857', boundary=(-180, -85.0511, 180, 85.0511))
 
-    :param levels: Available zoom levels, default is ``0-22``.
+    :param levels: Zoom levels of the pyramid, must be a list of integers,
+        default value is ``0-22``.
     :type levels: list
-    :param stride: Stride of the MetaTile, default is ``1``.
+
+    :param stride: Stride of the MetaTile in this pyramid, default
+        value is ``1``.
     :type stride: int
-    :param crs: Coordinate reference system of the map data.
+
+    :param crs: Coordinate Reference System (Geographic Coordinate System)
+        of the map data.  default value is ``EPSG:4326``, which is the common
+        WGS84 datum.
     :type crs: str
-    :param proj: Cartographic projection of the map.
+
+    :param proj: Projected coordinate system of the map, default value
+        is ``EPSG:3857``, which is Mercator projection used by GoogleMaps
+        and most web map services.
+
     :type proj: str
+
     :param boundary: Boundary of the map specified in data `crs`.
+        Map boundary in specified `crs`, only simple bounding box is supported
+        as of now, in the form of ``(left, top, right, bottom)``.
+        Default value is ``(-180,-85.0511,180,85.0511)``, which is the default
+        coverage of Google Maps
     """
 
     def __new__(cls,

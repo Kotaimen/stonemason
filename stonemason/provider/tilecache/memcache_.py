@@ -39,27 +39,6 @@ class MemTileCache(TileCache):
     .. _couchbase: <http://www.couchbase.com/>
     .. _nutcracker:  <https://github.com/twitter/twemproxy>
 
-    `servers`
-        A list of servers, the list is sent to :class:`pylibmc.Client`, default
-        value is ``['localhost:11211',]``.
-
-        .. seealso:: `pylibmc` `example <http://sendapatch.se/projects/pylibmc/index.html>`_.
-
-    `behaviors`
-        Set `pylibmc` client behavior, default value is:
-
-        .. code-block:: python
-
-            {
-                'tcp_nodelay': True,
-                'ketama': True,
-                'cas': True,
-            }
-
-        .. seealso:: `pylibmc` `behaviours <http://sendapatch.se/projects/pylibmc/behaviors.html>`_.
-
-    Sample:
-
     >>> from stonemason.provider.pyramid import Tile,TileIndex
     >>> from stonemason.provider.tilecache import MemTileCache
     >>> cache = MemTileCache(servers=['localhost:11211',])
@@ -72,9 +51,27 @@ class MemTileCache(TileCache):
     >>> cache.has('layer', TileIndex(3, 4, 5))
     False
 
-    :param servers: A sequence of strings specifying the servers to use.
+    :param servers: A list of servers, the list is sent to :class:`pylibmc.Client`, default
+        value is ``['localhost:11211',]``.
+
+        .. seealso:: `pylibmc` `example <http://sendapatch.se/projects/pylibmc/index.html>`_.
+    :type servers: list
+
     :param binary: Whether to use `memcached` binary protocol, default is ``True``.
-    :param behaviors: `pylibmc` behaviors.
+    :type binary: bool
+
+    :param behaviors: Set `pylibmc` client behavior, default value is:
+
+        .. code-block:: python
+
+            {
+                'tcp_nodelay': True,
+                'ketama': True,
+                'cas': True,
+            }
+
+        .. seealso:: `pylibmc` `behaviours <http://sendapatch.se/projects/pylibmc/behaviors.html>`_.
+    :type behaviours: dict
     """
 
     def __init__(self, servers=('localhost:11211', ),

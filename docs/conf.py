@@ -33,7 +33,8 @@ sys.path.append(os.path.abspath('..'))
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
     'sphinx.ext.doctest', 'sphinx.ext.mathjax',
-    'alabaster', 'sphinxcontrib.httpdomain'
+    'alabaster',
+    'sphinxcontrib.httpdomain',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -97,10 +98,10 @@ exclude_patterns = ['_build']
 pygments_style = 'friendly'
 
 # A list of ignored prefixes for module index sorting.
-#modindex_common_prefix = []
+# modindex_common_prefix = []
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
-#keep_warnings = False
+# keep_warnings = False
 
 
 # -- Options for HTML output ----------------------------------------------
@@ -126,7 +127,7 @@ html_theme_path = [alabaster.get_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+# html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -159,6 +160,7 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
+
 html_sidebars = {
     '**': [
         'about.html', 'navigation.html', 'searchbox.html',
@@ -246,18 +248,21 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'stonemason', u'stonemason Documentation',
+    ('index', 'stonemason', u'Stonemason Documentation',
      [u'K&R'], 1)
 ]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
 
-intersphinx_mapping = {'python': ('http://docs.python.org/', None),
-                       'PIL': ('http://pillow.readthedocs.org/', None),
-                       'pylibmc': (
-                           'http://sendapatch.se/projects/pylibmc/', None),
-                       'boto': ('http://boto.readthedocs.org/en/latest',None)}
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/', None),
+    'pillow': ('http://pillow.readthedocs.org/', None),
+    'pylibmc': ('http://sendapatch.se/projects/pylibmc/',
+                None),
+    'boto': ('http://boto.readthedocs.org/en/latest', None),
+    'flask': ('http://flask.pocoo.org/docs/latest/', None),
+}
 
 autodoc_member_order = 'bysource'
 
@@ -267,8 +272,8 @@ autodoc_member_order = 'bysource'
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'stonemason', u'stonemason Documentation',
-     u'K&R', 'stonemason', 'One line description of project.',
+    ('index', 'stonemason', u'Stonemason Documentation',
+     u'K&R', 'stonemason', 'Tile map service toolkit.',
      'Miscellaneous'),
 ]
 

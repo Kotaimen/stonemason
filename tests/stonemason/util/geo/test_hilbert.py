@@ -77,20 +77,20 @@ class TestHibertCurve(unittest.TestCase):
     def test_s_from_xy_order0(self):
         self.assertEqual(hilbert.hil_s_from_xy(0, 0, 1), 0)
 
-    def test_xy_from_s_order1(self):
+    def test_s_from_xy_order1(self):
         order = 1
         for s in range(4 ** order):
             x, y = hilbert.hil_xy_from_s(s, order)
             self.assertEqual(hilbert.hil_s_from_xy(x, y, order), s)
 
-    def test_xy_from_s_order2(self):
+    def test_s_from_xy_order2(self):
         order = 2
         for s in range(4 ** order):
             x, y = hilbert.hil_xy_from_s(s, order)
             self.assertEqual(hilbert.hil_s_from_xy(x, y, order), s)
 
 
-    def test_xy_from_s_large(self):
+    def test_s_from_xy_large(self):
         self.assertEqual(hilbert.hil_s_from_xy(2138, 3776, 15), 12345678)
         self.assertEqual(hilbert.hil_s_from_xy(2138, 3776, 19), 12345678)
         self.assertEqual(hilbert.hil_s_from_xy(3776, 2138, 20), 12345678)

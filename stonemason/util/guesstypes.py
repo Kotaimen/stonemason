@@ -36,12 +36,23 @@ def guess_extension(mimetype):
     """Guess extension from mimetype, return empty string on failure.
 
     Python's standard library ``mimetypes`` is not consistent between python
-    versions and operation systems, eg::
+    versions and operation systems, eg:
+
+    .. code-block:: console
 
         $ python -c 'import mimetypes; print(mimetypes.guess_extension("image/tiff"))'
         .tif
         $ python3 -c 'import mimetypes; print(mimetypes.guess_extension("image/tiff"))'
         .tiff
+
+    >>> import mimetypes
+    >>> from stonemason.util.guesstypes import guess_extension
+    >>> print mimetypes.guess_extension('bad type')
+    None
+    >>> guess_extension('bad type')
+    ''
+    >>> guess_extension('image/jpeg')
+    '.jpg'
 
     :param mimetype: Mimetype to guess.
     :returns: Guessed mimetype, or ``''`` if failed.
@@ -62,6 +73,13 @@ def guess_extension(mimetype):
 
 def guess_mimetype(extension):
     """Guess mimetype from extension, return ``application/data`` on failure.
+
+    >>> import mimetypes
+    >>> from stonemason.util.guesstypes import guess_mimetype
+    >>> print mimetypes.guess_extension('.blah')
+    None
+    >>> guess_mimetype('.blah')
+    'application/data'
 
     :param mimetype: Extension to guess.
     :returns: Guessed extension, or ``''`` if failed.

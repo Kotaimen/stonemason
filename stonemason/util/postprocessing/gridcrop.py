@@ -137,15 +137,6 @@ def grid_crop_into_data(image, stride=1, buffer_size=0,
     Same as :func:`grid_crop` except returns image file data instead of
     :class:`PIL.Image.Image`.
 
-    `format`
-        Image format supported by PIL/Pillow, eg: ``JPEG``, ``PNG``, ``WEBP``.
-        The actual list for formats depends on Pillow installation, see
-        `image formats`_ for a complete format list.
-
-    `parameters`
-        Image saving parameters, available list depends on `format` selected.
-        `image formats`_ for a complete parameter list.
-
     Some examples:
 
         format='JPEG'
@@ -161,11 +152,23 @@ def grid_crop_into_data(image, stride=1, buffer_size=0,
 
     :param image: Image to crop, must be square.
     :type image: :class:`PIL.Image.Image` or `bytes` or `file`
+
     :param stride: Number of grid images per axis.
+    :type stride: int
+
     :param buffer_size: Size of the buffer to be shaved each side in pixels,
                         default is 0, means no buffer is shaved.
-    :param format: Image format, default means same as given image.
-    :param parameters: Image save parameters as a dictionary.
+    :type buffer_size: int
+
+    :param format: Image format supported by PIL/Pillow, eg: ``JPEG``, ``PNG``,
+        ``WEBP``. The actual list for formats depends on Pillow installation,
+        see `image formats`_ for a complete format list.
+    :type format: str
+
+    :param parameters: Image saving parameters, available list depends on
+         `format` selected. `image formats`_ for a complete parameter list.
+    :type parameters: dict
+
     :return: A iterator of cropped image data.
     :rtype: iterator
     """
