@@ -6,5 +6,5 @@
     A high performance tile server WSGI application based on Flask.
 """
 
-from .app import StoneMasonApp, ThemeAPI, TileAPI
+from .tileserver import TileServerApp, ThemeAPI, TileAPI
 

@@ -10,12 +10,12 @@
 import six
 import json
 import unittest
-from stonemason.service.tileserver import StoneMasonApp
+from stonemason.service.tileserver import TileServerApp
 
 
 class TestStoneMasonApp(unittest.TestCase):
     def setUp(self):
-        app = StoneMasonApp()
+        app = TileServerApp()
         app.config['DEBUG'] = True
         app.config['TESTING'] = True
 

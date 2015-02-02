@@ -18,6 +18,6 @@ Tile Resource
 Application
 -----------
 
-.. autoclass:: stonemason.service.tileserver.StoneMasonApp
+.. autoclass:: stonemason.service.tileserver.TileServerApp
     :members:
 

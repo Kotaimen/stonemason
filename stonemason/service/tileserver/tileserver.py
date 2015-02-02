@@ -10,8 +10,8 @@
 import os
 
 import six
-from flask import Flask
-from flask.views import MethodView
+from flask import Flask, render_template
+from flask.views import View, MethodView
 from flask.json import jsonify
 
 from . import default_settings
@@ -116,16 +116,24 @@ class TileAPI(MethodView):
         return self._mason.get_tile(tag, z, x, y, scale, ext)
 
 
-class StoneMasonApp(Flask):
-    """StoneMason Server Application
+def home():
+    import stonemason
+    return render_template('index.html', version=stonemason.__version__)
 
-    StoneMasonApp is a WSGI compatible server application which serves tile \
-    data of different themes.
-    It is created with default settings lies in
-    :class:`stonemason.service.tileserver.default_settings` and could be
-    override with a config file and environment variables.
 
-    Available APIs are as follows:
+class TileServerApp(Flask):
+    """StoneMason tile server application.
+
+    Implements the tile map frontend service, also acting as a debugging
+    all-in-one server.
+
+    Configuration is loaded in the following order, each overwriting the
+    previous ones:
+        1. :class:`stonemason.service.tileserver.default_settings`,
+        2. Configuration file,
+        3. Environment variables.
+
+    Tile server exposes following REST API:
 
         :http:get:`/themes`
 
@@ -135,28 +143,31 @@ class StoneMasonApp(Flask):
 
         :http:get:`/tiles/(tag)/(int:z)/(int:x)/(int:y).(ext)`
 
+    With a management interface at site root:
+
+        :http:get:`/`
+
     """
 
-    ENV_PARAM_PREFIX = 'STONEMASON_APP_'
+    ENV_PARAM_PREFIX = 'STONEMASON_'
 
     def __init__(self, config=None):
+        package_root = os.path.dirname(__file__)
         Flask.__init__(self, self.__class__.__name__,
+                       template_folder=os.path.join(package_root, 'templates'),
+                       static_folder=os.path.join(package_root, 'static'),
                        instance_relative_config=True)
 
-        # config from default values
-        self.config.from_object(default_settings)
-
-        # config from setting file
-        if config is not None:
-            self.config.from_pyfile(config, silent=True)
-
-        # config from environment variables
-        for key, val in six.iteritems(os.environ):
-            if key.startswith(self.ENV_PARAM_PREFIX):
-                self.config[key] = val
+        self._load_config(config)
 
         self._mason = Mason()
 
+        # XXX: Just a sample index page
+        self.add_url_rule(rule='/',
+                          view_func=home,
+                          methods=['GET'])
+
+        # TODO: Move APIs to a separate BluePrint
         theme_view = ThemeAPI.as_view('theme_api', self._mason)
         self.add_url_rule(
             rule='/themes',
@@ -183,3 +194,15 @@ class StoneMasonApp(Flask):
             methods=['GET']
         )
 
+    def _load_config(self, config):
+        # config from default values
+        self.config.from_object(default_settings)
+
+        # config from setting file
+        if config is not None:
+            self.config.from_pyfile(config, silent=True)
+
+        # config from environment variables
+        for key, val in six.iteritems(os.environ):
+            if key.startswith(self.ENV_PARAM_PREFIX):
+                self.config[key] = val

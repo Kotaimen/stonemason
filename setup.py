@@ -4,6 +4,7 @@ import os
 import sys
 
 from setuptools import setup, find_packages
+
 from distutils.extension import Extension
 from distutils.command.sdist import sdist as sdist_
 from distutils.command.clean import clean as clean_
@@ -51,7 +52,8 @@ install_requires = [
     'Flask>=0.10',
     'Pillow>=2.3.0',
     'pylibmc>=1.4.0',
-    'boto>=2.35.0'
+    'boto>=2.35.0',
+    'Click>=3.0.0'
 ]
 
 tests_require = [
@@ -59,11 +61,6 @@ tests_require = [
     'coverage',
     # 'mock',
     'moto>=0.3.9',
-]
-
-find_excludes = [
-    'res',
-    'tests',
 ]
 
 py_modules = []
@@ -80,8 +77,10 @@ cython_modules = [
      ['stonemason/util/geo/_hilbert.pyx', ]),
 ]
 
-entry_points = {}
-
+entry_points = '''
+[console_scripts]
+stonemason-tileserver=stonemason.service.tileserver.main:tileserver
+'''
 #
 # Custom commands
 #
@@ -134,7 +133,11 @@ else:
         c_sources = list(source[:-3] + 'c' for source in sources)
         ext_modules.append(Extension(module, c_sources))
 
-package_data = {}
+package_data = {
+    'stonemason.util.geo': ['*.c'],
+    'stonemason.service.tileserver': ['templates/*', 'static/*'],
+
+}
 
 #
 # Setup
@@ -170,7 +173,8 @@ setup(
 
     py_modules=py_modules,
     ext_modules=ext_modules,
-    packages=find_packages(exclude=find_excludes),
+    packages=find_packages(exclude=['tests', 'tests.*']),
+    include_package_data=True,
     package_data=package_data,
     entry_points=entry_points,
 
@@ -185,3 +189,4 @@ setup(
     }
 
 )
+
