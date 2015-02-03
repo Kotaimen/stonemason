@@ -79,7 +79,7 @@ cython_modules = [
 
 entry_points = '''
 [console_scripts]
-stonemason-tileserver=stonemason.service.tileserver.main:tileserver
+stonemason=stonemason.__main__:cli
 '''
 #
 # Custom commands
