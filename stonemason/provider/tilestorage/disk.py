@@ -98,6 +98,9 @@ class DiskStorage(PersistenceStorageConcept):
             else:
                 raise
 
+    def close(self):
+        pass
+
 
 class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
     """ Store `MetaTile` on a file system.

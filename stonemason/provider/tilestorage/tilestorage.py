@@ -72,6 +72,10 @@ class ClusterStorage(object):  # pragma: no cover
         """
         raise NotImplementedError
 
+    def close(self):
+        """Close underlying connection to storage backend"""
+        raise NotImplementedError
+
 
 class MetaTileStorage(object):  # pragma: no cover
     """Persistence storage of `MetaTile`."""
@@ -111,6 +115,10 @@ class MetaTileStorage(object):  # pragma: no cover
         """
         raise NotImplementedError
 
+    def close(self):
+        """Close underlying connection to storage backend"""
+        raise NotImplementedError
+
 
 #
 # Internal IF
@@ -129,6 +137,10 @@ class PersistenceStorageConcept(object):  # pragma: no cover
 
     def delete(self, key):
         """Delete object with given `pathname`."""
+        raise NotImplementedError
+
+    def close(self):
+        """Close underlying connection to storage backend"""
         raise NotImplementedError
 
 
@@ -316,11 +328,14 @@ class StorageMixin(object):
 
         self._storage.delete(storage_key)
 
+    def close(self):
+        self._storage.close()
+
 
 #
 # "Null" storage
 #
-class NullClusterStorage(ClusterStorage): # pragma: no cover
+class NullClusterStorage(ClusterStorage):  # pragma: no cover
     """A storage stores nothing."""
 
     def get(self, index):
@@ -333,7 +348,7 @@ class NullClusterStorage(ClusterStorage): # pragma: no cover
         return
 
 
-class NullMetaTileStorage(MetaTileStorage): # pragma: no cover
+class NullMetaTileStorage(MetaTileStorage):  # pragma: no cover
     """A storage stores nothing."""
 
     def get(self, index):

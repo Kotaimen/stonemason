@@ -44,6 +44,7 @@ class TestS3ClusterStorage(unittest.TestCase):
         self.assertIsInstance(cluster, TileCluster)
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
+        storage.close()
 
     def test_keymode_simple(self):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
@@ -65,6 +66,7 @@ class TestS3ClusterStorage(unittest.TestCase):
 
         self.assertIsNotNone(self.conn.get_bucket(TEST_BUCKET_NAME).get_key(
             'testlayer/19/01/9E/BB/B3/19-453824-212288@8.zip'))
+        storage.close()
 
     def test_keymode_hilbert(self):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
@@ -76,6 +78,8 @@ class TestS3ClusterStorage(unittest.TestCase):
 
         self.assertIsNotNone(self.conn.get_bucket(TEST_BUCKET_NAME).get_key(
             'testlayer/19/03/35/B0/B6/19-453824-212288@8.zip'))
+
+        storage.close()
 
     def tearDown(self):
         # self.conn.delete_bucket(TEST_BUCKET_NAME)
@@ -110,6 +114,7 @@ class TestS3(unittest.TestCase):
 
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
+        storage.close()
 
     def tearDown(self):
         self.conn.close()

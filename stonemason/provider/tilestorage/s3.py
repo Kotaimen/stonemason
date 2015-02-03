@@ -85,6 +85,9 @@ class S3Storage(PersistenceStorageConcept):
         s3key = Key(bucket=self._bucket, name=key)
         s3key.delete()
 
+    def close(self):
+        self._conn.close()
+
 
 class S3MetaTileStorage(StorageMixin, MetaTileStorage):
     """ Store `MetaTile` on AWS S3.
