@@ -25,7 +25,7 @@ class DummyTileCache(TileCache):
 
 class DummyClusterStorage(ClusterStorage):
     def get(self, index):
-        return Tile(index=index, data='A tile')
+        return Tile(index=index, data=six.b('A tile'))
 
 
 class TestProvider(unittest.TestCase):
