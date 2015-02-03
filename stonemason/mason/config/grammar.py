@@ -16,7 +16,7 @@ class GrammarError(Exception):
     pass
 
 
-class Grammar(object):
+class Grammar(object): # pragma: no cover
     """Basic Grammar Parser
 
     A Grammar Parser analyzes and translates an expression
