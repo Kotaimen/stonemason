@@ -132,6 +132,7 @@ class TileServerApp(Flask):
         1. :class:`stonemason.service.tileserver.default_settings`,
         2. Configuration file,
         3. Environment variables.
+        4. Command line options.
 
     Tile server exposes following REST API:
 
@@ -147,18 +148,29 @@ class TileServerApp(Flask):
 
         :http:get:`/`
 
+    :type config: str
+    :param config:
+
+        Path of configuration file on your system.
+
+    :type kwargs: dict
+    :param kwargs:
+
+        Extra configurations specified on the creation of ``TileServerApp``.
+        Used to accept variables from command line options.
+
     """
 
     ENV_PARAM_PREFIX = 'STONEMASON_'
 
-    def __init__(self, config=None):
+    def __init__(self, config=None, **kwargs):
         package_root = os.path.dirname(__file__)
         Flask.__init__(self, self.__class__.__name__,
                        template_folder=os.path.join(package_root, 'templates'),
                        static_folder=os.path.join(package_root, 'static'),
                        instance_relative_config=True)
 
-        self._load_config(config)
+        self._load_config(config, **kwargs)
 
         self._mason = Mason()
 
@@ -194,7 +206,7 @@ class TileServerApp(Flask):
             methods=['GET']
         )
 
-    def _load_config(self, config):
+    def _load_config(self, config, **kwargs):
         # config from default values
         self.config.from_object(default_settings)
 
@@ -206,3 +218,6 @@ class TileServerApp(Flask):
         for key, val in six.iteritems(os.environ):
             if key.startswith(self.ENV_PARAM_PREFIX):
                 self.config[key] = val
+
+        # config from command line options
+        self.config.update(kwargs)

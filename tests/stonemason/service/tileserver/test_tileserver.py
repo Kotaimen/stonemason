@@ -15,11 +15,14 @@ from stonemason.service.tileserver import TileServerApp
 
 class TestStoneMasonApp(unittest.TestCase):
     def setUp(self):
-        app = TileServerApp()
-        app.config['DEBUG'] = True
-        app.config['TESTING'] = True
+        self.app = TileServerApp(NAME='stonemason')
+        self.app.config['DEBUG'] = True
+        self.app.config['TESTING'] = True
 
-        self.client = app.test_client()
+        self.client = self.app.test_client()
+
+    def test_config(self):
+        self.assertEqual(six.b('stonemason'), self.app.config['NAME'])
 
     def test_get_theme(self):
         resp = self.client.get('/themes/brick')
