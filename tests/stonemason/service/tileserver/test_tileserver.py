@@ -22,7 +22,7 @@ class TestStoneMasonApp(unittest.TestCase):
         self.client = self.app.test_client()
 
     def test_config(self):
-        self.assertEqual(six.b('stonemason'), self.app.config['NAME'])
+        self.assertEqual(six.u('stonemason'), self.app.config['NAME'])
 
     def test_get_theme(self):
         resp = self.client.get('/themes/brick')
