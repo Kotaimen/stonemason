@@ -2,7 +2,6 @@
 """
     stonemason.service.tileserver.app
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
     Implements the tile server app for Stonemason.
 
 """
@@ -14,9 +13,9 @@ from flask import Flask, render_template
 from flask.views import View, MethodView
 from flask.json import jsonify
 
-from . import default_settings
-
 from stonemason.mason import Mason
+
+from . import default_settings
 
 
 class ThemeAPI(MethodView):
@@ -118,6 +117,7 @@ class TileAPI(MethodView):
 
 def home():
     import stonemason
+
     return render_template('index.html', version=stonemason.__version__)
 
 
@@ -129,6 +129,7 @@ class TileServerApp(Flask):
 
     Configuration is loaded in the following order, each overwriting the
     previous ones:
+
         1. :class:`stonemason.service.tileserver.default_settings`,
         2. Configuration file,
         3. Environment variables.
