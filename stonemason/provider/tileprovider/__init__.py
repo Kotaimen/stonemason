@@ -10,4 +10,4 @@
 __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
-from .factory import TileProviderFactory, TileProvider
+from .factory import TileProviderBuilder, TileProvider

@@ -54,8 +54,11 @@ class TileCacheFactory(object):
 
     """
 
-    def create(self, prototype, **kwargs):
+    def create(self, **kwargs):
         """Create a ``TileCache`` instance"""
+
+        prototype = kwargs.get('prototype')
+
         if prototype == 'null':
             return NullTileCache()
         elif prototype == 'memcache':
@@ -93,8 +96,11 @@ class ClusterStorageFactory(object):
 
     """
 
-    def create(self, prototype, **kwargs):
+    def create(self, **kwargs):
         """Create a ``ClusterStorage`` instance."""
+
+        prototype = kwargs.get('prototype')
+
         if prototype == 'null':
             return NullClusterStorage()
         elif prototype == 'disk':
@@ -105,56 +111,75 @@ class ClusterStorageFactory(object):
             raise UnknownStorageType(prototype)
 
 
-class TileProviderFactory(object):
+class TileProviderBuilder(object):
     """TileProvider Factory
-`
+
     Build a tile provider with given configs.
-
-    :type tag: str
-    :param tag:
-
-        A string literal uniquely identifies a provider.
-
-    :type mode: str
-    :param mode:
-
-        A string literal controls behaviours of a provider. Available options
-        are:
-
-        - read-only:
-
-            Retrieve tiles directly from a storage. It will ignore the cache
-            config. Normally used in debug.
-
-    :type metadata: dict
-    :param metadata:
-
-        A dict object contains basic information of a provider.
-
-    :type cache_conf: dict
-    :param cache_conf:
-
-        A dict object contains configuration of a ``TileCache``.
-
-    :type storage_conf: dict
-    :param storage_conf:
-
-        A dict object contains configuration of a ``TileStorage``.
-
     """
 
     MODE_READ_ONLY = 'read-only'
 
-    def create(self, tag, mode='read-only', metadata=None, cache_conf=None,
-               storage_conf=None, design_conf=None):
+    def build(self, tag, mode='read-only', metadata=None, cache_conf=None,
+              storage_conf=None, design_conf=None):
+        """Build a tile provider
 
-        if mode == self.MODE_READ_ONLY or cache_conf == None:
+        :type tag: str
+        :param tag:
+
+            A string literal uniquely identifies a provider.
+
+        :type mode: str
+        :param mode:
+
+            A string literal controls behaviours of a provider. In ``read-only``
+            mode, a provider will ignore caches and retrieve tile directly from
+            the storage. And in ``hybrid`` mode, tile will be retrieved from the
+            cache before hitting a persistent storage.
+
+        :type metadata: dict
+        :param metadata:
+
+            A dict object contains basic information of a provider.
+
+        :type cache_conf: dict
+        :param cache_conf:
+
+            A dict object contains configuration of a ``TileCache``.
+
+        :type storage_conf: dict
+        :param storage_conf:
+
+            A dict object contains configuration of a ``TileStorage``.
+
+        :rtype: :class:`~stonemason.provider.tileprovider.TileProvider`
+        :return: Return a provider.
+
+        Samples:
+
+        Create a dummy provider always returns none.
+
+        >>> from stonemason.provider.tileprovider import TileProviderBuilder
+        >>> provider = TileProviderBuilder().build(tag='test')
+        >>> provider.tag
+        'test'
+        >>> provider.metadata
+        {}
+        >>> tile = provider.get_tile(0, 0, 0)
+        >>> tile is None
+        True
+
+        """
+
+        if mode == self.MODE_READ_ONLY or cache_conf is None:
             cache = NullTileCache()
         else:
             cache_conf = cache_conf
             cache = TileCacheFactory().create(**cache_conf)
 
-        storage = ClusterStorageFactory().create(**storage_conf)
+        if storage_conf is None:
+            storage = NullClusterStorage()
+        else:
+            storage = ClusterStorageFactory().create(**storage_conf)
 
         return TileProvider(tag, metadata, cache=cache, storage=storage)
 

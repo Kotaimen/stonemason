@@ -32,12 +32,12 @@ class TileProvider(object):
 
         A dict object contains information about a provider.
 
-    :type cache: :class:`stonemason.provider.tilecache.TileCache`
+    :type cache: :class:`~stonemason.provider.tilecache.TileCache`
     :param cache:
 
         A ``TileCache`` instance used to cache retrieved tile.
 
-    :type storage: :class:`stonemason.provider.tilestorage.TileStorage`
+    :type storage: :class:`~stonemason.provider.tilestorage.ClusterStorage`
     :param storage:
 
         A ``TileStorage`` instance where tiles are stored.
@@ -92,8 +92,9 @@ class TileProvider(object):
 
             Vertical axis.
 
+        :rtype: :class:`~stonemason.provider.pyramid.Tile` or None
         :return: A ``Tile`` object or None if not found.
-        :rtype: :class:`stonemason.provider.pyramid.Tile` or None
+
         """
         index = TileIndex(z, x, y)
 
@@ -105,11 +106,12 @@ class TileProvider(object):
             tile = self._storage.get(index)
             if tile is not None:
                 # fill the cache if tile is not None
-                self._cache.put(self.tag, index)
+                self._cache.put(self.tag, tile)
 
         return tile
 
     def close(self):
         """Close resources"""
-        pass
+        self._cache.close()
+        self._storage.close()
 
