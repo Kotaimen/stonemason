@@ -46,6 +46,7 @@ Providers
     pkg_pyramid
     pkg_tilecache
     pkg_tilestorage
+    pkg_tileprovider
 
 Backends
 --------

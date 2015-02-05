@@ -7,9 +7,8 @@
 
 """
 
-
-
-from .themeblock import MetadataBlock, CacheBlock, StorageBlock, ModeBlock
-from .themeblock import ThemeBlockError
+from .block import ThemeBlockError
 from .validator import ValidationError
 from .field import FieldTypeError
+from .block import MetadataBlock, CacheBlock, StorageBlock, ModeBlock, DesignBlock
+from .theme import Theme

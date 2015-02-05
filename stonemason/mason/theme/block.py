@@ -54,72 +54,56 @@ class MetadataBlock(ThemeBlock):
 
     The following settings are available:
 
-    `name`
+    :type name: str
+    :param name:
 
         A string literal that uniquely identify a theme. Different theme
-        should have different names. The default value is `default`.
+        should have different names. The default value is ``default``.
 
-
-    `crs`
+    :type crs: str
+    :param crs:
 
         A coordinate reference system(CRS) defines a specific map projection,
         as well as transformations between different spatial reference systems.
-        Validation is delayed to backend. The default value is `EPSG:3857`.
+        Validation is delayed to backend. The default value is ``WGS84``.
 
-
-    `scale`
+    :type scale: int
+    :param scale:
 
         A positive integer number which scales, or multiplies element size
         throughout the map rendering process for display on high resolution
         device. If you are rendering maps for a retina display, you should
-        probably use scale 2.
-        Valid value ranges from 1 to 4. The default value is 1.
+        probably use scale 2. Valid value could be 1 to 4. The default value
+        is ``1``
 
-
-    `buffer`
+    :type buffer: int
+    :param buffer:
 
         The padding space on all sides of a `metatile`. It will be
-        multiplied by the `scale` factor. The default value is 0.
+        multiplied by the `scale` factor. The default value is ``0``.
 
-
-    `stride`
+    :type stride: int
+    :param stride:
 
         The number of steps along the axis of a `metatile` grid. It must be a
         positive integer powers of 2. For a 2x2 metatile, the stride is 2.
-        The default value is 1.
+        The default value is ``1``.
 
+    :type format: str
+    :param format:
 
-    `format`
+        Output format. The default value is ``png``.
 
-        Output format. The default value is `png`.
+    :type format_options: dict
+    :param `format_options`:
 
+        Options of Output format. ``None`` if no options.
 
-    `format_options`
-
-        Options of Output format. None if no options.
-
-
-    `attribution`
+    :type attribution: str
+    :param attribution:
 
         Description about authors or copyright information.
 
-
-    :param name: Theme name.
-    :type name: str
-    :param crs: A coordinate reference system(CRS).
-    :type crs: str
-    :param scale: A proportional scale ratio.
-    :type scale: int or list
-    :param buffer: Extra boundary area size in pixels.
-    :type buffer: int
-    :param stride: The number of steps along a axis of a `metatile` grid.
-    :type stride: int
-    :param format: Output format.
-    :type format: str
-    :param format_options: Output format options.
-    :type format_options: dict
-    :param attribution: Information about authors or copyright.
-    :type attribution: str
     """
 
     def __init__(self,
@@ -224,7 +208,7 @@ class CacheBlock(ThemeBlock):
     """Configurations for `TileCache`
 
     The `CacheBlock` contains setup information to create a `TileCache` in a
-    `Provider`.
+    `TileProvider`.
 
     `prototype`
 
@@ -274,7 +258,7 @@ class StorageBlock(ThemeBlock):
     """Configurations for `TileStorage`
 
     The `StorageBlock` contains setup information to create a `TileStorage`
-    in a `Provider`.
+    in a `TileProvider`.
 
     `prototype`
 
@@ -323,7 +307,7 @@ class StorageBlock(ThemeBlock):
 class ModeBlock(ThemeBlock):
     """Theme Mode
 
-    Controls the running behaviors of a `Provider`.
+    Controls the running behaviors of a `TileProvider`.
 
     `mode`
 
@@ -337,7 +321,7 @@ class ModeBlock(ThemeBlock):
 
         Read tile from the `TileStorage` and cache them in `TileCache`.
 
-    :param mode: Running behavior of a `Provider`.
+    :param mode: Running behavior of a `TileProvider`.
     :type mode: str
 
     """
@@ -368,4 +352,5 @@ class ModeBlock(ThemeBlock):
 
 
 class DesignBlock(ThemeBlock):
-    pass
+    def __init__(self, *args, **kwargs):
+        pass
