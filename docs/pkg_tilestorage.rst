@@ -13,6 +13,16 @@ There are two types of storage:
 A MetaTileStorage can be converted to a read only ClusterStorage using a
 `ClusteringMixin`, but not vise vesa.
 
+Currently there are two types of storage backends:
+
+`disk`
+    Use filesystem as storage.
+
+`s3`
+    Use AWS S3 as storage.
+
+More backends will be added in the future.
+
 
 Exceptions
 ----------

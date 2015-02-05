@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'stonemason'
+project = u'Stonemason'
 copyright = u'2015, K&R'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -94,8 +94,8 @@ exclude_patterns = ['_build']
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-# pygments_style = 'sphinx'
-pygments_style = 'friendly'
+# overwrite this when building pdf manual
+# pygments_style = 'bw'
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -218,13 +218,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'stonemason.tex', u'stonemason Documentation',
+    ('index', 'stonemason.tex', u'Stonemason Documentation',
      u'K\\&R', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+latex_logo = '_static/logo.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.

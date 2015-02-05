@@ -9,8 +9,8 @@ TileStorage.
 
 TileCache has no persistence and depends on a distributed cache.
 
-Currently there is only `memcached` cache.
-The interface `TileCache` class can be used as a *null* cache.
+Currently there is only a `memcached` cache.
+
 
 Exceptions
 ----------
