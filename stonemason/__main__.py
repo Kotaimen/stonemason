@@ -9,9 +9,13 @@ __date__ = '2/3/15'
 import sys
 import os
 import click
+import six
+
+# NOTE: click will add "_" between prefix and variable, but flask don't...
+ENVVAR_PREFIX = 'STONEMASON'
 
 CONTEXT_SETTINGS = dict(
-    auto_envvar_prefix='STONEMASON',
+    auto_envvar_prefix=ENVVAR_PREFIX,
     help_option_names=['-h', '--help'],
 )
 
@@ -66,18 +70,26 @@ def tile_server(ctx, bind, read_only):
     """Starts tile server using given themes root."""
     assert isinstance(ctx, Context)
 
-    if read_only:
+    if read_only and ctx.verbosity > 0:
         click.secho('Starting tileserver in read only mode.', fg='red')
 
+    # parse binding port
     host, port = bind.split(':')
     port = int(port)
 
-    app = TileServerApp(themes=ctx.themes,
-                        read_only=read_only,
-                        debug=True)
+    config = {
+        'THEMES': ctx.themes,
+        'READ_ONLY': read_only,
+        'DEBUG': ctx.debug,
+        'VERBOSITY': ctx.verbosity
+    }
+    # add prefix to all config keys to confront with flask config
+    config = dict((ENVVAR_PREFIX + '_' + k, v)
+                  for (k, v) in six.iteritems(config))
+
+    app = TileServerApp(**config)
     app.run(host=host, port=port,
-            debug=ctx.debug, verbose=ctx.verbosity,
-            read_only=read_only)
+            debug=ctx.debug)
 
 
 #
