@@ -6,10 +6,10 @@ __date__ = '2/2/15'
 import six
 import unittest
 
-from stonemason.provider.pyramid import TileIndex, Tile
+from stonemason.provider.pyramid import Pyramid, TileIndex, Tile
 from stonemason.provider.tilecache import TileCache
-from stonemason.provider.tilestorage import ClusterStorage
-from stonemason.provider.tileprovider import TileProvider, TileProviderBuilder
+from stonemason.provider.tilestorage import ClusterStorage, TileCluster
+from stonemason.provider.tileprovider import TileProviderBuilder, TileProvider
 
 
 class DummyTileCache(TileCache):
@@ -25,12 +25,19 @@ class DummyTileCache(TileCache):
 
 class DummyClusterStorage(ClusterStorage):
     def get(self, index):
-        return Tile(index=index, data=six.b('A tile'))
+        tiles = [
+            Tile(index=TileIndex(1, 0, 0), data=six.b('A tile')),
+            Tile(index=TileIndex(1, 0, 1), data=six.b('A tile')),
+            Tile(index=TileIndex(1, 1, 0), data=six.b('A tile')),
+            Tile(index=TileIndex(1, 1, 1), data=six.b('A tile'))
+        ]
+        return TileCluster(index=index, tiles=tiles)
 
 
 class TestNullProvider(unittest.TestCase):
     def setUp(self):
-        self._provider = TileProvider(tag='null')
+        p = Pyramid()
+        self._provider = TileProvider(tag='null', pyramid=p)
 
     def test_tag(self):
         self.assertEqual('null', self._provider.tag)
@@ -44,11 +51,12 @@ class TestNullProvider(unittest.TestCase):
 
 class TestDummyProvider(unittest.TestCase):
     def setUp(self):
-        tag = 'test'
-        metadata = dict(scale=2)
-        storage = DummyClusterStorage()
+        t = 'test'
+        p = Pyramid()
+        m = dict(scale=2)
+        s = DummyClusterStorage()
 
-        self._provider = TileProvider(tag, metadata=metadata, storage=storage)
+        self._provider = TileProvider(t, pyramid=p, metadata=m, storage=s)
 
     def test_tag(self):
         self.assertEqual('test', self._provider.tag)
@@ -57,7 +65,7 @@ class TestDummyProvider(unittest.TestCase):
         self.assertDictEqual(dict(scale=2), self._provider.metadata)
 
     def test_get_tile(self):
-        z, x, y = 0, 0, 0
+        z, x, y = 1, 0, 0
         tile = self._provider.get_tile(z, x, y)
 
         self.assertEqual(TileIndex(z, x, y), tile.index)
@@ -66,14 +74,19 @@ class TestDummyProvider(unittest.TestCase):
 
 class TestTileProviderFactory(unittest.TestCase):
     def test_create_tile_provider(self):
-        tag = 'test'
-        cache_conf = dict(prototype='null')
-        storage_conf = dict(prototype='null')
+        t = 'test'
+        m = dict(attribution='K&R')
+        p = Pyramid()
+        cache_config = dict(prototype='null')
+        storage_config = dict(prototype='null')
 
-        provider = TileProviderBuilder().build(
-            tag=tag,
-            cache_conf=cache_conf,
-            storage_conf=storage_conf
-        )
+        builder = TileProviderBuilder(tag=t, pyramid=p)
+        builder.build_metadata(attribution='K&R')
+        builder.build_cache(**cache_config)
+        builder.build_storage(**storage_config)
 
-        assert isinstance(provider, TileProvider)
+        provider = builder.build()
+
+        self.assertEqual(t, provider.tag)
+        self.assertDictEqual(m, provider.metadata)
+        self.assertDictEqual(p._asdict(), provider.pyramid._asdict())

@@ -172,7 +172,7 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
                               gzip=gzip, readonly=readonly)
 
 
-class DiskClusterStorage(StorageMixin, MetaTileStorage):
+class DiskClusterStorage(StorageMixin, ClusterStorage):
     """ Store `TileCluster` on a file system.
 
     :param root: Required, root directory of the storage, must be a

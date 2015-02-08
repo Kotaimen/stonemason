@@ -34,7 +34,6 @@ Mason
 .. toctree::
     :maxdepth: 2
 
-    pkg_config
     pkg_theme
 
 Providers

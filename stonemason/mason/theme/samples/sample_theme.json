@@ -1,0 +1,20 @@
+{
+  "name": "antique",
+  "metadata": {
+    "attribution": "I am a sample."
+  },
+
+  "pyramid": {
+    "stride": 8
+  },
+
+  "cache": {
+    "prototype": "null"
+  },
+  "storage": {
+    "prototype": "disk",
+    "parameters": {
+      "root": "/Users/ray/proj/python/stonemason/tests/data/themes/sample_maps/antique/"
+    }
+  }
+}

@@ -1,134 +1,101 @@
 # -*- encoding: utf-8 -*-
-"""
-    stonemason.mason.theme.theme
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Defines the format of stonemason theme.
+__author__ = 'ray'
+__date__ = '2/8/15'
 
-"""
-
-from stonemason.mason.config import Config
-
-from .block import ModeBlock, MetadataBlock, DesignBlock, CacheBlock, \
-    StorageBlock
+from collections import namedtuple
 
 
-class Theme(object):
-    """ Map Theme
+class ThemeError(Exception):
+    pass
 
-    A ``Theme`` is a specialized config for providers. It contains a bunch of
-    config options for creating a provider.
 
-    :type mode: :class:`stonemason.mason.theme.ModeBlock`
-    :param mode:
+_MetadataConfig = namedtuple('MetadataConfig', 'attribution')
 
-        The mode is a instance of :class:`stonemason.mason.theme.ModeBlock`.
-        It is a control element that specifies behaviours of a provider.
 
-    :type metadata: :class:`stonemason.mason.theme.MetadataBlock`
-    :param metadata:
+class MetadataConfig(_MetadataConfig):
+    __slots__ = ()
 
-        A instance of :class:`stonemason.mason.theme.MetadataBlock` contains
-        basic information for a provider to retrieve a tile.
+    def __new__(cls, attribution='K&R'):
+        return _MetadataConfig.__new__(cls, attribution)
 
-    :type cache: :class:`stonemason.mason.theme.CacheBlock`
-    :param cache:
 
-        A instance of :class:`stonemason.mason.theme.CacheBlock` used to
-        create a cache storage for a provider cache a tile.
+_PyramidConfig = namedtuple('PyramidConfig',
+                            'levels stride crs proj boundary')
 
-    :type storage: :class:`stonemason.mason.theme.StorageBlock`
-    :param storage:
 
-        A instance of :class:`stonemason.mason.theme.StorageBlock` used to
-        create a storage where tile stores.
+class PyramidConfig(_PyramidConfig):
+    __slots__ = ()
 
-    :type design: :class:`stonemason.mason.theme.DesignBlock`
-    :param design:
+    def __new__(cls, levels=range(0, 23),
+                stride=1,
+                crs='EPSG:4326',
+                proj='EPSG:3857',
+                boundary=(-180, -85.0511, 180, 85.0511)):
+        return _PyramidConfig.__new__(
+            cls, levels=levels, stride=stride,
+            crs=crs, proj=proj, boundary=boundary)
 
-        A instance of :class:`stonemason.mason.theme.DesignBlock` defines how
-        a renderer render a map.
 
-    """
+_CacheConfig = namedtuple('__CacheConfig', 'prototype parameters')
 
-    def __init__(self,
-                 mode=None,
-                 metadata=None,
-                 cache=None,
-                 storage=None,
-                 design=None):
 
-        if mode is None:
-            mode = ModeBlock()
-        self._mode = mode
+class CacheConfig(_CacheConfig):
+    __slots__ = ()
+
+    def __new__(cls, prototype='null', parameters=None):
+        if parameters is None:
+            parameters = dict()
+        return _CacheConfig.__new__(
+            cls, prototype=prototype, parameters=parameters)
+
+
+_StorageConfig = namedtuple('StorageConfig', 'prototype parameters')
+
+
+class StorageConfig(_StorageConfig):
+    __slots__ = ()
+
+    def __new__(cls, prototype='null', parameters=None):
+        if parameters is None:
+            parameters = dict()
+        return _StorageConfig.__new__(
+            cls, prototype=prototype, parameters=parameters)
+
+
+_Theme = namedtuple('Theme', 'name metadata pyramid cache storage')
+
+
+class Theme(_Theme):
+    __slots__ = ()
+
+    def __new__(cls,
+                name=None,
+                metadata=None,
+                pyramid=None,
+                cache=None,
+                storage=None):
+
+        if name is None:
+            raise ThemeError('A Theme must have a Name!')
 
         if metadata is None:
-            metadata = MetadataBlock()
-        self._metadata = metadata
+            metadata = MetadataConfig()
+
+        if pyramid is None:
+            pyramid = PyramidConfig()
 
         if cache is None:
-            cache = CacheBlock()
-        self._cache = cache
+            cache = CacheConfig()
 
         if storage is None:
-            storage = StorageBlock()
-        self._storage = storage
+            storage = StorageConfig()
 
-        if design is None:
-            design = DesignBlock()
-        self._design = design
-
-    @staticmethod
-    def from_file(filename):
-        """Create a theme from a file
-
-        :tyep filename: str
-        :param filename:
-
-            Path of a configuration file on your system.
-        """
-        conf = Config()
-        conf.read_from_file(filename)
-
-        mode = conf.get('mode', dict())
-        mode_block = ModeBlock(**mode)
-
-        metadata = conf.get('metadata', dict())
-        metadata_block = MetadataBlock(**metadata)
-
-        cache = conf.get('cache', dict())
-        cache_block = CacheBlock(**cache)
-
-        storage = conf.get('storage', dict())
-        storage_block = StorageBlock(**storage)
-
-        design = conf.get('design', dict())
-        design_block = DesignBlock(**design)
-
-        return Theme(mode_block, metadata_block, cache_block, storage_block,
-                     design_block)
-
-    @property
-    def mode(self):
-        """`TileProvider` mode"""
-        return self._mode
-
-    @property
-    def metadata(self):
-        """Metadata of the theme"""
-        return self._metadata
-
-    @property
-    def cache(self):
-        """Cache configuration"""
-        return self._cache
-
-    @property
-    def storage(self):
-        """Storage configuration"""
-        return self._storage
-
-    @property
-    def design(self):
-        """Map design for renderer"""
-        return self._design
+        return _Theme.__new__(
+            cls,
+            name=name,
+            metadata=metadata,
+            pyramid=pyramid,
+            cache=cache,
+            storage=storage
+        )
