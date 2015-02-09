@@ -94,6 +94,11 @@ class MetaTileIndex(_MetaTileIndex):
     def __repr__(self):
         return 'MetaTileIndex(%d/%d/%d@%d)' % self
 
+    @staticmethod
+    def from_tile_index(index, stride):
+        assert isinstance(index, TileIndex)
+        return MetaTileIndex(index.z, index.x, index.y, stride)
+
 
 _MetaTile = collections.namedtuple('_MetaTile',
                                    'index data mimetype mtime etag buffer')

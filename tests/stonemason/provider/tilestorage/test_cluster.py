@@ -61,12 +61,9 @@ class TestCreateTileClusterFromMetaTile(ImageTestCase):
              TileIndex(4, 4, 9), TileIndex(4, 5, 9)},
             {tile.index for tile in tilecluster.tiles}
         )
-        ref_image = self.image.crop(
-            (256, 512, 512, 768))
-        for tile in tilecluster.tiles:
-            if tile.index == TileIndex(4, 4, 9):
-                self.assertImageEqual(Image.open(io.BytesIO(tile.data)),
-                                      ref_image)
+        ref_image = self.image.crop((256, 512, 512, 768))
+        tile = tilecluster[TileIndex(4, 4, 9)]
+        self.assertImageEqual(Image.open(io.BytesIO(tile.data)), ref_image)
 
 
 class TestCreateTileClusterFromZipFile(ImageTestCase):
@@ -80,23 +77,22 @@ class TestCreateTileClusterFromZipFile(ImageTestCase):
             tilecluster = TileCluster.from_zip(fp)
             self.assertIsInstance(tilecluster, TileCluster)
             self.assertEqual(tilecluster.index, MetaTileIndex(4, 4, 8, 2))
-            for tile in tilecluster.tiles:
-                if tile.index == TileIndex(4, 4, 8):
-                    self.assertEqual(tile.data, b'4-4-8')
-                    self.assertEqual(tile.mtime, 1422151500.0)
-                    self.assertEqual(tile.mimetype, 'text/plain')
-                if tile.index == TileIndex(4, 4, 9):
-                    self.assertEqual(tile.data, b'4-4-9')
-                    self.assertEqual(tile.mtime, 1422151500.0)
-                    self.assertEqual(tile.mimetype, 'text/plain')
-                if tile.index == TileIndex(4, 5, 8):
-                    self.assertEqual(tile.data, b'4-4-9')
-                    self.assertEqual(tile.mtime, 1422151500.0)
-                    self.assertEqual(tile.mimetype, 'text/plain')
-                if tile.index == TileIndex(4, 5, 9):
-                    self.assertEqual(tile.data, b'4-5-9')
-                    self.assertEqual(tile.mtime, 1422151500.0)
-                    self.assertEqual(tile.mimetype, 'text/plain')
+            tile = tilecluster[TileIndex(4, 4, 8)]
+            self.assertEqual(tile.data, b'4-4-8')
+            self.assertEqual(tile.mtime, 1422151500.0)
+            self.assertEqual(tile.mimetype, 'text/plain')
+            tile = tilecluster[TileIndex(4, 4, 9)]
+            self.assertEqual(tile.data, b'4-4-9')
+            self.assertEqual(tile.mtime, 1422151500.0)
+            self.assertEqual(tile.mimetype, 'text/plain')
+            tile = tilecluster[TileIndex(4, 5, 8)]
+            self.assertEqual(tile.data, b'4-4-9')
+            self.assertEqual(tile.mtime, 1422151500.0)
+            self.assertEqual(tile.mimetype, 'text/plain')
+            tile = tilecluster[TileIndex(4, 5, 9)]
+            self.assertEqual(tile.data, b'4-5-9')
+            self.assertEqual(tile.mtime, 1422151500.0)
+            self.assertEqual(tile.mimetype, 'text/plain')
 
     def test_from_zip_with_metadata(self):
         with open(self.zip_file, 'rb') as fp:
@@ -104,12 +100,10 @@ class TestCreateTileClusterFromZipFile(ImageTestCase):
             tilecluster = TileCluster.from_zip(fp, metadata)
             self.assertIsInstance(tilecluster, TileCluster)
             self.assertEqual(tilecluster.index, MetaTileIndex(4, 4, 8, 2))
-            for tile in tilecluster.tiles:
-                if tile.index == TileIndex(4, 5, 8):
-                    self.assertEqual(tile.data, b'4-4-9')
-                    self.assertEqual(tile.mtime, 0.0)
-                    self.assertEqual(tile.mimetype, 'text/tile')
-                    break
+            tile = tilecluster[TileIndex(4, 5, 8)]
+            self.assertEqual(tile.data, b'4-4-9')
+            self.assertEqual(tile.mtime, 0.0)
+            self.assertEqual(tile.mimetype, 'text/tile')
 
 
 class TestCreateTileClusterFromLegacyZipFile(ImageTestCase):

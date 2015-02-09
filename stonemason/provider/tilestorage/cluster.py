@@ -90,7 +90,7 @@ CLUSTER_ZIP_INDEX_LEGACY = 'tiles.json'
 CLUSTER_ZIP_VERSION = 1
 
 
-class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
+class TileCluster(object):
     """A cluster of `Tiles` split from  a `MetaTile`.
 
     `TileCluster` can be loaded from a clustered zip file or created from
@@ -98,7 +98,7 @@ class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
 
 
     >>> from stonemason.provider.tilestorage import TileCluster
-    >>> from stonemason.provider.pyramid import MetaTile, MetaTileIndex
+    >>> from stonemason.provider.pyramid import MetaTile, MetaTileIndex, TileIndex
     >>> from PIL import Image
     >>> import io
     >>> image = Image.new('RGB', (1024, 1024))
@@ -115,16 +115,53 @@ class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
     MetaTileIndex(4/4/8@2)
     >>> cluster.tiles
     [Tile(4/4/8), Tile(4/4/9), Tile(4/5/8), Tile(4/5/9)]
+    >>> cluster[TileIndex(4, 4, 8)]
+    Tile(4/4/8)
 
-
-    Properties:
-
-    `index`
-        :class:`~stonemason.provider.MetaTileIndex` of this cluster.
-
-    `tiles`
-        List of :class:`~stonemason.provider.Tile` in this cluster.
+    :param index: Metatile index of this cluster.
+    :type index: :class:`~stonemason.provider.MetaTileIndex`.
+    :param tiles: Tiles of this cluster
+    :type index: :class:`~stonemason.provider.Tile`.
     """
+
+    def __init__(self, index, tiles):
+        assert isinstance(index, MetaTileIndex)
+        assert isinstance(tiles, list)
+        self._index = index
+        self._tiles = sorted(tiles,
+                             key=lambda tile: self._tile_key_func(tile.index))
+
+    def _tile_key_func(self, index):
+        return (index.x - self._index.x) * self._index.stride + \
+               (index.y - self._index.y)
+
+    @property
+    def index(self):
+        """:class:`~stonemason.provider.MetaTileIndex` of this cluster."""
+        return self._index
+
+    @property
+    def tiles(self):
+        """A list of :class:`~stonemason.provider.Tile` in this cluster."""
+        return self._tiles
+
+    def __getitem__(self, index):
+        """Retrieve `Tile` with given index
+
+        :param index: Index of the tile.
+        :type index: :class:`~stonemason.provider.MetaTileIndex`
+        :return: Tile
+        :rtype: :class:`~stonemason.provider.Tile`
+        :raise: :class:`~TileClusterError``
+        """
+        assert isinstance(index, TileIndex)
+        if MetaTileIndex.from_tile_index(index,
+                                         self._index.stride) != self._index:
+            raise TileClusterError('Tile index is not covered in the cluster.')
+
+        row, column = index.x - self.index.x, index.y - self.index.y
+        return self._tiles[self._tile_key_func(index)]
+
 
     @staticmethod
     def from_metatile(metatile, splitter=None):
@@ -273,16 +310,16 @@ class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
         :raises: :class:`~stonemason.provider.tilestorage.TileClusterError`
         """
 
-        keys = list('%d-%d-%d' % tile.index for tile in self.tiles)
-        hashes = list(tile.etag for tile in self.tiles)
-        datas = list(tile.data for tile in self.tiles)
+        keys = list('%d-%d-%d' % tile.index for tile in self._tiles)
+        hashes = list(tile.etag for tile in self._tiles)
+        datas = list(tile.data for tile in self._tiles)
 
         # key->data map for index.json
         mapping = dict(zip(keys, datas))
 
         # build a key->key dict and delete duplicated tile data
         dedup = dict()
-        for i in range(len(self.tiles)):
+        for i in range(len(self._tiles)):
             k = keys[i]
             h = hashes[i]
             try:
@@ -300,7 +337,7 @@ class TileCluster(collections.namedtuple('_TileCluster', 'index tiles')):
                              compression=compression) as zipobj:
 
             # build index.json
-            sample_tile = self.tiles[0]  # XXX: should check all tiles
+            sample_tile = self._tiles[0]  # XXX: should check all tiles
             extension = guess_extension(sample_tile.mimetype)
             # try keep json dump ordered
             index = collections.OrderedDict([

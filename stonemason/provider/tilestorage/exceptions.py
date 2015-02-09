@@ -22,3 +22,4 @@ class ReadonlyStorage(TileStorageError):
 
 class TileClusterError(TileStorageError):
     pass
+
