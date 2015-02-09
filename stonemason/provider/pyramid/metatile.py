@@ -96,6 +96,17 @@ class MetaTileIndex(_MetaTileIndex):
 
     @staticmethod
     def from_tile_index(index, stride):
+        """ Create a `MetaTileIndex` from given `TileIndex`.
+
+        :param index: Given `TileIndex`
+        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
+
+        :param stride: Stride of the `MetaTile`
+        :type stride: int
+
+        :return: Created `MetaTileIndex`
+        :rtype:  :class:`~stonemason.provider.pyramid.MetaTileIndex`
+        """
         assert isinstance(index, TileIndex)
         return MetaTileIndex(index.z, index.x, index.y, stride)
 

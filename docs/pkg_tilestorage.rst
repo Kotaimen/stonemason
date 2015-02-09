@@ -1,25 +1,28 @@
 Tile Storage
 ============
 
-:mod:`stonemsaon.provider.tilestorage`
+.. module:: stonemsaon.provider.tilestorage
 
 Implements persistent tile storage.
 
 There are two types of storage:
 
-- `ClusterStorage` stores a cluster of tiles as zipped file.
-- `MetaTileStorage` stores raw, uncropped metatile data.
+    `ClusterStorage`
+        stores a cluster of tiles as zipped file.
+
+    `MetaTileStorage`
+        stores raw, uncropped metatile data.
 
 A MetaTileStorage can be converted to a read only ClusterStorage using a
-`ClusteringMixin`, but not vise vesa.
+`ClusteringMixin`, but not vise versa.
 
 Currently there are two types of storage backends:
 
-`disk`
-    Use filesystem as storage.
+    `disk`
+        Use filesystem as storage.
 
-`s3`
-    Use AWS S3 as storage.
+    `s3`
+        Use AWS S3 as storage.
 
 More backends will be added in the future.
 
@@ -27,27 +30,18 @@ More backends will be added in the future.
 Exceptions
 ----------
 
-.. autoclass:: stonemason.provider.tilestorage.TileStorageError
-    :members:
-
-.. autoclass:: stonemason.provider.tilestorage.TileClusterError
+.. automodule:: stonemason.provider.tilestorage.exceptions
     :members:
 
 
 Tile Cluster
 ------------
 
-.. autoclass:: stonemason.provider.tilestorage.Splitter
-    :members: __call__
-
-.. autoclass:: stonemason.provider.tilestorage.ImageSplitter
-    :members:
-
 .. autoclass:: stonemason.provider.tilestorage.TileCluster
-    :members:
+    :members: __getitem__
 
-Cluster Zip File Format
-~~~~~~~~~~~~~~~~~~~~~~~
+Cluster File Format
+-------------------
 
 
 `TileCluster` is stored as a `zip` file, zip format is chosen because
@@ -123,6 +117,18 @@ JSON fields:
 
     Optional fields are designed to work with legacy renders, current
     cluster will always write these fields.
+
+Splitter
+--------
+
+.. warning:: Splitter is temporary placed in the tilestorage package and
+    is subject to change.
+
+.. autoclass:: stonemason.provider.tilestorage.Splitter
+    :members: __call__
+
+.. autoclass:: stonemason.provider.tilestorage.ImageSplitter
+    :members:
 
 
 MetaTile Storage

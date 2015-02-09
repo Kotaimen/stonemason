@@ -1,7 +1,9 @@
 Tile System
 ===========
 
-:mod:`stonemason.provider.pyramid` contains definitions of `tiles`, `metatile` 
+.. module::stonemason.provider.pyramid
+
+:mod:`stonemason.provider.pyramid` contains definitions of `tile`, `metatile`
 and the quad tree `pyramid`.
 
 All classes in this package is implemented using :func:`collections.namedtuple`
