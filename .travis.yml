@@ -52,6 +52,7 @@ branches:
   only:
     - master
     - develop
+    - feature/check_travis_build_error
 
 before_script:
 #  - psql -U postgres -c 'create database travis_ci_test;'
