@@ -37,7 +37,7 @@ before_install:
 
 install:
   - pip install -q -r requirements-dev.txt
-  - pip install .
+  - pip install -q .
   - python setup.py build_ext --inplace
 
 services:
@@ -52,7 +52,6 @@ branches:
   only:
     - master
     - develop
-    - feature/check_travis_build_error
 
 before_script:
 #  - psql -U postgres -c 'create database travis_ci_test;'
