@@ -136,8 +136,8 @@ else:
 package_data = {
     'stonemason.mason.theme': ['samples/*'],
     'stonemason.util.geo': ['*.c'],
-    'stonemason.service.tileserver': ['templates/*', 'static/*'],
-
+    'stonemason.service.tileserver': [
+        'templates/*', 'static/*', 'static/js/*'],
 }
 
 #
