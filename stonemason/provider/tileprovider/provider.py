@@ -126,25 +126,21 @@ class TileProvider(object):
         # get from cache
         if self.mode != self.TILEPROVIDER_MODE_READONLY:
             tile = self._cache.get(self.tag, index)
-            if tile is not None:
+            if tile is not None:  # cache hit
                 return tile
 
         # get from storage
-        meta_index = MetaTileIndex(z, x, y, self._pyramid.stride)
+        meta_index = MetaTileIndex.from_tile_index(index, self._pyramid.stride)
 
         cluster = self._storage.get(meta_index)
-        if cluster is not None:
-            for t in cluster.tiles:
-                if t.index == index:
-                    tile = t
-                    break
-            else:
-                assert False
-        else:
-            tile = None
+        if cluster is None:  # cluster miss
+            return None
 
-            # refill the cache if tile is not None
-        if self.mode != self.TILEPROVIDER_MODE_READONLY and tile is not None:
+        # cluster hit
+        tile = cluster[index]
+
+        # refill the cache if tile is not None
+        if not self.is_read_only:
             self._cache.put_multi(self.tag, cluster.tiles)
 
         return tile
@@ -154,11 +150,14 @@ class TileProvider(object):
         return dict(
             tag=self.tag,
             pyramid=dict(self.pyramid._asdict()),
-            metadata=self.metadata
-        )
+            metadata=self.metadata)
 
     def close(self):
         """Close resources"""
         self._cache.close()
         self._storage.close()
+
+    @property
+    def is_read_only(self):
+        return self.mode == self.TILEPROVIDER_MODE_READONLY
 
