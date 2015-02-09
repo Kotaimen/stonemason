@@ -37,7 +37,7 @@ before_install:
 
 install:
   - pip install -q -r requirements-dev.txt
-  - pip install -q .
+  - pip install .
   - python setup.py build_ext --inplace
 
 services:
