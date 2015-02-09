@@ -7,8 +7,14 @@
 
 """
 
-from .block import ThemeBlockError
-from .validator import ValidationError
-from .field import FieldTypeError
-from .block import MetadataBlock, CacheBlock, StorageBlock, ModeBlock, DesignBlock
-from .theme import Theme
+import os
+
+from .parser import JsonThemeParser
+from .theme import MetadataConfig, PyramidConfig, CacheConfig, StorageConfig, \
+    Theme, ThemeError
+
+SAMPLE_THEME_DIRECTORY = os.path.join(
+    os.path.dirname(__file__), 'samples')
+
+SAMPLE_THEME = os.path.join(
+    SAMPLE_THEME_DIRECTORY, 'sample_theme.json')

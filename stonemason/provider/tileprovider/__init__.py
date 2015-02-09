@@ -6,8 +6,8 @@
 
 """
 
-
 __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
-from .factory import TileProviderBuilder, TileProvider
+from .builder import TileProviderBuilder
+from .provider import TileProvider

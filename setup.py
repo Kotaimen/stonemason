@@ -134,6 +134,7 @@ else:
         ext_modules.append(Extension(module, c_sources))
 
 package_data = {
+    'stonemason.mason.theme': ['samples/*'],
     'stonemason.util.geo': ['*.c'],
     'stonemason.service.tileserver': ['templates/*', 'static/*'],
 

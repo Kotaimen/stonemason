@@ -9,8 +9,8 @@
 import os
 
 import six
-from flask import Flask, render_template
-from flask.views import View, MethodView
+from flask import Flask, render_template, abort, make_response
+from flask.views import MethodView
 from flask.json import jsonify
 
 from stonemason.mason import Mason
@@ -47,10 +47,10 @@ class ThemeAPI(MethodView):
             
         """
         if tag is None:
-            themes = self._mason.get_themes()
+            themes = self._mason.list_metadata()
             return jsonify(result=themes)
         else:
-            theme = self._mason.get_theme(tag)
+            theme = self._mason.get_metadata(tag)
             return jsonify(result=theme)
 
 
@@ -112,7 +112,14 @@ class TileAPI(MethodView):
             tile.
 
         """
-        return self._mason.get_tile(tag, z, x, y, scale, ext)
+        tile = self._mason.get_tile(tag, z, x, y, scale, ext)
+        if tile is None:
+            abort(404)
+
+        response = make_response(tile.data)
+        response.headers['Content-Type'] = tile.mimetype
+
+        return response
 
 
 def home():
@@ -164,16 +171,27 @@ class TileServerApp(Flask):
 
     ENV_PARAM_PREFIX = 'STONEMASON_'
 
-    def __init__(self, config=None, **kwargs):
+    def __init__(self, config=None, STONEMASON_THEMES=None, read_only=True,
+                 debug=True, verbose=0, **kwargs):
         package_root = os.path.dirname(__file__)
         Flask.__init__(self, self.__class__.__name__,
                        template_folder=os.path.join(package_root, 'templates'),
                        static_folder=os.path.join(package_root, 'static'),
                        instance_relative_config=True)
 
-        self._load_config(config, **kwargs)
+        self._load_config(config)
 
         self._mason = Mason()
+
+        theme_dir = self.config.get('STONEMASON_THEMES')
+        if STONEMASON_THEMES is not None:
+            theme_dir = STONEMASON_THEMES
+
+        if debug:
+            self.config['DEBUG'] = True
+            self.config['TESTING'] = True
+
+        self._mason.load_theme_from_directory(theme_dir)
 
         # XXX: Just a sample index page
         self.add_url_rule(rule='/',
@@ -196,18 +214,18 @@ class TileServerApp(Flask):
 
         tile_view = TileAPI.as_view('tile_api', self._mason)
         self.add_url_rule(
-            rule='/tile/<tag>/<int:z>/<int:x>/<int:y>@<scale>.<ext>',
+            rule='/tiles/<tag>/<int:z>/<int:x>/<int:y>@<scale>.<ext>',
             view_func=tile_view,
             methods=['GET']
         )
         self.add_url_rule(
-            rule='/tile/<tag>/<int:z>/<int:x>/<int:y>.<ext>',
+            rule='/tiles/<tag>/<int:z>/<int:x>/<int:y>.<ext>',
             defaults={'scale': '1x'},
             view_func=tile_view,
             methods=['GET']
         )
 
-    def _load_config(self, config, **kwargs):
+    def _load_config(self, config):
         # config from default values
         self.config.from_object(default_settings)
 
@@ -218,7 +236,5 @@ class TileServerApp(Flask):
         # config from environment variables
         for key, val in six.iteritems(os.environ):
             if key.startswith(self.ENV_PARAM_PREFIX):
+                self.logger.info('Loading %s=%s' % (key, val))
                 self.config[key] = val
-
-        # config from command line options
-        self.config.update(kwargs)

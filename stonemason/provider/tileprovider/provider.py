@@ -6,7 +6,9 @@
 
 """
 
-from stonemason.provider.pyramid import TileIndex
+import six
+
+from stonemason.provider.pyramid import Pyramid, TileIndex, MetaTileIndex
 from stonemason.provider.tilecache import TileCache, NullTileCache
 from stonemason.provider.tilestorage import ClusterStorage, NullClusterStorage
 
@@ -44,13 +46,25 @@ class TileProvider(object):
 
     """
 
+    TILEPROVIDER_MODE_READONLY = 'read-only'
 
-    def __init__(self, tag, metadata=None, cache=None, storage=None):
+    TILEPROVIDER_MODE_HYBRID = 'hybrid'
+
+    def __init__(self, tag, pyramid, metadata=None,
+                 cache=None, storage=None, mode='read-only'):
+        assert isinstance(tag, six.string_types)
+        assert isinstance(pyramid, Pyramid)
         assert isinstance(metadata, dict) or metadata is None
         assert isinstance(cache, TileCache) or cache is None
         assert isinstance(storage, ClusterStorage) or storage is None
 
         self._tag = tag
+        self._pyramid = pyramid
+        self._mode = mode
+
+        if metadata is None:
+            metadata = dict()
+        self._metadata = metadata
 
         if cache is None:
             cache = NullTileCache()
@@ -60,19 +74,30 @@ class TileProvider(object):
             storage = NullClusterStorage()
         self._storage = storage
 
-        if metadata is None:
-            metadata = dict()
-        self._metadata = metadata
-
     @property
     def tag(self):
         """Name of the provider"""
         return self._tag
 
     @property
+    def pyramid(self):
+        """Pyramid of the """
+        return self._pyramid
+
+    @property
     def metadata(self):
         """Metadata of the provider"""
         return self._metadata
+
+    @property
+    def mode(self):
+        """Get working mode of the provider"""
+        return self._mode
+
+    @mode.setter
+    def mode(self, mode):
+        """Set working mode of the provider"""
+        self._mode = mode
 
     def get_tile(self, z, x, y):
         """Return a tile with given coordinate
@@ -99,16 +124,38 @@ class TileProvider(object):
         index = TileIndex(z, x, y)
 
         # get from cache
-        tile = self._cache.get(self.tag, index)
-        if tile is None:
-
-            # get from storage
-            tile = self._storage.get(index)
+        if self.mode != self.TILEPROVIDER_MODE_READONLY:
+            tile = self._cache.get(self.tag, index)
             if tile is not None:
-                # fill the cache if tile is not None
-                self._cache.put(self.tag, tile)
+                return tile
+
+        # get from storage
+        meta_index = MetaTileIndex(z, x, y, self._pyramid.stride)
+
+        cluster = self._storage.get(meta_index)
+        if cluster is not None:
+            for t in cluster.tiles:
+                if t.index == index:
+                    tile = t
+                    break
+            else:
+                assert False
+        else:
+            tile = None
+
+            # refill the cache if tile is not None
+        if self.mode != self.TILEPROVIDER_MODE_READONLY and tile is not None:
+            self._cache.put_multi(self.tag, cluster.tiles)
 
         return tile
+
+    def describe(self):
+        """Description of a ``TileProvider``"""
+        return dict(
+            tag=self.tag,
+            pyramid=dict(self.pyramid._asdict()),
+            metadata=self.metadata
+        )
 
     def close(self):
         """Close resources"""

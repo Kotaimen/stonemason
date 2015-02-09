@@ -6,31 +6,29 @@ Theme
 A `Theme` is the main configuration for stonemason. Stonemason creates
 various kinds of providers from different themes.
 
-It is composed of the following blocks:
+Normally, a theme contains the following configs:
 
-**Setup Blocks**:
+**Setup Configs**:
 
-- :class:`~stonemason.mason.theme.MetadataBlock`
+- :class:`~stonemason.mason.theme.PyramidConfig`
 
-    Various options for setting up a `Provider`.
+    Tile Grid of a `Provider`.
 
-- :class:`~stonemason.mason.theme.CacheBlock`
+- :class:`~stonemason.mason.theme.MetadataConfig`
+
+    Basic information about a `Provider`.
+
+- :class:`~stonemason.mason.theme.CacheConfig`
 
     Options for creating a :class:`~stonemason.provider.tilecache.TileCache`.
 
-- :class:`~stonemason.mason.theme.StorageBlock`
+- :class:`~stonemason.mason.theme.StorageConfig`
 
     Options for creating a :class:`~stonemason.provider.tilestorage.TileStorage`.
 
-**Control Blocks**:
+**Rendering Configs**:
 
-- :class:`~stonemason.mason.theme.ModeBlock`
-
-    Running behaviours of a `Provider`.
-
-**Rendering Blocks**:
-
-- :class:`~stonemason.mason.theme.DesignBlock`
+- `DesignConfig`
 
     definitions of styles for layers in tile rendering.
 
@@ -38,26 +36,30 @@ It is composed of the following blocks:
 Exceptions
 ~~~~~~~~~~
 
-.. autoclass:: stonemason.mason.theme.FieldTypeError
-    :members:
-
-.. autoclass:: stonemason.mason.theme.ValidationError
+.. autoclass:: stonemason.mason.theme.ThemeError
     :members:
 
 
-Theme Blocks
-~~~~~~~~~~~~
+Configs
+~~~~~~~
 
-.. autoclass:: stonemason.mason.theme.MetadataBlock
-    :members:
-
-.. autoclass:: stonemason.mason.theme.CacheBlock
-    :members:
-
-.. autoclass:: stonemason.mason.theme.StorageBlock
-    :members:
-
-.. autoclass:: stonemason.mason.theme.ModeBlock
+.. autoclass:: stonemason.mason.theme.PyramidConfig
     :members:
 
 
+.. autoclass:: stonemason.mason.theme.PyramidConfig
+    :members:
+
+.. autoclass:: stonemason.mason.theme.CacheConfig
+    :members:
+
+.. autoclass:: stonemason.mason.theme.StorageConfig
+    :members:
+
+
+Theme
+~~~~~
+
+
+.. autoclass:: stonemason.mason.theme.Theme
+    :members:
