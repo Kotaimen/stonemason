@@ -87,7 +87,7 @@ class TestTheme(unittest.TestCase):
         self.assertEqual('I am a sample.', theme.metadata.attribution)
 
         self.assertEqual(range(0, 23), theme.pyramid.levels)
-        self.assertEqual(8, theme.pyramid.stride)
+        self.assertEqual(16, theme.pyramid.stride)
         self.assertEqual('EPSG:4326', theme.pyramid.crs)
         self.assertEqual('EPSG:3857', theme.pyramid.proj)
         self.assertTupleEqual(
@@ -97,6 +97,10 @@ class TestTheme(unittest.TestCase):
         self.assertDictEqual(dict(), theme.cache.parameters)
 
         self.assertEqual('disk', theme.storage.prototype)
-        self.assertDictEqual(dict(
-            root="/Users/ray/proj/python/stonemason/tests/data/themes/sample_maps/antique/"),
-                             theme.storage.parameters)
+        self.assertDictEqual(
+            dict(
+                root="/Users/ray/proj/python/stonemason/stonemason/mason/theme/samples/antique",
+                dir_mode="legacy"
+            ),
+            theme.storage.parameters
+        )

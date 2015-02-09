@@ -5,7 +5,7 @@
   },
 
   "pyramid": {
-    "stride": 8
+    "stride": 16
   },
 
   "cache": {
@@ -14,7 +14,8 @@
   "storage": {
     "prototype": "disk",
     "parameters": {
-      "root": "/Users/ray/proj/python/stonemason/tests/data/themes/sample_maps/antique/"
+      "root": "/Users/ray/proj/python/stonemason/stonemason/mason/theme/samples/antique",
+      "dir_mode": "legacy"
     }
   }
 }

@@ -43,7 +43,7 @@ class Mason(object):
         for filename in os.listdir(dirpath):
 
             _, ext = os.path.splitext(filename)
-            #TODO: USE NOT ONLY JSON FORMAT
+            # TODO: USE NOT ONLY JSON FORMAT
             if ext != '.json':
                 continue
 
@@ -61,8 +61,13 @@ class Mason(object):
         return list(p.describe() for p in six.itervalues(self._providers))
 
     def get_tile(self, tag, z, x, y, scale, ext):
-        provider = self._providers[tag]
+        try:
+            provider = self._providers[tag]
+        except KeyError:
+            return None
+
         tile = provider.get_tile(z, x, y)
+
         return tile
 
     def close(self):
