@@ -113,8 +113,7 @@ class TestS3MetaTileStorage(unittest.TestCase):
         self.assertEqual(metatile.index, self.metatile.index)
         self.assertAlmostEqual(metatile.mtime, self.metatile.mtime, 0)
         self.assertEqual(metatile.etag, self.metatile.etag)
-        # XXX : Fails when using moto mocking boto, waiting for upstream fix
-        # self.assertEqual(metatile.mimetype, self.metatile.mimetype)
+        self.assertEqual(metatile.mimetype, self.metatile.mimetype)
 
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))

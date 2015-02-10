@@ -53,14 +53,13 @@ install_requires = [
     'Pillow>=2.3.0',
     'pylibmc>=1.4.0',
     'boto>=2.35.0',
-    'Click>=3.0.0'
+    'Click>=3.0.0',
 ]
 
 tests_require = [
-    'nose',
-    'coverage',
-    # 'mock',
-    'moto>=0.3.9',
+    'nose>=1.3.0',
+    'coverage>=3.7.0',
+    'moto>=0.4.0',
 ]
 
 py_modules = []
