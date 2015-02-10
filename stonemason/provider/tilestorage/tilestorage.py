@@ -234,7 +234,7 @@ class TileClusterSerializer(ObjectSerializeConcept):
         return TileCluster.from_zip(io.BytesIO(blob), metadata=metadata)
 
     def save(self, metatile):
-        metadata = dict(mimetype=metatile.mimetype,
+        metadata = dict(mimetype='application/zip',
                         mtime=metatile.mtime,
                         etag=metatile.etag)
         cluster = TileCluster.from_metatile(metatile, self._splitter)
@@ -288,6 +288,11 @@ class StorageMixin(object):
         blob, metadata = self._storage.retrieve(storage_key)
         if blob is None:
             return None
+        # verify metadata structure
+        assert set(metadata.keys()) == {'mimetype', 'etag', 'mtime'}
+        # if storage failed to preserve mimetype, use default value
+        if metadata['mimetype'] is None:
+            metadata['mimetype'] = self._mimetype
 
         if self._use_gzip:
             # decompress gzip

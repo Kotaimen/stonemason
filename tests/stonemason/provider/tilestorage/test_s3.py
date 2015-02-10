@@ -82,12 +82,11 @@ class TestS3ClusterStorage(unittest.TestCase):
         storage.close()
 
     def tearDown(self):
-        # self.conn.delete_bucket(TEST_BUCKET_NAME)
         self.conn.close()
         self.mock.stop()
 
 
-class TestS3(unittest.TestCase):
+class TestS3MetaTileStorage(unittest.TestCase):
     def setUp(self):
         self.mock = moto.mock_s3()
         self.mock.start()
@@ -111,6 +110,11 @@ class TestS3(unittest.TestCase):
 
         metatile = storage.get(self.metatile.index)
         self.assertIsInstance(metatile, MetaTile)
+        self.assertEqual(metatile.index, self.metatile.index)
+        self.assertAlmostEqual(metatile.mtime, self.metatile.mtime, 0)
+        self.assertEqual(metatile.etag, self.metatile.etag)
+        # XXX : Fails when using moto mocking boto, waiting for upstream fix
+        # self.assertEqual(metatile.mimetype, self.metatile.mimetype)
 
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
