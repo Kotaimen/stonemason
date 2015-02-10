@@ -9,7 +9,14 @@ from .theme import MetadataConfig, PyramidConfig, CacheConfig, StorageConfig
 from .theme import Theme
 
 
-class ThemeParser(object):
+class ThemeParser(object): # pragma: no cover
+    """ Theme Parser Base Class
+
+    A `ThemeParser` reads themes from various places and parse them into
+    `Theme` objects in stonemason.
+
+    """
+
     CONFIG_TAG_NAME = 'name'
 
     CONFIG_TAG_METADATA = 'metadata'
@@ -25,7 +32,29 @@ class ThemeParser(object):
 
 
 class JsonThemeParser(ThemeParser):
+    """Json Theme Parser
+
+    A `JsonThemeParser` parses theme files in json format.
+
+    """
     def read_from_file(self, filename):
+        """Reads theme from a given file and returns a list of
+        :class:`~stonemason.mason.theme.Theme` objects.
+
+        A multiple themes may be returned a theme file may contain not only
+        one theme.
+
+        :type filename: str
+        :param filename:
+
+            Path of the theme file.
+
+        :rtype: list
+        :return:
+
+            A list of `Theme` object.
+
+        """
         with open(filename, 'r') as fp:
             config = json.loads(fp.read())
 

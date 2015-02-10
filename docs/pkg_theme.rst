@@ -1,36 +1,11 @@
-Theme
-=====
+Theme System
+============
 
 :mod:`stonemason.mason.theme`
 
-A `Theme` is the main configuration for stonemason. Stonemason creates
-various kinds of providers from different themes.
-
-Normally, a theme contains the following configs:
-
-**Setup Configs**:
-
-- :class:`~stonemason.mason.theme.PyramidConfig`
-
-    Tile Grid of a `Provider`.
-
-- :class:`~stonemason.mason.theme.MetadataConfig`
-
-    Basic information about a `Provider`.
-
-- :class:`~stonemason.mason.theme.CacheConfig`
-
-    Options for creating a :class:`~stonemason.provider.tilecache.TileCache`.
-
-- :class:`~stonemason.mason.theme.StorageConfig`
-
-    Options for creating a :class:`~stonemason.provider.tilestorage.TileStorage`.
-
-**Rendering Configs**:
-
-- `DesignConfig`
-
-    definitions of styles for layers in tile rendering.
+A `Theme` is the main configuration for stonemason. It defines a large amount
+of configs for a :class:`~stonemason.provider.tileprovider.TileProvider` to
+serve tiles from different kinds of storage.
 
 
 Exceptions
@@ -40,12 +15,19 @@ Exceptions
     :members:
 
 
-Configs
-~~~~~~~
+Theme
+~~~~~
 
-.. autoclass:: stonemason.mason.theme.PyramidConfig
+.. autoclass:: stonemason.mason.theme.Theme
     :members:
 
+
+
+Theme Config
+~~~~~~~~~~~~
+
+.. autoclass:: stonemason.mason.theme.MetadataConfig
+    :members:
 
 .. autoclass:: stonemason.mason.theme.PyramidConfig
     :members:
@@ -57,9 +39,9 @@ Configs
     :members:
 
 
-Theme
-~~~~~
+Theme Parser
+~~~~~~~~~~~~
 
-
-.. autoclass:: stonemason.mason.theme.Theme
+.. autoclass:: stonemason.mason.theme.JsonThemeParser
     :members:
+
