@@ -18,3 +18,4 @@ from .tilestorage import ClusterStorage, MetaTileStorage, \
     TileStorageError, InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
 from .disk import DiskClusterStorage, DiskMetaTileStorage
 from .s3 import S3ClusterStorage, S3MetaTileStorage
+from .clusterfier import Clusterfier
