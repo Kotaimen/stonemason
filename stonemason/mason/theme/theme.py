@@ -1,4 +1,12 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.mason.theme.theme
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Implement theme configs
+
+"""
+
 
 __author__ = 'ray'
 __date__ = '2/8/15'
@@ -37,7 +45,7 @@ class PyramidConfig(_PyramidConfig):
             crs=crs, proj=proj, boundary=boundary)
 
 
-_CacheConfig = namedtuple('__CacheConfig', 'prototype parameters')
+_CacheConfig = namedtuple('CacheConfig', 'prototype parameters')
 
 
 class CacheConfig(_CacheConfig):

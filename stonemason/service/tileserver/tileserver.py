@@ -171,26 +171,24 @@ class TileServerApp(Flask):
 
     ENV_PARAM_PREFIX = 'STONEMASON_'
 
-    def __init__(self, config=None, STONEMASON_THEMES=None, read_only=True,
-                 debug=True, verbose=0, **kwargs):
+    def __init__(self, config=None, **kwargs):
         package_root = os.path.dirname(__file__)
         Flask.__init__(self, self.__class__.__name__,
                        template_folder=os.path.join(package_root, 'templates'),
                        static_folder=os.path.join(package_root, 'static'),
                        instance_relative_config=True)
 
+        # load configs
         self._load_config(config)
 
+        # update config with application arguments
+        self.config.update(kwargs)
+
+        # initialize mason
         self._mason = Mason()
 
+        # load themes
         theme_dir = self.config.get('STONEMASON_THEMES')
-        if STONEMASON_THEMES is not None:
-            theme_dir = STONEMASON_THEMES
-
-        if debug:
-            self.config['DEBUG'] = True
-            self.config['TESTING'] = True
-
         self._mason.load_theme_from_directory(theme_dir)
 
         # XXX: Just a sample index page
