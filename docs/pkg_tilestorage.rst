@@ -7,14 +7,14 @@ Implements persistent tile storage.
 
 There are two types of storage:
 
-    `ClusterStorage`
+    :class:`~stonemason.provider.tilestorage.ClusterStorage`
         stores a cluster of tiles as zipped file.
 
-    `MetaTileStorage`
+    :class:`~stonemason.provider.tilestorage.MetaTileStorage`
         stores raw, uncropped metatile data.
 
 A MetaTileStorage can be converted to a read only ClusterStorage using a
-`ClusteringMixin`, but not vise versa.
+:class:`~stonemason.provider.tilestorage.Clusterfier`, but not vise versa.
 
 Currently there are two types of storage backends:
 
@@ -160,4 +160,7 @@ Cluster Storage
     :members:
 
 .. autoclass:: stonemason.provider.tilestorage.S3ClusterStorage
+    :members:
+
+.. autoclass:: stonemason.provider.tilestorage.Clusterfier
     :members:
