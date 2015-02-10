@@ -11,8 +11,16 @@ class TestMetadataConfig(unittest.TestCase):
         self.assertEqual('K&R', m.attribution)
 
     def test_attribution(self):
-        m = MetadataConfig('dummy copyright')
+        m = MetadataConfig(attribution='dummy copyright')
         self.assertEqual('dummy copyright', m.attribution)
+
+    def test_version(self):
+        m = MetadataConfig(version='0.0.1')
+        self.assertEqual('0.0.1', m.version)
+
+    def test_description(self):
+        m = MetadataConfig(description='a sample')
+        self.assertEqual('a sample', m.description)
 
 
 class TestPyramidConfig(unittest.TestCase):
