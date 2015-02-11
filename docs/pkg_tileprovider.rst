@@ -8,7 +8,8 @@ Provider
 .. autoclass:: stonemason.provider.tileprovider.TileProvider
     :members:
 
-Provider Factory
+
+Provider Builder
 ----------------
 
 .. autoclass:: stonemason.provider.tileprovider.TileProviderBuilder

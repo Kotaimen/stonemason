@@ -29,20 +29,31 @@ class TileProvider(object):
 
         A string literal that identifies a ``TileProvider``.
 
+    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+    :param metadata:
+
+        The tile grid system of the `TileProvider`.
+
     :type metadata: dict
     :param metadata:
 
-        A dict object contains information about a provider.
+        Additional information of the `TileProvider`.
 
     :type cache: :class:`~stonemason.provider.tilecache.TileCache`
     :param cache:
 
-        A ``TileCache`` instance used to cache retrieved tile.
+        A ``TileCache`` instance used to cache tiles.
 
     :type storage: :class:`~stonemason.provider.tilestorage.ClusterStorage`
     :param storage:
 
-        A ``TileStorage`` instance where tiles are stored.
+        A ``TileStorage`` instance used to retrieve tiles.
+
+    :type mode: str
+    :param mode:
+
+        A string literal that represents the working behaviours of the
+        `TileProvider`. Available options are ``read-only`` and ``hybrid``
 
     """
 
@@ -99,23 +110,28 @@ class TileProvider(object):
         """Set working mode of the provider"""
         self._mode = mode
 
+    @property
+    def is_read_only(self):
+        """Check if is read only """
+        return self.mode == self.TILEPROVIDER_MODE_READONLY
+
     def get_tile(self, z, x, y):
         """Return a tile with given coordinate
 
         :type z: int
         :param z:
 
-            Zoom level.
+            A positive integer represents the zoom level of a tile.
 
         :type x: int
         :param x:
 
-            Horizontal axis.
+            A positive integer represents coordinate along x-axis.
 
         :type y: int
         :param y:
 
-            Vertical axis.
+            A positive integer represents coordinate along y-axis.
 
         :rtype: :class:`~stonemason.provider.pyramid.Tile` or None
         :return: A ``Tile`` object or None if not found.
@@ -157,7 +173,4 @@ class TileProvider(object):
         self._cache.close()
         self._storage.close()
 
-    @property
-    def is_read_only(self):
-        return self.mode == self.TILEPROVIDER_MODE_READONLY
 
