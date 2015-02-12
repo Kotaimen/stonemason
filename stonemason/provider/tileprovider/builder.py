@@ -69,12 +69,31 @@ class TileProviderBuilder(object):
     It is advised to add `TileCache` or `ClusterStorage` for building a fully
     functional `TileProvider`.
 
+    Samples:
+
+    >>> from stonemason.provider.pyramid import Pyramid
+    >>> from stonemason.provider.tileprovider import TileProviderBuilder
+    >>> p = Pyramid()
+    >>> builder = TileProviderBuilder(tag='test', pyramid=p)
+    >>> builder.build_metadata(attribution='K&R')
+    >>> builder.build_cache(prototype='null')
+    >>> builder.build_storage(prototype='null')
+    >>> provider = builder.build()
+    >>> provider.tag
+    'test'
+    >>> provider.metadata
+    {'attribution': 'K&R'}
+    >>> provider.is_read_only
+    True
+    >>> provider.mode
+    'read-only'
+
     :type tag: str
     :param tag:
 
         Name of the provider.
 
-    :type pyramid: :class:`stonemason.provider.pyramid.Pyramid`
+    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
     :param pyramid:
 
         The tile system of the provider.
@@ -84,12 +103,12 @@ class TileProviderBuilder(object):
 
         Metadata infromation of the provider.
 
-    :type cache: :class:`stonemason.provider.tilecache.TileCache`
+    :type cache: :class:`~stonemason.provider.tilecache.TileCache`
     :param cache:
 
         A TileCache instance used to cache tiles.
 
-    :type storage: :class:`stonemason.provider.tilestorage.ClusterStorage`
+    :type storage: :class:`~stonemason.provider.tilestorage.ClusterStorage`
     :param storage:
 
         A ClusterStorage instance used to store or retrieve tiles.
@@ -102,10 +121,10 @@ class TileProviderBuilder(object):
         self._cache = cache
         self._storage = storage
 
-    def build(self):
+    def build(self, mode=TileProvider.TILEPROVIDER_MODE_READONLY):
         """Build a `TileProvider`
 
-        :rtype: :class:`stonemason.provider.tileprovider.TileProvider`
+        :rtype: :class:`~stonemason.provider.tileprovider.TileProvider`
         :return: Return a `TileProvider` with previous build.
 
         """
@@ -117,21 +136,40 @@ class TileProviderBuilder(object):
             storage=self._storage,
         )
 
+        provider.mode = mode
+
         return provider
 
     def build_metadata(self, **metadata):
         """Create metadata from configs for `TileProvider`
+
+        :type metadata: dict
+        :param metadata:
+
+            A dict of basic information of a `TileProvider`
         """
         self._metadata = metadata
 
     def build_cache(self, **cache_config):
         """Create `TileStorage` from configs for `TileProvider`
+
+        :type cache_config: dict
+        :param cache_config:
+
+            A dict of setup information to create a `TileCache`
+
         """
         cache = TileCacheFactory().create(**cache_config)
         self._cache = cache
 
     def build_storage(self, **storage_config):
         """Create `ClusterStorage` from configs for `TileProvider`
+
+        :type storage_config: dict
+        :param storage_config:
+
+            A dict of setup information to create a `TileStorage`
+
         """
         storage = ClusterStorageFactory().create(
             pyramid=self._pyramid, **storage_config)

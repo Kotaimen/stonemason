@@ -21,13 +21,13 @@ class ProviderError(object):
 class TileProvider(object):
     """Tile Provider
 
-    A ``TileProvider`` retrieve tiles from a cache or storage with a given
+    A `TileProvider` retrieve tiles from a cache or storage with a given
     grid coordinate (z, x, y).
 
     :type tag: str
     :param tag:
 
-        A string literal that identifies a ``TileProvider``.
+        A string literal that identifies a `TileProvider`.
 
     :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
     :param metadata:
@@ -42,12 +42,12 @@ class TileProvider(object):
     :type cache: :class:`~stonemason.provider.tilecache.TileCache`
     :param cache:
 
-        A ``TileCache`` instance used to cache tiles.
+        A `TileCache` instance used to cache tiles.
 
     :type storage: :class:`~stonemason.provider.tilestorage.ClusterStorage`
     :param storage:
 
-        A ``TileStorage`` instance used to retrieve tiles.
+        A `TileStorage` instance used to retrieve tiles.
 
     :type mode: str
     :param mode:
@@ -87,32 +87,58 @@ class TileProvider(object):
 
     @property
     def tag(self):
-        """Name of the provider"""
+        """Return name of the provider
+
+        :rtype: str
+        :return: Name of the `TileProvider`
+
+        """
         return self._tag
 
     @property
     def pyramid(self):
-        """Pyramid of the """
+        """Return pyramid of the provider
+
+        :rtype: :class:`~stonemason.provider.pyramid.Pyramid`
+        :return: Pyramid of the `TileProvider`
+        """
         return self._pyramid
 
     @property
     def metadata(self):
-        """Metadata of the provider"""
+        """Return metadata of the provider
+
+        :rtype: dict
+        :return: A dict of basic information about the `TileProvider`
+
+        """
         return self._metadata
 
     @property
     def mode(self):
-        """Get working mode of the provider"""
+        """Return working mode of the provider
+
+        :rtype: str
+        :return: Working behaviour of the `TileProvider`
+        """
         return self._mode
 
     @mode.setter
     def mode(self, mode):
-        """Set working mode of the provider"""
+        """Set working mode of the provider
+
+        :type mode: str
+        :param mode: Working behaviour of the `TileProvider`
+        """
         self._mode = mode
 
     @property
     def is_read_only(self):
-        """Check if is read only """
+        """Check if is read only
+
+        :rtype: bool
+        :return: Check if is read only
+        """
         return self.mode == self.TILEPROVIDER_MODE_READONLY
 
     def get_tile(self, z, x, y):
@@ -134,7 +160,7 @@ class TileProvider(object):
             A positive integer represents coordinate along y-axis.
 
         :rtype: :class:`~stonemason.provider.pyramid.Tile` or None
-        :return: A ``Tile`` object or None if not found.
+        :return: A `Tile` object or None if not found.
 
         """
         index = TileIndex(z, x, y)
@@ -162,7 +188,12 @@ class TileProvider(object):
         return tile
 
     def describe(self):
-        """Description of a ``TileProvider``"""
+        """Description of a `TileProvider`
+
+        :return: A dict of name, pyramid and metadata information of `TileProvider`
+        :rtype: str
+
+        """
         return dict(
             tag=self.tag,
             pyramid=dict(self.pyramid._asdict()),
