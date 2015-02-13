@@ -147,6 +147,13 @@ class Home(MethodView):
         return render_template('index.html', themes=self._mason.themes())
 
 
+def health_check():
+    response = make_response()
+    response.headers['Content-Type'] = 'text/plain'
+    response.headers['Cache-Control'] = 'public, max-age=0'
+    return response
+
+
 class TileServerApp(Flask):
     """StoneMason tile server application.
 
@@ -207,9 +214,14 @@ class TileServerApp(Flask):
         theme_dir = self.config.get('STONEMASON_THEMES')
         self._mason.load_theme_from_directory(theme_dir)
 
-        # XXX: Just a sample index page
+        # A list of available maps
         self.add_url_rule(rule='/',
                           view_func=Home.as_view('home', self._mason),
+                          methods=['GET'])
+
+        # health check
+        self.add_url_rule(rule='/health_check',
+                          view_func=health_check,
                           methods=['GET'])
 
         map_view = MapAPI.as_view('map_api', self._mason)

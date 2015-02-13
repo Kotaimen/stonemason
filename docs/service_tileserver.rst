@@ -180,3 +180,32 @@ Retrieve Map
 
     :status 200: No error.
     :status 404: No such map.
+
+
+Health Check
+------------
+
+.. http:get:: /health_check
+
+    Check availability of the tile server.
+
+    **Example request**:
+
+        .. code-block:: http
+
+            GET /health_check HTTP/1.1
+            Host: example.com
+            Accept: */*
+
+    **Example response**:
+
+        .. code-block:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: text/plain
+            Cache-Control: private, max-age=0
+
+    :resheader Content-Type: Plain text.
+    :resheader Cache-Control: Do not cache.
+
+    :status 200: No error.
