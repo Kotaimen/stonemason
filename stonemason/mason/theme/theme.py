@@ -23,7 +23,8 @@ class ThemeError(Exception):
 _Theme = namedtuple('Theme', 'name metadata pyramid cache storage')
 
 _MetadataConfig = namedtuple('MetadataConfig',
-                             'version description attribution')
+                             'version description attribution thumbnail '
+                             'center center_zoom')
 
 _PyramidConfig = namedtuple('PyramidConfig', 'levels stride crs proj boundary')
 
@@ -68,7 +69,7 @@ class Theme(_Theme):
     >>> t.name
     'sample'
     >>> t.metadata
-    MetadataConfig(version='', description='', attribution='K&R')
+    MetadataConfig(version='', description='', attribution='K&R', thumbnail=None, center=[0, 0], center_zoom=4)
     >>> t.pyramid
     PyramidConfig(levels=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, \
 15, 16, 17, 18, 19, 20, 21, 22], stride=1, crs='EPSG:4326', \
@@ -157,13 +158,22 @@ class MetadataConfig(_MetadataConfig):
     >>> from stonemason.mason.theme import MetadataConfig
     >>> m = MetadataConfig(version='0.0.1',
     ...                    description='A sample',
-    ...                    attribution='Q')
+    ...                    attribution='Q',
+    ...                    thumbnail='http://localhost/thumb.jpg',
+    ...                    center=[139, 35],
+    ...                    center_zoom=5)
     >>> m.version
     '0.0.1'
     >>> m.description
     'A sample'
     >>> m.attribution
     'Q'
+    >>> m.thumbnail
+    'http://localhost/thumb.jpg'
+    >>> m.center
+    [139, 35]
+    >>> m.center_zoom
+    5
 
     :type version: str
     :param version:
@@ -180,12 +190,38 @@ class MetadataConfig(_MetadataConfig):
 
         The statement of the copyright author's identity.
 
+    :type thumbnail: str
+    :param thumbnail:
+
+        A url that represents the location of thumbnail.
+
+    :type center: list
+    :param center:
+
+        A [lon, lat] object that represents the start point of a provider's
+        map.
+
+    :type center_zoom: int
+    :param center_zoom:
+
+        A positive integer that represents the zoom level of the `center`.
+
     """
 
     __slots__ = ()
 
-    def __new__(cls, version='', description='', attribution='K&R'):
-        return _MetadataConfig.__new__(cls, version, description, attribution)
+    def __new__(cls, version='', description='', attribution='K&R',
+                thumbnail=None, center=None, center_zoom=4):
+
+        if center is None:
+            center = [0, 0]
+
+        return _MetadataConfig.__new__(cls, version=version,
+                                       description=description,
+                                       attribution=attribution,
+                                       thumbnail=thumbnail,
+                                       center=center,
+                                       center_zoom=center_zoom)
 
 
 class PyramidConfig(_PyramidConfig):

@@ -7,8 +7,10 @@
 """
 
 import os
+from logging import StreamHandler, Formatter
 
 import six
+from werkzeug.http import http_date
 from flask import Flask, render_template, abort, make_response
 from flask.views import MethodView
 from flask.json import jsonify
@@ -47,10 +49,10 @@ class ThemeAPI(MethodView):
             
         """
         if tag is None:
-            themes = self._mason.list_metadata()
+            themes = self._mason.themes()
             return jsonify(result=themes)
         else:
-            theme = self._mason.get_metadata(tag)
+            theme = self._mason.get_theme(tag)
             return jsonify(result=theme)
 
 
@@ -117,15 +119,32 @@ class TileAPI(MethodView):
             abort(404)
 
         response = make_response(tile.data)
+
+        # set response headers
         response.headers['Content-Type'] = tile.mimetype
+        response.headers['ETag'] = tile.etag
+        response.headers['Last-Modified'] = http_date(tile.mtime)
+        response.headers['Cache-Control'] = 'public, max-age=86400'
 
         return response
 
 
-def home():
-    import stonemason
+class MapAPI(MethodView):
+    def __init__(self, mason):
+        MethodView.__init__(self)
+        self._mason = mason
 
-    return render_template('index.html', version=stonemason.__version__)
+    def get(self, tag):
+        return render_template('map.html', theme=self._mason.get_theme(tag))
+
+
+class Home(MethodView):
+    def __init__(self, mason):
+        MethodView.__init__(self)
+        self._mason = mason
+
+    def get(self):
+        return render_template('index.html', themes=self._mason.themes())
 
 
 class TileServerApp(Flask):
@@ -178,11 +197,8 @@ class TileServerApp(Flask):
                        static_folder=os.path.join(package_root, 'static'),
                        instance_relative_config=True)
 
-        # load configs
-        self._load_config(config)
-
-        # update config with application arguments
-        self.config.update(kwargs)
+        # load configs and parameters
+        self._load_config(config, **kwargs)
 
         # initialize mason
         self._mason = Mason()
@@ -193,8 +209,15 @@ class TileServerApp(Flask):
 
         # XXX: Just a sample index page
         self.add_url_rule(rule='/',
-                          view_func=home,
+                          view_func=Home.as_view('home', self._mason),
                           methods=['GET'])
+
+        map_view = MapAPI.as_view('map_api', self._mason)
+        self.add_url_rule(
+            rule='/maps/<tag>',
+            view_func=map_view,
+            methods=['GET']
+        )
 
         # TODO: Move APIs to a separate BluePrint
         theme_view = ThemeAPI.as_view('theme_api', self._mason)
@@ -223,7 +246,7 @@ class TileServerApp(Flask):
             methods=['GET']
         )
 
-    def _load_config(self, config):
+    def _load_config(self, config, **kwargs):
         # config from default values
         self.config.from_object(default_settings)
 
@@ -231,8 +254,45 @@ class TileServerApp(Flask):
         if config is not None:
             self.config.from_pyfile(config, silent=True)
 
+
         # config from environment variables
         for key, val in six.iteritems(os.environ):
             if key.startswith(self.ENV_PARAM_PREFIX):
-                self.logger.info('Loading %s=%s' % (key, val))
                 self.config[key] = val
+
+        # config from command-line options
+        self.config.update(kwargs)
+
+        # log debug info
+        if self.config.get('STONEMASON_DEBUG'):
+            self.config['DEBUG'] = True
+
+        if self.config.get('STONEMASON_VERBOSE') is not None:
+            try:
+                verbosity = int(self.config['STONEMASON_VERBOSE'])
+            except ValueError:
+                verbosity = 0
+
+            # create a log handler for none debug use
+            if verbosity > 0:
+                class VerboseHandler(StreamHandler):
+                    def emit(x, record):
+                        StreamHandler.emit(x, record)
+
+                handler = VerboseHandler()
+                handler.setLevel('INFO')
+                handler.setFormatter(Formatter(self.debug_log_format))
+
+                self.logger.addHandler(handler)
+                self.logger.setLevel('INFO')
+
+        if config is not None:
+            self.logger.info('LOADED CONFIG: filename=%s' %
+                             os.path.join(self.instance_path, config))
+
+        for key, val in six.iteritems(os.environ):
+            if key.startswith(self.ENV_PARAM_PREFIX):
+                self.logger.info('LOADED ENV PARAM: %s=%s' % (key, val))
+
+        for key, val in six.iteritems(kwargs):
+            self.logger.info('Loading CMD PARAM: %s=%s' % (key, val))

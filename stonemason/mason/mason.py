@@ -53,12 +53,16 @@ class Mason(object):
     def load_theme_from_s3(self, s3path):
         raise NotImplemented
 
-    def get_metadata(self, tag):
-        provider = self._providers[tag]
-        return provider.describe()
-
-    def list_metadata(self):
+    def themes(self):
         return list(p.describe() for p in six.itervalues(self._providers))
+
+    def get_theme(self, tag):
+        try:
+            provider = self._providers[tag]
+        except KeyError:
+            return None
+
+        return provider.describe()
 
     def get_tile(self, tag, z, x, y, scale, ext):
         try:

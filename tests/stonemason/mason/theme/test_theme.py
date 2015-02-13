@@ -22,6 +22,18 @@ class TestMetadataConfig(unittest.TestCase):
         m = MetadataConfig(description='a sample')
         self.assertEqual('a sample', m.description)
 
+    def test_thumbnail(self):
+        m = MetadataConfig(thumbnail='http://example.com/1.jpeg')
+        self.assertEqual('http://example.com/1.jpeg', m.thumbnail)
+
+    def test_center(self):
+        m = MetadataConfig(center=[1, 1])
+        self.assertEqual([1, 1], m.center)
+
+    def test_center_zoom(self):
+        m = MetadataConfig(center_zoom=5)
+        self.assertEqual(5, m.center_zoom)
+
 
 class TestPyramidConfig(unittest.TestCase):
     def test_default(self):
@@ -92,7 +104,7 @@ class TestTheme(unittest.TestCase):
         theme = parser.read_from_file(SAMPLE_THEME)[0]
 
         self.assertEqual('antique', theme.name)
-        self.assertEqual('I am a sample.', theme.metadata.attribution)
+        self.assertEqual('K&R', theme.metadata.attribution)
 
         self.assertEqual(range(0, 23), theme.pyramid.levels)
         self.assertEqual(16, theme.pyramid.stride)
