@@ -85,8 +85,8 @@ proj='EPSG:3857', boundary=(-180, -85.0511, 180, 85.0511))
 
         A string literal that uniquely identify a theme. A valid theme name
         should start with an alphabet character and only contain alphanumeric
-        character and the underscore. This is equivalent to the regular
-        expression :regexp:`^[a-zA-Z][a-zA-Z0-9_]+`.
+        character, the underscore and the '@' character. This is equivalent to
+        the regular expression :regexp:`^[a-zA-Z][a-zA-Z0-9@_]*$`.
 
     :type metadata: :class:`~stonemason.mason.theme.MetadataConfig`
     :param metadata:
@@ -120,10 +120,11 @@ proj='EPSG:3857', boundary=(-180, -85.0511, 180, 85.0511))
         if name is None:
             raise ThemeError('A Theme must have a Name!')
 
-        if not re.match('^[a-zA-Z]\w*$', name):
+        if not re.match('^[a-zA-Z][a-zA-Z0-9@_]*$', name):
             raise ThemeError(
-                """A valid theme name should  start with an alphabet character
-                and only contain alphanumeric character and the underscore.""")
+                """A valid theme name should start with an alphabet character
+                and only contain alphanumeric character, the underscore and
+                the '@' character.""")
 
         if metadata is None:
             metadata = MetadataConfig()
