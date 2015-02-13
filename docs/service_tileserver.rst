@@ -24,7 +24,7 @@ Retrieve Theme Info
         .. code-block:: http
 
             HTTP/1.1 200 OK
-            Content-type: application/json
+            Content-Type: application/json
             Cache-Control: public, max-age=300
 
             {
@@ -64,7 +64,7 @@ List Theme Info
         .. code-block:: http
 
             HTTP/1.1 200 OK
-            Content-type: application/json
+            Content-Type: application/json
             Cache-Control: public, max-age=300
 
             [
@@ -110,7 +110,7 @@ Retrieve Tile
         .. code-block:: http
 
             HTTP/1.1 200 OK
-            Content-type: image/png
+            Content-Type: image/png
             Cache-Control: public, max-age=86400
             Etag: a00049ba79152d03380c34652f2cb612
             Last-Modified: Sat, 27 Apr 2015 00:44:54 GMT
@@ -142,3 +142,41 @@ Retrieve Tile
 .. http:get:: /tiles/(tag)/(int:z)/(int:x)/(int:y).(ext)
 
     Short way for retrieving a tile of scale 1.
+
+
+Retrieve Map
+------------
+
+.. http:get:: /maps/(tag)
+
+    Get a Map with the given tag.
+
+    **Example request**:
+
+        .. code-block:: http
+
+            GET /maps/brick HTTP/1.1
+            Host: example.com
+            Accept: */*
+
+    **Example response**:
+
+        .. code-block:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: text/html
+            Cache-Control: private, max-age=0
+
+            <!DOCTYPE html>
+            <html>
+            ...
+            </html>
+
+    :param tag: Tag of the theme, *required*.
+    :type tag: str
+
+    :resheader Content-Type: Map of the specified tag.
+    :resheader Cache-Control: Default max age is 0 seconds.
+
+    :status 200: No error.
+    :status 404: No such map.

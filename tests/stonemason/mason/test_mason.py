@@ -26,7 +26,7 @@ class TestMason(unittest.TestCase):
         self.assertIsNone(
             self._mason.get_tile('antique', 0, 0, 0, 1, 'png'))
 
-    def test_get_metadata(self):
+    def test_get_theme(self):
         self._mason.load_theme_from_file(SAMPLE_THEME)
 
         expected = {
@@ -43,7 +43,7 @@ class TestMason(unittest.TestCase):
             }
         }
 
-        m = self._mason.get_metadata('antique')
+        m = self._mason.get_theme('antique')
 
         self.assertEqual('antique', m['tag'])
-        self.assertEqual('I am a sample.', m['metadata']['attribution'])
+        self.assertEqual('K&R', m['metadata']['attribution'])

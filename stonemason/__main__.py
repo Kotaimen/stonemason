@@ -80,7 +80,7 @@ def cli(ctx, debug, verbose, themes):
     """Stonemason Tile Map Service Toolkit."""
     ctx.obj = Context()
     ctx.obj.themes = os.path.abspath(themes)
-    ctx.obj.verbosity = verbose
+    ctx.obj.verbose = verbose
     ctx.obj.debug = debug
 
 #
@@ -103,7 +103,7 @@ def tile_server(ctx, bind, read_only, workers, threads):
     """Starts tile server using given themes root."""
     assert isinstance(ctx, Context)
 
-    if read_only and ctx.verbosity > 0:
+    if read_only and ctx.verbose > 0:
         click.secho('Starting tileserver in read only mode.', fg='red')
 
     # parse binding port
@@ -114,7 +114,7 @@ def tile_server(ctx, bind, read_only, workers, threads):
         'THEMES': ctx.themes,
         'READ_ONLY': read_only,
         'DEBUG': ctx.debug,
-        'VERBOSITY': ctx.verbosity
+        'VERBOSE': ctx.verbose
     }
     # add prefix to all config keys to confront with flask config
     app_config = dict((ENVVAR_PREFIX + '_' + k, v)
