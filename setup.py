@@ -54,6 +54,7 @@ install_requires = [
     'pylibmc>=1.4.0',
     'boto>=2.35.0',
     'Click>=3.0.0',
+    'gunicorn>=19.0.0',
 ]
 
 tests_require = [
