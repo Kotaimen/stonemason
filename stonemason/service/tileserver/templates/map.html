@@ -38,7 +38,10 @@
 
     L.tileLayer('/tiles/{{ theme.tag }}/{z}/{x}/{y}.jpg', {
         attribution: "{{ theme.metadata.attribution }}",
-        maxZoom: {{ theme.pyramid.levels|last  }}
+        minZoom: {{ theme.pyramid.levels|first  }},
+        maxZoom: {{ theme.pyramid.levels|last  }},
+        detectRetina: true,
+
     }).addTo(map);
 
 
