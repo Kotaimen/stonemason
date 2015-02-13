@@ -231,6 +231,10 @@ class TileClusterSerializer(ObjectSerializeConcept):
         self._splitter = splitter
 
     def load(self, index, blob, metadata):
+        metadata = metadata.copy()
+        # let tilecluster figure out mimetype from cluster index,
+        # since storage always assign 'application/zip' for a cluster
+        del metadata['mimetype']
         return TileCluster.from_zip(io.BytesIO(blob), metadata=metadata)
 
     def save(self, metatile):

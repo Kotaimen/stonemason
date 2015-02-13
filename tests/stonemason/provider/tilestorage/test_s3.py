@@ -42,6 +42,14 @@ class TestS3ClusterStorage(unittest.TestCase):
 
         cluster = storage.get(self.metatile.index)
         self.assertIsInstance(cluster, TileCluster)
+
+        tile = cluster.tiles[0]
+
+        self.assertEqual(cluster.index, self.metatile.index)
+        self.assertAlmostEqual(tile.mtime, self.metatile.mtime, 0)
+        self.assertEqual(tile.mimetype, self.metatile.mimetype)
+
+
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
         storage.close()
