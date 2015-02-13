@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 
     <title>Stonemason {{ theme.tag|upper }}</title>
 
@@ -34,7 +35,12 @@
 
 <script type="text/javascript">
 
-    var map = L.map('map').setView({{ theme.metadata.center }}, {{ theme.metadata.center_zoom }});
+    var map = L.map('map').setView(
+        L.latLng(
+            {{ theme.metadata.center[1] }},
+            {{ theme.metadata.center[0] }}
+        ),
+        {{ theme.metadata.center_zoom }});
 
     L.tileLayer('/tiles/{{ theme.tag }}/{z}/{x}/{y}.jpg', {
         attribution: "{{ theme.metadata.attribution }}",
@@ -43,8 +49,7 @@
         detectRetina: true,
 
     }).addTo(map);
-
-
+    
 </script>
 
 </body>
