@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Stonemason Tile Server</title>
+    <title>Stonemason</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet"
@@ -33,7 +33,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Stonemason Console</a>
+            <a class="navbar-brand" href="#">Stonemason Tile Server Console</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -55,29 +55,60 @@
 
         {% for theme in themes %}
 
-        <div class="col-md-3 featurette">
-            <h2 class="featurette-heading text-uppercase">
-                <a href="maps/{{ theme['tag'] }}">
-                    {{ theme['tag'] }} <span class="text-muted">{{ theme['metadata']['version'] }}</span>
-                </a>
-            </h2>
+        <div class="col-xs-6 col-md-4">
+            <div class="panel panel-default">
 
-            <p class="text-justify">{{ theme['metadata']['description'] }}</p>
+                <div class="panel-heading">
+                    <h2>
+                        <p class="text-capitalize text-primary">{{ theme.tag }}
+                            <small>{{ theme.metadata.version }}</small>
+                            <a href="maps/{{ theme.tag }}"
+                               class="btn btn-default btn-small"
+                               role="button">
+                            <span class="glyphicon glyphicon-map-marker"
+                                  aria-hidden="true">
+                            </span>
+                            </a>
+                        </p>
+                    </h2>
+                </div>
 
-            <p class="text-right">&copy;{{
-                theme['metadata']['attribution'] }}</p>
+                <div class="panel-body">
+                    <p class="lead">
+                        {{ theme.metadata.description}}
+                    </p>
+                </div>
+
+                <table class="table table-default">
+                    <tr>
+                        <th span="2">Key</th>
+                        <th>Value</th>
+                    </tr>
+
+                    {% for key, value in theme.pyramid.iteritems() %}
+                    <tr>
+                        <td><code>{{ key }}</code></td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <div class="panel-footer">
+                    <p class="text-right">
+                        {{ theme.metadata.attribution }}
+                    </p>
+                </div>
+            </div>
+
+
         </div>
-
         {% endfor %}
-
     </div>
 
-</div>
 
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
 </body>
 </html>
