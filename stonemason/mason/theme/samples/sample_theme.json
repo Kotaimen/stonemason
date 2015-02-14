@@ -5,7 +5,7 @@
     "description": "Daniel Reeve's Map of Middle-earth is well known to fans of The Lord of the Rings. So we took his idea and made this parchment map of our own earth. Be careful, Sea monsters are waiting for you if you dig deep into sea.",
     "attribution": "K&R",
     "thumbnail": "https://raw.githubusercontent.com/Kotaimen/maps-ModernAntique/master/sample.jpg",
-    "center": [35.71, 139.79],
+    "center": [139.79, 35.71],
     "center_zoom": 6
   },
 
