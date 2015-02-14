@@ -84,7 +84,7 @@ class Pyramid(_Pyramid):
         levels = list(levels)
         assert isinstance(levels, list)
         assert isinstance(stride, int) and stride & ( stride - 1 ) == 0
-        assert isinstance(boundary, tuple) and len(boundary) == 4
+        assert isinstance(boundary, (tuple, list)) and len(boundary) == 4
         assert isinstance(crs, six.string_types)
         assert isinstance(proj, six.string_types)
 
