@@ -21,8 +21,8 @@
 </head>
 <body>
 
-<div class="container">
-    <nav class="navbar navbar-default">
+<nav class="navbar navbar-inverse">
+    <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed"
@@ -44,10 +44,8 @@
             </ul>
         </div>
         <!-- /.navbar-collapse -->
-    </nav>
-</div>
-<!-- /.container -->
-
+    </div>
+</nav>
 
 <div class="container">
 
@@ -59,18 +57,22 @@
             <div class="panel panel-default">
 
                 <div class="panel-heading">
-                    <h2>
-                        <p class="text-capitalize text-primary">{{ theme.tag }}
-                            <small>{{ theme.metadata.version }}</small>
+                    <h3>
+                        <p class="text-capitalize">
+                            {{ theme.tag }}
                             <a href="maps/{{ theme.tag }}"
-                               class="btn btn-default btn-small"
+                               class="btn btn-default btn-small pull-right"
                                role="button">
                             <span class="glyphicon glyphicon-map-marker"
                                   aria-hidden="true">
                             </span>
                             </a>
                         </p>
-                    </h2>
+                    </h3>
+                    <code>
+                        {{ theme.metadata.version }}
+                    </code>
+
                 </div>
 
                 <div class="panel-body">
@@ -80,14 +82,9 @@
                 </div>
 
                 <table class="table table-default">
-                    <tr>
-                        <th span="2">Key</th>
-                        <th>Value</th>
-                    </tr>
-
                     {% for key, value in theme.pyramid.iteritems() %}
                     <tr>
-                        <td><code>{{ key }}</code></td>
+                        <td>{{ key }}</td>
                         <td>{{ value }}</td>
                     </tr>
                     {% endfor %}
