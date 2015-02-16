@@ -16,6 +16,12 @@ import six
 
 import gunicorn.app.base
 
+
+# HACK: Fix import error when debug is true when using Flask reloading
+if sys.argv[0].endswith('__main__.py'):
+    sys.path.insert(0, os.path.abspath(
+        os.path.join(__file__, os.path.pardir, os.path.pardir)))
+
 #
 # Click contexts
 #
