@@ -1,6 +1,9 @@
 Tile Provider
 =============
 
+.. module:: stonemsaon.provider.tileprovider
+
+Interface of the provider namespace package, implements tile service.
 
 Provider
 --------

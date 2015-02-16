@@ -1,7 +1,10 @@
 Utilities
 =========
 
-:mod:`stonemason.util` contains utility functions and classes.
+.. module:: stonemsaon.util
+
+
+Contains utility functions and classes.
 
 
 .. automodule:: stonemason.util.guesstypes
@@ -11,13 +14,14 @@ Utilities
     :members:
 
 Geo
-===
+---
 
 .. automodule:: stonemason.util.geo.hilbert
     :members:
 
 Postprocessing
-==============
+--------------
+
 .. automodule:: stonemason.util.postprocessing.gridcrop
     :members:
 

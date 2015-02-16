@@ -28,36 +28,25 @@ User's Guide
 API Reference
 =============
 
-Mason
------
-
 .. toctree::
     :maxdepth: 2
 
     pkg_theme
 
-Providers
----------
 
 .. toctree::
     :maxdepth: 2
 
     pkg_pyramid
+    pkg_tileprovider
     pkg_tilecache
     pkg_tilestorage
-    pkg_tileprovider
 
-Backends
---------
 
 .. toctree::
     :maxdepth: 2
 
     pkg_service
-
-
-Utilties
---------
 
 .. toctree::
     :maxdepth: 2
