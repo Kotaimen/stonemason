@@ -30,7 +30,7 @@ class MetaTileIndex(_MetaTileIndex):
     `stride` must be order of 2, if specified stride makes metatile larger
     than current zoom level, it will be rounded down to level size.
 
-    `MetaTileIndex` is a `tuple` and thus is immutable once created.
+    `MetaTileIndex` is a `tuple` is immutable once created.
 
     >>> from stonemason.provider.pyramid import MetaTileIndex, TileIndex
     >>> index = MetaTileIndex(2, 0, 0, 2)

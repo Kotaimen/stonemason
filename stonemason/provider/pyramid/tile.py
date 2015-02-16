@@ -80,7 +80,7 @@ class Tile(_Tile):
 
     Tile is uniquely referenced by its :class:`~stonemason.provider.pyramid.TileIndex`.
 
-    A tile object is immutable once created and has following attributes:
+    A tile object is immutable once created.
 
     >>> from stonemason.provider.pyramid import Tile, TileIndex
     >>> tile = Tile(index=TileIndex(3, 4, 5),
