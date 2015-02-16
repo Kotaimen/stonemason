@@ -25,7 +25,6 @@
         content: '1 .column.size-1of1';
         }
         }
-
         @media screen and (min-width: 768px) and (max-width: 992px) {
         #grid[data-columns]::before {
         content: '2 .column.size-1of2';
@@ -50,13 +49,58 @@
         margin-bottom: 0;
         }
 
+        .container-wrapper {
+        margin-top: 50px;
+        }
+
+        /*
+        * Sidebar
+        */
+
+        /* Hide for mobile, show later */
+        .sidebar {
+        display: none;
+        }
+        @media (min-width: 768px) {
+        .sidebar {
+        position: fixed;
+        top: 50px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+        background-color: #f5f5f5;
+        border-right: 1px solid #eee;
+        }
+        }
+
+        /* Sidebar navigation */
+        .nav-sidebar {
+        margin-right: -21px; /* 20px padding + 1px border */
+        margin-bottom: 20px;
+        margin-left: -20px;
+        }
+        .nav-sidebar > li > a {
+        padding-right: 20px;
+        padding-left: 20px;
+        }
+        .nav-sidebar > .active > a,
+        .nav-sidebar > .active > a:hover,
+        .nav-sidebar > .active > a:focus {
+        color: #fff;
+        background-color: #428bca;
+        }
+
     </style>
 
 </head>
 <body>
 
-<nav class="navbar navbar-inverse">
-    <div class="container">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed"
@@ -81,69 +125,91 @@
     </div>
 </nav>
 
-<div class="container">
+<div class="container-wrapper">
 
+    <div class="container-fluid">
 
-    <div id="grid" data-columns>
+        <div class="row">
 
-        {% for theme in themes %}
+            <div class="col-sm-3 col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li><a href="#">Overview</a></li>
+                    <li><a href="#">Reports</a></li>
+                    <li><a href="#">Analytics</a></li>
+                    <li><a href="#">Export</a></li>
+                </ul>
+            </div>
+            <!--
+                        main
+                        -->
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div id="grid" data-columns>
 
-        <div class="item">
+                    {% for theme in themes %}
 
-            <div class="panel panel-default">
+                    <div class="item">
 
-                <div class="panel-heading">
-                    <h3 class="text-capitalize">{{ theme.tag }}
-                        <a href="maps/{{ theme.tag }}"
-                           class="btn btn-default btn-small pull-right"
-                           role="button">
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading">
+                                <h3 class="text-capitalize">{{ theme.tag }}
+                                    <a href="maps/{{ theme.tag }}"
+                                       class="btn btn-default btn-small pull-right"
+                                       role="button">
                             <span class="glyphicon glyphicon-map-marker"
                                   aria-hidden="true">
                             </span>
-                        </a>
-                    </h3>
-                    
-                    <code>{{ theme.metadata.version }}</code>
+                                    </a>
+                                </h3>
 
-                </div>
+                                <code>{{ theme.metadata.version }}</code>
 
-                <div class="panel-body">
-                    <p class="lead">
-                        {{ theme.metadata.description}}
-                    </p>
-                </div>
+                            </div>
 
-                <table class="table table-default">
-                    <tr>
-                        <th>Key</th>
-                        <th>Value</th>
-                    </tr>
+                            <div class="panel-body">
+                                <p class="lead">
+                                    {{ theme.metadata.description}}
+                                </p>
+                            </div>
 
-                    {% for key, value in theme.pyramid.iteritems() %}
-                    <tr>
-                        <td><code>{{ key }}</code></td>
-                        <td>{{ value }}</td>
-                    </tr>
+                            <table class="table table-default">
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                </tr>
+
+                                {% for key, value in theme.pyramid.iteritems()
+                                %}
+                                <tr>
+                                    <td><code>{{ key }}</code></td>
+                                    <td>{{ value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+
+                            <div class="panel-footer">
+                                <p class="text-right">
+                                    {{ theme.metadata.attribution }}
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
                     {% endfor %}
-                </table>
 
-                <div class="panel-footer">
-                    <p class="text-right">
-                        {{ theme.metadata.attribution }}
-                    </p>
                 </div>
+
             </div>
 
+
         </div>
-        {% endfor %}
-
     </div>
+</div>
 
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <script src="static/js/salvattore.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="static/js/salvattore.min.js"></script>
 
 </body>
 </html>

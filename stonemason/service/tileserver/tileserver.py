@@ -193,6 +193,23 @@ class TileServerApp(Flask):
         Extra configurations specified on the creation of ``TileServerApp``.
         Used to accept variables from command line options.
 
+        The following parameters are available now:
+
+        - STONEMASON_THEMES:
+
+            The directory path of the themes.
+
+        - STONEMASON_DEBUG:
+
+            Turn on debug mode. True or False.
+
+        - STONEMASON_VERBOSE:
+
+            Print verbose logs. 1 or 0.
+
+        - STONEMASON_MEMCACHE_SERVERS:
+
+            Specify memcache servers. A list of servers.
     """
 
     ENV_PARAM_PREFIX = 'STONEMASON_'
