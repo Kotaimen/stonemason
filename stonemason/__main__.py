@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-"""Main CLI entry point, using Click as argument parser."""
+"""Main CLI entry point, using Click as argparser."""
 
 __author__ = 'kotaimen'
 __date__ = '2/3/15'
 
 import os
-import sys
+import shutil
 import multiprocessing
+import sys
 
 import click
 import six
@@ -19,7 +20,7 @@ import gunicorn.app.base
 # Click contexts
 #
 
-# NOTE: click add "_" between prefix and variable, but Flask don't...
+# NOTE: Click adds "_" between prefix and variable, but Flask doesn't...
 ENVVAR_PREFIX = 'STONEMASON'
 
 CONTEXT_SETTINGS = dict(
@@ -29,12 +30,12 @@ CONTEXT_SETTINGS = dict(
 
 
 class Context(object):
-    """Custom context object, passing options collected from group command.
-    """
+    """Custom context object, collecting options from group command,
+    and pass them to sub commands."""
 
     def __init__(self):
         self.themes = None
-        self.verbosity = 0
+        self.verbose = 0
         self.debug = False
 
 
@@ -52,6 +53,7 @@ class TileServer(gunicorn.app.base.BaseApplication):
         super(TileServer, self).__init__()
 
     def load_config(self):
+        # TODO: Also supports Gunicorn configuration files
         config = dict(
             [(key, value) for key, value in six.iteritems(self.options)
              if key in self.cfg.settings and value is not None])
@@ -68,18 +70,28 @@ import stonemason
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.option('--debug/--no-debug', default=False, help='debug mode.')
+@click.option('--debug/--no-debug', default=False,
+              help='enable/disable debug mode.')
 @click.option('-v', '--verbose', default=False, count=True,
-              help='being verbose.')
-@click.option('-t', '--themes', type=click.Path(exists=False), required=True,
-              help='themes root directory, can be overridden using envvar '
-                   'STONEMASON_THEMES.')
+              help='being verbose, this option can be specified several times')
+@click.option('-t', '--themes',
+              type=click.Path(exists=False, file_okay=True,
+                              readable=True),
+              required=False, default='themes',
+              help='''themes root directory, by default, it tries lookup "themes"
+                   under current directory.  Only local file system directory
+                   is supported as of now.''')
 @click.version_option(stonemason.__version__, message='Stonemason %(version)s')
 @click.pass_context
 def cli(ctx, debug, verbose, themes):
-    """Stonemason Tile Map Service Toolkit."""
+    """Stonemason Tile Map Service Toolkit.
+
+    Options and arguments can be specified using environment variables
+    as STONEMASON_<option>."""
     ctx.obj = Context()
     ctx.obj.themes = os.path.abspath(themes)
+    if verbose > 0:
+        click.secho('Themes root: %s' % ctx.obj.themes, fg='green')
     ctx.obj.verbose = verbose
     ctx.obj.debug = debug
 
@@ -91,20 +103,23 @@ from stonemason.service.tileserver import TileServerApp
 
 @cli.command('tileserver', short_help='frontend tile server.')
 @click.option('-b', '--bind', default='127.0.0.1:7086', type=str,
-              help='address and port to bind to')
+              help='address and port to bind to.')
 @click.option('-w', '--workers', default=0, type=click.IntRange(0, None),
-              help='number of worker processes, default is cpu_num * 2')
+              help='number of worker processes, default is cpu_num * 2.')
 @click.option('--threads', default=1, type=click.IntRange(1, None),
-              help='number of worker threads per process, default is 1')
+              help='number of worker threads per process, default is 1.')
 @click.option('--read-only', is_flag=True,
-              help='start the server in read only mode', )
+              help='start the server in read only mode.', )
 @pass_context
 def tile_server(ctx, bind, read_only, workers, threads):
-    """Starts tile server using given themes root."""
+    """Starts tile server using given themes configuration.
+    When debug is enabled, a debugging enabled Flask based server
+    is used, otherwise a Gunicorn server is used.  Note workers and
+    threads option is unused when debug is enabled."""
     assert isinstance(ctx, Context)
 
     if read_only and ctx.verbose > 0:
-        click.secho('Starting tileserver in read only mode.', fg='red')
+        click.secho('Tile server started in read only mode.', fg='green')
 
     # parse binding port
     host, port = bind.split(':')
@@ -125,11 +140,17 @@ def tile_server(ctx, bind, read_only, workers, threads):
 
     if ctx.debug:
         # run Flask server in debug mode
+        if ctx.verbose > 0:
+            click.secho('Starting Flask debug tile server.', fg='green')
         app.run(host=host, port=port, debug=ctx.debug)
     else:
         # otherwise, start gunicorn server
         if workers == 0:
             workers = multiprocessing.cpu_count() * 2
+        if ctx.verbose > 0:
+            click.secho(
+                'Starting Gunicorn tile server using %d worker(s) ' \
+                'and %d thread(s) per worker' % (workers, threads), fg='green')
         options = dict(
             workers=workers,
             threads=threads,
@@ -144,19 +165,33 @@ def tile_server(ctx, bind, read_only, workers, threads):
 #
 @cli.command('init', short_help='init themes root.')
 @pass_context
-def init_theme(ctx, sample):
-    click.secho('Initializing themes root at %s...' % ctx.themes)
-    # TODO: Init theme root
+def init_theme(ctx):
+    if os.path.exists(ctx.themes):
+        click.secho('Theme root already exists at %s' % ctx.themes, err=True)
+        return -1
+    shutil.copytree(
+        os.path.join(os.path.dirname(__file__), 'mason', 'theme', 'samples'),
+        ctx.themes,
+        symlinks=False)
+    click.echo('Initialization complete, start a tile server using:')
+    click.echo('    export STONEMASON_THEMES=%s' % ctx.themes)
+    click.echo('    stonemason --debug tileserver')
 
 
 #
 # Theme Root Init Command
 #
+from stonemason.mason import Mason
+
+
 @cli.command('check', short_help='check theme configuration.')
 @pass_context
-def check_config(ctx, sample):
+def check_config(ctx):
+    """Check whether the theme configuration is valid without start the server.
+    """
     click.secho('Checking themes configuration at %s...' % ctx.themes)
-    # TODO: Check config
+    mason = Mason()
+    mason.load_theme_from_directory(ctx.themes)
 
 
 if __name__ == '__main__':
