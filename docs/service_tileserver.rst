@@ -1,11 +1,16 @@
 Tile Map Service
-================
+****************
 
 *TMS(Tile Map Service) REST API*
 
 
-Retrieve Theme Info
--------------------
+Theme API
+=========
+
+A list of HTTP REST APIs used to retrieve and list themes.
+
+Retrieve Theme
+--------------
 
 .. http:get:: /themes/(tag)
 
@@ -44,8 +49,8 @@ Retrieve Theme Info
     :status 400: When request is not valid.
 
 
-List Theme Info
----------------
+List Theme
+----------
 
 .. http:get:: /themes
 
@@ -88,6 +93,11 @@ List Theme Info
     :status 200: No error.
     :status 400: When request is not valid.
 
+
+Tile API
+========
+
+A list of HTTP REST APIs used to retrieve tiles.
 
 Retrieve Tile
 -------------
@@ -144,6 +154,11 @@ Retrieve Tile
     Short way for retrieving a tile of scale 1.
 
 
+Map API
+=======
+
+A list of HTTP REST APIs used to retrieve maps.
+
 Retrieve Map
 ------------
 
@@ -181,6 +196,11 @@ Retrieve Map
     :status 200: No error.
     :status 404: No such map.
 
+
+Status API
+==========
+
+A list of HTTP REST APIs used to get status of tile server.
 
 Health Check
 ------------
