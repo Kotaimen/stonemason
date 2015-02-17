@@ -1,7 +1,7 @@
 .. _quickstart:
 
 Quick Start
-===========
+***********
 
 .. highlight:: console
 
@@ -26,7 +26,7 @@ getting help is a bit different from other multi command tools like `git`::
 
 
 Initialize Theme Root
----------------------
+=====================
 
 `stonemason` must have a `theme root` predefined, where all map designs,
 render directives, storage configurations are assembled together.
@@ -48,7 +48,7 @@ structure and configurations for you, with a simple sample theme::
 
 
 Configure a Memcache
---------------------
+====================
 
 To start serving tiles, a memcache server is required, the sample theme
 generated above requires one listening on local TCP port ``11211``::
@@ -76,13 +76,13 @@ generated above requires one listening on local TCP port ``11211``::
 
 
 Configure Redis
----------------
+===============
 
 Redis is used in distributed deployment as message queue, which is not
 required in the quickstart.
 
 Tile Server
------------
+===========
 
 After created a sample themes root, you can start the tile server::
 
@@ -100,7 +100,7 @@ TODO: Insert a screenshot here.
 
 
 Deployment
-----------
+==========
 
 Here is a sample `Docker` configuration which assumes a dist package in
 ``dist/`` and themes in ``themes/`` along the ``Dockerfile``:

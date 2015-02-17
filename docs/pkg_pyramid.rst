@@ -1,5 +1,5 @@
 Tile System
-===========
+***********
 
 .. module::stonemason.provider.pyramid
 
@@ -10,7 +10,7 @@ All classes in this package is implemented using :func:`collections.namedtuple`
 thus is immutable and pickle serializable.
 
 Tile
-----
+====
 
 .. autoclass:: stonemason.provider.pyramid.TileIndex
     :members:
@@ -20,7 +20,7 @@ Tile
 
 
 MetaTile
---------
+========
 
 .. autoclass:: stonemason.provider.pyramid.MetaTileIndex
     :members:
@@ -29,7 +29,7 @@ MetaTile
     :members:
 
 Serial
-------
+======
 
 .. autoclass:: stonemason.provider.pyramid.Hilbert
     :members:
@@ -39,7 +39,7 @@ Serial
 
 
 Pyramid
--------
+=======
 
 .. autoclass:: stonemason.provider.pyramid.Pyramid
     :members:

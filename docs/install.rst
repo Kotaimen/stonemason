@@ -3,10 +3,10 @@
 .. highlight:: console
 
 Installation
-============
+************
 
 Python2 or Python3?
--------------------
+===================
 
 Being a cartography package, `stonemason` has lots of binary and Python
 geospatial package dependencies.  Although `stonemason` works on both
