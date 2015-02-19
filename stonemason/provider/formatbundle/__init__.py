@@ -10,6 +10,8 @@
 __author__ = 'kotaimen'
 __date__ = '2/17/15'
 
+from .exceptions import FormatError, InvalidMapType, InvalidTileFormat, \
+    NoMatchingMapWriter
 from .maptype import MapType
 from .tileformat import TileFormat
 from .bundle import FormatBundle

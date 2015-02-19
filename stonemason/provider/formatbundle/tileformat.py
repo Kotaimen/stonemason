@@ -30,10 +30,11 @@ class TileFormat(_TileFormat):
     KNOWN_FORMATS = {
         'JPEG': 'image/jpeg',
         'PNG': 'image/png',
+        'TIFF': 'image/tiff',
     }
 
     def __new__(cls, format=None, extension=None,
-                mimetype=None, parameter=None):
+                mimetype=None, parameters=None):
 
         if format is not None and mimetype is None:
             if format not in cls.KNOWN_FORMATS:
@@ -45,11 +46,11 @@ class TileFormat(_TileFormat):
         if extension is None:
             extension = guess_extension(mimetype)
 
-        if parameter is None:
-            parameter = dict()
+        if parameters is None:
+            parameters = dict()
 
         assert isinstance(mimetype, six.string_types)
         assert isinstance(extension, six.string_types)
-        assert isinstance(parameter, dict)
+        assert isinstance(parameters, dict)
 
-        return _TileFormat.__new__(cls, format, extension, mimetype, parameter)
+        return _TileFormat.__new__(cls, format, extension, mimetype, parameters)

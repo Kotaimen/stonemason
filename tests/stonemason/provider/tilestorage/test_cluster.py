@@ -14,7 +14,8 @@ from PIL import Image
 from stonemason.provider.pyramid import MetaTile, MetaTileIndex, \
     TileIndex, Tile, Pyramid
 from stonemason.provider.tilestorage import TileCluster
-from stonemason.provider.formatbundle import MapWriter, find_writer, TileFormat
+from stonemason.provider.formatbundle import MapType, TileFormat, MapWriter, \
+    find_writer
 
 from tests import DATA_DIRECTORY, ImageTestCase
 
@@ -30,7 +31,7 @@ class TestCreateTileClusterFromMetaTile(ImageTestCase):
                                  data=self.image_data,
                                  mimetype='image/png',
                                  buffer=256)
-        self.writer = find_writer(TileFormat(format='JPEG'))
+        self.writer = find_writer(MapType('image'), TileFormat(format='PNG'))
 
     def test_from_metatile(self):
         tilecluster = TileCluster.from_metatile(self.metatile, self.writer)

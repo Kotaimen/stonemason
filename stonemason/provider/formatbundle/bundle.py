@@ -23,7 +23,7 @@ class FormatBundle(object):
         self._map_type = map_type
         self._tile_format = tile_format
 
-        self._writer = find_writer(tile_format, map_type=map_type)
+        self._writer = find_writer(map_type, tile_format)
         assert isinstance(self._writer, MapWriter)
 
     @property
