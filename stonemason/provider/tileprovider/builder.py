@@ -13,7 +13,7 @@ __date__ = '2/5/15'
 from stonemason.provider.tilecache import NullTileCache, MemTileCache
 from stonemason.provider.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
-
+from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
 from .provider import TileProvider
 
 
@@ -49,12 +49,21 @@ class ClusterStorageFactory(object):
         prototype = kwargs.get('prototype')
         parameters = kwargs.get('parameters')
 
+        # XXX: Use hard-wired format bundle for integration
+
+        format_bundle = FormatBundle(MapType('image'),
+                                     TileFormat('JPEG'))
+
         if prototype == 'null':
             return NullClusterStorage()
         elif prototype == 'disk':
-            return DiskClusterStorage(pyramid=pyramid, **parameters)
+            return DiskClusterStorage(pyramid=pyramid,
+                                      format=format_bundle,
+                                      **parameters)
         elif prototype == 's3':
-            return S3ClusterStorage(pyramid=pyramid, **parameters)
+            return S3ClusterStorage(pyramid=pyramid,
+                                    format=format_bundle,
+                                    **parameters)
         else:
             raise UnknownPrototype(prototype)
 
@@ -114,6 +123,7 @@ class TileProviderBuilder(object):
         A ClusterStorage instance used to store or retrieve tiles.
 
     """
+
     def __init__(self, tag, pyramid, metadata=None, cache=None, storage=None):
         self._tag = tag
         self._pyramid = pyramid

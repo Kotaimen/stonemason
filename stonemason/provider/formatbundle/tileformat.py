@@ -26,6 +26,7 @@ class TileFormat(_TileFormat):
     """
     __slots__ = ()
 
+    # TODO: Allow register custom formats
     KNOWN_FORMATS = {
         'JPEG': 'image/jpeg',
         'PNG': 'image/png',
@@ -34,8 +35,9 @@ class TileFormat(_TileFormat):
     def __new__(cls, format=None, extension=None,
                 mimetype=None, parameter=None):
 
-        if format not in cls.KNOWN_FORMATS:
-            raise InvalidTileFormat(format)
+        if format is not None and mimetype is None:
+            if format not in cls.KNOWN_FORMATS:
+                raise InvalidTileFormat(format)
 
         if mimetype is None:
             mimetype = cls.KNOWN_FORMATS[format]

@@ -9,7 +9,6 @@
 __author__ = 'kotaimen'
 __date__ = '1/23/15'
 
-
 import os
 import errno
 import sys
@@ -17,10 +16,13 @@ import sys
 import six
 
 from stonemason.util.tempfn import generate_temp_filename
+from stonemason.provider.formatbundle import FormatBundle
 
 from .tilestorage import ClusterStorage, MetaTileStorage, \
     PersistenceStorageConcept, create_key_mode, MetaTileSerializer, \
     TileClusterSerializer, StorageMixin
+
+from .exceptions import TileStorageError
 
 
 def safe_makedirs(name):
@@ -153,12 +155,12 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
     """
 
     def __init__(self, root='.', dir_mode='hilbert', pyramid=None,
-                 mimetype='application/data', extension=None,
-                 readonly=False, gzip=False):
+                 format=None, readonly=False, gzip=False):
         assert isinstance(root, six.string_types)
-        # Make sure absolute path is used since relative path creates lots of
-        # confusion during deployment.
-        assert os.path.isabs(root)
+        if not isinstance(format, FormatBundle):
+            raise TileStorageError('Must specify format explicitly.')
+        if not os.path.isabs(root):
+            raise TileStorageError('Only accepts an absolute path.')
 
         storage = DiskStorage()
 
@@ -168,7 +170,8 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
 
         StorageMixin.__init__(self, storage, object_persistence, key_mode,
                               pyramid=pyramid, prefix=root,
-                              mimetype=mimetype, extension=extension,
+                              mimetype=format.tile_format.mimetype,
+                              extension=format.tile_format.extension,
                               gzip=gzip, readonly=readonly)
 
 
@@ -220,19 +223,22 @@ class DiskClusterStorage(StorageMixin, ClusterStorage):
     :type splitter: :class:`~stonemason.provider.tilestorage.Splitter`
     """
 
-    def __init__(self, root='.', dir_mode='hilbert', pyramid=None,
-                 mimetype='application/data',
+    def __init__(self, root='.', dir_mode='hilbert', pyramid=None, format=None,
                  readonly=False, compressed=False, splitter=None):
         assert isinstance(root, six.string_types)
-        assert os.path.isabs(root)
+        if not isinstance(format, FormatBundle):
+            raise TileStorageError('Must specify format explicitly.')
+        if not os.path.isabs(root):
+            raise TileStorageError('Only accepts an absolute path.')
 
         storage = DiskStorage()
 
         key_mode = create_key_mode(dir_mode, sep=os.sep)
         object_persistence = TileClusterSerializer(compressed=compressed,
-                                                   splitter=splitter)
+                                                   writer=format.writer)
 
         StorageMixin.__init__(self, storage, object_persistence, key_mode,
                               pyramid=pyramid, prefix=root,
-                              mimetype=mimetype, extension='.zip',
+                              mimetype=format.tile_format.mimetype,
+                              extension='.zip',
                               gzip=False, readonly=readonly)

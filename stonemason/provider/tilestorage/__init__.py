@@ -10,8 +10,7 @@ __author__ = 'kotaimen'
 __date__ = '12/26/14'
 
 from .tilestorage import TileStorageError
-from .cluster import Splitter, ImageSplitter, TileCluster, \
-    TileClusterError
+from .cluster import TileCluster, TileClusterError
 from .tilestorage import ClusterStorage, MetaTileStorage, \
     NullClusterStorage, NullMetaTileStorage, \
     TileStorageError, InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage

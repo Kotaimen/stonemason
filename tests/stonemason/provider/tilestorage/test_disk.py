@@ -9,6 +9,7 @@ import shutil
 import tempfile
 
 from stonemason.provider.pyramid import MetaTile, MetaTileIndex, Pyramid
+from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.provider.tilestorage import DiskClusterStorage, \
     DiskMetaTileStorage, TileCluster, \
     InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
@@ -26,11 +27,13 @@ class TestDiskClusterStorage(unittest.TestCase):
                                  data=open(grid_image, 'rb').read(),
                                  mimetype='image/png')
 
+        self.format = FormatBundle(MapType('image'), TileFormat('PNG'))
+
     def test_basic(self):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png')
+            format=self.format)
         storage.put(self.metatile)
 
         cluster = storage.get(self.metatile.index)
@@ -43,7 +46,7 @@ class TestDiskClusterStorage(unittest.TestCase):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='text/plain')
+            format=FormatBundle(MapType('image'), TileFormat('JPEG')))
 
         self.assertRaises(InvalidMetaTileIndex,
                           storage.put,
@@ -59,7 +62,7 @@ class TestDiskClusterStorage(unittest.TestCase):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png',
+            format=self.format,
             readonly=True)
         self.assertRaises(ReadonlyStorage, storage.put, self.metatile)
         self.assertRaises(ReadonlyStorage, storage.retire, self.metatile.index)
@@ -68,7 +71,7 @@ class TestDiskClusterStorage(unittest.TestCase):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png',
+            format=self.format,
             dir_mode='simple')
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,
@@ -81,7 +84,7 @@ class TestDiskClusterStorage(unittest.TestCase):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png',
+            format=self.format,
             dir_mode='legacy')
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,
@@ -93,7 +96,7 @@ class TestDiskClusterStorage(unittest.TestCase):
         storage = DiskClusterStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png',
+            format=self.format,
             dir_mode='hilbert')
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,
@@ -114,12 +117,13 @@ class TestDiskMetaTileStorage(unittest.TestCase):
         self.metatile = MetaTile(MetaTileIndex(19, 453824, 212288, 8),
                                  data=open(grid_image, 'rb').read(),
                                  mimetype='image/png')
+        self.format = FormatBundle(MapType('image'), TileFormat('PNG'))
 
     def test_basic(self):
         storage = DiskMetaTileStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png')
+            format=self.format)
         storage.put(self.metatile)
 
         metatile = storage.get(self.metatile.index)
@@ -136,7 +140,7 @@ class TestDiskMetaTileStorage(unittest.TestCase):
         storage = DiskMetaTileStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png',
+            format=self.format,
             dir_mode='simple',
             gzip=True)
         storage.put(self.metatile)
@@ -150,9 +154,9 @@ class TestDiskMetaTileStorage(unittest.TestCase):
         storage = DiskMetaTileStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png',
-            dir_mode='simple',
-            extension='.dat')
+            format=FormatBundle(MapType('image'),
+                                TileFormat('PNG', extension='.dat')),
+            dir_mode='simple', )
         storage.put(self.metatile)
         self.assertTrue(os.path.exists(os.path.join(self.root,
                                                     '19', '453824', '212288',

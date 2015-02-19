@@ -16,71 +16,13 @@ import math
 
 import six
 
-from stonemason.util.postprocessing.gridcrop import grid_crop_into_data
 from stonemason.util.guesstypes import guess_mimetype, guess_extension
 from stonemason.provider.pyramid import Tile, TileIndex, MetaTile, \
     MetaTileIndex
+from stonemason.provider.formatbundle import MapWriter
 
 from .exceptions import TileClusterError
 
-
-class Splitter(object):  # pragma: no cover
-    """Base class for metatile data splitter."""
-
-    def __call__(self, data, stride, buffer):
-        """Crop given metatile data into smaller tile data.
-
-        :param data: Metatile data.
-        :type data: bytes
-        :param stride: Number of tiles per axis.
-        :type stride: int
-        :param buffer: Size of pixel buffer around metatile.
-        :type buffer: int
-        :return: A iterable of ``((row, column), grid_data)``.
-        :rtype: iterator
-        """
-        raise NotImplementedError
-
-
-class ImageSplitter(Splitter):
-    """Split metatile using grid cropper and provided format and parameters.
-
-    Split given metatile image data into tiles by calling grid cropping.
-
-    .. seealso:: :func:`~stonemason.util.postprocessing.gridcrop.grid_crop_into_data` and
-        :func:`~stonemason.util.postprocessing.gridcrop.grid_crop`
-
-    >>> from stonemason.provider.tilestorage import ImageSplitter
-    >>> from PIL import Image
-    >>> import io
-    >>> image = Image.new('RGB', (768, 768))
-    >>> splitter = ImageSplitter(format='JPEG',
-    ...                          parameters={'optimized':True,
-    ...                                      'quality': 60})
-    >>> for (row, column), image_data in splitter(image, 2, 128):
-    ...     grid_image = Image.open(io.BytesIO(image_data))
-    ...     print grid_image.format, grid_image.size
-    JPEG (256, 256)
-    JPEG (256, 256)
-    JPEG (256, 256)
-    JPEG (256, 256)
-
-    :param format: Format of the cropped tile data.
-    :param parameters: Image save format parameters.
-    """
-
-    def __init__(self, format=None, parameters=None):
-        if parameters is None:
-            parameters = {}
-        self._format = format
-        self._parameters = parameters
-
-    def __call__(self, data, stride, buffer):
-        return grid_crop_into_data(data,
-                                   stride=stride,
-                                   buffer_size=buffer,
-                                   format=self._format,
-                                   parameters=self._parameters)
 
 # The index file name
 CLUSTER_ZIP_INDEX = 'index.json'
@@ -96,6 +38,7 @@ class TileCluster(object):
 
 
     >>> from stonemason.provider.tilestorage import TileCluster
+    >>> from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
     >>> from stonemason.provider.pyramid import MetaTile, MetaTileIndex, TileIndex
     >>> from PIL import Image
     >>> import io
@@ -108,7 +51,8 @@ class TileCluster(object):
     ...                     mimetype='image/jpeg',
     ...                     mtime=1.,
     ...                     buffer=256)
-    >>> cluster = TileCluster.from_metatile(metatile)
+    >>> format_bundle = FormatBundle(MapType('image'), TileFormat('JPEG'))
+    >>> cluster = TileCluster.from_metatile(metatile, format_bundle.writer)
     >>> cluster.index
     MetaTileIndex(4/4/8@2)
     >>> cluster.tiles
@@ -162,28 +106,24 @@ class TileCluster(object):
 
 
     @staticmethod
-    def from_metatile(metatile, splitter=None):
+    def from_metatile(metatile, writer):
         """Create a `TileCluster` object from a `MetaTile`.
 
-        Besides `metatile`, a :class:`~stonemason.provider.tilestorage.Splitter`
-        instance must also be provided.  The splitter is used to split metatile
+        Besides `metatile`, a :class:`~stonemason.provider.formatbundle.MapWriter`
+        instance must also be provided.  It is used to re-split metatile
         data into smaller tiles.
-
-        To split a raster image tile, use included
-        :class:`~stonemason.provider.tilestorage.ImageSplitter` class.
 
         :param metatile: The metatile.
         :type metatile: :class:`~stonemason.provider.tilecache.TileCluster`
-        :param splitter: A splitter to tansform metatile data into small tiles.
-        :type splitter: Splitter
+
+        :param writer: A `MapWriter` to resplit metatile data into small tiles.
+        :type writer: :class:`~stonemason.provider.formatbundle.MapWriter`
+
         :return: created cluster object.
         :rtype: :class:`~stonemason.provider.tilestorage.TileCluster`
         """
         assert isinstance(metatile, MetaTile)
-
-        if splitter is None and metatile.mimetype.startswith('image/'):
-            splitter = ImageSplitter()
-        assert isinstance(splitter, Splitter)
+        assert isinstance(writer, MapWriter)
 
         # calculate (row, column) index to relative left top tile
         tile_indexes = dict()
@@ -194,9 +134,9 @@ class TileCluster(object):
 
         # reference tile index using split tile data
         tiles = list()
-        for (row, column), data in splitter(metatile.data,
-                                            metatile.index.stride,
-                                            metatile.buffer):
+        for (row, column), data in writer.resplit_map(metatile.data,
+                                                      metatile.index.stride,
+                                                      metatile.buffer):
             tile = Tile(tile_indexes[(row, column)],
                         data,
                         mimetype=metatile.mimetype,
@@ -206,7 +146,7 @@ class TileCluster(object):
         return TileCluster(metatile.index, tiles)
 
     @staticmethod
-    def from_image(index, image, metadata, splitter=None, buffer=0):
+    def from_image(index, image, metadata, writer=None, buffer=0):
         # XXX not necessary till we have real rendering
         raise NotImplementedError
 

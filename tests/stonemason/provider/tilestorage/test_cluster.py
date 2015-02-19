@@ -13,29 +13,10 @@ from PIL import Image
 
 from stonemason.provider.pyramid import MetaTile, MetaTileIndex, \
     TileIndex, Tile, Pyramid
-from stonemason.provider.tilestorage import Splitter, ImageSplitter, \
-    TileCluster
-from stonemason.provider.tilestorage.cluster import guess_extension, \
-    guess_mimetype
+from stonemason.provider.tilestorage import TileCluster
+from stonemason.provider.formatbundle import MapWriter, find_writer, TileFormat
 
 from tests import DATA_DIRECTORY, ImageTestCase
-
-
-class TestImageSplitter(ImageTestCase):
-    def setUp(self):
-        self.splitter = ImageSplitter(format='JPEG')
-        grid_image = os.path.join(DATA_DIRECTORY,
-                                  'grid_crop', 'grid.png')
-        self.image_data = open(grid_image, mode='rb').read()
-        self.image = Image.open(grid_image)
-
-    def test_split(self):
-        for (row, column), image_data in self.splitter(self.image,
-                                                       stride=2,
-                                                       buffer=256):
-            grid_image = Image.open(io.BytesIO(image_data))
-            self.assertEqual(grid_image.format, 'JPEG')
-            self.assertEqual(grid_image.size, (256, 256))
 
 
 class TestCreateTileClusterFromMetaTile(ImageTestCase):
@@ -49,10 +30,10 @@ class TestCreateTileClusterFromMetaTile(ImageTestCase):
                                  data=self.image_data,
                                  mimetype='image/png',
                                  buffer=256)
-        self.splitter = ImageSplitter()
+        self.writer = find_writer(TileFormat(format='JPEG'))
 
     def test_from_metatile(self):
-        tilecluster = TileCluster.from_metatile(self.metatile)
+        tilecluster = TileCluster.from_metatile(self.metatile, self.writer)
         self.assertIsInstance(tilecluster, TileCluster)
         self.assertEqual(tilecluster.index, self.metatile.index)
         self.assertEqual(len(tilecluster.tiles), 4)
@@ -129,8 +110,18 @@ class TestCreateTileClusterFromLegacyZipFile(ImageTestCase):
                              MetaTileIndex(19, 468416, 187664, 8))
 
 
-class TxtSplitter(Splitter):
-    def __call__(self, data, stride, buffer):
+class TextMapWriter(MapWriter):
+    def __init__(self):
+        format_ = TileFormat(format='TXT', mimetype='text/plain')
+        super(TextMapWriter, self).__init__(format_)
+
+    def crop_map(self, map, buffer=0):
+        raise NotImplementedError
+
+    def grid_crop_map(self, map, stride=1, buffer=0):
+        raise NotImplementedError
+
+    def resplit_map(self, data, stride=1, buffer=0):
         for x in range(stride):
             for y in range(stride):
                 yield (x, y), b'tile_data'
@@ -145,7 +136,7 @@ class TestSaveClusterAsZipFile(unittest.TestCase):
                             buffer=0)
 
         self.cluster = TileCluster.from_metatile(metatile,
-                                                 splitter=TxtSplitter())
+                                                 writer=TextMapWriter())
 
         self.expected_index = {
             "version": 1,

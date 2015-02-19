@@ -13,7 +13,7 @@ __date__ = '2/17/15'
 
 from .maptype import MapType
 from .tileformat import TileFormat
-from .mapwriter import find_writer, MapWriterConcept
+from .mapwriter import find_writer, MapWriter
 
 
 class FormatBundle(object):
@@ -23,9 +23,17 @@ class FormatBundle(object):
         self._map_type = map_type
         self._tile_format = tile_format
 
-        self._writer = find_writer(map_type, tile_format)
-        assert isinstance(self._writer, MapWriterConcept)
+        self._writer = find_writer(tile_format, map_type=map_type)
+        assert isinstance(self._writer, MapWriter)
 
     @property
     def writer(self):
-        return self.writer
+        return self._writer
+
+    @property
+    def map_type(self):
+        return self._map_type
+
+    @property
+    def tile_format(self):
+        return self._tile_format
