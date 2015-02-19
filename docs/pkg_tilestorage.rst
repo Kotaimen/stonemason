@@ -32,6 +32,7 @@ Exceptions
 
 .. automodule:: stonemason.provider.tilestorage.exceptions
     :members:
+    :undoc-members:
 
 
 Tile Cluster
