@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/5/15'
-
 """
     stonemason.util.postprocessing.gridrop
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -13,6 +10,9 @@ __date__ = '1/5/15'
     PIL/Pillow is required for image IO and image processing.
 
 """
+
+__author__ = 'kotaimen'
+__date__ = '1/5/15'
 
 import io
 

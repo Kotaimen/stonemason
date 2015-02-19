@@ -1,13 +1,13 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '2/9/15'
-
 """
     stonemason.provider.tilestorage.clusterfier
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Convert a `MetaTileStorage` to a `ClusterStorage` on-the-fly.
 """
+
+__author__ = 'kotaimen'
+__date__ = '2/9/15'
 
 from .tilestorage import ClusterStorage, MetaTileStorage
 from .cluster import TileCluster

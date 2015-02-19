@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '12/26/14'
-
 """
     stonemason.provider.tilestorage
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Persistence storage of metatiles.
 """
+__author__ = 'kotaimen'
+__date__ = '12/26/14'
 
 from .tilestorage import TileStorageError
 from .cluster import Splitter, ImageSplitter, TileCluster, \

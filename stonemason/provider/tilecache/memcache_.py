@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/12/15'
-
 """
     stonemason.provider.tilecache.memcache_
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Memcached tile cache
 """
+__author__ = 'kotaimen'
+__date__ = '1/12/15'
 
 import re
 import json

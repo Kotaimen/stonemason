@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/23/15'
-
 """
     stonemason.provider.tilestorage.disk
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Disk based storages.
 
 """
+__author__ = 'kotaimen'
+__date__ = '1/23/15'
+
 
 import os
 import errno

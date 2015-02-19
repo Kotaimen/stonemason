@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/29/15'
-
 """
     stonemason.provider.tilestorage.s3
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     S3 based storages.
 
 """
+
+__author__ = 'kotaimen'
+__date__ = '1/29/15'
 
 import email
 import time

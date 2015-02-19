@@ -1,15 +1,13 @@
 # -*- encoding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-
-__author__ = 'kotaimen'
-__date__ = '1/18/15'
 
 """
     stonemason.provider.tilestorage.cluster
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Metatile split into Tiles.
 """
+
+__author__ = 'kotaimen'
+__date__ = '1/18/15'
 
 import collections
 import zipfile

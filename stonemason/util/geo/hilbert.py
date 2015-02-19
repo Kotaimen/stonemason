@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/8/15'
-
 """
     stonemason.util.geo.hilbert
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10,6 +7,9 @@ __date__ = '1/8/15'
     Hilbert curve calculations.
 
 """
+
+__author__ = 'kotaimen'
+__date__ = '1/8/15'
 
 # XXX: This is implemented cython for unsigned integer bit operation
 from . import _hilbert

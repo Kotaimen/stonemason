@@ -1,13 +1,13 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/25/15'
-
 """
     stonemason.util.guesstypes
     ~~~~~~~~~~~~~~~~~~~~~~~~~~
     Guess mimetypes or file extensions.
 """
+
+__author__ = 'kotaimen'
+__date__ = '1/25/15'
 
 import mimetypes
 
