@@ -13,6 +13,9 @@ class TestMapType(unittest.TestCase):
         self.assertEqual(MapType('raster').type, 'raster')
         self.assertEqual(MapType('image').type, 'image')
 
+    def test_repr(self):
+        self.assertEqual(str(MapType('raster')), 'MapType(raster)')
+
     def test_init_fail(self):
         self.assertRaises(InvalidMapType, MapType, 'foobar')
 

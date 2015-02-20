@@ -16,6 +16,11 @@ class TestFormatBundle(unittest.TestCase):
         self.assertIsInstance(bundle.tile_format, TileFormat)
         self.assertIsInstance(bundle.writer, MapWriter)
 
+    def test_repr(self):
+        self.assertEqual(
+            str(FormatBundle(MapType('image'), TileFormat('JPEG'))),
+            'FormatBundle(MapType(image), TileFormat(JPEG|image/jpeg|.jpg))')
+
     def test_writer_fail(self):
         self.assertRaises(NoMatchingMapWriter, FormatBundle,
                           MapType('feature'),

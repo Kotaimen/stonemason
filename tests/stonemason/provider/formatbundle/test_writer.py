@@ -27,6 +27,9 @@ class TestImageMapWriter(unittest.TestCase):
         self.image_data = open(grid_image, mode='rb').read()
         self.image = Image.open(grid_image)
 
+    def test_real_map_type(self):
+        self.assertEqual(self.writer.real_map_type, Image.Image)
+
     def test_crop_map(self):
         data = self.writer.crop_map(self.image, buffer=256)
         image = Image.open(io.BytesIO(data))

@@ -16,6 +16,10 @@ class TestTileFormat(unittest.TestCase):
         self.assertEqual(fmt.extension, '.jpg')
         self.assertEqual(fmt.parameters, {})
 
+    def test_repr(self):
+        self.assertEqual(str(TileFormat('JPEG')),
+                         'TileFormat(JPEG|image/jpeg|.jpg)')
+
     def test_init2(self):
         fmt = TileFormat(format='JPEG', mimetype='image/jpg',
                          extension='.jpeg',
