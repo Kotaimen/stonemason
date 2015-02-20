@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/6/15'
-
 """
     stonemason.provider.tilecache.tilecache
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     A do nothing tile cache.
 """
+__author__ = 'kotaimen'
+__date__ = '1/6/15'
 
 import re
 

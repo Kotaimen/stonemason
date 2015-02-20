@@ -1,13 +1,14 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/18/15'
 
 """
     stonemason.provider.pyramid.metatile
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Large square area in a map.
 """
+
+__author__ = 'kotaimen'
+__date__ = '1/18/15'
 
 import collections
 import time

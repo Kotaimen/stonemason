@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/8/15'
-
 """
     stonemason.provider.pyramid.tile
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Square area in a map.
 
 """
+__author__ = 'kotaimen'
+__date__ = '1/8/15'
 
 import collections
 import time

@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '12/26/14'
-
 """
     stonemason.provider.tilecache
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10,6 +7,9 @@ __date__ = '12/26/14'
     A cache of tiles.
 """
 
+__author__ = 'kotaimen'
+__date__ = '12/26/14'
+
 from .tilecache import TileCache, NullTileCache, TileCacheError
-from .memcache_ import MemTileCache
+from .memcache_ import MemTileCache, MemTileCacheError
 

@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/18/15'
-
 """
     stonemason.provider.tilestorage.tilestorage
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10,13 +7,16 @@ __date__ = '1/18/15'
     Persistence storage of tiles.
 """
 
+__author__ = 'kotaimen'
+__date__ = '1/18/15'
+
 import io
 import gzip
 import six
 
 from stonemason.provider.pyramid import MetaTileIndex, MetaTile, \
     Hilbert, Legacy, Pyramid
-from stonemason.util.guesstypes import guess_extension, guess_mimetype
+from stonemason.provider.formatbundle import MapWriter, FormatBundle, TileFormat
 
 from .cluster import TileCluster
 
@@ -226,9 +226,10 @@ class MetaTileSerializer(ObjectSerializeConcept):
 
 
 class TileClusterSerializer(ObjectSerializeConcept):
-    def __init__(self, compressed=False, splitter=None):
+    def __init__(self, writer, compressed=False):
+        assert isinstance(writer, MapWriter)
         self._compressed = compressed
-        self._splitter = splitter
+        self._writer = writer
 
     def load(self, index, blob, metadata):
         metadata = metadata.copy()
@@ -241,7 +242,7 @@ class TileClusterSerializer(ObjectSerializeConcept):
         metadata = dict(mimetype='application/zip',
                         mtime=metatile.mtime,
                         etag=metatile.etag)
-        cluster = TileCluster.from_metatile(metatile, self._splitter)
+        cluster = TileCluster.from_metatile(metatile, self._writer)
         buf = io.BytesIO()
         cluster.save_as_zip(buf, compressed=self._compressed)
         return buf.getvalue(), metadata
@@ -269,12 +270,8 @@ class StorageMixin(object):
         assert isinstance(prefix, six.string_types)
         self._prefix = prefix
 
-        # mimetype & extension
-        if extension is None:
-            self._extension = guess_extension(mimetype)
-        else:
-            assert extension.startswith('.')
-            self._extension = extension
+        assert extension.startswith('.')
+        self._extension = extension
         self._mimetype = mimetype
 
         # readonly flag

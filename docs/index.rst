@@ -41,6 +41,7 @@ API Reference
     pkg_tileprovider
     pkg_tilecache
     pkg_tilestorage
+    pkg_formatbundle
 
 
 .. toctree::

@@ -32,6 +32,7 @@ Exceptions
 
 .. automodule:: stonemason.provider.tilestorage.exceptions
     :members:
+    :undoc-members:
 
 
 Tile Cluster
@@ -116,18 +117,6 @@ JSON fields:
 
     Optional fields are designed to work with legacy renders, current
     cluster will always write these fields.
-
-Splitter
-========
-
-.. warning:: Splitter is temporary placed in the tilestorage package and
-    is subject to change.
-
-.. autoclass:: stonemason.provider.tilestorage.Splitter
-    :members: __call__
-
-.. autoclass:: stonemason.provider.tilestorage.ImageSplitter
-    :members:
 
 
 MetaTile Storage
