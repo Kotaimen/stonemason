@@ -17,6 +17,29 @@ from .mapwriter import find_writer, MapWriter
 
 
 class FormatBundle(object):
+    """ Bundles map type and tile format together and try finding a
+    matching writer.
+
+    >>> from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+    >>> format = FormatBundle(MapType('image'), TileFormat('JPEG'))
+    >>> format
+    FormatBundle(MapType(image), TileFormat(JPEG|image/jpeg|.jpg))
+    >>> format.map_type
+    MapType(image)
+    >>> format.tile_format
+    TileFormat(JPEG|image/jpeg|.jpg)
+    >>> format.writer.real_map_type
+    <class PIL.Image.Image at ...>
+
+    :param map_type: Map type of the bundle.
+    :type map_type: :class:`~stonemason.provider.formatbundle.MapType`
+
+    :param tile_format: Tile format of the bundle.
+    :type tile_format: :class:`~stonemason.provider.formatbundle.TileFormat`
+
+    :raises: :exc:`~stonemason.provider.formatbundle.NoMatchingMapWriter`
+    """
+
     def __init__(self, map_type, tile_format):
         assert isinstance(map_type, MapType)
         assert isinstance(tile_format, TileFormat)
@@ -28,12 +51,18 @@ class FormatBundle(object):
 
     @property
     def writer(self):
+        """Map writer of the bundle."""
         return self._writer
 
     @property
     def map_type(self):
+        """Map type of the bundle."""
         return self._map_type
 
     @property
     def tile_format(self):
+        """Tile format of the bundle."""
         return self._tile_format
+
+    def __repr__(self):
+        return 'FormatBundle(%r, %r)' % (self._map_type, self._tile_format)
