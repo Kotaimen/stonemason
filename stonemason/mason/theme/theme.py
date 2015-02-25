@@ -3,7 +3,7 @@
     stonemason.mason.theme.theme
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Implements theme and configs for stonemason
+    Implements theme and relative theme elements.
 
 """
 
@@ -11,52 +11,44 @@ __author__ = 'ray'
 __date__ = '2/8/15'
 
 import re
-from collections import namedtuple
+
+from .element import ThemeElement
 
 
 class ThemeError(Exception):
-    """Base Theme Exception"""
     pass
 
 
-# make theme immutable
-_MetadataConfig = namedtuple(
-    'MetadataConfig',
-    'version description attribution thumbnail center center_zoom')
-
-_PyramidConfig = namedtuple(
-    'PyramidConfig',
-    'levels stride crs proj boundary')
-
-_CacheConfig = namedtuple(
-    'CacheConfig',
-    'prototype parameters')
-
-_StorageConfig = namedtuple(
-    'StorageConfig',
-    'prototype parameters')
-
-_Theme = namedtuple(
-    'Theme',
-    'name metadata pyramid cache storage')
+class InvalidThemeName(ThemeError):
+    pass
 
 
-class MetadataConfig(_MetadataConfig):
+class ThemeRoot(ThemeElement):
+    def validate(self):
+        if not re.match('^[a-zA-Z][a-zA-Z0-9@_]*$', self.name):
+            raise InvalidThemeName(self.name)
+        return ThemeElement.validate(self)
+
+
+class ThemeMetadata(ThemeElement):
     """Metadata Config
 
-    The `MetadataConfig` is one of the basic building elements of a `Theme`
-    that contains basic properties of a theme. Properties in MetadataConfig
+    The `ThemeMetadata` is one of the basic building elements of a `Theme`.
+    It contains basic properties of a theme. Properties in ThemeMetadata
     aims to provide better understanding of a Theme.
 
     Samples:
 
-    >>> from stonemason.mason.theme import MetadataConfig
-    >>> m = MetadataConfig(version='0.0.1',
-    ...                    description='A sample',
-    ...                    attribution='Q',
-    ...                    thumbnail='http://localhost/thumb.jpg',
-    ...                    center=[139, 35],
-    ...                    center_zoom=5)
+    >>> from stonemason.mason.theme.theme import ThemeMetadata
+    >>> m = ThemeMetadata('metadata',
+    ...                   version='0.0.1',
+    ...                   description='A sample',
+    ...                   attribution='Q',
+    ...                   thumbnail='http://localhost/thumb.jpg',
+    ...                   center=[139, 35],
+    ...                   center_zoom=5)
+    >>> m.name
+    'metadata'
     >>> m.version
     '0.0.1'
     >>> m.description
@@ -70,69 +62,113 @@ class MetadataConfig(_MetadataConfig):
     >>> m.center_zoom
     5
 
-    :type version: str
+    :param name:
+
+        A string literal represents the name of the `ThemeElement`.
+
+    :type name: str
+
     :param version:
 
-        A string literal represents the current edition of the `Theme`.
+        A string literal that represents the current edition of the `Theme`.
+        For example, ``0.0.1``.
 
-    :type description: str
+    :type version: str
+
     :param description:
 
         A written representation of current `Theme`.
 
-    :type attribution: str
+    :type description: str
+
     :param attribution:
 
         The statement of the copyright author's identity.
 
-    :type thumbnail: str
+    :type attribution: str
+
     :param thumbnail:
 
-        A url that represents the location of thumbnail.
+        A image url that represents the location of a thumbnail.
 
-    :type center: list
+    :type thumbnail: str
+
     :param center:
 
-        A [lon, lat] object that represents the start point of a provider's
-        map.
+        A [lon, lat] object that represents the initial view point of the
+        theme. Default to [0, 0].
 
-    :type center_zoom: int
+    :type center: list
+
     :param center_zoom:
 
-        A positive integer that represents the zoom level of the `center`.
+        A positive integer that represents the initial zoom level of the
+        theme. Default to 4.
+
+    :type center_zoom: int
 
     """
 
-    __slots__ = ()
+    def __init__(self, name, **attributes):
+        ThemeElement.__init__(
+            self, name,
+            version=attributes.get('version', ''),
+            description=attributes.get('description', ''),
+            attribution=attributes.get('attribution', 'K&R'),
+            thumbnail=attributes.get('thumbnail', ''),
+            center=attributes.get('center', [0, 0]),
+            center_zoom=attributes.get('center_zoom', 4))
 
-    def __new__(cls, version='', description='', attribution='K&R',
-                thumbnail=None, center=None, center_zoom=4):
+        self.validate()
 
-        if center is None:
-            center = [0, 0]
+    @property
+    def version(self):
+        """Current edition of the theme"""
+        return self.attributes['version']
 
-        return _MetadataConfig.__new__(cls, version=version,
-                                       description=description,
-                                       attribution=attribution,
-                                       thumbnail=thumbnail,
-                                       center=center,
-                                       center_zoom=center_zoom)
+    @property
+    def description(self):
+        """Description of the theme"""
+        return self.attributes['description']
+
+    @property
+    def attribution(self):
+        """Copyright about the theme"""
+        return self.attributes['attribution']
+
+    @property
+    def thumbnail(self):
+        """Thumbnail url"""
+        return self.attributes['thumbnail']
+
+    @property
+    def center(self):
+        """Initial view point of the theme"""
+        return self.attributes['center']
+
+    @property
+    def center_zoom(self):
+        """Initial view level of the theme"""
+        return self.attributes['center_zoom']
 
 
-class PyramidConfig(_PyramidConfig):
+class ThemePyramid(ThemeElement):
     """Pyramid Config
 
-    The `PyramidConfig` contains properties used to construct the
-    :class:`~stonemason.provider.pyramid.Pyramid` tile grid system.
+    The `ThemePyramid` contains properties used to construct a
+    :class:`~stonemason.provider.pyramid.Pyramid` tile system.
 
     Samples:
 
-    >>> from stonemason.mason.theme import PyramidConfig
-    >>> p = PyramidConfig(levels=range(0, 5),
-    ...                   stride=8,
-    ...                   crs='EPSG:4326',
-    ...                   proj='EPSG:3857',
-    ...                   boundary=(-45, -45, 45, 45))
+    >>> from stonemason.mason.theme.theme import ThemePyramid
+    >>> p = ThemePyramid('pyramid',
+    ...                  levels=range(0, 5),
+    ...                  stride=8,
+    ...                  crs='EPSG:4326',
+    ...                  proj='EPSG:3857',
+    ...                  boundary=(-45, -45, 45, 45))
+    >>> p.name
+    'pyramid'
     >>> p.levels
     [0, 1, 2, 3, 4]
     >>> p.stride
@@ -144,185 +180,247 @@ class PyramidConfig(_PyramidConfig):
     >>> p.boundary
     (-45, -45, 45, 45)
 
-    :type levels: list
+    :param name:
+
+        A string literal represents the name of the `ThemeElement`
+
+    :type name: str
+
     :param levels:
 
         A list of positive integers indicates available levels for the tile
         system. Default values ranges from 0 to 23 (exclusive).
 
-    :type stride: int
+    :type levels: list
+
     :param stride:
 
         A positive integer that represents the number of steps along the side
-        of a `metatile`. It must be powers of 2. Stride of a 2x2 metatile is
-        2. The default value is ``1``.
+        of a `metatile`. Its value must be powers of 2. For example, the
+        stride of a 2x2 metatile is ``2``. The default value is ``1``.
 
-    :type crs: str
+    :type stride: int
+
     :param crs:
 
-        A string literal that defines the coordinate reference system(CRS) of
-        the available data source. Its validation is delayed to backend. The
-        default value is ``EPSG:4326``.
+        A string literal indicates the coordinate reference system(CRS) of the
+        data source. The default value is ``EPSG:4326``.
 
-    :type proj: str
+    :type crs: str
+
     :param proj:
 
-        A string literal that defines the projection of the map. Its
-        validation is delayed to backend. The default value is ``EPSG:3857``.
+        A string literal that indicates the projection of the tile system. The
+        default value is ``EPSG:3857``.
 
-    :type boundary: tuple
+    :type proj: str
+
     :param boundary:
 
-        Boundary of the map specified in data `crs`. The default value is
-        (-180, -85.0511, 180, 85.0511).
+        A four value tuple indicates the boundary of the tile system. The
+        value is specified in coordinate system defined in `crs`. The default
+        value is (-180, -85.0511, 180, 85.0511).
+
+    :type boundary: tuple
 
     """
 
-    __slots__ = ()
 
-    def __new__(cls, levels=range(0, 23),
-                stride=1,
-                crs='EPSG:4326',
-                proj='EPSG:3857',
-                boundary=(-180, -85.0511, 180, 85.0511)):
-        return _PyramidConfig.__new__(cls, levels=levels, stride=stride,
-                                      crs=crs, proj=proj, boundary=boundary)
+    def __init__(self, name, **attributes):
+        ThemeElement.__init__(
+            self, name,
+            levels=attributes.get('levels', list(range(0, 23))),
+            stride=attributes.get('stride', 1),
+            crs=attributes.get('crs', 'EPSG:4326'),
+            proj=attributes.get('proj', 'EPSG:3857'),
+            boundary=attributes.get('boundary',
+                                    (-180, -85.0511, 180, 85.0511)))
+
+        self.validate()
+
+    @property
+    def levels(self):
+        """Available levels of the tile system"""
+        return self.attributes['levels']
+
+    @property
+    def stride(self):
+        """Steps along the side of a `Metatile`"""
+        return self.attributes['stride']
+
+    @property
+    def crs(self):
+        """Coordinate Reference System of the data"""
+        return self.attributes['crs']
+
+    @property
+    def proj(self):
+        """Projection of the tile system"""
+        return self.attributes['proj']
+
+    @property
+    def boundary(self):
+        """Boundary of the tile system"""
+        return self.attributes['boundary']
 
 
-class CacheConfig(_CacheConfig):
+class ThemeCache(ThemeElement):
     """Config for `TileCache`
 
-    The `CacheConfig` contains setup information to create a
-    :class:`~stonemason.provider.tilecache.TileCache` in a `TileProvider`.
-
-    The validation of parameters values is delayed to the creation time.
+    The `ThemeCache` contains parameters to setup a
+    :class:`~stonemason.provider.tilecache.TileCache` instances.
 
     Samples:
 
-    >>> from stonemason.mason.theme import CacheConfig
-    >>> c = CacheConfig(prototype='memcache',
+    >>> from stonemason.mason.theme.theme import ThemeCache
+    >>> c = ThemeCache('cache',
+    ...                 prototype='memcache',
     ...                 parameters=dict(servers=['127.0.0.1']))
+    >>> c.name
+    'cache'
     >>> c.prototype
     'memcache'
     >>> c.parameters
     {'servers': ['127.0.0.1']}
 
-    :type prototype: str
+    :param name:
+
+        A string literal represents the name of the `ThemeElement`
+
+    :type name: str
+
     :param prototype:
 
-        A string literal represents the type of `TileCache` to create. For
-        now, only ``null`` and ``memcache`` is supported. Default value
-        is ``null``.
+        A string literal indicates the type of `TileCache` to create. For now,
+        only ``null`` and ``memcache`` is available. Default value is ``null``.
 
-    :type parameters: dict
+    :type prototype: str
+
     :param parameters:
 
-        A dict object contains options used to create `TileCache`. Default to
-        None.
+        A dict object contains parameters to setup a `TileCache` instance.
+        Default to `{}`.
+
+    :type parameters: dict
 
     """
 
-    __slots__ = ()
+    def __init__(self, name, **attributes):
+        ThemeElement.__init__(
+            self, name,
+            prototype=attributes.get('prototype', 'null'),
+            parameters=attributes.get('parameters', dict()))
 
-    def __new__(cls, prototype='null', parameters=None):
+        self.validate()
 
-        if parameters is None:
-            parameters = dict()
+    @property
+    def prototype(self):
+        """Prototype of the cache"""
+        return self.attributes['prototype']
 
-        return _CacheConfig.__new__(cls, prototype=prototype,
-                                    parameters=parameters)
+    @property
+    def parameters(self):
+        """Parameters of the cache"""
+        return self.attributes['parameters']
 
 
-class StorageConfig(_StorageConfig):
+class ThemeStorage(ThemeElement):
     """Config for `ClusterStorage`
 
-    The `StorageConfig` contains setup information to create a
-    :class:`~stonemason.provider.tilestorage.ClusterStorage`
-    in a `TileProvider`. The validation of these option values is delayed to
-    the creation time.
+    The `ThemeStorage` contains parameters to setup a
+    :class:`~stonemason.provider.tilestorage.ClusterStorage` instance.
 
     Samples:
 
-    >>> from stonemason.mason.theme import StorageConfig
-    >>> s = StorageConfig(prototype='disk',
-    ...                   parameters=dict(root='/tmp/themes/'))
+    >>> from stonemason.mason.theme.theme import ThemeStorage
+    >>> s = ThemeStorage('storage', prototype='disk', parameters=dict(root='.'))
+    >>> s.name
+    'storage'
     >>> s.prototype
     'disk'
     >>> s.parameters
-    {'root': '/tmp/themes/'}
+    {'root': '.'}
 
-    :type prototype: str
+    :param name:
+
+        A string literal represents the name of the `ThemeElement`
+
+    :type name: str
+
     :param prototype:
 
-        A string literal represents the type of `ClusterStorage` to create.
-        Three choice, ``null``, ``disk`` and ``s3``, are available. Default
-        value is ``null``.
+        A string literal indicates the type of `ClusterStorage` to create.
+        There are three available choices, ``null``, ``disk`` and ``s3``. The
+        Default value is ``null``.
 
-    :type parameters: dict
+    :type prototype: str
+
     :param parameters:
 
-        A dict object contains options used to create `ClusterStorage`.
-        The default is None.
+        A dict object contains parameters used to create a `ClusterStorage`
+        instance. The default is `{}`.
+
+    :type parameters: dict
 
     """
 
-    __slots__ = ()
+    def __init__(self, name, **attributes):
+        ThemeElement.__init__(
+            self, name,
+            prototype=attributes.get('prototype', 'null'),
+            parameters=attributes.get('parameters', dict()))
 
-    def __new__(cls, prototype='null', parameters=None):
+        self.validate()
 
-        if parameters is None:
-            parameters = dict()
+    @property
+    def prototype(self):
+        """Prototype of the storage"""
+        return self.attributes['prototype']
 
-        return _StorageConfig.__new__(cls, prototype=prototype,
-                                      parameters=parameters)
+    @property
+    def parameters(self):
+        """Parameters of the storage"""
+        return self.attributes['parameters']
 
 
-class Theme(_Theme):
+class Theme(object):
     """Stonemason Theme
 
-    A configuration that defines how and where a
-    :class:`~stonemason.provider.tileprovider.TileProvider` retrieve its tiles.
+    A `Theme` in stonemason is a configuration object that indicates how and
+    where a :class:`~stonemason.provider.tileprovider.TileProvider` retrieve
+    its tiles.
 
-    Each `Theme` in stonemason has a name, which is also used to identify
-    the tiles to retrieve.
+    Each `Theme` has a name used to uniquely identify the theme. Also, a theme
+    normally has to contain the following elements:
 
-    Normally, a theme instance also defines the following configs:
+        - :class:`~stonemason.mason.theme.ThemeMetadata`:
 
-        - :class:`~stonemason.mason.theme.MetadataConfig`:
+            Basic properties of a `Theme`.
 
-            Basic information about a `Provider`.
+        - :class:`~stonemason.mason.theme.ThemePyramid`:
 
-        - :class:`~stonemason.mason.theme.PyramidConfig`:
+            Properties of the tile system of a `Theme`.
 
-            Properties that defines the tile Grid of a `Provider`.
+        - :class:`~stonemason.mason.theme.ThemeCache`:
 
-        - :class:`~stonemason.mason.theme.CacheConfig`:
+            Properties for setup a
+            :class:`~stonemason.provider.tilecache.TileCache` instance.
 
-            Properties for creating a
-            :class:`~stonemason.provider.tilecache.TileCache`.
+        - :class:`~stonemason.mason.theme.ThemeStorage`:
 
-        - :class:`~stonemason.mason.theme.StorageConfig`:
-
-            Properties for creating a
-            :class:`~stonemason.provider.tilestorage.ClusterStorage`.
+            Properties for setup a
+            :class:`~stonemason.provider.tilestorage.ClusterStorage` instance.
 
     Samples:
 
-    >>> from stonemason.mason.theme import Theme, PyramidConfig
-    >>> t = Theme(name='sample', pyramid=PyramidConfig(levels=range(0, 3)))
+    >>> from stonemason.mason.theme import Theme
+    >>> from stonemason.mason.theme import ThemeMetadata
+    >>> t = Theme(name='sample', pyramid=dict(levels=[0, 1, 2]))
     >>> t.name
     'sample'
-    >>> t.metadata
-    MetadataConfig(version='', description='', attribution='K&R', thumbnail=None, center=[0, 0], center_zoom=4)
-    >>> t.pyramid
-    PyramidConfig(levels=[0, 1, 2], stride=1, crs='EPSG:4326', proj='EPSG:3857', boundary=(-180, -85.0511, 180, 85.0511))
-    >>> t.cache
-    CacheConfig(prototype='null', parameters={})
-    >>> t.storage
-    StorageConfig(prototype='null', parameters={})
+    >>> t.pyramid.levels
+    [0, 1, 2]
 
-
-    :type name: str
     :param name:
 
         A string literal that uniquely identify a theme. A valid theme name
@@ -330,60 +428,90 @@ class Theme(_Theme):
         character, the underscore and the '@' character. This is equivalent to
         the regular expression :regexp:`^[a-zA-Z][a-zA-Z0-9@_]*$`.
 
-    :type metadata: :class:`~stonemason.mason.theme.MetadataConfig`
+    :type name: str
+
     :param metadata:
 
         Basic information about a theme, something like attribution, version.
 
-    :type pyramid: :class:`~stonemason.mason.theme.PyramidConfig`
+    :type metadata: :class:`~stonemason.mason.theme.MetadataConfig`
+
     :param pyramid:
 
         Properties that defines the tile grid system. It specified properties
         like boundary, zoom levels.
 
-    :type cache: :class:`~stonemason.mason.theme.CacheConfig`
+    :type pyramid: :class:`~stonemason.mason.theme.PyramidConfig`
+
     :param cache:
 
         Properties that defines the `TileCache` used to cache tiles. It
         could be None to disable the cache.
 
-    :type storage: :class:`~stonemason.mason.theme.StorageConfig`
+    :type cache: :class:`~stonemason.mason.theme.CacheConfig`
+
     :param storage:
 
         Properties that defines the `ClusterStorage` where tiles are stored.
 
+    :type storage: :class:`~stonemason.mason.theme.StorageConfig`
+
+
     """
 
-    __slots__ = ()
+    def __init__(self, **configs):
+        name = configs.get('name', 'default')
+        self._root = ThemeRoot(name)
 
-    def __new__(cls, name=None, metadata=None,
-                pyramid=None, cache=None, storage=None):
+        metadata_attrs = configs.get('metadata', dict())
+        theme_metadata = ThemeMetadata('metadata', **metadata_attrs)
+        self._root.put_element(theme_metadata.name, theme_metadata)
 
-        if name is None:
-            raise ThemeError('A Theme must have a Name!')
+        pyramid_attrs = configs.get('pyramid', dict())
+        theme_pyramid = ThemePyramid('pyramid', **pyramid_attrs)
+        self._root.put_element(theme_pyramid.name, theme_pyramid)
 
-        if not re.match('^[a-zA-Z][a-zA-Z0-9@_]*$', name):
-            raise ThemeError(
-                """A valid theme name should start with an alphabet character
-                and only contain alphanumeric character, the underscore and
-                the '@' character.""")
+        cache_attrs = configs.get('cache', dict())
+        theme_cache = ThemeCache('cache', **cache_attrs)
+        self._root.put_element(theme_cache.name, theme_cache)
 
-        if metadata is None:
-            metadata = MetadataConfig()
+        storage_attrs = configs.get('storage', dict())
+        theme_storage = ThemeStorage('storage', **storage_attrs)
+        self._root.put_element(theme_storage.name, theme_storage)
 
-        if pyramid is None:
-            pyramid = PyramidConfig()
+    @property
+    def name(self):
+        """Name of the theme"""
+        return self._root.name
 
-        if cache is None:
-            cache = CacheConfig()
+    @property
+    def metadata(self):
+        """Metadata Parameters of the theme"""
+        return self._root.get_element('metadata')
 
-        if storage is None:
-            storage = StorageConfig()
+    @property
+    def pyramid(self):
+        """Pyramid Parameters of the theme"""
+        return self._root.get_element('pyramid')
 
-        assert isinstance(metadata, MetadataConfig)
-        assert isinstance(pyramid, PyramidConfig)
-        assert isinstance(cache, CacheConfig)
-        assert isinstance(storage, StorageConfig)
+    @property
+    def cache(self):
+        """Cache Parameters of the theme"""
+        return self._root.get_element('cache')
 
-        return _Theme.__new__(cls, name=name, metadata=metadata,
-                              pyramid=pyramid, cache=cache, storage=storage)
+    @property
+    def storage(self):
+        """Storage parameters of the theme"""
+        return self._root.get_element('storage')
+
+    def describe(self):
+        """Description of the theme"""
+        description = dict(
+            name=self.name,
+            pyramid=self.pyramid.attributes,
+            metadata=self.metadata.attributes,
+            cache=self.cache.attributes,
+            storage=self.storage.attributes
+        )
+
+        return description

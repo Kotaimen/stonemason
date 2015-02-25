@@ -6,44 +6,28 @@ __date__ = '2/3/15'
 import unittest
 
 from stonemason.mason import Mason
-from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY, SAMPLE_THEME
+from stonemason.mason import ThemeNotExist, ThemeNotLoaded, ThemeAlreadyLoaded
+from stonemason.mason.theme import DictThemeManager, JsonThemeLoader
+from stonemason.mason.theme import SAMPLE_THEME
+
 
 
 class TestMason(unittest.TestCase):
     def setUp(self):
+        self._manager = DictThemeManager()
+
+        loader = JsonThemeLoader(SAMPLE_THEME)
+        loader.load(self._manager)
+
         self._mason = Mason()
 
-    def tearDown(self):
-        self._mason.close()
+    def test_load_theme(self):
+        theme = self._manager.get('antique')
 
-    def test_load_theme_from_file(self):
-        self._mason.load_theme_from_file(SAMPLE_THEME)
+        self._mason.load_theme(theme)
         self.assertIsNone(
             self._mason.get_tile('antique', 0, 0, 0, 1, 'png'))
 
-    def test_load_theme_from_directory(self):
-        self._mason.load_theme_from_directory(SAMPLE_THEME_DIRECTORY)
-        self.assertIsNone(
-            self._mason.get_tile('antique', 0, 0, 0, 1, 'png'))
+        self.assertRaises(
+            ThemeAlreadyLoaded, self._mason.load_theme, theme)
 
-    def test_get_theme(self):
-        self._mason.load_theme_from_file(SAMPLE_THEME)
-
-        expected = {
-            "pyramid": {
-                "levels": range(0, 23),
-                "stride": 1,
-                "crs": "EPSG:4326",
-                "proj": "EPSG:3857",
-                "boundary": (-180, -85.0511, 180, 85.0511)
-            },
-            "tag": "nanook",
-            "metadata": {
-                "attribution": "I am a sample."
-            }
-        }
-
-        m = self._mason.get_theme('antique')
-
-        self.assertEqual('antique', m['tag'])
-        self.assertEqual('K&R', m['metadata']['attribution'])

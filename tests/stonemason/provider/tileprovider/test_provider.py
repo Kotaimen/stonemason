@@ -9,7 +9,7 @@ import unittest
 from stonemason.provider.pyramid import Pyramid, TileIndex, Tile
 from stonemason.provider.tilecache import TileCache
 from stonemason.provider.tilestorage import ClusterStorage, TileCluster
-from stonemason.provider.tileprovider import TileProviderBuilder, TileProvider
+from stonemason.provider.tileprovider import TileProvider
 
 
 class DummyTileCache(TileCache):
@@ -71,22 +71,3 @@ class TestDummyProvider(unittest.TestCase):
         self.assertEqual(TileIndex(z, x, y), tile.index)
         self.assertEqual(six.b('A tile'), tile.data)
 
-
-class TestTileProviderFactory(unittest.TestCase):
-    def test_create_tile_provider(self):
-        t = 'test'
-        m = dict(attribution='K&R')
-        p = Pyramid()
-        cache_config = dict(prototype='null')
-        storage_config = dict(prototype='null')
-
-        builder = TileProviderBuilder(tag=t, pyramid=p)
-        builder.build_metadata(attribution='K&R')
-        builder.build_cache(**cache_config)
-        builder.build_storage(**storage_config)
-
-        provider = builder.build()
-
-        self.assertEqual(t, provider.tag)
-        self.assertDictEqual(m, provider.metadata)
-        self.assertDictEqual(p._asdict(), provider.pyramid._asdict())

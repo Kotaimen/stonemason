@@ -13,11 +13,6 @@ from stonemason.provider.tilecache import TileCache, NullTileCache
 from stonemason.provider.tilestorage import ClusterStorage, NullClusterStorage
 
 
-class ProviderError(object):
-    """Base TileProvider Error"""
-    pass
-
-
 class TileProvider(object):
     """Tile Provider
 
@@ -57,33 +52,29 @@ class TileProvider(object):
 
     """
 
-    TILEPROVIDER_MODE_READONLY = 'read-only'
-
-    TILEPROVIDER_MODE_HYBRID = 'hybrid'
-
     def __init__(self, tag, pyramid, metadata=None,
-                 cache=None, storage=None, mode='read-only'):
-        assert isinstance(tag, six.string_types)
+                 cache=None, storage=None, readonly=False):
+
+        # setting up default values
+        if metadata is None:
+            metadata = dict()
+        if cache is None:
+            cache = NullTileCache()
+        if storage is None:
+            storage = NullClusterStorage()
+
         assert isinstance(pyramid, Pyramid)
-        assert isinstance(metadata, dict) or metadata is None
-        assert isinstance(cache, TileCache) or cache is None
-        assert isinstance(storage, ClusterStorage) or storage is None
+        assert isinstance(metadata, dict)
+        assert isinstance(cache, TileCache)
+        assert isinstance(storage, ClusterStorage)
 
         self._tag = tag
         self._pyramid = pyramid
-        self._mode = mode
-
-        if metadata is None:
-            metadata = dict()
         self._metadata = metadata
-
-        if cache is None:
-            cache = NullTileCache()
         self._cache = cache
-
-        if storage is None:
-            storage = NullClusterStorage()
         self._storage = storage
+
+        self._readonly = readonly
 
     @property
     def tag(self):
@@ -101,6 +92,7 @@ class TileProvider(object):
 
         :rtype: :class:`~stonemason.provider.pyramid.Pyramid`
         :return: Pyramid of the `TileProvider`
+
         """
         return self._pyramid
 
@@ -115,31 +107,24 @@ class TileProvider(object):
         return self._metadata
 
     @property
-    def mode(self):
+    def readonly(self):
         """Return working mode of the provider
 
         :rtype: str
         :return: Working behaviour of the `TileProvider`
-        """
-        return self._mode
 
-    @mode.setter
-    def mode(self, mode):
+        """
+        return self._readonly
+
+    @readonly.setter
+    def readonly(self, val):
         """Set working mode of the provider
 
         :type mode: str
         :param mode: Working behaviour of the `TileProvider`
-        """
-        self._mode = mode
 
-    @property
-    def is_read_only(self):
-        """Check if is read only
-
-        :rtype: bool
-        :return: Check if is read only
         """
-        return self.mode == self.TILEPROVIDER_MODE_READONLY
+        self._readonly = val
 
     def get_tile(self, z, x, y):
         """Return a tile with given coordinate
@@ -166,7 +151,7 @@ class TileProvider(object):
         index = TileIndex(z, x, y)
 
         # get from cache
-        if self.mode != self.TILEPROVIDER_MODE_READONLY:
+        if not self.readonly:
             tile = self._cache.get(self.tag, index)
             if tile is not None:  # cache hit
                 return tile
@@ -182,22 +167,10 @@ class TileProvider(object):
         tile = cluster[index]
 
         # refill the cache if tile is not None
-        if not self.is_read_only:
+        if not self.readonly:
             self._cache.put_multi(self.tag, cluster.tiles)
 
         return tile
-
-    def describe(self):
-        """Description of a `TileProvider`
-
-        :return: A dict of name, pyramid and metadata information of `TileProvider`
-        :rtype: str
-
-        """
-        return dict(
-            tag=self.tag,
-            pyramid=dict(self.pyramid._asdict()),
-            metadata=self.metadata)
 
     def close(self):
         """Close resources"""
