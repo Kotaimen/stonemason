@@ -11,6 +11,7 @@ __author__ = 'ray'
 __date__ = '2/5/15'
 
 from stonemason.provider.pyramid import Pyramid
+from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.provider.tilecache import NullTileCache, MemTileCache
 from stonemason.provider.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
@@ -75,14 +76,24 @@ class ClusterStorageFactory(object):
         prototype = kwargs.get('prototype')
         parameters = kwargs.get('parameters')
 
+        # XXX: Use hard-wired format bundle for integration
+        format_bundle = FormatBundle(MapType('image'),
+                                     TileFormat('JPEG'))
+
+
+
         if prototype == 'null':
             return NullClusterStorage()
 
         elif prototype == 'disk':
-            return DiskClusterStorage(pyramid=pyramid, **parameters)
+            return DiskClusterStorage(pyramid=pyramid,
+                                      format=format_bundle,
+                                      **parameters)
 
         elif prototype == 's3':
-            return S3ClusterStorage(pyramid=pyramid, **parameters)
+            return S3ClusterStorage(pyramid=pyramid,
+                                    format=format_bundle,
+                                    **parameters)
 
         else:
             raise UnknownStoragePrototype(prototype)
