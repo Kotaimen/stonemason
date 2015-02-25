@@ -188,6 +188,7 @@ def init_theme(ctx):
 # Theme Root Init Command
 #
 from stonemason.mason import Mason
+from stonemason.mason.theme import DictThemeManager, DirectoryThemeLoader
 
 
 @cli.command('check', short_help='check theme configuration.')
@@ -196,8 +197,15 @@ def check_config(ctx):
     """Check whether the theme configuration is valid without start the server.
     """
     click.secho('Checking themes configuration at %s...' % ctx.themes)
+
+    manager = DictThemeManager()
+    loader = DirectoryThemeLoader(ctx.themes)
+    loader.load(manager)
+
     mason = Mason()
-    mason.load_theme_from_directory(ctx.themes)
+    for theme_name in manager.list():
+        theme = manager.get(theme_name)
+        mason.load_theme(theme)
 
 
 if __name__ == '__main__':
