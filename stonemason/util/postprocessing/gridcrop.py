@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/5/15'
-
 """
     stonemason.util.postprocessing.gridrop
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -13,6 +10,9 @@ __date__ = '1/5/15'
     PIL/Pillow is required for image IO and image processing.
 
 """
+
+__author__ = 'kotaimen'
+__date__ = '1/5/15'
 
 import io
 
@@ -145,10 +145,6 @@ def grid_crop_into_data(image, stride=1, buffer_size=0,
     .. _image formats: <https://pillow.readthedocs.org/handbook/image-file-formats.html>
 
     See :func:`~stonemason.util.postprocessing.gridrop` for parameter descriptions.
-
-    .. note::
-        Pillow won't do convert colorspaces when saving images, so convert
-        `image` to P mode first if a paletted image is required.
 
     :param image: Image to crop, must be square.
     :type image: :class:`PIL.Image.Image` or `bytes` or `file`

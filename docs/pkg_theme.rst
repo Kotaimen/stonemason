@@ -1,5 +1,5 @@
 Theme System
-============
+************
 
 :mod:`stonemason.mason.theme`
 
@@ -9,14 +9,14 @@ serve tiles from different kinds of storage.
 
 
 Exceptions
-~~~~~~~~~~
+==========
 
 .. autoclass:: stonemason.mason.theme.ThemeError
     :members:
 
 
 Theme
-~~~~~
+=====
 
 .. autoclass:: stonemason.mason.theme.Theme
     :members:
@@ -24,7 +24,7 @@ Theme
 
 
 Theme Element
-~~~~~~~~~~~~~
+=============
 
 .. autoclass:: stonemason.mason.theme.ThemeElement
     :members:
@@ -43,7 +43,7 @@ Theme Element
 
 
 Theme Loader
-~~~~~~~~~~~~
+============
 
 .. autoclass:: stonemason.mason.theme.JsonThemeLoader
     :members:

@@ -25,3 +25,5 @@ Features:
 - Zero configuration deployment.
 
 > TODO: Add a demo page here.
+
+**Happy Chinese New Year**

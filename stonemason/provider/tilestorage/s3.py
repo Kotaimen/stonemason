@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/29/15'
-
 """
     stonemason.provider.tilestorage.s3
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     S3 based storages.
 
 """
+
+__author__ = 'kotaimen'
+__date__ = '1/29/15'
 
 import email
 import time
@@ -18,9 +18,12 @@ from boto.s3.key import Key
 
 import six
 
+from stonemason.provider.formatbundle import FormatBundle
+
 from .tilestorage import ClusterStorage, MetaTileStorage, \
     PersistenceStorageConcept, create_key_mode, MetaTileSerializer, \
     TileClusterSerializer, StorageMixin
+from .exceptions import TileStorageError
 
 
 def s3timestamp2mtime(timestamp):
@@ -166,8 +169,11 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',
                  key_mode='simple', prefix='my_storage',
-                 pyramid=None, mimetype='application/oct-stream',
-                 extension=None, readonly=False):
+                 pyramid=None, format=None,
+                 readonly=False):
+        if not isinstance(format, FormatBundle):
+            raise TileStorageError('Must specify format explicitly.')
+
         s3storage = S3Storage(access_key=access_key, secret_key=secret_key,
                               bucket=bucket, policy=policy)
 
@@ -177,7 +183,8 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
 
         StorageMixin.__init__(self, s3storage, object_persistence, key_mode,
                               pyramid=pyramid, prefix=prefix,
-                              mimetype=mimetype, extension=extension,
+                              mimetype=format.tile_format.mimetype,
+                              extension=format.tile_format.extension,
                               gzip=False, readonly=readonly)
 
 
@@ -248,18 +255,22 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',
                  key_mode='simple', prefix='my_storage',
-                 pyramid=None, mimetype='application/oct-stream',
+                 pyramid=None, format=None,
                  readonly=False, compressed=False, splitter=None):
+        if not isinstance(format, FormatBundle):
+            raise TileStorageError('Must specify format explicitly.')
+
         s3storage = S3Storage(access_key=access_key, secret_key=secret_key,
                               bucket=bucket, policy=policy)
 
         key_mode = create_key_mode(key_mode, sep='/')
 
         object_persistence = TileClusterSerializer(compressed=compressed,
-                                                   splitter=splitter)
+                                                   writer=format.writer)
 
         StorageMixin.__init__(self, s3storage, object_persistence, key_mode,
                               pyramid=pyramid, prefix=prefix,
-                              mimetype=mimetype, extension='.zip',
+                              mimetype=format.tile_format.mimetype,
+                              extension='.zip',
                               gzip=False, readonly=readonly)
 

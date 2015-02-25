@@ -1,5 +1,5 @@
 Tile Cache
-==========
+**********
 
 .. module:: stonemsaon.provider.tilecache
 
@@ -13,13 +13,16 @@ Currently there is only a `memcached` cache.
 
 
 Exceptions
-----------
+==========
 
-.. autoclass:: stonemason.provider.tilecache.TileCacheError
+.. autoexception:: stonemason.provider.tilecache.TileCacheError
+    :members:
+
+.. autoexception:: stonemason.provider.tilecache.MemTileCacheError
     :members:
 
 TileCache
----------
+=========
 
 .. autoclass:: stonemason.provider.tilecache.TileCache
    :members:
@@ -28,7 +31,7 @@ TileCache
    :members:
 
 Memcached
----------
+=========
 
 .. autoclass:: stonemason.provider.tilecache.MemTileCache
     :members:

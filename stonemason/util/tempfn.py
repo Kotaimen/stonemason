@@ -1,5 +1,11 @@
 # -*- coding:utf-8 -*-
 
+"""
+    stonemason.util.tempfn
+    ~~~~~~~~~~~~~~~~~~~~~~
+    Generate a temp filename
+"""
+
 __author__ = 'ray'
 __date__ = '8/30/12'
 

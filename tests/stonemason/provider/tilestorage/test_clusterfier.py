@@ -11,8 +11,10 @@ import tempfile
 from tests import DATA_DIRECTORY
 
 from stonemason.provider.pyramid import MetaTile, MetaTileIndex, Pyramid
+from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.provider.tilestorage import Clusterfier, \
     DiskMetaTileStorage, TileCluster
+
 
 class TestClusterfier(unittest.TestCase):
     def setUp(self):
@@ -23,14 +25,15 @@ class TestClusterfier(unittest.TestCase):
         self.metatile = MetaTile(MetaTileIndex(19, 453824, 212288, 8),
                                  data=open(grid_image, 'rb').read(),
                                  mimetype='image/png')
+        self.format = FormatBundle(MapType('image'), TileFormat('PNG'))
 
     def test_basic(self):
         storage = DiskMetaTileStorage(
             pyramid=self.pyramid,
             root=self.root,
-            mimetype='image/png')
+            format=self.format)
 
-        cluster_storage = Clusterfier(storage)
+        cluster_storage = Clusterfier(storage, self.format.writer)
         cluster_storage.put(self.metatile)
 
         metatile = storage.get(self.metatile.index)
@@ -48,6 +51,7 @@ class TestClusterfier(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.root, ignore_errors=True)
+
 
 if __name__ == '__main__':
     unittest.main()

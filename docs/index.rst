@@ -4,9 +4,9 @@
     contain the root `toctree` directive.
 
 
-**********
+##########
 Stonemason
-**********
+##########
 
 *Stonemason* is a tile map service toolkit developed in Python.
 
@@ -14,7 +14,7 @@ TODO: Insert a map here.
 
 
 User's Guide
-============
+############
 
 .. toctree::
     :maxdepth: 1
@@ -26,38 +26,28 @@ User's Guide
     xlarge
 
 API Reference
-=============
-
-Mason
------
+#############
 
 .. toctree::
     :maxdepth: 2
 
     pkg_theme
 
-Providers
----------
 
 .. toctree::
     :maxdepth: 2
 
     pkg_pyramid
+    pkg_tileprovider
     pkg_tilecache
     pkg_tilestorage
-    pkg_tileprovider
+    pkg_formatbundle
 
-Backends
---------
 
 .. toctree::
     :maxdepth: 2
 
     pkg_service
-
-
-Utilties
---------
 
 .. toctree::
     :maxdepth: 2
@@ -66,7 +56,7 @@ Utilties
 
 
 Services
-========
+########
 
 .. toctree::
     :maxdepth: 2
@@ -75,7 +65,7 @@ Services
 
 
 Indices and tables
-==================
+##################
 
 * :ref:`genindex`
 * :ref:`modindex`

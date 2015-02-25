@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/10/15'
-
 """
     stonemason.provider.pyramid.serial
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Convert tile index to a serial number
 """
+__author__ = 'kotaimen'
+__date__ = '1/10/15'
 
 import math
 
@@ -16,7 +15,6 @@ import stonemason.util.geo.hilbert as hilbert
 
 
 class Hilbert(object):
-
     """ Calculate serial using Hilbert curve """
 
     @staticmethod
@@ -51,7 +49,7 @@ class Hilbert(object):
             # Hex string zero padding to even length
             hex_str = ('%X' % block).zfill(digits % 2 + digits)
 
-            dirs.extend(hex_str[i:i + 2] for i in range(0,len(hex_str), 2))
+            dirs.extend(hex_str[i:i + 2] for i in range(0, len(hex_str), 2))
 
         return dirs
 

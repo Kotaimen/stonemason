@@ -1,5 +1,5 @@
 Tile Storage
-============
+************
 
 .. module:: stonemsaon.provider.tilestorage
 
@@ -28,21 +28,21 @@ More backends will be added in the future.
 
 
 Exceptions
-----------
+==========
 
 .. automodule:: stonemason.provider.tilestorage.exceptions
     :members:
+    :undoc-members:
 
 
 Tile Cluster
-------------
+============
 
 .. autoclass:: stonemason.provider.tilestorage.TileCluster
     :members: __getitem__
 
 Cluster File Format
--------------------
-
+===================
 
 `TileCluster` is stored as a `zip` file, zip format is chosen because
 there is no easy way to read a tar.gz file on non `*nix` platforms.
@@ -82,35 +82,35 @@ the zip file:
 
 JSON fields:
 
-`version`
+    `version`
 
-    Version of the index.json, always ``1`` at the time of writing.
+        Version of the index.json, always ``1`` at the time of writing.
 
-`datas`
+    `datas`
 
-    A list of tile data file name with out extension in ``z-x-y`` format.
+        A list of tile data file name with out extension in ``z-x-y`` format.
 
-`tiles`
+    `tiles`
 
-    A mapping of ``(tile_index, tile_data)``, multiple indexes can point
-    to same tile data if they are identical.
+        A mapping of ``(tile_index, tile_data)``, multiple indexes can point
+        to same tile data if they are identical.
 
-`extension`
+    `extension`
 
-    File extension of the tile data, with the starting ``.``, the
-    extension is guessed from `mimetype`.
+        File extension of the tile data, with the starting ``.``, the
+        extension is guessed from `mimetype`.
 
-`stride`
+    `stride`
 
-    Optional, stride of the metatile.
+        Optional, stride of the metatile.
 
-`mimetype`
+    `mimetype`
 
-    Optional, mimetype of the metatile.
+        Optional, mimetype of the metatile.
 
-`mtime`
+    `mtime`
 
-    Optional, last modified time of the metattile.
+        Optional, last modified time of the metattile.
 
 
 .. note::
@@ -118,21 +118,9 @@ JSON fields:
     Optional fields are designed to work with legacy renders, current
     cluster will always write these fields.
 
-Splitter
---------
-
-.. warning:: Splitter is temporary placed in the tilestorage package and
-    is subject to change.
-
-.. autoclass:: stonemason.provider.tilestorage.Splitter
-    :members: __call__
-
-.. autoclass:: stonemason.provider.tilestorage.ImageSplitter
-    :members:
-
 
 MetaTile Storage
-----------------
+================
 
 .. autoclass:: stonemason.provider.tilestorage.MetaTileStorage
     :members:
@@ -148,7 +136,7 @@ MetaTile Storage
 
 
 Cluster Storage
----------------
+===============
 
 .. autoclass:: stonemason.provider.tilestorage.ClusterStorage
     :members:

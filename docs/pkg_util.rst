@@ -1,8 +1,13 @@
 Utilities
-=========
+*********
 
-:mod:`stonemason.util` contains utility functions and classes.
+.. module:: stonemsaon.util
 
+
+Contains utility functions and classes.
+
+General
+=======
 
 .. automodule:: stonemason.util.guesstypes
     :members:
@@ -18,6 +23,7 @@ Geo
 
 Postprocessing
 ==============
+
 .. automodule:: stonemason.util.postprocessing.gridcrop
     :members:
 

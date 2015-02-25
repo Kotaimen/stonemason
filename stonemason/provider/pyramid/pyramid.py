@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '1/10/15'
-
 """
     stonemason.provider.pyramid.pyramid
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10,6 +7,8 @@ __date__ = '1/10/15'
     The Quad Tree tile system, with optional CRS&Boundary check.
 
 """
+__author__ = 'kotaimen'
+__date__ = '1/10/15'
 
 import collections
 import re
@@ -80,7 +79,6 @@ class Pyramid(_Pyramid):
                 crs='EPSG:4326',
                 proj='EPSG:3857',
                 boundary=(-180, -85.0511, 180, 85.0511)):
-
         levels = list(levels)
         assert isinstance(levels, list)
         assert isinstance(stride, int) and stride & ( stride - 1 ) == 0

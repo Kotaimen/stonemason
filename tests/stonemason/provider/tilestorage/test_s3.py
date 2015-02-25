@@ -10,6 +10,7 @@ import moto
 import boto, boto.s3
 
 from stonemason.provider.pyramid import MetaTile, MetaTileIndex, Pyramid
+from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.provider.tilestorage import S3ClusterStorage, \
     S3MetaTileStorage, TileCluster, \
     InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
@@ -32,12 +33,14 @@ class TestS3ClusterStorage(unittest.TestCase):
         self.metatile = MetaTile(MetaTileIndex(19, 453824, 212288, 8),
                                  data=open(grid_image, 'rb').read(),
                                  mimetype='image/png')
+        self.format = FormatBundle(MapType('image'), TileFormat('PNG'))
+
 
     def test_basic(self):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
                                    prefix='testlayer',
                                    pyramid=self.pyramid,
-                                   mimetype='image/png')
+                                   format=self.format)
         storage.put(self.metatile)
 
         cluster = storage.get(self.metatile.index)
@@ -49,7 +52,6 @@ class TestS3ClusterStorage(unittest.TestCase):
         self.assertAlmostEqual(tile.mtime, self.metatile.mtime, 0)
         self.assertEqual(tile.mimetype, self.metatile.mimetype)
 
-
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
         storage.close()
@@ -58,7 +60,7 @@ class TestS3ClusterStorage(unittest.TestCase):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
                                    prefix='testlayer',
                                    pyramid=self.pyramid,
-                                   mimetype='image/png')
+                                   format=self.format)
         storage.put(self.metatile)
 
         self.assertIsNotNone(self.conn.get_bucket(TEST_BUCKET_NAME).get_key(
@@ -69,7 +71,7 @@ class TestS3ClusterStorage(unittest.TestCase):
                                    prefix='testlayer',
                                    pyramid=self.pyramid,
                                    key_mode='legacy',
-                                   mimetype='image/png')
+                                   format=self.format)
         storage.put(self.metatile)
 
         self.assertIsNotNone(self.conn.get_bucket(TEST_BUCKET_NAME).get_key(
@@ -81,7 +83,7 @@ class TestS3ClusterStorage(unittest.TestCase):
                                    prefix='testlayer',
                                    pyramid=self.pyramid,
                                    key_mode='hilbert',
-                                   mimetype='image/png')
+                                   format=self.format)
         storage.put(self.metatile)
 
         self.assertIsNotNone(self.conn.get_bucket(TEST_BUCKET_NAME).get_key(
@@ -107,13 +109,14 @@ class TestS3MetaTileStorage(unittest.TestCase):
         self.metatile = MetaTile(MetaTileIndex(19, 453824, 212288, 8),
                                  data=open(grid_image, 'rb').read(),
                                  mimetype='image/png')
+        self.format = FormatBundle(MapType('image'), TileFormat('PNG'))
 
     def test_basic(self):
         storage = S3MetaTileStorage(
             pyramid=self.pyramid,
             bucket=TEST_BUCKET_NAME,
             prefix='testlayer',
-            mimetype='image/png')
+            format=self.format)
         storage.put(self.metatile)
 
         metatile = storage.get(self.metatile.index)
