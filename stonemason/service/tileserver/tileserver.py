@@ -16,6 +16,8 @@ from flask.views import MethodView
 from flask.json import jsonify
 
 from stonemason.mason import Mason
+from stonemason.mason.theme import \
+    ThemeManager, DictThemeManager, DirectoryThemeLoader
 
 from . import default_settings
 
@@ -33,27 +35,39 @@ class ThemeAPI(MethodView):
 
     """
 
-    def __init__(self, mason):
+    def __init__(self, theme_manager):
         MethodView.__init__(self)
-        self._mason = mason
+        assert isinstance(theme_manager, ThemeManager)
+        self._manager = theme_manager
 
-    def get(self, tag):
+    def get(self, name):
         """Return a theme info and raise :http:statuscode:`404` when theme is
         not available.
 
-        :type tag: str
-        :param tag:
+        :type name: str
+        :param name:
 
             The Name of a theme. A string literal that uniquely identify a
             theme.
             
         """
-        if tag is None:
-            themes = self._mason.themes()
-            return jsonify(result=themes)
+
+        # list all the themes
+        if name is None:
+
+            collection = list()
+
+            for name in self._manager.list():
+                theme = self._manager.get(name)
+                collection.append(theme.describe())
+
+            return jsonify(result=collection)
+
+        # list one theme
         else:
-            theme = self._mason.get_theme(tag)
-            return jsonify(result=theme)
+
+            theme = self._manager.get(name)
+            return jsonify(result=theme.describe())
 
 
 class TileAPI(MethodView):
@@ -130,21 +144,39 @@ class TileAPI(MethodView):
 
 
 class MapAPI(MethodView):
-    def __init__(self, mason):
+    def __init__(self, mason, theme_manager):
         MethodView.__init__(self)
+        assert isinstance(mason, Mason)
+        assert isinstance(theme_manager, ThemeManager)
+
         self._mason = mason
+        self._theme_manager = theme_manager
 
     def get(self, tag):
-        return render_template('map.html', theme=self._mason.get_theme(tag))
+        if tag not in self._mason.tags:
+            abort(404)
+
+        theme = self._theme_manager.get(tag)
+
+        return render_template('map.html', theme=theme.describe())
 
 
 class Home(MethodView):
-    def __init__(self, mason):
+    def __init__(self, mason, theme_manager):
         MethodView.__init__(self)
+        assert isinstance(mason, Mason)
+        assert isinstance(theme_manager, ThemeManager)
+
         self._mason = mason
+        self._theme_manager = theme_manager
 
     def get(self):
-        return render_template('index.html', themes=self._mason.themes())
+        collection = list()
+        for tag in self._mason.tags:
+            theme = self._theme_manager.get(tag)
+            collection.append(theme.describe())
+
+        return render_template('index.html', themes=collection)
 
 
 def health_check():
@@ -224,24 +256,45 @@ class TileServerApp(Flask):
         # load configs and parameters
         self._load_config(config, **kwargs)
 
-        # initialize mason
-        self._mason = Mason()
 
         # load themes
         theme_dir = self.config.get('STONEMASON_THEMES')
-        self._mason.load_theme_from_directory(theme_dir)
+        theme_loader = DirectoryThemeLoader(theme_dir)
+
+        self._theme_manager = DictThemeManager()
+        theme_loader.load(self._theme_manager)
+
+        # initialize mason
+        external_cache_hosts = self.config.get('STONEMASON_MEMCACHE_HOSTS')
+        external_cache_config = None
+
+        if external_cache_hosts is not None:
+            external_cache_config = dict(
+                prototype='memcache',
+                parameters=dict(servers=external_cache_hosts.split())
+                )
+
+        self._mason = Mason(default_cache_config=external_cache_config)
+        for theme_name in self._theme_manager.list():
+            theme = self._theme_manager.get(theme_name)
+            self._mason.load_theme(theme)
 
         # A list of available maps
-        self.add_url_rule(rule='/',
-                          view_func=Home.as_view('home', self._mason),
-                          methods=['GET'])
+        self.add_url_rule(
+            rule='/',
+            view_func=Home.as_view('home', self._mason, self._theme_manager),
+            methods=['GET']
+        )
 
         # health check
-        self.add_url_rule(rule='/health_check',
-                          view_func=health_check,
-                          methods=['GET'])
+        self.add_url_rule(
+            rule='/health_check',
+            view_func=health_check,
+            methods=['GET']
+        )
 
-        map_view = MapAPI.as_view('map_api', self._mason)
+        # map view
+        map_view = MapAPI.as_view('map_api', self._mason, self._theme_manager)
         self.add_url_rule(
             rule='/maps/<tag>',
             view_func=map_view,
@@ -249,15 +302,15 @@ class TileServerApp(Flask):
         )
 
         # TODO: Move APIs to a separate BluePrint
-        theme_view = ThemeAPI.as_view('theme_api', self._mason)
+        theme_view = ThemeAPI.as_view('theme_api', self._theme_manager)
         self.add_url_rule(
             rule='/themes',
-            defaults={'tag': None},
+            defaults={'name': None},
             view_func=theme_view,
             methods=['GET']
         )
         self.add_url_rule(
-            rule='/themes/<tag>',
+            rule='/themes/<name>',
             view_func=theme_view,
             methods=['GET']
         )

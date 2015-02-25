@@ -23,25 +23,30 @@ Theme
 
 
 
-Theme Config
+Theme Element
+~~~~~~~~~~~~~
+
+.. autoclass:: stonemason.mason.theme.ThemeElement
+    :members:
+
+.. autoclass:: stonemason.mason.theme.ThemeMetadata
+    :members:
+
+.. autoclass:: stonemason.mason.theme.ThemePyramid
+    :members:
+
+.. autoclass:: stonemason.mason.theme.ThemeCache
+    :members:
+
+.. autoclass:: stonemason.mason.theme.ThemeStorage
+    :members:
+
+
+Theme Loader
 ~~~~~~~~~~~~
 
-.. autoclass:: stonemason.mason.theme.MetadataConfig
+.. autoclass:: stonemason.mason.theme.JsonThemeLoader
     :members:
 
-.. autoclass:: stonemason.mason.theme.PyramidConfig
+.. autoclass:: stonemason.mason.theme.DirectoryThemeLoader
     :members:
-
-.. autoclass:: stonemason.mason.theme.CacheConfig
-    :members:
-
-.. autoclass:: stonemason.mason.theme.StorageConfig
-    :members:
-
-
-Theme Parser
-~~~~~~~~~~~~
-
-.. autoclass:: stonemason.mason.theme.JsonThemeParser
-    :members:
-

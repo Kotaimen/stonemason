@@ -42,7 +42,7 @@
         ),
         {{ theme.metadata.center_zoom }});
 
-    L.tileLayer('/tiles/{{ theme.tag }}/{z}/{x}/{y}.jpg', {
+    L.tileLayer('/tiles/{{ theme.name }}/{z}/{x}/{y}.jpg', {
         attribution: "{{ theme.metadata.attribution }}",
         minZoom: {{ theme.pyramid.levels|first  }},
         maxZoom: {{ theme.pyramid.levels|last  }},

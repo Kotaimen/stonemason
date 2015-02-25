@@ -3,18 +3,21 @@
     stonemason.mason.theme
     ~~~~~~~~~~~~~~~~~~~~~~
 
-    Implements details of theme for stonemason
+    Implements `Theme` and `ThemeManager` for stonemason
 
 """
 
 import os
 
-from .parser import JsonThemeParser
-from .theme import MetadataConfig, PyramidConfig, CacheConfig, StorageConfig, \
-    Theme, ThemeError
+from .theme import ThemeError, InvalidThemeName
+from .theme import Theme, ThemeElement
+from .theme import ThemeMetadata, ThemePyramid, ThemeCache, ThemeStorage
 
-SAMPLE_THEME_DIRECTORY = os.path.join(
-    os.path.dirname(__file__), 'samples')
+from .manager import ThemeManagerError, DuplicatedTheme
+from .manager import ThemeManager, DictThemeManager
+from .loader import ThemeLoader, JsonThemeLoader, DirectoryThemeLoader
 
-SAMPLE_THEME = os.path.join(
-    SAMPLE_THEME_DIRECTORY, 'sample_theme.json')
+
+SAMPLE_THEME_DIRECTORY = os.path.join(os.path.dirname(__file__), 'samples')
+
+SAMPLE_THEME = os.path.join(SAMPLE_THEME_DIRECTORY, 'sample_theme.json')

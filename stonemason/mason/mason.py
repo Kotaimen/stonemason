@@ -2,78 +2,104 @@
 """
     stonemason.mason.mason
     ~~~~~~~~~~~~~~~~~~~~~~
-
-    Facade StoneMason.
+    Facade of StoneMason.
 
 """
 
-import os
-import six
+from collections import namedtuple
 
-from stonemason.provider.pyramid import Pyramid
-from stonemason.provider.tileprovider import TileProviderBuilder
+from .builder import TileProviderFactory
+from .theme import Theme, ThemeManager
 
-from .theme import JsonThemeParser
+
+class MasonError(Exception):
+    """Base Mason Error"""
+    pass
+
+
+class ThemeNotExist(MasonError):
+    """`Theme` is not found"""
+    pass
+
+
+class ThemeAlreadyLoaded(MasonError):
+    """`Theme` has already been loaded"""
+    pass
+
+
+class ThemeNotLoaded(MasonError):
+    """`Theme` has not been loaded"""
+    pass
 
 
 class Mason(object):
-    """Stonemason Facade"""
+    """Stonemason Facade
 
-    def __init__(self):
+    `Mason` is the facade of `Stonemason`. A `Mason` object provides tiles of
+    various kinds of themes from caches, storage and renders.
+
+    Themes could be loaded or unloaded by their names. Though, these with
+    duplicated names are not allowed.
+
+    In `Mason`, tiles are served according to their tags which, for now,
+    equals to the name of their themes.
+
+    :param theme_store: A `ThemeManager` instance that contains piles of themes.
+    :type theme_store: :class:`stonemason.mason.theme.ThemeManager`
+
+    :param readonly: A bool variable that controls serving mode of `Mason`.
+    :type readonly: bool
+
+    """
+
+    def __init__(self,
+                 readonly=False,
+                 logger=None,
+                 default_cache_config=None):
+        assert isinstance(readonly, bool)
+        assert isinstance(default_cache_config, dict) or \
+               default_cache_config is None
+
+        self._logger = logger
+        self._readonly = readonly
+        self._default_cache_config = default_cache_config
+
+        self._builder = TileProviderFactory()
         self._providers = dict()
 
-    def load_theme_from_file(self, filepath):
-        themes = JsonThemeParser().read_from_file(filepath)
+    @property
+    def tags(self):
+        """Get all available tile tags"""
+        return list(tag for tag in self._providers)
 
-        for theme in themes:
-            tag = theme.name
-            pyramid = Pyramid(**theme.pyramid._asdict())
+    def load_theme(self, theme):
+        """Load the named theme"""
+        tag = theme.name
 
-            builder = TileProviderBuilder(tag, pyramid)
-            builder.build_metadata(**theme.metadata._asdict())
-            builder.build_cache(**theme.cache._asdict())
-            builder.build_storage(**theme.storage._asdict())
+        if tag in self._providers:
+            raise ThemeAlreadyLoaded(tag)
 
-            provider = builder.build()
+        provider = self._builder.create_from_theme(
+            tag, theme, cache_config=self._default_cache_config)
 
-            self._providers[provider.tag] = provider
+        if self._readonly:
+            provider.readonly = True
 
-    def load_theme_from_directory(self, dirpath):
-
-        for filename in os.listdir(dirpath):
-
-            _, ext = os.path.splitext(filename)
-            # TODO: USE NOT ONLY JSON FORMAT
-            if ext != '.json':
-                continue
-
-            filepath = os.path.join(dirpath, filename)
-            self.load_theme_from_file(filepath)
-
-    def load_theme_from_s3(self, s3path):
-        raise NotImplemented
-
-    def themes(self):
-        return list(p.describe() for p in six.itervalues(self._providers))
-
-    def get_theme(self, tag):
-        try:
-            provider = self._providers[tag]
-        except KeyError:
-            return None
-
-        return provider.describe()
+        self._providers[tag] = provider
 
     def get_tile(self, tag, z, x, y, scale, ext):
+        """Get a tile with the given tag and parameters"""
+
         try:
             provider = self._providers[tag]
         except KeyError:
             return None
+        else:
+            tile = provider.get_tile(z, x, y)
+            return tile
 
-        tile = provider.get_tile(z, x, y)
+    @property
+    def tags(self):
+        """Get all available tile tags"""
+        return list(tag for tag in self._providers)
 
-        return tile
-
-    def close(self):
-        for provider in six.itervalues(self._providers):
-            provider.close()
