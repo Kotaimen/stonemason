@@ -11,7 +11,7 @@ __date__ = '1/12/15'
 
 import re
 import json
-import pylibmc
+import memcache
 import random
 
 from .tilecache import TileCache, TileCacheError
@@ -53,41 +53,18 @@ class MemTileCache(TileCache):
     :param servers: A list of servers, the list is sent to :class:`pylibmc.Client`, default
         value is ``['localhost:11211',]``.
 
-        .. seealso:: `pylibmc` `example <http://sendapatch.se/projects/pylibmc/index.html>`_.
     :type servers: list
-
-    :param binary: Whether to use `memcached` binary protocol, default is ``True``.
-    :type binary: bool
-
-    :param behaviors: Set `pylibmc` client behavior, default value is:
-
-        .. code-block:: python
-
-            {
-                'tcp_nodelay': True,
-                'ketama': True,
-                'cas': True,
-            }
-
-        .. seealso:: `pylibmc` `behaviours <http://sendapatch.se/projects/pylibmc/behaviors.html>`_.
-    :type behaviours: dict
     """
 
-    def __init__(self, servers=('localhost:11211', ),
+    def __init__(self, servers=['localhost:11211'],
                  binary=True,
                  min_compress_len=0,
                  behaviors=None):
         super(TileCache, self).__init__()
-        if behaviors is None:
-            behaviors = {'tcp_nodelay': True,
-                         'ketama': True,
-                         'cas': True}
-        self.connection = pylibmc.Client(servers, binary=binary,
-                                         behaviors=behaviors)
+        self.connection = memcache.Client(servers)
         # Verify connection
-        try:
-            self.connection.get_stats()
-        except pylibmc.Error:
+        data = self.connection.get_stats()
+        if not data:
             raise MemTileCacheError("Can't connect to memcache servers.")
 
 
@@ -179,7 +156,7 @@ class MemTileCache(TileCache):
 
         failed = self.connection.set_multi(data, time=ttl)
         if len(failed) > 0:
-            raise MemTileCacheError('Tile not writen: "%s"' % failed)
+            raise MemTileCacheError('Tile not writen: "%s"' % len(failed))
 
     def lock(self, tag, index, ttl=0.1):
         # memcache only supports integer ttl...
