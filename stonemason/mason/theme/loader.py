@@ -30,7 +30,7 @@ class ThemeLoader(object):  # pragma: no cover
     A `ThemeLoader` loads themes into a theme manager.
     """
 
-    def load(self, manager):
+    def load_into(self, manager):
         """Subclass should implement this method
 
         :param manager: A :class:`~stonemason.mason.theme.ThemeManager` object.
@@ -56,7 +56,7 @@ class JsonThemeLoader(ThemeLoader):
     def __init__(self, filename):
         self._filename = filename
 
-    def load(self, manager):
+    def load_into(self, manager):
         """Load themes into the manager"""
         assert isinstance(manager, ThemeManager)
 
@@ -70,7 +70,7 @@ class JsonThemeLoader(ThemeLoader):
 
 
 class YAMLThemeLoader(ThemeLoader):
-    #TODO: Implement yaml theme format
+    # TODO: Implement yaml theme format
     pass
 
 
@@ -88,7 +88,7 @@ class DirectoryThemeLoader(ThemeLoader):
     def __init__(self, dirname):
         self._dirname = dirname
 
-    def load(self, manager):
+    def load_into(self, manager):
         """Load themes into the manager"""
         assert isinstance(manager, ThemeManager)
 
@@ -99,6 +99,6 @@ class DirectoryThemeLoader(ThemeLoader):
                 continue
 
             file_loader = JsonThemeLoader(filename)
-            loaded.extend(file_loader.load(manager))
+            loaded.extend(file_loader.load_into(manager))
 
         return loaded

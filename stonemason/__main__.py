@@ -200,7 +200,7 @@ def check_config(ctx):
 
     manager = DictThemeManager()
     loader = DirectoryThemeLoader(ctx.themes)
-    loader.load(manager)
+    loader.load_into(manager)
 
     mason = Mason()
     for theme_name in manager.list():
