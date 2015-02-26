@@ -7,17 +7,17 @@ import unittest
 
 from stonemason.mason import Mason
 from stonemason.mason import ThemeNotExist, ThemeNotLoaded, ThemeAlreadyLoaded
-from stonemason.mason.theme import DictThemeManager, JsonThemeLoader
+from stonemason.mason.theme import MemThemeManager, JsonThemeLoader
 from stonemason.mason.theme import SAMPLE_THEME
 
 
 
 class TestMason(unittest.TestCase):
     def setUp(self):
-        self._manager = DictThemeManager()
+        self._manager = MemThemeManager()
 
         loader = JsonThemeLoader(SAMPLE_THEME)
-        loader.load(self._manager)
+        loader.load_into(self._manager)
 
         self._mason = Mason()
 

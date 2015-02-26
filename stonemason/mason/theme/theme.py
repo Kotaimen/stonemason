@@ -505,7 +505,12 @@ class Theme(object):
         return self._root.get_element('storage')
 
     def describe(self):
-        """Description of the theme"""
+        """Description of the theme
+
+        :return: A dict of theme description.
+        :rtype: dict
+
+        """
         description = dict(
             name=self.name,
             pyramid=self.pyramid.attributes,
