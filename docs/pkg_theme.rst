@@ -45,8 +45,20 @@ Theme Element
 Theme Loader
 ============
 
-.. autoclass:: stonemason.mason.theme.JsonThemeLoader
+.. autoclass:: stonemason.mason.theme.ThemeLoader
     :members:
 
-.. autoclass:: stonemason.mason.theme.DirectoryThemeLoader
+.. autoclass:: stonemason.mason.theme.JsonThemeLoader
+
+.. autoclass:: stonemason.mason.theme.LocalThemeLoader
+
+
+Theme Manager
+=============
+
+.. autoclass:: stonemason.mason.theme.ThemeManager
     :members:
+
+.. autoclass:: stonemason.mason.theme.MemThemeManager
+
+

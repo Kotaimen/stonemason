@@ -14,8 +14,8 @@ from .theme import Theme, ThemeElement
 from .theme import ThemeMetadata, ThemePyramid, ThemeCache, ThemeStorage
 
 from .manager import ThemeManagerError, DuplicatedTheme
-from .manager import ThemeManager, DictThemeManager
-from .loader import ThemeLoader, JsonThemeLoader, DirectoryThemeLoader
+from .manager import ThemeManager, MemThemeManager
+from .loader import ThemeLoader, JsonThemeLoader, LocalThemeLoader
 
 
 SAMPLE_THEME_DIRECTORY = os.path.join(os.path.dirname(__file__), 'samples')

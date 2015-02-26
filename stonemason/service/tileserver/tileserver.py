@@ -17,7 +17,7 @@ from flask.json import jsonify
 
 from stonemason.mason import Mason
 from stonemason.mason.theme import \
-    ThemeManager, DictThemeManager, DirectoryThemeLoader
+    ThemeManager, MemThemeManager, LocalThemeLoader
 
 from . import default_settings
 
@@ -57,8 +57,7 @@ class ThemeAPI(MethodView):
 
             collection = list()
 
-            for name in self._manager.list():
-                theme = self._manager.get(name)
+            for theme in self._manager.iterthemes():
                 collection.append(theme.describe())
 
             return jsonify(result=collection)
@@ -259,10 +258,10 @@ class TileServerApp(Flask):
 
         # load themes
         theme_dir = self.config.get('STONEMASON_THEMES')
-        theme_loader = DirectoryThemeLoader(theme_dir)
+        theme_loader = LocalThemeLoader(theme_dir)
 
-        self._theme_manager = DictThemeManager()
-        theme_loader.load(self._theme_manager)
+        self._theme_manager = MemThemeManager()
+        theme_loader.load_into(self._theme_manager)
 
         # initialize mason
         external_cache_hosts = self.config.get('STONEMASON_MEMCACHE_HOSTS')
@@ -275,8 +274,7 @@ class TileServerApp(Flask):
                 )
 
         self._mason = Mason(default_cache_config=external_cache_config)
-        for theme_name in self._theme_manager.list():
-            theme = self._theme_manager.get(theme_name)
+        for theme in self._theme_manager.iterthemes():
             self._mason.load_theme(theme)
 
         # A list of available maps

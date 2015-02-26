@@ -25,28 +25,28 @@ def is_valid_theme_filename(filename):
 
 
 class ThemeLoader(object):  # pragma: no cover
-    """Theme Loader Interface
+    """Base Theme Loader
 
-    A `ThemeLoader` loads themes into a theme manager.
+    A `ThemeLoader` could parse and load themes into a theme manager.
     """
 
-    def load(self, manager):
+    def load_into(self, manager):
         """Subclass should implement this method
 
         :param manager: A :class:`~stonemason.mason.theme.ThemeManager` object.
         :type manager: :class:`~stonemason.mason.theme.ThemeManager`
 
-        :return: A list of names of loaded themes.
+        :return: A list of the names of loaded themes.
         :rtype: list
         """
         raise NotImplementedError
 
 
 class JsonThemeLoader(ThemeLoader):
-    """Theme File Loader
+    """Json Theme Loader
 
-    `FileThemeLoader` parses a json file to themes, and loads them into
-    a theme manager.
+    A `FileThemeLoader` could parses and loads a json theme into a theme
+    manager.
 
     :param filename: A string literal represents the full path of a file.
     :type filename: str
@@ -56,7 +56,7 @@ class JsonThemeLoader(ThemeLoader):
     def __init__(self, filename):
         self._filename = filename
 
-    def load(self, manager):
+    def load_into(self, manager):
         """Load themes into the manager"""
         assert isinstance(manager, ThemeManager)
 
@@ -70,15 +70,14 @@ class JsonThemeLoader(ThemeLoader):
 
 
 class YAMLThemeLoader(ThemeLoader):
-    #TODO: Implement yaml theme format
+    # TODO: Implement yaml theme format
     pass
 
 
-class DirectoryThemeLoader(ThemeLoader):
-    """Theme Directory Loader
+class LocalThemeLoader(ThemeLoader):
+    """Local Theme Directory Loader
 
-    `DirectoryThemeLoader` parses valid files to themes in the given
-    directory, and loads them into a theme store.
+    A `LocalThemeLoader` could parse and load themes in a given directory.
 
     :param dirname: A string literal represents the full path of a directory.
     :type dirname: str
@@ -88,17 +87,19 @@ class DirectoryThemeLoader(ThemeLoader):
     def __init__(self, dirname):
         self._dirname = dirname
 
-    def load(self, manager):
+    def load_into(self, manager):
         """Load themes into the manager"""
         assert isinstance(manager, ThemeManager)
 
         loaded = list()
+
         for basename in os.listdir(self._dirname):
+
             filename = os.path.join(self._dirname, basename)
             if not is_valid_theme_filename(filename):
                 continue
 
             file_loader = JsonThemeLoader(filename)
-            loaded.extend(file_loader.load(manager))
+            loaded.extend(file_loader.load_into(manager))
 
         return loaded
