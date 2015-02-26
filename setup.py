@@ -51,11 +51,18 @@ install_requires = [
     'six>=1.8.0',
     'Flask>=0.10',
     'Pillow>=2.3.0',
-    'pylibmc>=1.4.0',
     'boto>=2.35.0',
     'Click>=3.0.0',
     'gunicorn>=19.0.0',
 ]
+
+if IS_PY3:
+    install_requires.append('python3-memcached')
+else:
+    install_requires.extend(
+        ['python-memcached',
+         'futures']
+    )
 
 tests_require = [
     'nose>=1.3.0',

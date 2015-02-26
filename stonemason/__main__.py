@@ -111,13 +111,17 @@ from stonemason.service.tileserver import TileServerApp
 @click.option('-b', '--bind', default='127.0.0.1:7086', type=str,
               help='address and port to bind to.')
 @click.option('-w', '--workers', default=0, type=click.IntRange(0, None),
+              envvar='STONEMASON_WORKERS',
               help='number of worker processes, default is cpu_num * 2.')
 @click.option('--threads', default=1, type=click.IntRange(1, None),
+              envvar='STONEMASON_THREADS',
               help='number of worker threads per process, default is 1.')
+@click.option('--hosts', default=None, type=str,
+              help='Memcache cluster hosts, default is disable memcached.')
 @click.option('--read-only', is_flag=True,
               help='start the server in read only mode.', )
 @pass_context
-def tile_server(ctx, bind, read_only, workers, threads):
+def tile_server(ctx, bind, read_only, workers, threads, hosts):
     """Starts tile server using given themes configuration.
     When debug is enabled, a debugging enabled Flask based server
     is used, otherwise a Gunicorn server is used.  Note workers and
@@ -134,8 +138,9 @@ def tile_server(ctx, bind, read_only, workers, threads):
     app_config = {
         'THEMES': ctx.themes,
         'READ_ONLY': read_only,
-        'DEBUG': ctx.debug,
-        'VERBOSE': ctx.verbose
+        'DEBUG': True, #ctx.debug,
+        'VERBOSE': ctx.verbose,
+        'MEMCACHE_HOSTS': hosts,
     }
     # add prefix to all config keys to confront with flask config
     app_config = dict((ENVVAR_PREFIX + '_' + k, v)
@@ -157,11 +162,14 @@ def tile_server(ctx, bind, read_only, workers, threads):
             click.secho(
                 'Starting Gunicorn tile server using %d worker(s) ' \
                 'and %d thread(s) per worker' % (workers, threads), fg='green')
-        options = dict(
-            workers=workers,
-            threads=threads,
-            bind=bind,
-        )
+        options = {
+            'workers': workers,
+            'threads': threads,
+            'bind': bind,
+            # 'loglevel': 'debug',
+            'errorlog': '-',
+            'preload_app': False
+        }
         server = TileServer(app, options)
         server.run()
 

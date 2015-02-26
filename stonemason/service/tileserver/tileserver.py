@@ -7,6 +7,7 @@
 """
 
 import os
+import re
 from logging import StreamHandler, Formatter
 
 import six
@@ -268,9 +269,10 @@ class TileServerApp(Flask):
         external_cache_config = None
 
         if external_cache_hosts is not None:
+            external_cache_hosts = re.split(r'[; ]+', external_cache_hosts)
             external_cache_config = dict(
                 prototype='memcache',
-                parameters=dict(servers=external_cache_hosts.split())
+                parameters=dict(servers=external_cache_hosts)
                 )
 
         self._mason = Mason(default_cache_config=external_cache_config)
