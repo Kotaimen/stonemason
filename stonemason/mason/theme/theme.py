@@ -24,6 +24,11 @@ class InvalidThemeName(ThemeError):
 
 
 class ThemeRoot(ThemeElement):
+    """Root Theme Element
+
+    The `ThemeRoot` serves as the root of all the theme elements.
+
+    """
     def validate(self):
         if not re.match('^[a-zA-Z][a-zA-Z0-9@_]*$', self.name):
             raise InvalidThemeName(self.name)
@@ -31,7 +36,7 @@ class ThemeRoot(ThemeElement):
 
 
 class ThemeMetadata(ThemeElement):
-    """Metadata Config
+    """Metadata Theme Element
 
     The `ThemeMetadata` is one of the basic building elements of a `Theme`.
     It contains basic properties of a theme. Properties in ThemeMetadata
@@ -153,7 +158,7 @@ class ThemeMetadata(ThemeElement):
 
 
 class ThemePyramid(ThemeElement):
-    """Pyramid Config
+    """Pyramid Theme Element
 
     The `ThemePyramid` contains properties used to construct a
     :class:`~stonemason.provider.pyramid.Pyramid` tile system.
@@ -265,7 +270,7 @@ class ThemePyramid(ThemeElement):
 
 
 class ThemeCache(ThemeElement):
-    """Config for `TileCache`
+    """Cache Theme Element
 
     The `ThemeCache` contains parameters to setup a
     :class:`~stonemason.provider.tilecache.TileCache` instances.
@@ -325,7 +330,7 @@ class ThemeCache(ThemeElement):
 
 
 class ThemeStorage(ThemeElement):
-    """Config for `ClusterStorage`
+    """Storage Theme Element
 
     The `ThemeStorage` contains parameters to setup a
     :class:`~stonemason.provider.tilestorage.ClusterStorage` instance.

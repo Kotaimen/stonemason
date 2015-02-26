@@ -12,7 +12,7 @@ __date__ = '2/23/15'
 
 
 class ThemeElement(object):
-    """Element of a Theme
+    """Base Element of a Theme
 
     A `ThemeElement` represents the base building block of a theme. Both user
     defined attributes and child elements could be attached to a

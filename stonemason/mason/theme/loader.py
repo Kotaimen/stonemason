@@ -25,7 +25,7 @@ def is_valid_theme_filename(filename):
 
 
 class ThemeLoader(object):  # pragma: no cover
-    """Theme Loader Interface
+    """Base Theme Loader
 
     A `ThemeLoader` could parse and load themes into a theme manager.
     """

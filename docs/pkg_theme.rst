@@ -45,11 +45,12 @@ Theme Element
 Theme Loader
 ============
 
-.. autoclass:: stonemason.mason.theme.JsonThemeLoader
+.. autoclass:: stonemason.mason.theme.ThemeLoader
     :members:
 
+.. autoclass:: stonemason.mason.theme.JsonThemeLoader
+
 .. autoclass:: stonemason.mason.theme.LocalThemeLoader
-    :members:
 
 
 Theme Manager
@@ -59,6 +60,5 @@ Theme Manager
     :members:
 
 .. autoclass:: stonemason.mason.theme.MemThemeManager
-    :members:
 
 
