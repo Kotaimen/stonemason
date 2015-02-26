@@ -92,11 +92,11 @@ class ThemeElement(object):
         :param name: A string literal represents the name of the `ThemeElement`.
         :type name: str
 
-        :return: A `ThemeElement` instance.
-        :rtype: `ThemeElement`
+        :return: A `ThemeElement` instance or ``None`` if not exists.
+        :rtype: `ThemeElement` or None
 
         """
-        return self._children[name]
+        return self._children.get(name, None)
 
     def __repr__(self):
         """A printable representation of the `ThemeElement`.
