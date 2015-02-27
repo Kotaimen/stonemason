@@ -120,10 +120,11 @@ from stonemason.service.tileserver import TileServerApp
               help='''number of worker threads per process, default is 1.
               Read from envvar STONEMASON_WORKERS.  ''')
 @click.option('--cache', default=None, type=str,
+              envvar='STONEMASON_MEMCACHE_HOSTS',
               help='''tile cache configuration, default is None, which
               means caching is disabled.  Memcache hosts format is:
               host1:port1;host2:port2.
-              Read from envvar STONEMASON_CACHE_CONFIG
+              Read from envvar STONEMASON_MEMCACHE_HOSTS.
               ''')
 @click.option('--read-only', is_flag=True,
               help='start the server in read only mode.', )
@@ -155,7 +156,7 @@ def tile_server(ctx, bind, read_only, workers, threads, cache):
         'STONEMASON_READ_ONLY': read_only,
         'STONEMASON_DEBUG': bool(ctx.debug),
         'STONEMASON_VERBOSE': ctx.verbose,
-        'STONEMASON_MEMCACHE_HOSTS': hosts,
+        'STONEMASON_MEMCACHE_HOSTS': cache,
     }
 
     # Flask based WSGI application
