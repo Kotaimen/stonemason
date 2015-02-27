@@ -42,7 +42,7 @@ class Context(object):
     def __init__(self):
         self.themes = None
         self.verbose = 0
-        self.debug = False
+        self.debug = 0
 
 
 pass_context = click.make_pass_decorator(Context)
@@ -76,24 +76,25 @@ import stonemason
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
-@click.option('--debug/--no-debug', default=False,
-              help='enable/disable debug mode.')
+@click.option('-d', '--debug', default=False, count=True,
+              help='''enable debug mode, this option can be specified several
+              times:
+                -d      enable debugging mode of the flask framework,
+                -dd     use flask debugging server instead of gunicorn.
+              ''')
 @click.option('-v', '--verbose', default=False, count=True,
-              help='being verbose, this option can be specified several times')
+              help='being verbose.')
 @click.option('-t', '--themes',
               type=click.Path(exists=False, file_okay=True,
                               readable=True),
               required=False, default='themes',
-              help='''themes root directory, by default, it tries lookup "themes"
-                   under current directory.  Only local file system directory
-                   is supported as of now.''')
+              help='''themes root directory, by default, it looks "themes"
+              under current directory, note the directory must already exists.
+              Read from envvar STONEMASON_THEMES.''')
 @click.version_option(stonemason.__version__, message='Stonemason %(version)s')
 @click.pass_context
 def cli(ctx, debug, verbose, themes):
-    """Stonemason Tile Map Service Toolkit.
-
-    Options and arguments can be specified using environment variables
-    as STONEMASON_<option>."""
+    """Stonemason Tile Map Service Toolkit."""
     ctx.obj = Context()
     ctx.obj.themes = os.path.abspath(themes)
     if verbose > 0:
@@ -112,20 +113,35 @@ from stonemason.service.tileserver import TileServerApp
               help='address and port to bind to.')
 @click.option('-w', '--workers', default=0, type=click.IntRange(0, None),
               envvar='STONEMASON_WORKERS',
-              help='number of worker processes, default is cpu_num * 2.')
+              help='''number of worker processes, default is cpu_num * 2,
+              Read from envvar STONEMASON_WORKERS.''')
 @click.option('--threads', default=1, type=click.IntRange(1, None),
               envvar='STONEMASON_THREADS',
-              help='number of worker threads per process, default is 1.')
-@click.option('--hosts', default=None, type=str,
-              help='Memcache cluster hosts, default is disable memcached.')
+              help='''number of worker threads per process, default is 1.
+              Read from envvar STONEMASON_WORKERS.  ''')
+@click.option('--cache', default=None, type=str,
+              envvar='STONEMASON_MEMCACHE_HOSTS',
+              help='''tile cache configuration, default is None, which
+              means caching is disabled.  Memcache hosts format is:
+              host1:port1;host2:port2.
+              Read from envvar STONEMASON_MEMCACHE_HOSTS.
+              ''')
 @click.option('--read-only', is_flag=True,
               help='start the server in read only mode.', )
 @pass_context
-def tile_server(ctx, bind, read_only, workers, threads, hosts):
+def tile_server(ctx, bind, read_only, workers, threads, cache):
     """Starts tile server using given themes configuration.
-    When debug is enabled, a debugging enabled Flask based server
-    is used, otherwise a Gunicorn server is used.  Note workers and
-    threads option is unused when debug is enabled."""
+
+    When debug mode>2, a flask debugging server is used.  Otherwise, gunicorn
+    is used as http server.  A nginx is also recommended for any internet facing
+    services.
+
+    Note for python2, threading mode maybe not available unless `futures`
+    package is installed.
+
+    By default, tile cache is not enabled, to connect to a default configured
+    local memcache server, use --cache=localhost:11211.
+    """
     assert isinstance(ctx, Context)
 
     if read_only and ctx.verbose > 0:
@@ -136,38 +152,41 @@ def tile_server(ctx, bind, read_only, workers, threads, hosts):
     port = int(port)
 
     app_config = {
-        'THEMES': ctx.themes,
-        'READ_ONLY': read_only,
-        'DEBUG': True, #ctx.debug,
-        'VERBOSE': ctx.verbose,
-        'MEMCACHE_HOSTS': hosts,
+        'STONEMASON_THEMES': ctx.themes,
+        'STONEMASON_READ_ONLY': read_only,
+        'STONEMASON_DEBUG': bool(ctx.debug),
+        'STONEMASON_VERBOSE': ctx.verbose,
+        'STONEMASON_MEMCACHE_HOSTS': cache,
     }
-    # add prefix to all config keys to confront with flask config
-    app_config = dict((ENVVAR_PREFIX + '_' + k, v)
-                      for (k, v) in six.iteritems(app_config))
 
     # Flask based WSGI application
     app = TileServerApp(**app_config)
 
-    if ctx.debug:
+    if ctx.debug > 1:
         # run Flask server in debug mode
-        if ctx.verbose > 0:
+        if ctx.verbose:
             click.secho('Starting Flask debug tile server.', fg='green')
         app.run(host=host, port=port, debug=ctx.debug)
     else:
         # otherwise, start gunicorn server
+
         if workers == 0:
+            # by default, use cpu num * 2
             workers = multiprocessing.cpu_count() * 2
-        if ctx.verbose > 0:
+        if ctx.verbose:
             click.secho(
                 'Starting Gunicorn tile server using %d worker(s) ' \
                 'and %d thread(s) per worker' % (workers, threads), fg='green')
+            log_level = 'debug'
+        else:
+            log_level = 'info'
+
         options = {
             'workers': workers,
             'threads': threads,
             'bind': bind,
-            # 'loglevel': 'debug',
-            'errorlog': '-',
+            'loglevel': log_level,
+            'errorlog': '-',  # stderr
             'preload_app': False
         }
         server = TileServer(app, options)
@@ -180,6 +199,7 @@ def tile_server(ctx, bind, read_only, workers, threads, hosts):
 @cli.command('init', short_help='init themes root.')
 @pass_context
 def init_theme(ctx):
+    """Create a sample theme root directory."""
     if os.path.exists(ctx.themes):
         click.secho('Theme root already exists at %s' % ctx.themes, err=True)
         return -1
