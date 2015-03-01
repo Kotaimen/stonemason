@@ -48,7 +48,7 @@ class MapWriter(object):  # pragma: no cover
         raise NotImplementedError
 
     def grid_crop_map(self, map, stride=1, buffer=0):
-        """ Crop a map object into grids and serialize into tile data.
+        """ Crop a map object into grids and serialize them into tile data.
 
         :param map: Map data.
 
@@ -65,7 +65,7 @@ class MapWriter(object):  # pragma: no cover
         raise NotImplementedError
 
     def resplit_map(self, data, stride=1, buffer=0):
-        """ Re-corp a metatile data object into tiles.
+        """ Re-corp a metatile into tiles.
 
         Same as :meth:`grid_crop_map` except this method accepts
         :class:`~stonemason.provider.pyramid.MetaTile` data instead of map data.

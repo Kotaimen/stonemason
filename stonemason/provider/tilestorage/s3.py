@@ -150,14 +150,14 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
         storage describes tile pyramid model.
     :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
 
-    :param mimetype: Mimetype of the `MetaTile` stored in this storage,
-        default is ``application/oct-stream``.
-    :type mimetype: str
+    :param format: `FormatBundle` of the storage which specifies:
 
-    :param extension: File extension used by storage, by default, its
-        guessed from `mimetype`.  Note if `gzip` option is set to ``True``,
-        ``.gz`` is appended to extension.
-    :type extension: str or None
+        - `mimetype` of the tiles stored in the storage,
+        - `exension` of the tiles, Note if `gzip` option is set to ``True``,
+          ``.gz`` is appended to extension.
+        - How to split a `MetaTile` into tiles.
+
+    :type format: :class:`~stonemason.provider.formatbundle.FormatBundle`
 
     :param readonly: Whether the storage is created in read only mode, default
         is ``False``, :meth:`put` and :meth:`retire` always raises
@@ -238,9 +238,14 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
         storage describes tile pyramid model.
     :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
 
-    :param mimetype: Mimetype of the `MetaTile` stored in this storage,
-        default is ``application/oct-stream``.
-    :type mimetype: str
+    :param format: `FormatBundle` of the storage which specifies:
+
+        - `mimetype` of the tiles stored in the storage,
+        - `exension` of the tiles, Note if `gzip` option is set to ``True``,
+          ``.gz`` is appended to extension.
+        - How to split a `MetaTile` into tiles.
+
+    :type format: :class:`~stonemason.provider.formatbundle.FormatBundle`
 
     :param readonly: Whether the storage is created in read only mode, default
         is ``False``, :meth:`put` and :meth:`retire` always raises

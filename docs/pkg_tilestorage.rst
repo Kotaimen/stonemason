@@ -3,9 +3,9 @@ Tile Storage
 
 .. module:: stonemsaon.provider.tilestorage
 
-Implements persistent tile storage.
-
-There are two types of storage:
+Implements persistent tile storage.  For performance and cost reasons, only
+`MetaTile`s and `TileClusters` can be placed in the storage. There are two
+types of storage:
 
     :class:`~stonemason.provider.tilestorage.ClusterStorage`
         stores a cluster of tiles as zipped file.
@@ -19,10 +19,10 @@ A MetaTileStorage can be converted to a read only ClusterStorage using a
 Currently there are two types of storage backends:
 
     `disk`
-        Use filesystem as storage.
+        Local filesystem.
 
     `s3`
-        Use AWS S3 as storage.
+        AWS Simple Storage Service.
 
 More backends will be added in the future.
 

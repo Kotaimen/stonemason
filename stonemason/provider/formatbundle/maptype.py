@@ -18,16 +18,16 @@ _MapType = collections.namedtuple('_MapType', 'type')
 
 
 class MapType(_MapType):
-    """Defines `type` produced by a map renderer.
+    """The result `type` produced by a map renderer.
 
     The following map types are supported:
 
     ``image``
-        Ordinary image for final presentation.
-        Usually type is :class:`PIL.Image.Image`.
+        Ordinary image for final map presentation.
+        Usually the actual object type is :class:`PIL.Image.Image`.
 
     ``raster``
-        Georeferenced raster (eg: `GeoTIFF`, `DEM`).
+        Geo-referenced raster (eg: ``GeoTIFF``, ``DEM``).
 
     ``feature``
         Geography feature (aka: `vector`).
@@ -43,8 +43,6 @@ class MapType(_MapType):
     __slots__ = ()
 
     KNOWN_TYPES = {'raster', 'image', 'feature'}
-
-    # TODO: Implement type check
 
     def __new__(cls, type='image'):
         if type not in cls.KNOWN_TYPES:

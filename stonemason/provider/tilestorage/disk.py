@@ -108,11 +108,11 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
     """ Store `MetaTile` on a file system.
 
     :param root: Required, root directory of the storage, must be a
-        absolute os path.
+        absolute filesystem path.
     :type root: str
 
-    :param dir_mode: Specifies how the directory names is calculated from
-        metatile index, possible values are:
+    :param dir_mode: Specifies how the directory names are calculated from
+        metatile index, possible choices are:
 
         `simple`
             Same as the tile api url schema, ``z/x/y.ext``.
@@ -134,14 +134,14 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
         storage describes tile pyramid model.
     :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
 
-    :param mimetype: Mimetype of the `MetaTile` stored in this storage,
-        default is ``application/data``.
-    :type mimetype: str
+    :param format: `FormatBundle` of the storage which specifies:
 
-    :param extension: File extension used by storage, by default, its
-        guessed from `mimetype`.  Note if `gzip` option is set to ``True``,
-        ``.gz`` is appended to extension.
-    :type extension: str or None
+        - `mimetype` of the tiles stored in the storage,
+        - `exension` of the tiles, Note if `gzip` option is set to ``True``,
+          ``.gz`` is appended to extension.
+        - How to split a `MetaTile` into tiles.
+
+    :type format: :class:`~stonemason.provider.formatbundle.FormatBundle`
 
     :param readonly: Whether the storage is created in read only mode, default
         is ``False``, :meth:`put` and :meth:`retire` always raises
@@ -205,9 +205,14 @@ class DiskClusterStorage(StorageMixin, ClusterStorage):
         storage describes tile pyramid model.
     :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
 
-    :param mimetype: Mimetype of the `MetaTile` stored in this storage,
-        default is ``application/data``.
-    :type mimetype: str
+    :param format: `FormatBundle` of the storage which specifies:
+
+        - `mimetype` of the tiles stored in the storage,
+        - `exension` of the tiles, Note if `gzip` option is set to ``True``,
+          ``.gz`` is appended to extension.
+        - How to split a `MetaTile` into tiles.
+
+    :type format: :class:`~stonemason.provider.formatbundle.FormatBundle`
 
     :param readonly: Whether the storage is created in read only mode, default
         is ``False``, :meth:`put` and :meth:`retire` always raises
