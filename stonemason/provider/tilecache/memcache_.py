@@ -25,16 +25,15 @@ class MemTileCacheError(TileCacheError):
 class MemTileCache(TileCache):
     """A tile cache based on `memcached` protocol backend.
 
+    Tile cache based on `memcached`_ protocol backend. The backend does not
+    necessary being `memcached` itself, any storage or proxy talks its
+    protocol will work, like `couchbase`_ or `nutcracker`_.
+
     .. Note::
 
-        `memcached` has a limit on cache object size, usually its ``4MB``.
-
-    Tile cache based on `memcached`_ protocol backend using `pylibmc`_ driver.
-    The backend does not necessary being `memcached` itself, any storage or
-    proxy talks its protocol will work, like `couchbase`_ or `nutcracker`_.
+        ``memcached`` has a limit on cache object size, usually its ``4MB``.
 
     .. _memcached: <http://memcached.org/>
-    .. _pylibmc: <http://sendapatch.se/projects/pylibmc/>
     .. _couchbase: <http://www.couchbase.com/>
     .. _nutcracker:  <https://github.com/twitter/twemproxy>
 
@@ -50,8 +49,8 @@ class MemTileCache(TileCache):
     >>> cache.has('layer', TileIndex(3, 4, 5))
     False
 
-    :param servers: A list of servers, the list is sent to :class:`pylibmc.Client`, default
-        value is ``['localhost:11211',]``.
+    :param servers: A list of memcache cluster servers, default value is
+        ``['localhost:11211',]``.
 
     :type servers: list
     """
