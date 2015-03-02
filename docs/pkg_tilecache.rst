@@ -4,12 +4,9 @@ Tile Cache
 .. module:: stonemsaon.provider.tilecache
 
 A `TileCache` temporary stores recently accessed tiles for faster access, or
-as a intermediate storage when metatile or tilecluster is retrieved from a
-TileStorage.
+as a intermediate storage for tiles retrieved from a `TileStorage`.
 
-TileCache has no persistence and depends on a distributed cache.
-
-Currently there is only a `memcached` cache.
+Only a `memcached` backend is implemented as of now.
 
 
 Exceptions
