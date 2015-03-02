@@ -67,3 +67,15 @@ class TestTileServerApp(unittest.TestCase):
         self.assertIn('pyramid', theme)
         self.assertIn('cache', theme)
         self.assertIn('storage', theme)
+
+    def test_get_tile_tags(self):
+        resp = self.client.get('/tiles')
+        data = json.loads(resp.data.decode('utf-8'))
+
+        tags = data['result']
+
+        self.assertIn('antique', tags)
+
+    def test_get_tile(self):
+        resp = self.client.get('/tiles/antique/1/1/1.jpg')
+        self.assertEqual(404, resp.status_code)

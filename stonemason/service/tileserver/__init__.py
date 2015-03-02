@@ -11,8 +11,9 @@ import os
 import six
 from flask import Flask
 
-from .models import ThemeModel
+from .models import ThemeModel, MasonModel
 from . import themes
+from . import tiles
 from . import default_settings
 
 
@@ -139,10 +140,14 @@ class TileServerApp(Flask):
         self._theme_model = ThemeModel(
             theme_dir=self._preference.theme_dir)
 
-        # self._mason_model = MasonModel(
-        # self._theme_model, cache_servers=self._preference.cache_servers)
+        self._mason_model = MasonModel(
+            self._theme_model, cache_servers=self._preference.cache_servers)
 
         themes_blueprint = themes.create_blueprint(
             theme_model=self._theme_model)
         self.register_blueprint(themes_blueprint)
 
+        tiles_blueprint = tiles.create_blueprint(
+            mason_model=self._mason_model
+        )
+        self.register_blueprint(tiles_blueprint)

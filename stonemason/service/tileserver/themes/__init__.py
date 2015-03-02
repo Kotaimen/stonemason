@@ -9,7 +9,7 @@ from .views import ThemeView
 
 
 def create_blueprint(**kwargs):
-    themes = Blueprint('tiles', __name__)
+    themes = Blueprint('themes', __name__)
 
     themes_view = ThemeView.as_view('themes', **kwargs)
 
