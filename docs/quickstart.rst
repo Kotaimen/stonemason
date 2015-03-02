@@ -31,8 +31,8 @@ Initialize Theme Root
 `stonemason` must have a `theme root` predefined, where all map designs,
 render directives, storage configurations are assembled together.
 
-Themes root can be passed as `stonemason` option, or defined in
-``STONEMASON_THEMES`` envvar, by default
+Themes root can be passed as ``--themes`` option, or defined in
+``STONEMASON_THEMES`` envvar.
 
 To init a themes root, use ``init`` command, it will create the directory
 structure and configurations for you, with a simple sample theme::
@@ -46,6 +46,12 @@ structure and configurations for you, with a simple sample theme::
 .. warning:: Because we have not finished map renderer, the init
     command doesn't work out of box, yet.
 
+Check Theme Configuration
+=========================
+
+To verify theme configuration, use ``check`` subcommand:
+
+    $ stonemason --themes=themes -v check
 
 Configure a Memcache
 ====================
@@ -74,7 +80,6 @@ generated above requires one listening on local TCP port ``11211``::
     `Twitter's nutcracker <https://github.com/twitter/twemproxy>`_.
 
 
-
 Configure Redis
 ===============
 
@@ -88,13 +93,40 @@ After created a sample themes root, you can start the tile server::
 
     $ cd ~/themes
     $ export STONEMASON_THEMES=`pwd`
-    $ stonemason --debug n tileserver --bind=127.0.0.1:8000
+    $ stonemason -dd tileserver --bind=127.0.0.1:8000
 
-This starts a `Flask` server with debugging and auto reloading enabled.
-To run a production server using `Gunicorn`, remove the ``--debug`` option::
+The ``-dd`` option means a debugging flask server will be started, to start
+To production server using `Gunicorn`, don't supply the ``--debug`` option::
 
-    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=4 --threads=1
+    $ stonemason tileserver --bind=0.0.0.0:8000
+    [2015-03-02 18:09:30 +0800] [42985] [INFO] Starting gunicorn 19.2.1
+    [2015-03-02 18:09:30 +0800] [42985] [INFO] Listening at: http://127.0.0.1:7086 (42985)
+    [2015-03-02 18:09:30 +0800] [42985] [INFO] Using worker: sync
+    [2015-03-02 18:09:30 +0800] [43013] [INFO] Booting worker with pid: 43013
+    [2015-03-02 18:09:31 +0800] [43014] [INFO] Booting worker with pid: 43014
 
+
+When `Gunicorn` server is used, you can specify number of worker processes used
+and number of threads per worker::
+
+    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2 --threads=4
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Starting gunicorn 19.2.1
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://127.0.0.1:7086 (43027)
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Using worker: threads
+    [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054
+    [2015-03-02 18:10:00 +0800] [43055] [INFO] Booting worker with pid: 43055
+
+If you have `memcache` server configured above, use it to speedup::
+
+    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2 --threads=4 --cache=localhost:11211
+
+Or define it in envvar ``STONEMASON_MEMCACHE_HOSTS``::
+
+    $ export STONEMASON_MEMCACHE_HOSTS=localhost:11211
+
+If a memcache cluster is used, separate each node with ``;`` or space::
+
+    $ export STONEMASON_MEMCACHE_HOSTS=10.0.16.1:11211;10.0.16.2:11211
 
 TODO: Insert a screenshot here.
 
@@ -117,15 +149,28 @@ Here is a sample `Docker` configuration which assumes a dist package in
 
     WORKDIR     ${STONEMASON_THEMES}
 
+    WORKDIR     ${STONEMASON_THEMES}
+
     RUN         apt-get update && \
                 apt-get -y install python-dev python-pip && \
-                apt-get -y install libjpeg-dev libz-dev libtiff-dev libfreetype6-dev libwebp-dev liblcms2-dev && \
-                apt-get -y install libmemcached-dev && \
-                apt-get -y install libgeos-dev libgdal-dev gdal-bin python-gdal
+                apt-get -y install libjpeg-dev libz-dev libtiff-dev libfreetype6-dev libwebp-dev liblcms2-dev
 
-    # Speedup slow pip install by caching them first
-    RUN         pip install pillow pylibmc
+    # Set the locale otherwise Click will complain,
+    # See http://click.pocoo.org/3/python3/
+    RUN         locale-gen en_US.UTF-8
+    ENV         LANG en_US.UTF-8
+    ENV         LANGUAGE en_US:en
+    ENV         LC_ALL en_US.UTF-8
 
+    # Speedup pip install by install "must have" prerequests first
+    RUN         pip install pillow flask boto gunicorn six Click
+
+    ADD         dist/${STONEMASON}.tar.gz /tmp/
+    RUN         pip install /tmp/${STONEMASON}/
+
+    COPY        themes ${STONEMASON_THEMES}/
+
+    # Install stonemason
     ADD         dist/${STONEMASON}.tar.gz /tmp/
     RUN         pip install /tmp/${STONEMASON}/
 
@@ -133,11 +178,20 @@ Here is a sample `Docker` configuration which assumes a dist package in
 
     # Check configuration
     RUN         find ${STONEMASON_THEMES}
-    RUN         stonemason check
+    RUN         stonemason -v check
 
     # Start tile server
     EXPOSE      7086
     CMD         stonemason tileserver --bind 0.0.0.0:7086
+
+To start tileserver in docker container, use::
+
+    $ docker build -t stonemason .
+    $ docker run -p 0.0.0.0:7086:7086 stonemason stonemason tileserver --bind 0.0.0.0:7086 --workers=1
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Starting gunicorn 19.2.1
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://127.0.0.1:7086 (43027)
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Using worker: threads
+    [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054
 
 
 If you want to use another ``WSGI`` server or customized `Gunicorn`
