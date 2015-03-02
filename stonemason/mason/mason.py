@@ -67,11 +67,6 @@ class Mason(object):
         self._builder = TileProviderFactory()
         self._providers = dict()
 
-    @property
-    def tags(self):
-        """Get all available tile tags"""
-        return list(tag for tag in self._providers)
-
     def load_theme(self, theme):
         """Load the named theme"""
         tag = theme.name
@@ -98,8 +93,7 @@ class Mason(object):
             tile = provider.get_tile(z, x, y)
             return tile
 
-    @property
-    def tags(self):
+    def get_tile_tags(self):
         """Get all available tile tags"""
         return list(tag for tag in self._providers)
 

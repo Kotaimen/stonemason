@@ -9,17 +9,19 @@ from .views import TilesView, TagsView
 
 
 def create_blueprint(**kwargs):
-    tiles = Blueprint('tiles', __name__)
+    blueprint = Blueprint('mason', __name__)
 
     tiles_view = TilesView.as_view('tiles', **kwargs)
 
-    tiles.add_url_rule(
+    blueprint.add_url_rule(
+        endpoint='tile',
         rule='/tiles/<tag>/<int:z>/<int:x>/<int:y>@<scale>.<ext>',
         view_func=tiles_view,
         methods=['GET']
     )
 
-    tiles.add_url_rule(
+    blueprint.add_url_rule(
+        endpoint='tile@1x',
         rule='/tiles/<tag>/<int:z>/<int:x>/<int:y>.<ext>',
         view_func=tiles_view,
         defaults={'scale': '1x'},
@@ -28,10 +30,11 @@ def create_blueprint(**kwargs):
 
     tags_view = TagsView.as_view('tags', **kwargs)
 
-    tiles.add_url_rule(
+    blueprint.add_url_rule(
+        endpoint='tile_tags',
         rule='/tiles',
         view_func=tags_view,
         methods=['GET']
     )
 
-    return tiles
+    return blueprint

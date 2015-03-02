@@ -9,21 +9,23 @@ from .views import ThemeView
 
 
 def create_blueprint(**kwargs):
-    themes = Blueprint('themes', __name__)
+    blueprint = Blueprint('themes', __name__)
 
-    themes_view = ThemeView.as_view('themes', **kwargs)
+    view = ThemeView.as_view('themes', **kwargs)
 
-    themes.add_url_rule(
+    blueprint.add_url_rule(
+        endpoint='theme',
         rule='/themes/<tag>',
-        view_func=themes_view,
+        view_func=view,
         methods=['GET']
     )
 
-    themes.add_url_rule(
+    blueprint.add_url_rule(
+        endpoint='theme_list',
         rule='/themes',
-        view_func=themes_view,
+        view_func=view,
         defaults={'tag': None},
         methods=['GET']
     )
 
-    return themes
+    return blueprint
