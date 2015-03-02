@@ -82,4 +82,12 @@ class TestTileServerApp(unittest.TestCase):
 
     def test_get_map(self):
         resp = self.client.get('/maps/antique')
-        print resp.data
+        self.assertEqual(200, resp.status_code)
+
+    def test_health_check(self):
+        resp = self.client.get('/health_check')
+        self.assertEqual(200, resp.status_code)
+
+    def test_admin(self):
+        resp = self.client.get('/')
+        self.assertEqual(200, resp.status_code)
