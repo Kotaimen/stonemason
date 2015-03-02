@@ -14,6 +14,7 @@ from flask import Flask
 from .models import ThemeModel, MasonModel
 from . import themes
 from . import tiles
+from . import maps
 from . import default_settings
 
 
@@ -151,3 +152,8 @@ class TileServerApp(Flask):
             mason_model=self._mason_model
         )
         self.register_blueprint(tiles_blueprint)
+
+        maps_blueprint = maps.create_blueprint(
+            mason_model=self._mason_model, theme_model=self._theme_model
+        )
+        self.register_blueprint(maps_blueprint)

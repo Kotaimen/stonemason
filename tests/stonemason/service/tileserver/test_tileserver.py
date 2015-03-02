@@ -79,3 +79,7 @@ class TestTileServerApp(unittest.TestCase):
     def test_get_tile(self):
         resp = self.client.get('/tiles/antique/1/1/1.jpg')
         self.assertEqual(404, resp.status_code)
+
+    def test_get_map(self):
+        resp = self.client.get('/maps/antique')
+        print resp.data
