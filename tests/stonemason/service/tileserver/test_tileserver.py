@@ -19,8 +19,11 @@ from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 class TestTileServerAppSetup(unittest.TestCase):
     def test_config_from_default_settings(self):
         app = TileServerApp()
-        for key, val in six.iteritems(app.config):
-            self.assertFalse(key.startswith('STONEMASON_'))
+        self.assertEqual(False, app.config['STONEMASON_DEBUG'])
+        self.assertEqual(False, app.config['STONEMASON_TESTING'])
+        self.assertEqual('.', app.config['STONEMASON_THEMES'])
+        self.assertEqual(None, app.config['STONEMASON_CACHE'])
+        self.assertEqual(0, app.config['STONEMASON_VERBOSE'])
 
     def test_config_from_pyfile(self):
         self.assertRaises(IOError, TileServerApp, 'settings.py')
