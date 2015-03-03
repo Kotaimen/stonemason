@@ -54,11 +54,11 @@ class TileServer(gunicorn.app.base.BaseApplication):
               help='''number of threads per process, default is 1.
               Read from envvar STONEMASON_WORKERS.  ''')
 @click.option('--cache', default=None, type=str,
-              envvar='STONEMASON_MEMCACHE_HOSTS',
+              envvar='STONEMASON_CACHE',
               help='''tile cache configuration, default is None, which
               means caching is disabled.  Memcache hosts format is:
               host1:port1;host2:port2.
-              Read from envvar STONEMASON_MEMCACHE_HOSTS.
+              Read from envvar STONEMASON_CACHE.
               ''')
 @click.option('--read-only', is_flag=True,
               help='start the server in read only mode.', )
@@ -97,7 +97,7 @@ def tile_server_command(ctx, bind, read_only, workers, threads, cache):
         'STONEMASON_READ_ONLY': read_only,
         'STONEMASON_DEBUG': bool(ctx.debug),
         'STONEMASON_VERBOSE': ctx.verbose,
-        'STONEMASON_MEMCACHE_HOSTS': cache,
+        'STONEMASON_CACHE': cache,
     }
 
     # Flask based WSGI application

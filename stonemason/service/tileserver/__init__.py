@@ -206,7 +206,7 @@ class TileServerPreference(object):
 
     @property
     def cache_servers(self):
-        return self._app.config.get('STONEMASON_MEMCACHE_HOSTS', None)
+        return self._app.config.get('STONEMASON_CACHE', None)
 
     @property
     def verbose(self):
@@ -246,11 +246,9 @@ class TileServerApp(Flask):
 
         :http:get:`/`
 
-
     And a health check url:
 
         :http:get:`/health_check`
-
 
     :type config: str
     :param config:

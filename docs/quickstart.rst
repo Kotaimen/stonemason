@@ -120,13 +120,13 @@ If you have `memcache` server configured above, use it to speedup::
 
     $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2 --threads=4 --cache=localhost:11211
 
-Or define it in envvar ``STONEMASON_MEMCACHE_HOSTS``::
+Or define it in envvar ``STONEMASON_CACHE``::
 
-    $ export STONEMASON_MEMCACHE_HOSTS=localhost:11211
+    $ export STONEMASON_CACHE=localhost:11211
 
 If a memcache cluster is used, separate each node with ``;`` or space::
 
-    $ export STONEMASON_MEMCACHE_HOSTS=10.0.16.1:11211;10.0.16.2:11211
+    $ export STONEMASON_CACHE=10.0.16.1:11211;10.0.16.2:11211
 
 TODO: Insert a screenshot here.
 
