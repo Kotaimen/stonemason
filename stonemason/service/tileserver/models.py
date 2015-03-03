@@ -24,9 +24,9 @@ class ThemeModel(object):
 
 
 class MasonModel(object):
-    def __init__(self, theme_model, cache_servers=None):
-        assert isinstance(theme_model, ThemeModel)
-        self._theme_model = theme_model
+    def __init__(self, themes, cache_servers=None):
+        assert isinstance(themes, list)
+        self._themes = themes
         self._mason = None
         self._cache_servers = cache_servers
 
@@ -44,7 +44,7 @@ class MasonModel(object):
                 )
 
             self._mason = Mason(default_cache_config=cache_config)
-            for theme in self._theme_model:
+            for theme in self._themes:
                 self._mason.load_theme(theme)
 
         return self._mason
@@ -54,15 +54,3 @@ class MasonModel(object):
 
     def get_tile_tags(self):
         return self.mason.get_tile_tags()
-
-#
-# class MapModel(object):
-# pass
-#
-#
-# class AdminModel(object):
-# pass
-#
-#
-# class HealthCheckModel(object):
-# pass

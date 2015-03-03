@@ -143,8 +143,10 @@ class TileServerApp(Flask):
         self._theme_model = ThemeModel(
             theme_dir=self._preference.theme_dir)
 
+        theme_collection = list(t for t in self._theme_model)
+
         self._mason_model = MasonModel(
-            self._theme_model, cache_servers=self._preference.cache_servers)
+            theme_collection, cache_servers=self._preference.cache_servers)
 
         themes_blueprint = themes.create_blueprint(
             theme_model=self._theme_model)
