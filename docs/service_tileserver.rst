@@ -229,3 +229,35 @@ Health Check
     :resheader Cache-Control: Do not cache.
 
     :status 200: No error.
+
+
+Admin API
+=========
+
+A map management console.
+
+Overview
+--------
+
+.. http:get:: /
+
+    Return the management console of the tile server.
+
+    **Example request**:
+
+        .. code-block:: http
+
+            GET / HTTP/1.1
+            Host: example.com
+            Accept: */*
+
+    **Example response**:
+
+        .. code-block:: http
+
+            HTTP/1.1 200 OK
+            Content-Type: text/html
+
+    :resheader Content-Type: HTML page.
+
+    :status 200: No error.
