@@ -10,6 +10,19 @@ from ..models import MasonModel, ThemeModel
 
 
 class MapView(MethodView):
+    """Map View
+
+    A map site with named tag.
+
+    :param mason_model: A :class:`~stonemason.service.models.MasonModel` that
+                        contains mason themes.
+    :type mason_model: :class:`~stonemason.service.models.MasonModel`
+
+    :param theme_model: A theme model that manages themes.
+    :type theme_model: :class:`~stonemason.service.models.ThemeModel`
+
+    """
+
     def __init__(self, mason_model, theme_model):
         assert isinstance(mason_model, MasonModel)
         assert isinstance(theme_model, ThemeModel)
@@ -17,7 +30,7 @@ class MapView(MethodView):
         self._theme_model = theme_model
 
     def get(self, tag):
-
+        """Retrieve a map site with the given tag."""
         tags = self._mason_model.get_tile_tags()
         if tag not in tags:
             abort(404)

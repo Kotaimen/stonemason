@@ -10,6 +10,19 @@ from ..models import MasonModel, ThemeModel
 
 
 class AdminView(MethodView):
+    """Admin View
+
+    Retrieve an overview of all loaded maps.
+
+    :param mason_model: A :class:`~stonemason.service.models.MasonModel` that
+                        contains mason themes.
+    :type mason_model: :class:`~stonemason.service.models.MasonModel`
+
+    :param theme_model: A theme model that manages themes.
+    :type theme_model: :class:`~stonemason.service.models.ThemeModel`
+
+    """
+
     def __init__(self, mason_model, theme_model):
         assert isinstance(mason_model, MasonModel)
         assert isinstance(theme_model, ThemeModel)
@@ -17,6 +30,7 @@ class AdminView(MethodView):
         self._theme_model = theme_model
 
     def get(self):
+        """Retrieve an overview of all loaded maps."""
         collection = list()
         for tag in self._mason_model.get_tile_tags():
             theme = self._theme_model.get_theme(tag)
