@@ -241,7 +241,7 @@ class ThemePyramid(ThemeElement):
     def __init__(self, name, **attributes):
         ThemeElement.__init__(
             self, name,
-            levels=attributes.get('levels', range(0, 23)),
+            levels=attributes.get('levels', list(range(0, 23))),
             stride=attributes.get('stride', 1),
             crs=attributes.get('crs', 'EPSG:4326'),
             proj=attributes.get('proj', 'EPSG:3857'),
