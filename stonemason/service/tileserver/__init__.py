@@ -194,26 +194,59 @@ class TileServerPreference(object):
 
     @property
     def debug(self):
+        """Indicate debug status of `stonemason`. Return `True` if debug is on.
+
+        Return `True` if `STONEMASON_DEBUG` is set to `True`. Setting `DEBUG`
+        option of `Flask` will not affect this value and only turn on flask
+        debug.
+        """
         return bool(self._app.config.get('STONEMASON_DEBUG', False))
 
     @property
     def testing(self):
+        """Indicate test status of `stonemason`. Return `True` if being on
+         testing
+
+         Return `True` if `STONEMASON_TESTING` is set to `True`. Setting
+         `TESTING` option of `Flask` will not affect this value and only turn
+         on flask testing.
+         """
         return bool(self._app.config.get('STONEMASON_TESTING', False))
 
     @property
     def theme_dir(self):
+        """Return the path of theme directory
+
+        Return the theme directory setting by `STONEMASON_THEMES`. Default
+        is current working directory.
+        """
+
         return self._app.config.get('STONEMASON_THEMES', '.')
 
     @property
     def cache_servers(self):
+        """Return a list of address of cache servers
+
+        Return addresses of cache servers setting in `STONEMASON_CACHE`.
+        Default is `None`.
+
+        """
         return self._app.config.get('STONEMASON_CACHE', None)
 
     @property
     def verbose(self):
+        """Return verbose level of logging
+
+        Return a positive integer represents the level of logging setting
+        by `STONEMASON_VERBOSE`. Setting to `0` to turn off logging. Default
+        to `0`.
+        """
+
         try:
             verbose = int(self._app.config.get('STONEMASON_VERBOSE', 0))
         except ValueError:
             verbose = 0
+
         return verbose
 
 
