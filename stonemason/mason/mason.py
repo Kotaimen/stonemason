@@ -55,14 +55,12 @@ class Mason(object):
     def __init__(self,
                  readonly=False,
                  logger=None,
-                 default_cache_config=None):
+                 external_cache=None):
         assert isinstance(readonly, bool)
-        assert isinstance(default_cache_config, dict) or \
-               default_cache_config is None
 
         self._logger = logger
         self._readonly = readonly
-        self._default_cache_config = default_cache_config
+        self._external_cache = external_cache
 
         self._builder = TileProviderFactory()
         self._providers = dict()
@@ -75,7 +73,7 @@ class Mason(object):
             raise ThemeAlreadyLoaded(tag)
 
         provider = self._builder.create_from_theme(
-            tag, theme, cache_config=self._default_cache_config)
+            tag, theme, external_cache=self._external_cache)
 
         if self._readonly:
             provider.readonly = True

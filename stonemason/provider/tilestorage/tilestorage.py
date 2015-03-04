@@ -235,7 +235,7 @@ class TileClusterSerializer(ObjectSerializeConcept):
         metadata = metadata.copy()
         # let tilecluster figure out mimetype from cluster index,
         # since storage always assign 'application/zip' for a cluster
-        del metadata['mimetype']
+        # del metadata['mimetype']
         return TileCluster.from_zip(io.BytesIO(blob), metadata=metadata)
 
     def save(self, metatile):

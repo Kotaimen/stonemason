@@ -195,6 +195,13 @@ class TileCluster(object):
                         field = field.encode('ascii')
                 return field
 
+            # if mimetype is not provided in the index, guess from extension
+            if 'mimetype' not in index:
+                mimetype = guess_mimetype(extension)
+            if 'mimetype' in metadata and metadata['mimetype'] is not None:
+                if metadata['mimetype'] != mimetype:
+                    raise TileClusterError('Mismatching mimetype: expecting "%s", got "%s".' % (metadata['mimetype'], mimetype ))
+
             mimetype = load_optional_field('mimetype')
             if mimetype is None:
                 mimetype = guess_mimetype(extension)

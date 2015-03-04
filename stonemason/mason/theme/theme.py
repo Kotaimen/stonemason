@@ -19,7 +19,7 @@ class ThemeError(Exception):
     pass
 
 
-class InvalidThemeName(ThemeError):
+class InvalidThemeValue(ThemeError):
     pass
 
 
@@ -29,9 +29,19 @@ class ThemeRoot(ThemeElement):
     The `ThemeRoot` serves as the root of all the theme elements.
 
     """
+
+    def __init__(self, name, **attributes):
+        ThemeElement.__init__(
+            self, name, maptype=attributes.get('maptype', 'image'))
+
+    @property
+    def maptype(self):
+        return self.attributes['maptype']
+
     def validate(self):
         if not re.match('^[a-zA-Z][a-zA-Z0-9@_]*$', self.name):
-            raise InvalidThemeName(self.name)
+            raise InvalidThemeValue(self.name)
+
         return ThemeElement.validate(self)
 
 
@@ -123,8 +133,6 @@ class ThemeMetadata(ThemeElement):
             thumbnail=attributes.get('thumbnail', ''),
             center=attributes.get('center', [0, 0]),
             center_zoom=attributes.get('center_zoom', 4))
-
-        self.validate()
 
     @property
     def version(self):
@@ -230,18 +238,16 @@ class ThemePyramid(ThemeElement):
 
     """
 
-
     def __init__(self, name, **attributes):
         ThemeElement.__init__(
             self, name,
-            levels=attributes.get('levels', list(range(0, 23))),
+            levels=attributes.get('levels', range(0, 23)),
             stride=attributes.get('stride', 1),
             crs=attributes.get('crs', 'EPSG:4326'),
             proj=attributes.get('proj', 'EPSG:3857'),
             boundary=attributes.get('boundary',
                                     (-180, -85.0511, 180, 85.0511)))
 
-        self.validate()
 
     @property
     def levels(self):
@@ -316,8 +322,6 @@ class ThemeCache(ThemeElement):
             prototype=attributes.get('prototype', 'null'),
             parameters=attributes.get('parameters', dict()))
 
-        self.validate()
-
     @property
     def prototype(self):
         """Prototype of the cache"""
@@ -373,9 +377,8 @@ class ThemeStorage(ThemeElement):
         ThemeElement.__init__(
             self, name,
             prototype=attributes.get('prototype', 'null'),
+            tileformat=attributes.get('tileformat', dict(format='JPEG', extension='jpg')),
             parameters=attributes.get('parameters', dict()))
-
-        self.validate()
 
     @property
     def prototype(self):
@@ -383,12 +386,16 @@ class ThemeStorage(ThemeElement):
         return self.attributes['prototype']
 
     @property
+    def tileformat(self):
+        return self.attributes['tileformat']
+
+    @property
     def parameters(self):
         """Parameters of the storage"""
         return self.attributes['parameters']
 
 
-class Theme(object):
+class Theme(ThemeRoot):
     """Stonemason Theme
 
     A `Theme` in stonemason is a configuration object that indicates how and
@@ -466,56 +473,48 @@ class Theme(object):
 
     def __init__(self, **configs):
         name = configs.get('name', 'default')
-        self._root = ThemeRoot(name)
+        maptype = configs.get('maptype', 'image')
+
+        ThemeRoot.__init__(self, name, maptype=maptype)
 
         metadata_attrs = configs.get('metadata', dict())
         theme_metadata = ThemeMetadata('metadata', **metadata_attrs)
-        self._root.put_element(theme_metadata.name, theme_metadata)
+        self.put_element(theme_metadata.name, theme_metadata)
 
         pyramid_attrs = configs.get('pyramid', dict())
         theme_pyramid = ThemePyramid('pyramid', **pyramid_attrs)
-        self._root.put_element(theme_pyramid.name, theme_pyramid)
+        self.put_element(theme_pyramid.name, theme_pyramid)
 
         cache_attrs = configs.get('cache', dict())
         theme_cache = ThemeCache('cache', **cache_attrs)
-        self._root.put_element(theme_cache.name, theme_cache)
+        self.put_element(theme_cache.name, theme_cache)
 
         storage_attrs = configs.get('storage', dict())
         theme_storage = ThemeStorage('storage', **storage_attrs)
-        self._root.put_element(theme_storage.name, theme_storage)
-
-    @property
-    def name(self):
-        """Name of the theme"""
-        return self._root.name
+        self.put_element(theme_storage.name, theme_storage)
 
     @property
     def metadata(self):
         """Metadata Parameters of the theme"""
-        return self._root.get_element('metadata')
+        return self.get_element('metadata')
 
     @property
     def pyramid(self):
         """Pyramid Parameters of the theme"""
-        return self._root.get_element('pyramid')
+        return self.get_element('pyramid')
 
     @property
     def cache(self):
         """Cache Parameters of the theme"""
-        return self._root.get_element('cache')
+        return self.get_element('cache')
 
     @property
     def storage(self):
         """Storage parameters of the theme"""
-        return self._root.get_element('storage')
+        return self.get_element('storage')
 
     def describe(self):
-        """Description of the theme
-
-        :return: A dict of theme description.
-        :rtype: dict
-
-        """
+        """Description of the theme"""
         description = dict(
             name=self.name,
             pyramid=self.pyramid.attributes,
