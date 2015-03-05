@@ -92,7 +92,6 @@
             }
         }
 
-
         /* Sidebar navigation */
         .nav-sidebar {
             margin-right: -21px; /* 20px padding + 1px border */
@@ -104,13 +103,6 @@
             padding-right: 20px;
             padding-left: 20px;
         }
-
-        /*.nav-sidebar > .active > a,*/
-        /*.nav-sidebar > .active > a:hover,*/
-        /*.nav-sidebar > .active > a:focus {*/
-            /*color: #fff;*/
-            /*background-color: #428bca;*/
-        /*}*/
 
     </style>
 
@@ -157,9 +149,7 @@
                     <li><a href="#">Export</a></li>
                 </ul>
             </div>
-            <!--
-                        main
-                        -->
+            <!-- main -->
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 <div id="grid" data-columns>
 
@@ -172,11 +162,11 @@
                             <div class="panel-heading">
                                 <h3 class="text-capitalize">{{ theme.name }}
                                     <a href="maps/{{ theme.name }}"
-                                       class="btn btn-default btn-small pull-right"
+                                       class="btn btn-default btn-sml pull-right"
                                        role="button">
-                            <span class="glyphicon glyphicon-map-marker"
-                                  aria-hidden="true">
-                            </span>
+                                    <span class="glyphicon glyphicon-map-marker"
+                                          aria-hidden="true">
+                                    </span>
                                     </a>
                                 </h3>
 
@@ -185,31 +175,39 @@
                             </div>
 
                             <div class="panel-body">
-                                <p >
-                                    {{ theme.metadata.description}}
+                                <p>
+                                    {{ theme.metadata.description|e }}
                                 </p>
                             </div>
 
                             <table class="table table-default">
                                 <tr>
-                                    <th>Key</th>
-                                    <th>Value</th>
+                                    <td>CRS</td>
+                                    <td><code>{{ theme.pyramid.crs|e }}</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Projection</td>
+                                    <td><code>{{ theme.pyramid.proj|e }}</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Zoom Levels</td>
+                                    <td>{{ theme.pyramid.levels[0] }}~{{
+                                        theme.pyramid.levels[-1] }}
+                                    </td>
                                 </tr>
 
-                                {% for key, value in theme.pyramid.iteritems()
-                                %}
-                                <tr>
-                                    <td>{{ key }}</td>
-                                    <td>{{ value }}</td>
-                                </tr>
-                                {% endfor %}
+
                             </table>
 
                             <div class="panel-footer">
                                 <p class="text-right">
-                                    {{ theme.metadata.attribution }}
+                                    {{ theme.metadata.attribution|e }}
                                 </p>
                             </div>
+
+
                         </div>
 
                     </div>

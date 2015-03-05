@@ -39,31 +39,41 @@ class TileCacheFactory(object):
     """`TileCache` Factory
     """
 
-    def create(self, **kwargs):
+    KNOWN_CACHES = {
+        'memcache': MemTileCache
+    }
+
+    def create(self, prototype, **parameters):
         """Create a `TileCache` instance
 
-        :param kwargs: A dict contains parameters for creating a `TileCache`.
+        :param prototype: Prototype of the cache.
+        :type prototype: str
+
+        :param kwargs: Parameters for the specified `TileCache`.
         :type kwargs: dict
 
         """
-        prototype = kwargs.get('prototype')
-        parameters = kwargs.get('parameters')
-
         if prototype == 'null':
             return NullTileCache()
 
-        elif prototype == 'memcache':
-            return MemTileCache(**parameters)
-
-        else:
+        constructor = self.KNOWN_CACHES.get(prototype)
+        if constructor is None:
             raise UnknownCachePrototype(prototype)
+
+        return constructor(**parameters)
 
 
 class ClusterStorageFactory(object):
     """`ClusterStorage` Factory
     """
 
-    def create(self, pyramid, **kwargs):
+    KNOWN_CLUSTER_STORAGE = {
+        'disk': DiskClusterStorage,
+        's3': S3ClusterStorage
+    }
+
+
+    def create(self, prototype, pyramid, formatbundle, **parameters):
         """Create a `ClusterStorage` instance
 
         :param pyramid: An instance of `Pyramid`.
@@ -73,30 +83,15 @@ class ClusterStorageFactory(object):
         :type kwargs: dict
 
         """
-        prototype = kwargs.get('prototype')
-        parameters = kwargs.get('parameters')
-
-        # XXX: Use hard-wired format bundle for integration
-        format_bundle = FormatBundle(MapType('image'),
-                                     TileFormat('JPEG'))
-
-
 
         if prototype == 'null':
             return NullClusterStorage()
 
-        elif prototype == 'disk':
-            return DiskClusterStorage(pyramid=pyramid,
-                                      format=format_bundle,
-                                      **parameters)
-
-        elif prototype == 's3':
-            return S3ClusterStorage(pyramid=pyramid,
-                                    format=format_bundle,
-                                    **parameters)
-
-        else:
+        constructor = self.KNOWN_CLUSTER_STORAGE.get(prototype)
+        if constructor is None:
             raise UnknownStoragePrototype(prototype)
+
+        return constructor(pyramid=pyramid, format=formatbundle, **parameters)
 
 
 class TileProviderFactory(object):
@@ -112,7 +107,7 @@ class TileProviderFactory(object):
         self._cache_factory = TileCacheFactory()
         self._storage_factory = ClusterStorageFactory()
 
-    def create_from_theme(self, tag, theme, cache_config=None):
+    def create_from_theme(self, tag, theme, external_cache=None):
         """Build `TileProvider` from a stonemason theme
 
         :param theme: A stonemason `Theme` instance.
@@ -122,22 +117,58 @@ class TileProviderFactory(object):
         :type cache_config: dict
         """
         assert isinstance(theme, Theme)
-        assert isinstance(cache_config, dict) or cache_config is None
+        assert isinstance(external_cache, dict) or external_cache is None
 
         tag = tag
-        pyramid = Pyramid(**theme.pyramid.attributes)
-        metadata = theme.metadata.attributes
 
-        if cache_config is None:
-            cache = self._cache_factory.create(**theme.cache.attributes)
-        else:
-            assert isinstance(cache_config, dict)
-            cache = self._cache_factory.create(**cache_config)
+        pyramid = self._build_pyramid_from_theme(theme)
 
-        storage = self._storage_factory.create(
-            pyramid, **theme.storage.attributes)
+        metadata = self._build_metadata_from_theme(theme)
+
+        cache = self._build_cache_from_theme(theme, external_cache)
+
+        storage = self._build_storage_from_theme(theme)
 
         provider = TileProvider(
             tag, pyramid, metadata=metadata, cache=cache, storage=storage)
 
         return provider
+
+    def _build_metadata_from_theme(self, theme):
+        return dict(theme.metadata.attributes)
+
+    def _build_pyramid_from_theme(self, theme):
+        return Pyramid(**theme.pyramid.attributes)
+
+    def _build_cache_from_theme(self, theme, external_cache=None):
+
+        if external_cache is None:
+            prototype = theme.cache.prototype
+            parameters = theme.cache.parameters
+
+        else:
+            assert isinstance(external_cache, dict)
+
+            prototype = external_cache.get('prototype', 'null')
+            parameters = external_cache.get('parameters', dict())
+
+        cache = self._cache_factory.create(prototype, **parameters)
+
+        return cache
+
+    def _build_storage_from_theme(self, theme):
+
+        prototype = theme.storage.prototype
+
+        pyramid = Pyramid(**theme.pyramid.attributes)
+
+        maptype = MapType(theme.maptype)
+        tileformat = TileFormat(**theme.storage.tileformat)
+        bundle = FormatBundle(maptype, tileformat)
+
+        parameters = theme.storage.parameters
+
+        storage = self._storage_factory.create(
+            prototype, pyramid, bundle, **parameters)
+
+        return storage

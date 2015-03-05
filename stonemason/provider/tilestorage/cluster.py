@@ -155,7 +155,7 @@ class TileCluster(object):
         """Load `TileCluster` from a clustered zip file.
 
         :param zip_file: The zip file, can be a file name or a file like object.
-        :type zip_file: file
+        :type zip_file: FileIO
         :param metadata: Extra metadata as a dict, overwriting any metadata
                          in the zip file.
         :type metadata: dict
@@ -194,6 +194,15 @@ class TileCluster(object):
                         # make sure fields values are *not* unicode under py27
                         field = field.encode('ascii')
                 return field
+
+            # if mimetype is not provided in the index, guess from extension
+            try:
+                mimetype = index['mimetype']
+            except KeyError:
+                mimetype = guess_mimetype(extension)
+            if metadata is not None and 'mimetype' in metadata and metadata['mimetype'] is not None:
+                if metadata['mimetype'] != mimetype:
+                    raise TileClusterError('Mismatching mimetype: expecting "%s", got "%s".' % (metadata['mimetype'], mimetype ))
 
             mimetype = load_optional_field('mimetype')
             if mimetype is None:

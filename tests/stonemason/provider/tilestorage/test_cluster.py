@@ -78,14 +78,14 @@ class TestCreateTileClusterFromZipFile(ImageTestCase):
 
     def test_from_zip_with_metadata(self):
         with open(self.zip_file, 'rb') as fp:
-            metadata = dict(mtime=0.0, mimetype='text/tile', stride=None)
+            metadata = dict(mtime=0.0, mimetype='text/plain', stride=None)
             tilecluster = TileCluster.from_zip(fp, metadata)
             self.assertIsInstance(tilecluster, TileCluster)
             self.assertEqual(tilecluster.index, MetaTileIndex(4, 4, 8, 2))
             tile = tilecluster[TileIndex(4, 5, 8)]
             self.assertEqual(tile.data, b'4-4-9')
             self.assertEqual(tile.mtime, 0.0)
-            self.assertEqual(tile.mimetype, 'text/tile')
+            self.assertEqual(tile.mimetype, 'text/plain')
 
 
 class TestCreateTileClusterFromLegacyZipFile(ImageTestCase):

@@ -1,23 +1,33 @@
 Tile Server
 ***********
 
+.. module:: stonemason.service.tileserver
 
-Theme Resource
-==============
 
-.. autoclass:: stonemason.service.tileserver.ThemeAPI
+Tile Server Config
+==================
+
+.. autoclass:: stonemason.service.tileserver.FlaskAppConfig
     :members:
 
-Tile Resource
-=============
+.. autoclass:: stonemason.service.tileserver.ObjectConfig
 
-.. autoclass:: stonemason.service.tileserver.TileAPI
+.. autoclass:: stonemason.service.tileserver.PyFileConfig
+
+.. autoclass:: stonemason.service.tileserver.EnvVariableConfig
+
+.. autoclass:: stonemason.service.tileserver.CmdVariableConfig
+
+
+Tile Server Preference
+======================
+
+.. autoclass:: stonemason.service.tileserver.TileServerPreference
     :members:
 
 
-Application
+Tile Server
 ===========
 
 .. autoclass:: stonemason.service.tileserver.TileServerApp
     :members:
-

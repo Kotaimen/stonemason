@@ -9,7 +9,7 @@
 
 import os
 
-from .theme import ThemeError, InvalidThemeName
+from .theme import ThemeError, InvalidThemeValue
 from .theme import Theme, ThemeElement
 from .theme import ThemeMetadata, ThemePyramid, ThemeCache, ThemeStorage
 

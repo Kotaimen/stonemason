@@ -35,11 +35,6 @@ class TileCache(object):  # pragma: no cover
 
     `TileCache` is designed to be shared between all `themes` and `layers` in
     a particular deployment.
-
-    .. note::
-
-        Being a thin wrapper layer, CAP model is dependent on the actual
-        cache system implement, check implement for details.
     """
 
     def get(self, tag, index):

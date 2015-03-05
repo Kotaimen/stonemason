@@ -143,8 +143,8 @@ else:
 package_data = {
     'stonemason.mason.theme': ['samples/sample_theme.json'],
     'stonemason.util.geo': ['*.c'],
-    'stonemason.service.tileserver': [
-        'templates/*', 'static/js/*'],
+    'stonemason.service.tileserver.maps': ['templates/*'],
+    'stonemason.service.tileserver.admin': ['templates/*'],
 }
 
 #

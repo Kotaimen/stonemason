@@ -42,12 +42,12 @@
         ),
         {{ theme.metadata.center_zoom }});
 
-    L.tileLayer('/tiles/{{ theme.name }}/{z}/{x}/{y}.jpg', {
+    L.tileLayer('/tiles/{{ theme.name }}/{z}/{x}/{y}.{{ theme.storage.tileformat.extension }}', {
         attribution: "{{ theme.metadata.attribution }}",
         minZoom: {{ theme.pyramid.levels|first  }},
         maxZoom: {{ theme.pyramid.levels|last  }},
         detectRetina: true,
-
+        errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png',
     }).addTo(map);
 
 </script>

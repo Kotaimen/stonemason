@@ -25,10 +25,13 @@ class ThemeElement(object):
     :type attributes: str
 
     """
+
     def __init__(self, name, **attributes):
         self._name = name
         self._attributes = attributes
         self._children = dict()
+
+        self.validate()
 
     @property
     def name(self):
@@ -57,8 +60,8 @@ class ThemeElement(object):
         :rtype: bool
 
         """
-        for sub in self._children:
-            sub.validate()
+        for child in self._children:
+            child.validate()
         return True
 
     def put_element(self, name, elem):
@@ -107,5 +110,6 @@ class ThemeElement(object):
         """
         repr_attr = ', '.join(
             '%s=%r' % (key, val) for key, val in self._attributes.items())
+
         return '%s(name=%s, %s)' % (
             self.__class__.__name__, self._name, repr_attr)
