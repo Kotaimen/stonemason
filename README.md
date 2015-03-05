@@ -15,15 +15,14 @@ Inspired by:
 
 Features:
 
-- Tile map service.
-- Distributed render backend.
-- Tile caching and permanent storage.
-- Debug server for map design.
+- Tile map service (done)
+- Distributed render backend
+- Tile caching and permanent storage (done)
+- Debug server for map design (done)
 - Mapnik as raster renderer.
 - High quality relief renderer.
 - Image composer based on PIL and imagemagick.
-- Zero configuration deployment.
+- Zero configuration deployment (done)
 
 > TODO: Add a demo page here.
 
-**Happy Chinese New Year**
