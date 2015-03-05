@@ -1,0 +1,8 @@
+six>=1.8.0
+Flask>=0.10
+Pillow>=2.3.0
+pylibmc>=1.4.0
+boto>=2.35.0
+Click>=3.0.0
+gunicorn>=19.0.0
+python-memcached>=1.5.3
