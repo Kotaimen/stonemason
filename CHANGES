@@ -1,9 +1,27 @@
 Stonemason Changelog
 ====================
 
-Version 0.1
------------
+v0.1.0
+------
 
-First public release, scheduled at 2015/06.
+Release date: 2015-03-05
+
+Features:
+
+- Tile map service
+- Tile caching and permanent storage
+- Debug server for map design
+- Zero configuration deployment
+
+Known issues:
+
+- Due to a bug in ubuntu-14.04 default python3, stonemason tileserver won't load
+  on python3, see http://bugs.python.org/issue14710
+
+
+v0.2.0
+------
+
+Scheduled at 2015-04.
 
 
