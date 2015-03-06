@@ -65,7 +65,7 @@ class TilesView(MethodView):
         response.headers['Content-Type'] = tile.mimetype
         response.headers['ETag'] = tile.etag
         response.headers['Last-Modified'] = http_date(tile.mtime)
-        response.headers['Cache-Control'] = 'public, max-age=86400'
+        response.headers['Cache-Control'] = self._model.cache_control
 
         return response
 

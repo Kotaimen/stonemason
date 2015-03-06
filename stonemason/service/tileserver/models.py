@@ -24,28 +24,33 @@ class ThemeModel(object):
 
 
 class MasonModel(object):
-    def __init__(self, themes, cache_servers=None):
+    def __init__(self, themes, cache_servers=None, max_age=300):
         assert isinstance(themes, list)
         self._themes = themes
         self._mason = None
         self._cache_servers = cache_servers
+        self._max_age = max_age
+
+    def do_init(self):
+        cache_config = None
+
+        if self._cache_servers is not None:
+            cache_servers = re.split(r'[; ]+', self._cache_servers)
+            cache_config = dict(
+                prototype='memcache',
+                parameters=dict(servers=cache_servers)
+            )
+
+        mason = Mason(external_cache=cache_config)
+        for theme in self._themes:
+            mason.load_theme(theme)
+
+        return mason
 
     @property
     def mason(self):
         if self._mason is None:
-            # lazy initialization
-            cache_config = None
-
-            if self._cache_servers is not None:
-                cache_servers = re.split(r'[; ]+', self._cache_servers)
-                cache_config = dict(
-                    prototype='memcache',
-                    parameters=dict(servers=cache_servers)
-                )
-
-            self._mason = Mason(external_cache=cache_config)
-            for theme in self._themes:
-                self._mason.load_theme(theme)
+            self._mason = self.do_init()
 
         return self._mason
 
@@ -54,3 +59,11 @@ class MasonModel(object):
 
     def get_tile_tags(self):
         return self.mason.get_tile_tags()
+
+    @property
+    def cache_control(self):
+        if self._max_age == 0:
+            return 'max-age=0, nocache'
+        else:
+            return 'public, max-age=%d' % self._max_age
+

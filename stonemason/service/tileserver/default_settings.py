@@ -24,3 +24,5 @@ STONEMASON_CACHE = None
 # to 0 to turn off the logging.
 STONEMASON_VERBOSE = 0
 
+# Cache control max age of tile api
+STONEMASON_MAX_AGE = 300
