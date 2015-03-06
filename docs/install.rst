@@ -27,7 +27,7 @@ Develop is done on Mac homebrew, deploying to `ubuntu-14.04-LTS` and
 
 
 Binary Packages
----------------
+===============
 
 Install following binary packages first.
 
@@ -59,7 +59,7 @@ On MacOS, use `homebrew <http://brew.sh/>`_ to install binary packages::
     $ brew install memcached libmemcached
 
 Optional Packages
------------------
+=================
 
 Optional packages are required when rendering maps.
 
@@ -109,7 +109,7 @@ of new features and fixes without breaking xml stylesheet, much.
 
 
 Python Dependency
------------------
+=================
 
 After grab the source code using Git or source package, run::
 
@@ -121,7 +121,7 @@ After grab the source code using Git or source package, run::
 
 
 Virtualenv
-----------
+==========
 
 If you only plan using `stonemason` to render/serve maps, its recommended
 to install it into a virtualenv using `pip`.
@@ -150,7 +150,7 @@ To quit the virtual environment, use::
 
 
 Build and Test
---------------
+==============
 
 If you want running `stonemason` without installing you must build all
 `Cython` extensions in place::
@@ -196,7 +196,7 @@ Or use Python3::
 
 
 Document
---------
+========
 
 ::
 
