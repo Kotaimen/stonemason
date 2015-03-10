@@ -12,7 +12,8 @@ before_install:
   # Add ubuntugis and mapnik stable PPA
   - sudo apt-get install -qq python-software-properties
   - sudo add-apt-repository -y ppa:ubuntugis/ppa
-  - sudo add-apt-repository -y ppa:mapnik/v2.2.0
+#  - sudo add-apt-repository -y ppa:mapnik/v2.2.0
+  - sudo add-apt-repository -y ppa:mapnik/nightly-2.3
   - sudo apt-get update -qq
   
   # Install pillow binary requests
@@ -53,6 +54,7 @@ branches:
     - master
     - develop
     - /^release.*$/
+    - feature/mapnik-build
 
 before_script:
 #  - psql -U postgres -c 'create database travis_ci_test;'

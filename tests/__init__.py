@@ -5,21 +5,52 @@ __date__ = '12/25/14'
 
 import os
 import unittest
+from unittest.case import skipUnless
 
-from PIL import Image
+#
+# Data directory
+#
 
 DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), 'data')
 
 
+#
+# Image test base
+#
+from PIL import Image, ImageChops, ImageStat
+
+
 class ImageTestCase(unittest.TestCase):
+    """Comparing images pixel by pixel."""
+
     def assertImageEqual(self, first, second):
         assert isinstance(first, Image.Image)
         assert isinstance(second, Image.Image)
-        # NOTE: We can't use TestCase.assertEqual() here since it will try to
-        # generate a extremely large "diff report" if test fails.
-        self.assertTrue(list(first.getdata()) == list(second.getdata()))
+
+        diff = ImageChops.difference(first, second)
+        stat = ImageStat.Stat(diff)
+
+        self.assertAlmostEqual(sum(stat.sum), 0.0)
 
     def assertImageNotEqual(self, first, second):
         assert isinstance(first, Image.Image)
         assert isinstance(second, Image.Image)
-        self.assertFalse(list(first.getdata()) == list(second.getdata()))
+
+        diff = ImageChops.difference(first, second)
+        stat = ImageStat.Stat(diff)
+
+        self.assertGreater(sum(stat.sum), 0.0)
+
+#
+# Conditional tests
+#
+try:
+    import mapnik
+
+    HAS_MAPNIK = True
+except ImportError:
+    mapnik = None
+    HAS_MAPNIK = False
+
+def skipUnlessHasMapnik():
+    return skipUnless(HAS_MAPNIK, 'Mapnik no installed.')
