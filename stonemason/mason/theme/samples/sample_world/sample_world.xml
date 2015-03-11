@@ -337,7 +337,7 @@
     <StyleName>countries-land</StyleName>
     <StyleName>countries-text</StyleName>
     <Datasource>
-       <Parameter name="file"><![CDATA[/Users/kotaimen/Documents/MapBox/project/World/layers/countries/ne_50m_admin_0_countries_lakes.shp]]></Parameter>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_countries_lakes.shp]]></Parameter>
        <Parameter name="id"><![CDATA[countries]]></Parameter>
        <Parameter name="project"><![CDATA[World]]></Parameter>
        <Parameter name="srs"><![CDATA[]]></Parameter>
