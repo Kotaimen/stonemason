@@ -11,7 +11,7 @@
   <Parameter name="scale">2</Parameter>
   <Parameter name="metatile">1</Parameter>
   <Parameter name="id"><![CDATA[World]]></Parameter>
-  <Parameter name="_updated">1425991818000</Parameter>
+  <Parameter name="_updated">1426091555000</Parameter>
   <Parameter name="tilejson"><![CDATA[2.0.0]]></Parameter>
   <Parameter name="scheme"><![CDATA[xyz]]></Parameter>
 </Parameters>
@@ -337,7 +337,7 @@
     <StyleName>countries-land</StyleName>
     <StyleName>countries-text</StyleName>
     <Datasource>
-       <Parameter name="file"><![CDATA[ne_50m_admin_0_countries_lakes.shp]]></Parameter>
+       <Parameter name="file"><![CDATA[/Users/kotaimen/Documents/MapBox/project/World/layers/countries/ne_50m_admin_0_countries_lakes.shp]]></Parameter>
        <Parameter name="id"><![CDATA[countries]]></Parameter>
        <Parameter name="project"><![CDATA[World]]></Parameter>
        <Parameter name="srs"><![CDATA[]]></Parameter>
@@ -351,208 +351,208 @@
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>25000000</MaxScaleDenominator>
     <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>50000000</MaxScaleDenominator>
     <MinScaleDenominator>25000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>100000000</MaxScaleDenominator>
     <MinScaleDenominator>50000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>25000000</MaxScaleDenominator>
     <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>50000000</MaxScaleDenominator>
     <MinScaleDenominator>25000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>25000000</MaxScaleDenominator>
     <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 7)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 7)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 7)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 8)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 8)</Filter>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
-    <TextSymbolizer face-name="DejaVu Sans Condensed" size="10" minimum-distance="2" dx="4" dy="3" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
 </Style>
 <Style name="places-marker" filter-mode="first">

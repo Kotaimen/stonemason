@@ -10,7 +10,8 @@ virtualenv:
 
 before_install:
   # Add ubuntugis and mapnik stable PPA
-  - sudo apt-get install -qq software-properties-common
+  - sudo apt-get install -qq python-software-properties
+#  - sudo apt-get install -qq software-properties-common
   - sudo add-apt-repository -y ppa:ubuntugis/ppa
 #  - sudo add-apt-repository -y ppa:mapnik/v2.2.0
   - sudo add-apt-repository -y ppa:mapnik/nightly-2.3
