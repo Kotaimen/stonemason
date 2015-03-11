@@ -11,8 +11,16 @@ from unittest.case import skipUnless
 # Data directory
 #
 
+# For test data
 DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), 'data')
 
+# For temporary test output, visual confirm
+TEST_DIRECTORY = os.path.join(os.path.dirname(__file__), 'output')
+
+SAMPLE_THEME_DIRECTORY = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), os.pardir,
+    'stonemason', 'mason', 'theme', 'samples',
+))
 
 #
 # Image test base
@@ -51,6 +59,7 @@ try:
 except ImportError:
     mapnik = None
     HAS_MAPNIK = False
+
 
 def skipUnlessHasMapnik():
     return skipUnless(HAS_MAPNIK, 'Mapnik no installed.')

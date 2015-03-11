@@ -14,10 +14,10 @@ import PIL
 from PIL import Image
 
 import stonemason.util.postprocessing.gridcrop as gridcrop
-from tests import DATA_DIRECTORY, ImageTestCase
+from tests import DATA_DIRECTORY, TEST_DIRECTORY, ImageTestCase
 
 
-class TestPIL(ImageTestCase):
+class TestGridCrop(ImageTestCase):
     def setUp(self):
         grid_image = os.path.join(DATA_DIRECTORY, 'grid_crop',
                                   'paletted_grid.png')
@@ -60,11 +60,12 @@ class TestPIL(ImageTestCase):
         grids = dict(gridcrop.grid_crop(self.grid_data, stride=2,
                                         buffer_size=256))
         # visual confirm
-        # for (row, column), image in six.iteritems(grids):
-        # filename = os.path.join(tempfile.gettempdir(),
-        # '%d-%d.png' % (row, column))
-        # six.print_(filename)
-        # image.save(filename)
+        output_dir = os.path.join(TEST_DIRECTORY, 'grid_crop')
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        for (row, column), image in six.iteritems(grids):
+            filename = os.path.join(output_dir, '%d-%d.png' % (row, column))
+            image.save(filename)
 
         self.assertImageEqual(grids[(0, 0)],
                               self.grid_image.crop((256, 256, 512, 512)))
