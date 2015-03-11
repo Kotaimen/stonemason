@@ -27,7 +27,8 @@ before_install:
   - sudo apt-get install -qq python-numpy python-scipy
   
   # Install  Mapnik
-  - sudo apt-get install -qq libgeos-dev libgdal-dev gdal-bin python-gdal 
+  - sudo apt-get install -qq libgeos-dev libgdal-dev gdal-bin python-gdal
+  - sudo apt-get install -qq fonts-dejavu
   - sudo apt-get install -qq python-mapnik
   
   # Check installed packages
