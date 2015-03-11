@@ -5,7 +5,7 @@ __date__ = '3/9/15'
 
 import unittest
 import os
-import io
+import sys
 
 from PIL import Image
 from tests import skipUnlessHasMapnik, \
@@ -30,6 +30,13 @@ class TestMapnikSetup(unittest.TestCase):
 @skipUnlessHasMapnik()
 class TestMapnikRendering(unittest.TestCase):
     def setUp(self):
+        # The sample_world theme uses Dejavu font family which is either
+        # distrubuted by mapnik or fonts-dejavu-core package.
+        if sys.platform == 'darwin':
+            mapnik.register_fonts('/Library/Fonts/')
+        elif sys.platform == 'linux2':
+            mapnik.register_fonts('/usr/share/fonts')
+
         theme_root = os.path.join(SAMPLE_THEME_DIRECTORY, 'sample_world')
         self.style_sheet = os.path.join(theme_root, 'sample_world.xml')
 
