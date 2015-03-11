@@ -22,308 +22,308 @@
     <MaxScaleDenominator>500000000</MaxScaleDenominator>
     <MinScaleDenominator>200000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[abbrev]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[abbrev]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>50000000</MaxScaleDenominator>
     <MinScaleDenominator>25000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>200000000</MaxScaleDenominator>
     <MinScaleDenominator>100000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>100000000</MaxScaleDenominator>
     <MinScaleDenominator>50000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>25000000</MaxScaleDenominator>
     <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>50000000</MaxScaleDenominator>
     <MinScaleDenominator>25000000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>100000000</MaxScaleDenominator>
     <MinScaleDenominator>50000000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>25000000</MaxScaleDenominator>
     <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>50000000</MaxScaleDenominator>
     <MinScaleDenominator>25000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>25000000</MaxScaleDenominator>
     <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>100000000</MaxScaleDenominator>
     <MinScaleDenominator>50000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>25000000</MaxScaleDenominator>
     <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>25000000</MaxScaleDenominator>
     <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>6500000</MaxScaleDenominator>
     <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 7)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 7)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
-    <TextSymbolizer face-name="DejaVu Serif Condensed Bold Italic" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
 </Style>
 <Style name="countries-land" filter-mode="first">
