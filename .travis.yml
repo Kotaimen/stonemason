@@ -29,7 +29,7 @@ before_install:
   
   # Install  Mapnik
   - sudo apt-get install -qq libgeos-dev libgdal-dev gdal-bin python-gdal
-  - sudo apt-get install -qq fonts-dejavu-core
+#  - sudo apt-get install -qq fonts-dejavu-core
   - sudo apt-get install -qq python-mapnik
   
   # Check installed packages
