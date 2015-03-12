@@ -56,7 +56,6 @@ branches:
     - master
     - develop
     - /^release.*$/
-    - feature/mapnik-build
 
 before_script:
 #  - psql -U postgres -c 'create database travis_ci_test;'
