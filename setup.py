@@ -141,10 +141,18 @@ else:
         ext_modules.append(Extension(module, c_sources))
 
 package_data = {
-    'stonemason.mason.theme': ['samples/sample_theme.json'],
-    'stonemason.util.geo': ['*.c'],
+    'stonemason.mason.theme':
+        [
+            'samples/sample_theme.json',
+            'samples/sample_world/ne_50m_admin_0_countries_lakes.*',
+            'samples/sample_world/ne_50m_populated_places_simple.*',
+            'samples/sample_world/sample_world.xml',
+            'samples/sample_world/readme.md',
+        ],
+    'stonemason.util.geo': ['_hilbert.c'],
     'stonemason.service.tileserver.maps': ['templates/*'],
     'stonemason.service.tileserver.admin': ['templates/*'],
+
 }
 
 #
