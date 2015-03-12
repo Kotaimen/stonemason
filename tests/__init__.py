@@ -62,4 +62,18 @@ except ImportError:
 
 
 def skipUnlessHasMapnik():
-    return skipUnless(HAS_MAPNIK, 'Mapnik no installed.')
+    return skipUnless(HAS_MAPNIK, 'python-mapnik not installed.')
+
+
+try:
+    from osgeo import osr
+    from osgeo import ogr
+    import gdal
+    HAS_GDAL = True
+except ImportError:
+    osr, ogr = None, None
+    HAS_GDAL = False
+
+
+def skipUnlessHasGDAL():
+    return skipUnless(HAS_GDAL, 'python-gdal not installed.')
