@@ -1,6 +1,11 @@
 # -*- encoding: utf-8 -*-
 
 """
+    stonemason.util.geo.hilbert
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Hilbert curve calculations.
+
 Hilbert curve algorithms are taken from (and modified):
   Henry S. Warren, Jr., Hakers's Delight Second Edition, 2012.
   Chapter 16: Hilbert's Curve
@@ -10,6 +15,7 @@ __author__ = 'kotaimen'
 __date__ = '1/9/15'
 
 def hil_xy_from_s(unsigned long long s, int n):
+
     cdef int i
     cdef unsigned long long sa, sb
     cdef unsigned long long x, y, swap, cmpl

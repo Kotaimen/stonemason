@@ -80,8 +80,8 @@ py_modules = []
 ext_modules = []
 
 cython_modules = [
-    ('stonemason.util.geo._hilbert',
-     ['stonemason/util/geo/_hilbert.pyx', ]),
+    ('stonemason.util.geo.hilbert',
+     ['stonemason/util/geo/hilbert.pyx', ]),
 ]
 
 entry_points = '''
