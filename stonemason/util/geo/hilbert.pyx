@@ -6,15 +6,17 @@
 
     Hilbert curve calculations.
 
-Hilbert curve algorithms are taken from (and modified):
-  Henry S. Warren, Jr., Hakers's Delight Second Edition, 2012.
-  Chapter 16: Hilbert's Curve
+    Hilbert curve algorithms are taken from (and modified):
+      Henry S. Warren, Jr., Hakers's Delight Second Edition, 2012.
+      Chapter 16: Hilbert's Curve
 """
 
 __author__ = 'kotaimen'
 __date__ = '1/9/15'
 
 def hil_xy_from_s(unsigned long long s, int n):
+    assert n < 64
+    assert s < 4 ** n
 
     cdef int i
     cdef unsigned long long sa, sb
@@ -43,6 +45,8 @@ def hil_xy_from_s(unsigned long long s, int n):
     return xp, yp
 
 def hil_s_from_xy(unsigned long long x, unsigned long long y, int n):
+    assert n < 64
+
     cdef int i, xi, yi
     cdef unsigned long long s
 
