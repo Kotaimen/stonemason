@@ -5,6 +5,8 @@ __date__ = '12/25/14'
 
 import os
 import unittest
+import importlib
+
 from unittest.case import skipUnless
 
 #
@@ -50,14 +52,13 @@ class ImageTestCase(unittest.TestCase):
         self.assertGreater(sum(stat.sum), 0.0)
 
 #
-# Conditional tests
+# Conditional tests for optional decencies
 #
 try:
-    import mapnik
+    importlib.import_module('mapnik')
 
     HAS_MAPNIK = True
 except ImportError:
-    mapnik = None
     HAS_MAPNIK = False
 
 
@@ -66,12 +67,11 @@ def skipUnlessHasMapnik():
 
 
 try:
-    from osgeo import osr
-    from osgeo import ogr
-    import gdal
+    importlib.import_module('osgeo.osr')
+    importlib.import_module('osgeo.ogr')
+    importlib.import_module('osgeo.gdal')
     HAS_GDAL = True
 except ImportError:
-    osr, ogr = None, None
     HAS_GDAL = False
 
 

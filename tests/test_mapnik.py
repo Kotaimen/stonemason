@@ -8,13 +8,11 @@ import os
 import sys
 
 from PIL import Image
-from tests import skipUnlessHasMapnik, \
+from tests import skipUnlessHasMapnik, HAS_MAPNIK, \
     SAMPLE_THEME_DIRECTORY, TEST_DIRECTORY
 
-try:
+if HAS_MAPNIK:
     import mapnik
-except ImportError:
-    pass
 
 
 @skipUnlessHasMapnik()

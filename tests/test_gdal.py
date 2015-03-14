@@ -6,7 +6,9 @@ __date__ = '3/11/15'
 import unittest
 from distutils.version import LooseVersion
 
-try:
+from tests import skipUnlessHasGDAL, HAS_GDAL
+
+if HAS_GDAL:
     from osgeo import osr
     from osgeo import ogr
     from osgeo import gdal
@@ -14,10 +16,6 @@ try:
     osr.UseExceptions()
     ogr.UseExceptions()
     gdal.UseExceptions()
-except ImportError:
-    pass
-
-from tests import skipUnlessHasGDAL
 
 
 @skipUnlessHasGDAL()
