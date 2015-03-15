@@ -1,7 +1,10 @@
+# -*- encoding: utf-8 -*-
+
 import re
 import codecs
 import os
 import sys
+import subprocess
 
 from setuptools import setup, find_packages
 
@@ -10,8 +13,9 @@ from distutils.command.sdist import sdist as sdist_
 from distutils.command.clean import clean as clean_
 from distutils import log
 
+log.set_threshold(log.DEBUG)
 
-# Can't use six here
+# Check python version
 IS_PY3 = sys.version_info.major == 3
 
 # Check Cython availability
@@ -22,10 +26,7 @@ except ImportError:
 else:
     HAS_CYTHON = True
 
-
-#
-# Find package version
-#
+# Find package locaction and version
 where_am_i = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -79,10 +80,48 @@ py_modules = []
 
 ext_modules = []
 
+
+# a list of (module, sources, kwargs)
+# module: full module name
+# sources: as list of pyx files
+# kwargs: extra keyword arguments for distutils.Extension
 cython_modules = [
-    ('stonemason.util.geo.hilbert',
-     ['stonemason/util/geo/hilbert.pyx', ]),
+    (
+        'stonemason.util.geo.hilbert',
+        ['stonemason/util/geo/hilbert.pyx', ],
+        {}
+    ),
 ]
+
+
+def pkg_config(name):
+    cflags = subprocess.check_output(['pkg-config', '--cflags', name])
+    libs = subprocess.check_output(['pkg-config', '--libs', name])
+    if IS_PY3:
+        cflags = cflags.decode('ascii')
+        libs = libs.decode('ascii')
+    return cflags, libs
+
+
+try:
+    cflags, libs = pkg_config('MagickWand')
+except subprocess.CalledProcessError:
+    log.warn('Unable to find MagickWand through pkg-config.')
+else:
+    cython_modules.append(
+        (
+            'stonemason.util.postprocessing.magickcmd',
+            ['stonemason/util/postprocessing/magickcmd.pyx', ],
+            {
+                'extra_compile_args': cflags.split(),
+                'extra_link_args': libs.split(),
+            }
+        ),
+    )
+
+#
+# CLI entry point
+#
 
 entry_points = '''
 [console_scripts]
@@ -97,8 +136,8 @@ cmdclass = {}
 if HAS_CYTHON:
 
     # Build cython file when doing build_ext command
-    for module, sources in cython_modules:
-        ext_modules.append(Extension(module, sources))
+    for module, sources, kwargs in cython_modules:
+        ext_modules.append(Extension(module, sources, **kwargs))
 
     cmdclass['build_ext'] = build_ext
 
@@ -136,9 +175,16 @@ if HAS_CYTHON:
 
 else:
     # No Cython, assuming build using sdist, just build .so from c
-    for module, sources in cython_modules:
+    log.warn('Building extensions from sdist.')
+    for module, sources, kwargs in cython_modules:
+        log.info("building %s" % module)
         c_sources = list(source[:-3] + 'c' for source in sources)
-        ext_modules.append(Extension(module, c_sources))
+        ext_modules.append(Extension(module, c_sources, **kwargs))
+
+
+#
+# Package data
+#
 
 package_data = {
     'stonemason.mason.theme':
@@ -149,7 +195,8 @@ package_data = {
             'samples/sample_world/sample_world.xml',
             'samples/sample_world/readme.md',
         ],
-    'stonemason.util.geo': ['_hilbert.c'],
+    'stonemason.util.geo': ['*.c'],
+    'stonemason.util.postprocessing': ['*.c'],
     'stonemason.service.tileserver.maps': ['templates/*'],
     'stonemason.service.tileserver.admin': ['templates/*'],
 

@@ -77,3 +77,16 @@ except ImportError:
 
 def skipUnlessHasGDAL():
     return skipUnless(HAS_GDAL, 'python-gdal not installed.')
+
+
+try:
+    importlib.import_module('stonemason.util.postprocessing.magickcmd')
+
+    HAS_IMAGEMAGICK = True
+except ImportError:
+    raise
+    HAS_IMAGEMAGICK = False
+
+
+def skipUnlessHasImageMagick():
+    return skipUnless(HAS_IMAGEMAGICK, 'Imagemagick not installed.')
