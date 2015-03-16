@@ -13,20 +13,35 @@ from cpython.mem cimport PyMem_Malloc, PyMem_Free
 from cpython.bytes cimport PyBytes_AsString
 
 cdef extern from "wand/MagickWand.h":
+
     ctypedef struct ImageInfo:
         pass
 
-    ctypedef bint MagickBooleanType
+    ctypedef enum MagickBooleanType: # from magick-type.h
+        MagickFalse = 0
+        MagickTrue = 1
+
+    ctypedef enum ExceptionType:
+        ErrorException = 400
+
+    ctypedef struct SemaphoreInfo:
+        pass
 
     ctypedef struct ExceptionInfo:
-        pass
+        ExceptionType severity
+        int error_number
+        char *reason
+        char *description
+        void *exceptions
+        MagickBooleanType relinquish
+        SemaphoreInfo *semaphore
+        size_t signature
 
     ctypedef MagickBooleanType(*MagickCommand)(ImageInfo *, int, char **,
                                                char **, ExceptionInfo *)
 
-    void MagickCoreGenesis(char *path,
-                           MagickBooleanType establish_signal_handlers)
-    void MagickCoreTerminus()
+    void MagickWandGenesis()
+    void MagickWandTerminus()
 
     ImageInfo *AcquireImageInfo()
     ExceptionInfo *AcquireExceptionInfo()
@@ -34,7 +49,7 @@ cdef extern from "wand/MagickWand.h":
     ExceptionInfo *DestroyExceptionInfo(ExceptionInfo *exception_info)
 
     MagickBooleanType ConvertImageCommand(ImageInfo *image_info,
-                                          int    argc,
+                                          int argc,
                                           char ** argv,
                                           char ** metadata,
                                           ExceptionInfo *exception_info)
@@ -66,6 +81,9 @@ def version():
     cdef char *version_string = GetMagickVersion(&v)
     return to_string(version_string)
 
+class MagickError(RuntimeError):
+    pass
+
 def convert(list args):
     cdef char *cwd
     cdef MagickBooleanType status
@@ -75,7 +93,7 @@ def convert(list args):
     cdef char ** argv
 
     # prepend default convert arguments
-    full_args = 'convert -quiet -limit thread 1'.split()
+    full_args = 'convert -limit thread 1'.split()
     full_args.extend(args)
 
     assert all(isinstance(a, str) for a in full_args)
@@ -93,24 +111,23 @@ def convert(list args):
 
     argc = len(full_args)
     argv = to_c_string_array(full_args)
-    MagickCoreGenesis(cwd, False)
+
+    MagickWandGenesis()
 
     image_info = AcquireImageInfo()
     exception_info = AcquireExceptionInfo()
     try:
-        status = MagickCommandGenesis(image_info,
-                                      ConvertImageCommand,
+        status = ConvertImageCommand(image_info,
                                       argc,
                                       argv,
                                       NULL,
                                       exception_info)
-    except Exception:
-        return False
-    else:
-        # XXX: Find a way to capture stdout/stderr output
-        return bool(status)
+
+        if exception_info.severity >= ErrorException:
+            raise MagickError(exception_info.reason)
+
     finally:
         PyMem_Free(argv)
         DestroyExceptionInfo(exception_info)
         DestroyImageInfo(image_info)
-        MagickCoreTerminus()
+        MagickWandTerminus()

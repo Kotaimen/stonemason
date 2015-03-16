@@ -13,7 +13,8 @@ from tests import skipUnlessHasImageMagick, HAS_IMAGEMAGICK, \
 
 
 if HAS_IMAGEMAGICK:
-    from stonemason.util.postprocessing.magickcmd import convert, version
+    from stonemason.util.postprocessing.magickcmd import convert, version, \
+        MagickError
 
 
 # @skipUnlessHasImageMagick()
@@ -28,14 +29,22 @@ class TestMagickCmd(unittest.TestCase):
         m = re.search(r'^ImageMagick (\d\.\d+\.\d+)-\d+', v)
         if m:
             self.assertGreaterEqual(LooseVersion(m.group(1)),
-                                    LooseVersion('6.9.0'))
+                                    LooseVersion('6.6.9'))
         else:
             self.assert_(False, v)
 
     def test_convert(self):
         status = convert(['rose:', '-negate', self.rose])
-        self.assertTrue(status)
         self.assertTrue(os.path.exists(self.rose))
+
+    def test_convert_fail(self):
+        self.assertRaises(MagickError,
+                          convert,
+                          ['rose:', '-bad-option', self.rose])
+
+    # def test_convert_complex(self):
+
+        # convert(['rose:', 'png:-'])
 
 if __name__ == '__main__':
     unittest.main()
