@@ -87,9 +87,9 @@ with `ubuntu-14.04-LTS` and can be installed from system package manager::
     $ apt-get install python-mapnik
 
 To install the latest nightly ``2.3.x`` branch or ``3.0.0-pre`` branch, check
-the offical installation_ manual.
+the official installation_ manual.
 
-    .. _ubuntuinstallation: <https://github.com/mapnik/mapnik/wiki/UbuntuInstallation>
+    .. _installation: <https://github.com/mapnik/mapnik/wiki/UbuntuInstallation>
 
 Recommend `mapnik` version is latest ``2.3.x`` branch, which contains a lots
 of new features and fixes without breaking xml stylesheet, much:
@@ -157,12 +157,8 @@ Or use Python3::
     using Python2, they won't work under Python3, you have to clean
     compiled extension first, then rebuild::
 
-        $ python setup.py clean
-        running clean
-        removing 'build/temp.macosx-10.10-x86_64-2.7' (and everything under it)
-        removing 'stonemason/util/geo/_hilbert.'c
         removing 'stonemason/util/geo/_hilbert.'so
-        $ python3 setup.py build_ext --inplace
+        $ python3 setup.py build_ext --inplace --force
 
 `stonemason` uses `nose` and `tox` for testing::
 

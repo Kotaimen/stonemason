@@ -43,6 +43,10 @@ API Reference
     pkg_tilestorage
     pkg_formatbundle
 
+.. toctree::
+    :maxdepth: 2
+
+    pkg_composer
 
 .. toctree::
     :maxdepth: 2
