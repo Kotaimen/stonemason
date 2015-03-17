@@ -5,6 +5,7 @@ __date__ = '12/25/14'
 
 import os
 import unittest
+import subprocess
 import importlib
 
 from unittest.case import skipUnless
@@ -77,3 +78,14 @@ except ImportError:
 
 def skipUnlessHasGDAL():
     return skipUnless(HAS_GDAL, 'python-gdal not installed.')
+
+
+try:
+    output = subprocess.check_output(['convert', '-version'])
+    HAS_IMAGEMAGICK = True
+except subprocess.CalledProcessError:
+    HAS_IMAGEMAGICK = False
+
+
+def skipUnlessHasImageMagick():
+    return skipUnless(HAS_IMAGEMAGICK, 'imagemagick not installed.')
