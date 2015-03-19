@@ -10,7 +10,13 @@ Stonemason
 
 *Stonemason* is a tile map service toolkit developed in Python.
 
-TODO: Insert a map here.
+
+.. figure:: _static/newspaper.png
+   :width: 100 %
+   :alt: "Newspaper" map sample render
+   :align: center
+
+   Newspaper
 
 
 User's Guide

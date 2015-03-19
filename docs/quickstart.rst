@@ -56,6 +56,14 @@ To verify theme configuration, use ``check`` subcommand:
 Configure a Memcache
 ====================
 
+
+.. sidebar:: Tip
+
+    Even if a memcache cluster is used, you can still configure tileserver
+    to listen ``localhost:11211`` by using a memcache proxy like
+    `Twitter's nutcracker <https://github.com/twitter/twemproxy>`_.
+
+
 To start serving tiles, a memcache server is required, the sample theme
 generated above requires one listening on local TCP port ``11211``::
 
@@ -73,11 +81,6 @@ generated above requires one listening on local TCP port ``11211``::
     ...
     STAT crawler_reclaimed 0
     END
-
-
-.. note:: Even if a memcache cluster is used, you can still configure tileserver
-    to listen ``localhost:11211`` by using a memcache proxy like
-    `Twitter's nutcracker <https://github.com/twitter/twemproxy>`_.
 
 
 Configure Redis
