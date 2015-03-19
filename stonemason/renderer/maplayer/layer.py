@@ -16,11 +16,10 @@ class MapLayer(object):
 
     A `Layer` is a single map unit that represents objects designating a common
     source. A normal map usually consists of a tree of layers that represents
-    the hierarchy of a map.
+    the hierarchy of a map design.
 
-    Three different map type could be represented by a layer, image, vector, and
-    raster. And primitive layers could be transformed, composed by intermediate
-    layers or directly accessed.
+    Various map type could be rendered in a layer. Primitive layers could be
+    even be transformed, composed by intermediate layers.
 
     :param name: A string literal that identifies a layer.
     :type name: str
@@ -34,45 +33,6 @@ class MapLayer(object):
     def name(self):
         """Name of layer"""
         return self._name
-
-    def image(self, context):
-        """Rendering an image representation of a layer
-
-        :param context: Context.
-        :type context: :class:`stonemason.renderer.maplayer.MapContext`
-
-        :return: A PIL image that represents the data of area defined in map
-                 context.
-        :rtype: :class:`PIL.Image`
-
-        """
-        raise NotImplementedError
-
-    def vector(self, context):
-        """Rendering a vector representation of a layer
-
-        :param context: Context.
-        :type context: :class:`stonemason.renderer.maplayer.MapContext`
-
-        :return: A GeoJson that represents the data of area defined in map
-                 context.
-        :rtype: str
-
-        """
-        raise NotImplementedError
-
-    def raster(self, context):
-        """Rendering a Raster representation of a layer
-
-        :param context: Context.
-        :type context: :class:`stonemason.renderer.maplayer.MapContext`
-
-        :return: A raster object that represents the data of area defined in map
-                 context.
-        :rtype: :class:`gdal.Dataset`
-
-        """
-        raise NotImplementedError
 
     def __repr__(self):
         return '%s()' % (self.__class__.__name__)
