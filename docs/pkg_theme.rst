@@ -7,6 +7,8 @@ A `Theme` is the main configuration for stonemason. It defines a large amount
 of configs for a :class:`~stonemason.provider.tileprovider.TileProvider` to
 serve tiles from different kinds of storage.
 
+.. autoclass:: stonemason.mason.theme.Theme
+    :members:
 
 Exceptions
 ==========
@@ -14,15 +16,8 @@ Exceptions
 .. autoclass:: stonemason.mason.theme.ThemeError
     :members:
 
-
-Theme
-=====
-
-.. autoclass:: stonemason.mason.theme.Theme
-    :members:
-
-Theme Element
-=============
+Elements
+========
 
 .. autoclass:: stonemason.mason.theme.ThemeElement
     :members:
@@ -40,8 +35,8 @@ Theme Element
     :members:
 
 
-Theme Loader
-============
+Loaders
+=======
 
 .. autoclass:: stonemason.mason.theme.ThemeLoader
     :members:
@@ -51,8 +46,8 @@ Theme Loader
 .. autoclass:: stonemason.mason.theme.LocalThemeLoader
 
 
-Theme Manager
-=============
+Managers
+========
 
 .. autoclass:: stonemason.mason.theme.ThemeManager
     :members:

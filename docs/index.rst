@@ -37,8 +37,12 @@ API Reference
 .. toctree::
     :maxdepth: 2
 
-    pkg_theme
+    pkg_service
 
+.. toctree::
+    :maxdepth: 2
+
+    pkg_theme
 
 .. toctree::
     :maxdepth: 2
@@ -57,16 +61,11 @@ API Reference
 .. toctree::
     :maxdepth: 2
 
-    pkg_service
-
-.. toctree::
-    :maxdepth: 2
-
     pkg_util
 
 
-Services
-########
+REST API Reference
+##################
 
 .. toctree::
     :maxdepth: 2
