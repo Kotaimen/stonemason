@@ -177,21 +177,20 @@ class ThemePyramid(ThemeElement):
     >>> p = ThemePyramid('pyramid',
     ...                  levels=range(0, 5),
     ...                  stride=8,
-    ...                  crs='EPSG:4326',
-    ...                  proj='EPSG:3857',
-    ...                  boundary=(-45, -45, 45, 45))
+    ...                  geogcs='EPSG:4326',
+    ...                  projcs='EPSG:3857')
     >>> p.name
     'pyramid'
     >>> p.levels
     [0, 1, 2, 3, 4]
     >>> p.stride
     8
-    >>> p.crs
+    >>> p.geogcs
     'EPSG:4326'
-    >>> p.proj
+    >>> p.projcs
     'EPSG:3857'
-    >>> p.boundary
-    (-45, -45, 45, 45)
+    >>> p.geogbounds
+    (-180, -85.0511, 180, 85.0511)
 
     :param name:
 
@@ -243,10 +242,14 @@ class ThemePyramid(ThemeElement):
             self, name,
             levels=attributes.get('levels', list(range(0, 23))),
             stride=attributes.get('stride', 1),
-            crs=attributes.get('crs', 'EPSG:4326'),
-            proj=attributes.get('proj', 'EPSG:3857'),
-            boundary=attributes.get('boundary',
-                                    (-180, -85.0511, 180, 85.0511)))
+            geogcs=attributes.get('geogcs', 'WGS84'),
+            projcs=attributes.get('projcs', 'EPSG:3857'),
+            geogbounds=attributes.get('geogbounds',
+                                      (-180, -85.0511, 180, 85.0511)),
+            projbounds=attributes.get('projbounds',
+                                      (-20037508.34, -20037508.34, 20037508.34,
+                                       20037508.34))
+        )
 
 
     @property
@@ -260,19 +263,24 @@ class ThemePyramid(ThemeElement):
         return self.attributes['stride']
 
     @property
-    def crs(self):
-        """Coordinate Reference System of the data"""
-        return self.attributes['crs']
+    def projcs(self):
+        """Projection coodrinate system of the pyramid"""
+        return self.attributes['projcs']
 
     @property
-    def proj(self):
-        """Projection of the tile system"""
-        return self.attributes['proj']
+    def geogcs(self):
+        """Geographic coordinate system of the pyramid"""
+        return self.attributes['geogcs']
 
     @property
-    def boundary(self):
-        """Boundary of the tile system"""
-        return self.attributes['boundary']
+    def geogbounds(self):
+        """Boundary of the map in geographic coordinate system"""
+        return self.attributes['geogbounds']
+
+    @property
+    def projbounds(self):
+        """Boundary of the map in projection coordinate system"""
+        return self.attributes['projbounds']
 
 
 class ThemeCache(ThemeElement):
@@ -377,7 +385,8 @@ class ThemeStorage(ThemeElement):
         ThemeElement.__init__(
             self, name,
             prototype=attributes.get('prototype', 'null'),
-            tileformat=attributes.get('tileformat', dict(format='JPEG', extension='jpg')),
+            tileformat=attributes.get('tileformat',
+                                      dict(format='JPEG', extension='jpg')),
             parameters=attributes.get('parameters', dict()))
 
     @property

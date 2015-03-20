@@ -9,6 +9,12 @@ and the quad tree `pyramid`.
 All classes in this package is implemented using :func:`collections.namedtuple`
 thus is immutable and pickle serializable.
 
+Pyramid
+=======
+
+.. autoclass:: stonemason.provider.pyramid.Pyramid
+    :members:
+
 Tile
 ====
 
@@ -37,9 +43,3 @@ Serial
 .. autoclass:: stonemason.provider.pyramid.Legacy
     :members:
 
-
-Pyramid
-=======
-
-.. autoclass:: stonemason.provider.pyramid.Pyramid
-    :members:

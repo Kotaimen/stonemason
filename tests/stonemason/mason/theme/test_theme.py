@@ -41,27 +41,29 @@ class TestThemePyramid(unittest.TestCase):
         self._expected = dict(
             levels=range(0, 5),
             stride=2,
-            crs='EPSG:4301',
-            proj='EPSG:4326',
-            boundary=(-45., -45., 45., 45.))
+            geogcs='EPSG:4301',
+            projcs='EPSG:4326',
+            geogbounds=(-45., -45., 45., 45.),
+            projbounds=(-44., -44., 44., 44.))
 
     def test_default(self):
         m = ThemePyramid(name='pyramid')
 
         self.assertEqual(list(range(0, 23)), m.levels)
         self.assertEqual(1, m.stride)
-        self.assertEqual('EPSG:4326', m.crs)
-        self.assertEqual('EPSG:3857', m.proj)
-        self.assertTupleEqual((-180, -85.0511, 180, 85.0511), m.boundary)
+        self.assertEqual('WGS84', m.geogcs)
+        self.assertEqual('EPSG:3857', m.projcs)
+        self.assertTupleEqual((-180, -85.0511, 180, 85.0511), m.geogbounds)
 
     def test_init(self):
         m = ThemePyramid(name='pyramid', **self._expected)
 
         self.assertEqual(range(0, 5), m.levels)
         self.assertEqual(2, m.stride)
-        self.assertEqual('EPSG:4301', m.crs)
-        self.assertEqual('EPSG:4326', m.proj)
-        self.assertEqual((-45., -45., 45., 45.), m.boundary)
+        self.assertEqual('EPSG:4301', m.geogcs)
+        self.assertEqual('EPSG:4326', m.projcs)
+        self.assertEqual((-45., -45., 45., 45.), m.geogbounds)
+        self.assertEqual((-44., -44., 44., 44.), m.projbounds)
 
 
 class TestCacheTheme(unittest.TestCase):

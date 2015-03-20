@@ -4,3 +4,9 @@ __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
 
+"""
+    stonemason.service
+    ~~~~~~~~~~~~~~~~~~
+
+    Namespace package for REST services.
+"""

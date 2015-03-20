@@ -22,6 +22,7 @@ from stonemason.service.tileserver import TileServerApp
 from ..main import cli
 from ..context import pass_context, Context
 
+
 class TileServer(gunicorn.app.base.BaseApplication):
     """Integrated gunicorn application server"""
 
@@ -60,10 +61,16 @@ class TileServer(gunicorn.app.base.BaseApplication):
               host1:port1;host2:port2.
               Read from envvar STONEMASON_CACHE.
               ''')
+@click.option('--max-age', default=300, type=int,
+              envvar='STONEMASON_MAX_AGE',
+              help='''Max-age of cache control header returned by tile api.
+              Default is 300, which is 24 hours.  Set to 0 disables cache
+              control header, which is the default behaviour when debugging
+              tile server is used (specified by -dd option).''')
 @click.option('--read-only', is_flag=True,
               help='start the server in read only mode.', )
 @pass_context
-def tile_server_command(ctx, bind, read_only, workers, threads, cache):
+def tile_server_command(ctx, bind, read_only, workers, threads, cache, max_age):
     """Starts tile server using given themes configuration.
 
     Debug option:
@@ -92,12 +99,17 @@ def tile_server_command(ctx, bind, read_only, workers, threads, cache):
     host, port = bind.split(':')
     port = int(port)
 
+    # disable cache control when debugging
+    if ctx.debug > 1:
+        max_age = 0
+
     app_config = {
         'STONEMASON_THEMES': ctx.themes,
         'STONEMASON_READ_ONLY': read_only,
         'STONEMASON_DEBUG': bool(ctx.debug),
         'STONEMASON_VERBOSE': ctx.verbose,
         'STONEMASON_CACHE': cache,
+        'STONEMASON_MAX_AGE': max_age,
     }
 
     # Flask based WSGI application

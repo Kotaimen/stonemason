@@ -26,8 +26,9 @@ class TestTileProviderFactory(unittest.TestCase):
 
         self.assertEqual(theme.pyramid.levels, provider.pyramid.levels)
         self.assertEqual(theme.pyramid.stride, provider.pyramid.stride)
-        self.assertEqual(theme.pyramid.crs, provider.pyramid.crs)
-        self.assertEqual(theme.pyramid.proj, provider.pyramid.proj)
-        self.assertEqual(theme.pyramid.boundary, provider.pyramid.boundary)
+        self.assertEqual(theme.pyramid.geogcs, provider.pyramid.geogcs)
+        self.assertEqual(theme.pyramid.projcs, provider.pyramid.projcs)
+        self.assertEqual(theme.pyramid.geogbounds, provider.pyramid.geogbounds)
+        self.assertEqual(theme.pyramid.projbounds, provider.pyramid.projbounds)
 
         self.assertIsNone(provider.get_tile(0, 0, 0))

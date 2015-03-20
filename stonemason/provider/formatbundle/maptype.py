@@ -18,19 +18,32 @@ _MapType = collections.namedtuple('_MapType', 'type')
 
 
 class MapType(_MapType):
-    """The result `type` produced by a map renderer.
+    """The map `type` produced by a cartographer.
 
-    The following map types are supported:
+    The following map types are known:
 
     ``image``
-        Ordinary image for final map presentation.
-        Usually the actual object type is :class:`PIL.Image.Image`.
+        Map generated from image processing or simple grid analysis
+        Data type for `image` is :class:`PIL.Image.Image`.
 
     ``raster``
-        Geo-referenced raster (eg: ``GeoTIFF``, ``DEM``).
+        Geo-referenced multi band spatial raster, usually from satellite
+        imaging or data elevation model.
+        Data type for `raster` is :class:`osgeo.gdal.Dataset`.
 
     ``feature``
-        Geography feature (aka: `vector`).
+        OSR simple geometry features.
+        Data type for `feature` is :class:`osgeo.ogr.Feature`.
+
+    ``graphics``
+        Vector graphics.
+
+    ``tin``
+        Triangulated irregular network for surface/terrain visualization and
+        analysis.
+
+    ``cloud``
+        Point cloud data from 3D laser scanning.
 
     >>> from stonemason.provider.formatbundle import MapType
     >>> maptype = MapType('image')
@@ -42,7 +55,11 @@ class MapType(_MapType):
     """
     __slots__ = ()
 
-    KNOWN_TYPES = {'raster', 'image', 'feature'}
+    KNOWN_TYPES = {
+        'raster', 'image',
+        'feature', 'graphics',
+        'tin', 'cloud'
+    }
 
     def __new__(cls, type='image'):
         if type not in cls.KNOWN_TYPES:
@@ -52,3 +69,5 @@ class MapType(_MapType):
 
     def __repr__(self):
         return 'MapType(%s)' % self.type
+
+

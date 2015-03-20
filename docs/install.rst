@@ -5,34 +5,16 @@
 Installation
 ************
 
-Python2 or Python3?
-===================
+Environment
+===========
 
-Being a cartography package, `stonemason` has lots of binary and Python
-geospatial package dependencies.  Although `stonemason` works on both
-Python2 and Python3, some binary packages (like `gdal`) still don't have
-a Python3 plugin.
-
-`stonemason` is carefully designed so components have geospatial dependency
-(eg: the `mapnik` renderer) and components which don't have (eg: the tile
-server) are separated.  Thus a distributed deployment don't require install
-geospaial packages on all nodes.
-
-However, in a "all-in-one" develop environment, you still have to install
-every dependency and stick with Python2.
-
-`stonemason` is developed and tested against Python 2.7 and Python 3.4.
-Develop is done on Mac homebrew, deploying to `ubuntu-14.04-LTS` and
-`ubuntu-12.04-LTS` when the latest version is not available.
-
+Due to the complexity of integrate geospatial packages, using a Python 2.7
+interpreter on a Debian distribution or mac homebrew is highly recommended.
 
 Binary Packages
----------------
+===============
 
-Install following binary packages first.
-
-.. note:: If you only planning use Python2, you don't need have all the python3
-    stuff installed.
+Install binary packages first. .. note:: Python3 related packages are optional.
 
 **ubuntu**
 
@@ -59,9 +41,11 @@ On MacOS, use `homebrew <http://brew.sh/>`_ to install binary packages::
     $ brew install memcached libmemcached
 
 Optional Packages
------------------
+=================
 
-Optional packages are required when rendering maps.
+Most geospatial dependencies are optional, only required when component
+is actually used.
+
 
 GEOS/GDAL
 ~~~~~~~~~
@@ -73,55 +57,61 @@ highly recommended install them from system package manager::
 
     $ sudo apt-get install libgeos-dev
     $ sudo apt-get install python-scipy python-numpy
-    $ sudo apt-get gdal-bin python-gdal
-    
+    $ sudo apt-get install gdal-bin python-gdal
+    $ sudo apt-get install python3-scipy python3-numpy
+    $ sudo apt-get install python3-gdal
+
 .. note:: Its important to install `scipy`/`numpy` first, otherwise `python-gdal`
     won't install `numpy` bindings properly. `stonemason` uses it in the custom
     relief shading renderer.
 
 `ubuntu-14.04-LTS` comes with reasonably recent `geos` and `gdal`, for
-older ubuntu versions, install from `ubuntu-gis` is recommended::
+older ubuntu versions, install from `ubuntu-gis` PPA is recommended::
 
-    $ apt-get install -qq python-software-properties
-    $ add-apt-repository -y ppa:ubuntugis/ppa
-    $ apt-get update
-    $ apt-get install libgeos-dev gdal-bin python-gdal
+    $ sudo apt-get install -qq python-software-properties
+    $ sudo add-apt-repository -y ppa:ubuntugis/ppa
+    $ sudo apt-get update
+    $ sudo apt-get install libgeos-dev gdal-bin python-gdal
 
 **Mac**
 
-**TODO**
+    $ pip install numpy scipy
+    $ brew install geos gdal
 
 Mapnik
 ~~~~~~
 
-At the time of writing, the stable `mapnik` version is still ``2.2.x``, it comes
+At the time of writing, the stable `mapnik` version is still ``2.2.0``, it comes
 with `ubuntu-14.04-LTS` and can be installed from system package manager::
 
     $ apt-get install python-mapnik
 
 To install the latest nightly ``2.3.x`` branch or ``3.0.0-pre`` branch, check
-the offical installation_ manual.
+the official installation_ manual.
+
+    .. _installation: <https://github.com/mapnik/mapnik/wiki/UbuntuInstallation>
 
 Recommend `mapnik` version is latest ``2.3.x`` branch, which contains a lots
-of new features and fixes without breaking xml stylesheet, much.
+of new features and fixes without breaking xml stylesheet, much:
 
-    .. _ubuntuinstallation: <https://github.com/mapnik/mapnik/wiki/UbuntuInstallation>
-
+    $ sudo add-apt-repository -y ppa:mapnik/nightly-2.3
+    $ sudo apt-get update
+    $ sudo apt-get install python-mapnik
 
 Python Dependency
------------------
+=================
 
 After grab the source code using Git or source package, run::
-
-    $ pip install -rrequirements.txt
-    $ pip install -rrequirements-dev.txt
 
     $ pip3 install -rrequirements.txt
     $ pip3 install -rrequirements-dev.txt
 
+    $ pip install -rrequirements.txt
+    $ pip install -rrequirements-dev.txt
+
 
 Virtualenv
-----------
+==========
 
 If you only plan using `stonemason` to render/serve maps, its recommended
 to install it into a virtualenv using `pip`.
@@ -150,7 +140,7 @@ To quit the virtual environment, use::
 
 
 Build and Test
---------------
+==============
 
 If you want running `stonemason` without installing you must build all
 `Cython` extensions in place::
@@ -167,12 +157,8 @@ Or use Python3::
     using Python2, they won't work under Python3, you have to clean
     compiled extension first, then rebuild::
 
-        $ python setup.py clean
-        running clean
-        removing 'build/temp.macosx-10.10-x86_64-2.7' (and everything under it)
-        removing 'stonemason/util/geo/_hilbert.'c
         removing 'stonemason/util/geo/_hilbert.'so
-        $ python3 setup.py build_ext --inplace
+        $ python3 setup.py build_ext --inplace --force
 
 `stonemason` uses `nose` and `tox` for testing::
 
@@ -196,11 +182,14 @@ Or use Python3::
 
 
 Document
---------
+========
 
-::
+Build html based document:
 
     $ cd docs
     $ make html
 
+To build PDF version textlive is required:
 
+    $ sudo apt-get install texlive texlive-latex-extra
+    $ make latexpdf

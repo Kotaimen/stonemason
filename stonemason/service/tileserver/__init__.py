@@ -137,26 +137,32 @@ class TileServerPreference(object):
 
     Preference of Tile Server includes the following options:
 
-        - STONEMASON_DEBUG:
+        - ``STONEMASON_DEBUG``:
 
             Set to `True` to turn on debug mode for tileserver and flask.
 
-        - STONEMASON_TESTING:
+        - ``STONEMASON_TESTING``:
 
             Set to `True` to turn on testing mode for flask.
 
-        - STONEMASON_THEMES:
+        - ``STONEMASON_THEMES``:
 
             An absolute path of theme directory.
 
-        - STONEMASON_CACHE:
+        - ``STONEMASON_CACHE``:
 
-            A string of memcache cache servers seperated by ``;`` or blank.
+            A string of memcache cache servers separated by ``;`` or whitespace.
 
-        - STONEMASON_VERBOSE:
+        - ``STONEMASON_VERBOSE``:
 
             A positive integer that represents the verbosity of log info. Set
             to 0 to turn off the logging.
+
+        - ``STONEMASON_MAX_AGE``:
+
+            Set ``Cache-Control`` header returned by tile api, default value is
+            ``300``, which means cache control max age is 300 seconds, set
+            this value to ``0`` disables ``Cache-Control``.
 
     """
     OPTION_PREFIX = 'STONEMASON_'
@@ -196,7 +202,7 @@ class TileServerPreference(object):
     def debug(self):
         """Indicate debug status of `stonemason`. Return `True` if debug is on.
 
-        Return `True` if `STONEMASON_DEBUG` is set to `True`. Setting `DEBUG`
+        Return `True` if ``STONEMASON_DEBUG`` is set to `True`. Setting `DEBUG`
         option of `Flask` will not affect this value and only turn on flask
         debug.
         """
@@ -207,7 +213,7 @@ class TileServerPreference(object):
         """Indicate test status of `stonemason`. Return `True` if being on
          testing
 
-         Return `True` if `STONEMASON_TESTING` is set to `True`. Setting
+         Return `True` if ``STONEMASON_TESTING`` is set to `True`. Setting
          `TESTING` option of `Flask` will not affect this value and only turn
          on flask testing.
          """
@@ -217,7 +223,7 @@ class TileServerPreference(object):
     def theme_dir(self):
         """Return the path of theme directory
 
-        Return the theme directory setting by `STONEMASON_THEMES`. Default
+        Return the theme directory setting by ``STONEMASON_THEMES``. Default
         is current working directory.
         """
 
@@ -227,7 +233,7 @@ class TileServerPreference(object):
     def cache_servers(self):
         """Return a list of address of cache servers
 
-        Return addresses of cache servers setting in `STONEMASON_CACHE`.
+        Return addresses of cache servers setting in ``STONEMASON_CACHE``.
         Default is `None`.
 
         """
@@ -238,7 +244,7 @@ class TileServerPreference(object):
         """Return verbose level of logging
 
         Return a positive integer represents the level of logging setting
-        by `STONEMASON_VERBOSE`. Setting to `0` to turn off logging. Default
+        by ``STONEMASON_VERBOSE``. Setting to `0` to turn off logging. Default
         to `0`.
         """
 
@@ -248,6 +254,18 @@ class TileServerPreference(object):
             verbose = 0
 
         return verbose
+
+    @property
+    def max_age(self):
+        """Number of seconds of max age in returned ``Cache-Control`` header,
+        ``0`` means no caching. """
+
+        try:
+            max_age = int(self._app.config.get('STONEMASON_MAX_AGE', 300))
+        except ValueError:
+            max_age = 300
+
+        return max_age
 
 
 class TileServerApp(Flask):
@@ -324,7 +342,9 @@ class TileServerApp(Flask):
         theme_collection = list(t for t in self._theme_model)
 
         self._mason_model = MasonModel(
-            theme_collection, cache_servers=self._preference.cache_servers)
+            theme_collection,
+            cache_servers=self._preference.cache_servers,
+            max_age=self._preference.max_age)
 
         # initialize blueprints
         themes_blueprint = themes.create_blueprint(

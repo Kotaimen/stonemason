@@ -1,7 +1,7 @@
 Theme System
 ************
 
-:mod:`stonemason.mason.theme`
+.. module:: stonemason.mason.theme
 
 A `Theme` is the main configuration for stonemason. It defines a large amount
 of configs for a :class:`~stonemason.provider.tileprovider.TileProvider` to
@@ -20,8 +20,6 @@ Theme
 
 .. autoclass:: stonemason.mason.theme.Theme
     :members:
-
-
 
 Theme Element
 =============
