@@ -9,9 +9,7 @@
 __author__ = 'kotaimen'
 __date__ = '1/6/15'
 
-import re
-
-from stonemason.provider.pyramid import TileIndex, Tile
+from stonemason.pyramid import Tile
 
 
 class TileCacheError(Exception):
@@ -31,7 +29,7 @@ class TileCache(object):  # pragma: no cover
     A tile in the cache is identified by its `tag` and `index`.
     `tag` must be a string  matching regular expression
     :regexp:`[a-zA-Z][a-zA-Z0-9_-%]+`, while `index` must be an
-    :class:`~stonemason.provider.pyramid.TileIndex` object.
+    :class:`~stonemason.pyramid.TileIndex` object.
 
     `TileCache` is designed to be shared between all `themes` and `layers` in
     a particular deployment.
@@ -43,7 +41,7 @@ class TileCache(object):  # pragma: no cover
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
+        :type index: :class:`~stonemason.pyramid.TileIndex`
         :return: `Tile` object on hit, `None` on miss.
         :rtype: `Tile` or `None`
         """
@@ -58,7 +56,7 @@ class TileCache(object):  # pragma: no cover
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
+        :type index: :class:`~stonemason.pyramid.TileIndex`
         :return: Whether the tile exists in the cache.
         :rtype: bool
         """
@@ -73,7 +71,7 @@ class TileCache(object):  # pragma: no cover
         :param tag: Tag of the tile.
         :type tag: str
         :param tile: Tile to put.
-        :type tile: :class:`~stonemason.provider.pyramid.Tile`
+        :type tile: :class:`~stonemason.pyramid.Tile`
         :param ttl: Number of seconds before expiration, `0` means never.
         :type ttl: int
         :return: None
@@ -89,7 +87,7 @@ class TileCache(object):  # pragma: no cover
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
+        :type index: :class:`~stonemason.pyramid.TileIndex`
         :return: None
         """
         raise NotImplementedError
@@ -138,7 +136,7 @@ class TileCache(object):  # pragma: no cover
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
+        :type index: :class:`~stonemason.pyramid.TileIndex`
         :param ttl: Number of seconds before lock expiration.
         :type ttl: int
         :return: CAS on success or zero when tile is already locked.
@@ -154,7 +152,7 @@ class TileCache(object):  # pragma: no cover
         :param tag: Tag of the tile.
         :type tag: str
         :param index: Index of the tile.
-        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
+        :type index: :class:`~stonemason.pyramid.TileIndex`
         :param cas: CAS value of the tile.
         :type cas: int
         :return: `True` if unlock is successful or no lock is present, `False` otherwise.

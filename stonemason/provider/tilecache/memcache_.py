@@ -11,11 +11,13 @@ __date__ = '1/12/15'
 
 import re
 import json
-import memcache
 import random
 
+import memcache
+
+from stonemason.pyramid import Tile, TileIndex
+
 from .tilecache import TileCache, TileCacheError
-from stonemason.provider.pyramid import Tile, TileIndex
 
 
 class MemTileCacheError(TileCacheError):
@@ -37,7 +39,7 @@ class MemTileCache(TileCache):
     .. _couchbase: <http://www.couchbase.com/>
     .. _nutcracker:  <https://github.com/twitter/twemproxy>
 
-    >>> from stonemason.provider.pyramid import Tile,TileIndex
+    >>> from stonemason.pyramid import Tile,TileIndex
     >>> from stonemason.provider.tilecache import MemTileCache
     >>> cache = MemTileCache(servers=['localhost:11211',])
     >>> cache.put('layer', Tile(TileIndex(3, 4, 5), b'tile'))

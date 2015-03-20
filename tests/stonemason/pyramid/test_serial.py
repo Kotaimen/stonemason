@@ -5,7 +5,7 @@ __date__ = '1/10/15'
 
 import unittest
 
-from stonemason.provider.pyramid import Hilbert, Legacy
+from stonemason.pyramid import Hilbert, Legacy
 
 
 class TestHilbert(unittest.TestCase):

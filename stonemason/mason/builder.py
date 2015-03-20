@@ -10,7 +10,7 @@
 __author__ = 'ray'
 __date__ = '2/5/15'
 
-from stonemason.provider.pyramid import Pyramid
+from stonemason.pyramid import Pyramid
 from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.provider.tilecache import NullTileCache, MemTileCache
 from stonemason.provider.tilestorage import NullClusterStorage, \
@@ -77,7 +77,7 @@ class ClusterStorageFactory(object):
         """Create a `ClusterStorage` instance
 
         :param pyramid: An instance of `Pyramid`.
-        :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+        :type pyramid: :class:`~stonemason.pyramid.Pyramid`
 
         :param kwargs: A dict contains parameters for creating a `ClusterStorage`.
         :type kwargs: dict

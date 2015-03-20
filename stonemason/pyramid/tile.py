@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.pyramid.tile
+    stonemason.pyramid.tile
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Square area in a map.
 
@@ -11,11 +11,11 @@ __date__ = '1/8/15'
 
 import collections
 import time
-import mimetypes
 import hashlib
+
 import six
 
-from .serial import Hilbert
+from stonemason.pyramid.serial import Hilbert
 
 
 _TileIndex = collections.namedtuple('_TileIndex', 'z x y')
@@ -24,13 +24,13 @@ _TileIndex = collections.namedtuple('_TileIndex', 'z x y')
 class TileIndex(_TileIndex):
     """Coordinate of a map Tile.
 
-    Coordinate (aka: index) of a map :class:`~stonemason.provider.pyramid.Tile`
+    Coordinate (aka: index) of a map :class:`~stonemason.pyramid.Tile`
     using GoogleMaps style tile map system.
 
     `TileIndex` is a `tuple` and thus is immutable once created.
 
 
-    >>> from stonemason.provider.pyramid import TileIndex
+    >>> from stonemason.pyramid import TileIndex
     >>> index = TileIndex(3, 4, 5)
     >>> index
     TileIndex(3/4/5)
@@ -75,13 +75,13 @@ class Tile(_Tile):
     """A piece of square area in a map.
 
     A `tile` is a piece of square area in a rendered digital map, sliced
-    using quad-tree grid system, called :class:`~stonemason.provider.pyramid.Pyramid`.
+    using quad-tree grid system, called :class:`~stonemason.pyramid.Pyramid`.
 
-    Tile is uniquely referenced by its :class:`~stonemason.provider.pyramid.TileIndex`.
+    Tile is uniquely referenced by its :class:`~stonemason.pyramid.TileIndex`.
 
     A tile object is immutable once created.
 
-    >>> from stonemason.provider.pyramid import Tile, TileIndex
+    >>> from stonemason.pyramid import Tile, TileIndex
     >>> tile = Tile(index=TileIndex(3, 4, 5),
     ...             data=b'a tile',
     ...             mimetype='text/plain',
@@ -96,7 +96,7 @@ class Tile(_Tile):
     'c37ee78cb8b04fa64e295342b3e229cd'
 
     :param index: Index of the tile.
-    :type index: :class:`~stonemason.provider.pyramid.TileIndex`.
+    :type index: :class:`~stonemason.pyramid.TileIndex`.
 
     :param data: Arbitrary binary or textual data, though its usually
         a rendered raster map image, or geo referenced features.

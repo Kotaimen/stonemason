@@ -17,11 +17,10 @@ import math
 import six
 
 from stonemason.util.guesstypes import guess_mimetype, guess_extension
-from stonemason.provider.pyramid import Tile, TileIndex, MetaTile, \
-    MetaTileIndex
+from stonemason.pyramid import Tile, TileIndex, MetaTile, MetaTileIndex
 from stonemason.provider.formatbundle import MapWriter
-
 from .exceptions import TileClusterError
+
 
 
 # The index file name
@@ -39,7 +38,7 @@ class TileCluster(object):
 
     >>> from stonemason.provider.tilestorage import TileCluster
     >>> from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
-    >>> from stonemason.provider.pyramid import MetaTile, MetaTileIndex, TileIndex
+    >>> from stonemason.pyramid import MetaTile, MetaTileIndex, TileIndex
     >>> from PIL import Image
     >>> import io
     >>> image = Image.new('RGB', (1024, 1024))

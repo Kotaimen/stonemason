@@ -1,9 +1,9 @@
 Tile System
 ***********
 
-.. module::stonemason.provider.pyramid
+.. module::stonemason.pyramid
 
-:mod:`stonemason.provider.pyramid` contains definitions of `tile`, `metatile`
+:mod:`stonemason.pyramid` contains definitions of `tile`, `metatile`
 and the quad tree `pyramid`.
 
 All classes in this package is implemented using :func:`collections.namedtuple`
@@ -12,34 +12,77 @@ thus is immutable and pickle serializable.
 Pyramid
 =======
 
-.. autoclass:: stonemason.provider.pyramid.Pyramid
+.. autoclass:: stonemason.pyramid.Pyramid
     :members:
 
 Tile
 ====
 
-.. autoclass:: stonemason.provider.pyramid.TileIndex
+.. autoclass:: stonemason.pyramid.TileIndex
     :members:
 
-.. autoclass:: stonemason.provider.pyramid.Tile
+.. autoclass:: stonemason.pyramid.Tile
     :members:
 
 
 MetaTile
 ========
 
-.. autoclass:: stonemason.provider.pyramid.MetaTileIndex
+.. autoclass:: stonemason.pyramid.MetaTileIndex
     :members:
 
-.. autoclass:: stonemason.provider.pyramid.MetaTile
+.. autoclass:: stonemason.pyramid.MetaTile
     :members:
+
+
+Hilbert Curves
+==============
+
+.. function:: stonemason.util.geo.hilbert.hil_xy_from_s(s, n)
+
+    Compute point coordinate from given Hilbert curve length.
+
+    Given the order `n` of a Hilbert curve, compute point coordinate `(x, y)`
+    using length `n`.  This is the reverse operation of :func:`hil_s_from_xy`
+
+        >>> from stonemason.pyramid import hil_xy_from_s
+        >>> hil_xy_from_s(10, 2)
+        (3L, 3L)
+        >>> hil_xy_from_s(829371542099833, 25)
+        (31152875L, 17840406L)
+
+    :param s: Length of the Hilbert curve.
+    :param n: Order of the Hilbert curve
+    :return: Coordinate as a tuple `(x, y)`.
+    :rtype: tuple
+
+.. function:: stonemason.util.geo.hilbert.hil_s_from_xy(x, y, n)
+
+    Compute Hilbert curve length from given point coordinate.
+
+    Given the order `n` of a Hilbert curve and coordinates `x` and `y`,
+    computes the length `s` of the curve from the origin to `(x, y)`.
+
+        >>> from stonemason.pyramid import hil_s_from_xy
+        >>> hil_s_from_xy(3,3, 2)
+        10L
+        >>> hil_s_from_xy(31152875, 17840406, 25)
+        829371542099833L
+
+    :param x: x coordinate.
+    :param y: y coordinate.
+    :param n: Order of the Hilbert curve.
+    :type n: int
+    :return: Hilbert curve length.
+    :rtype: int
+
 
 Serial
 ======
 
-.. autoclass:: stonemason.provider.pyramid.Hilbert
+.. autoclass:: stonemason.pyramid.Hilbert
     :members:
 
-.. autoclass:: stonemason.provider.pyramid.Legacy
+.. autoclass:: stonemason.pyramid.Legacy
     :members:
 

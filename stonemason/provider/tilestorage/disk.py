@@ -130,9 +130,9 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
         value is ``hilbert``.
     :type dir_mode: str
 
-    :param pyramid: The :class:`~stonemason.provider.pyramid.Pyramid` of the
+    :param pyramid: The :class:`~stonemason.pyramid.Pyramid` of the
         storage describes tile pyramid model.
-    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
 
     :param format: `FormatBundle` of the storage which specifies:
 
@@ -201,9 +201,9 @@ class DiskClusterStorage(StorageMixin, ClusterStorage):
         value is ``hilbert``.
     :type dir_mode: str
 
-    :param pyramid: The :class:`~stonemason.provider.pyramid.Pyramid` of the
+    :param pyramid: The :class:`~stonemason.pyramid.Pyramid` of the
         storage describes tile pyramid model.
-    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
 
     :param format: `FormatBundle` of the storage which specifies:
 

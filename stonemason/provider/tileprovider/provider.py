@@ -6,9 +6,7 @@
 
 """
 
-import six
-
-from stonemason.provider.pyramid import Pyramid, TileIndex, MetaTileIndex
+from stonemason.pyramid import Pyramid, TileIndex, MetaTileIndex
 from stonemason.provider.tilecache import TileCache, NullTileCache
 from stonemason.provider.tilestorage import ClusterStorage, NullClusterStorage
 
@@ -24,7 +22,7 @@ class TileProvider(object):
 
         A string literal that identifies a `TileProvider`.
 
-    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
     :param metadata:
 
         The tile grid system of the `TileProvider`.
@@ -90,7 +88,7 @@ class TileProvider(object):
     def pyramid(self):
         """Return pyramid of the provider
 
-        :rtype: :class:`~stonemason.provider.pyramid.Pyramid`
+        :rtype: :class:`~stonemason.pyramid.Pyramid`
         :return: Pyramid of the `TileProvider`
 
         """
@@ -144,7 +142,7 @@ class TileProvider(object):
 
             A positive integer represents coordinate along y-axis.
 
-        :rtype: :class:`~stonemason.provider.pyramid.Tile` or None
+        :rtype: :class:`~stonemason.pyramid.Tile` or None
         :return: A `Tile` object or None if not found.
 
         """

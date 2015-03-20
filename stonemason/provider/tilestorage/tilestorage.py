@@ -12,15 +12,14 @@ __date__ = '1/18/15'
 
 import io
 import gzip
+
 import six
 
-from stonemason.provider.pyramid import MetaTileIndex, MetaTile, \
-    Hilbert, Legacy, Pyramid
-from stonemason.provider.formatbundle import MapWriter, FormatBundle, TileFormat
-
+from stonemason.pyramid import MetaTileIndex, MetaTile, Hilbert, Legacy, Pyramid
+from stonemason.provider.formatbundle import MapWriter
 from .cluster import TileCluster
-
 from .exceptions import *
+
 
 
 #
@@ -56,7 +55,7 @@ class ClusterStorage(object):  # pragma: no cover
         any existing one.
 
         :param metatile: MetaTile to store.
-        :type metatile: :class:`~stonemason.provider.pyramid.MetaTile`
+        :type metatile: :class:`~stonemason.pyramid.MetaTile`
         """
 
         raise NotImplementedError
@@ -99,7 +98,7 @@ class MetaTileStorage(object):  # pragma: no cover
         Store a `MetaTile` in the storage, overriding any existing one.
 
         :param metatile: MetaTile to store.
-        :type metatile: :class:`~stonemason.provider.pyramid.MetaTile`
+        :type metatile: :class:`~stonemason.pyramid.MetaTile`
         """
 
         raise NotImplementedError

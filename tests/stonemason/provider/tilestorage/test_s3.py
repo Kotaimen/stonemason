@@ -7,13 +7,14 @@ import unittest
 import os
 
 import moto
-import boto, boto.s3
+import boto
+import boto.s3
 
-from stonemason.provider.pyramid import MetaTile, MetaTileIndex, Pyramid
+from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.provider.tilestorage import S3ClusterStorage, \
-    S3MetaTileStorage, TileCluster, \
-    InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
+    S3MetaTileStorage, TileCluster
+
 
 TEST_BUCKET_NAME = 'tilestorage'
 

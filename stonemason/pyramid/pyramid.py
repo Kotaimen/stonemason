@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.pyramid.pyramid
+    stonemason.pyramid.pyramid
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     The Quad Tree tile system, with optional CRS&Boundary check.
@@ -35,7 +35,7 @@ class Pyramid(_Pyramid):
     .. _OSRSetFromUserInput: http://www.gdal.org/ogr__srs__api_8h.html#a927749db01cec3af8aa5e577d032956b
 
 
-    >>> from stonemason.provider.pyramid import Pyramid
+    >>> from stonemason.pyramid import Pyramid
     >>> pyramid = Pyramid(levels=[4, 5, 6], stride=4)
     >>> pyramid.levels
     [4, 5, 6]

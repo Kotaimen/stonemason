@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.pyramid.serial
+    stonemason.pyramid.serial
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Convert tile index to a serial number
@@ -11,7 +11,7 @@ __date__ = '1/10/15'
 
 import math
 
-import stonemason.util.geo.hilbert as hilbert
+from .hilbert import hil_s_from_xy, hil_xy_from_s
 
 
 class Hilbert(object):
@@ -26,7 +26,7 @@ class Hilbert(object):
         """
         assert 0 <= z <= 28
 
-        return (z << 58) | hilbert.hil_s_from_xy(x, y, z)
+        return (z << 58) | hil_s_from_xy(x, y, z)
 
     @staticmethod
     def coord2dir(z, x, y):
@@ -41,7 +41,7 @@ class Hilbert(object):
         # zoom level has more than 4096 tiles
         if z > 6:
             # Group by Hilbert length as 64x64 blocks
-            block = hilbert.hil_s_from_xy(x, y, z) // 4096
+            block = hil_s_from_xy(x, y, z) // 4096
 
             # Max number of hex digits for the block
             digits = (z - 5) // 2
