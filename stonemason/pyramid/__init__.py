@@ -14,3 +14,4 @@ from .tile import TileIndex, Tile
 from .metatile import MetaTileIndex, MetaTile
 from .serial import Hilbert, Legacy
 from .pyramid import Pyramid
+from .hilbert import hil_s_from_xy, hil_xy_from_s
