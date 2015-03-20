@@ -1,9 +1,9 @@
 Tile System
 ***********
 
-.. module::stonemason.provider.pyramid
+.. module::stonemason.pyramid
 
-:mod:`stonemason.provider.pyramid` contains definitions of `tile`, `metatile`
+:mod:`stonemason.pyramid` contains definitions of `tile`, `metatile`
 and the quad tree `pyramid`.
 
 All classes in this package is implemented using :func:`collections.namedtuple`
@@ -12,34 +12,34 @@ thus is immutable and pickle serializable.
 Pyramid
 =======
 
-.. autoclass:: stonemason.provider.pyramid.Pyramid
+.. autoclass:: stonemason.pyramid.Pyramid
     :members:
 
 Tile
 ====
 
-.. autoclass:: stonemason.provider.pyramid.TileIndex
+.. autoclass:: stonemason.pyramid.TileIndex
     :members:
 
-.. autoclass:: stonemason.provider.pyramid.Tile
+.. autoclass:: stonemason.pyramid.Tile
     :members:
 
 
 MetaTile
 ========
 
-.. autoclass:: stonemason.provider.pyramid.MetaTileIndex
+.. autoclass:: stonemason.pyramid.MetaTileIndex
     :members:
 
-.. autoclass:: stonemason.provider.pyramid.MetaTile
+.. autoclass:: stonemason.pyramid.MetaTile
     :members:
 
 Serial
 ======
 
-.. autoclass:: stonemason.provider.pyramid.Hilbert
+.. autoclass:: stonemason.pyramid.Hilbert
     :members:
 
-.. autoclass:: stonemason.provider.pyramid.Legacy
+.. autoclass:: stonemason.pyramid.Legacy
     :members:
 

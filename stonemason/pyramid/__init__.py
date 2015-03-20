@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.pyramid
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.geo
+    ~~~~~~~~~~~~~~
 
-    Logic of the quad-tree (aka: pyramid) tile map system.
+    Quad tree tile system and geographic calculations
 """
 
 __author__ = 'kotaimen'

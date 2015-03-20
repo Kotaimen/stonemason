@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.pyramid.serial
+    stonemason.pyramid.serial
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Convert tile index to a serial number

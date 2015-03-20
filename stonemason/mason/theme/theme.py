@@ -169,7 +169,7 @@ class ThemePyramid(ThemeElement):
     """Pyramid Theme Element
 
     The `ThemePyramid` contains properties used to construct a
-    :class:`~stonemason.provider.pyramid.Pyramid` tile system.
+    :class:`~stonemason.pyramid.Pyramid` tile system.
 
     Samples:
 
