@@ -80,8 +80,8 @@ py_modules = []
 ext_modules = []
 
 cython_modules = [
-    ('stonemason.util.geo.hilbert',
-     ['stonemason/util/geo/hilbert.pyx', ]),
+    ('stonemason.pyramid.hilbert',
+     ['stonemason/pyramid/hilbert.pyx', ]),
 ]
 
 entry_points = '''
@@ -149,7 +149,7 @@ package_data = {
             'samples/sample_world/sample_world.xml',
             'samples/sample_world/readme.md',
         ],
-    'stonemason.util.geo': ['_hilbert.c'],
+    'stonemason.pyramid': ['hilbert.c'],
     'stonemason.service.tileserver.maps': ['templates/*'],
     'stonemason.service.tileserver.admin': ['templates/*'],
 

@@ -5,7 +5,7 @@ __date__ = '1/23/15'
 
 import unittest
 
-from stonemason.provider.pyramid import Pyramid
+from stonemason.pyramid import Pyramid
 
 
 class TestPyramid(unittest.TestCase):

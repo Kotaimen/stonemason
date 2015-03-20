@@ -6,7 +6,7 @@ __date__ = '1/14/15'
 import unittest
 import hashlib
 
-from stonemason.provider.pyramid import Tile, TileIndex
+from stonemason.pyramid import Tile, TileIndex
 
 
 class TestTileIndex(unittest.TestCase):

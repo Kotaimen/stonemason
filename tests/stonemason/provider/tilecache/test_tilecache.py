@@ -6,7 +6,7 @@ __date__ = '1/24/15'
 import unittest
 
 from stonemason.provider.tilecache import NullTileCache
-from stonemason.provider.pyramid import Tile, TileIndex
+from stonemason.pyramid import Tile, TileIndex
 
 
 class TestNullTileCache(unittest.TestCase):

@@ -2,7 +2,7 @@
 
 
 """
-    stonemason.provider.pyramid.metatile
+    stonemason.pyramid.metatile
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Large square area in a map.
 """
@@ -16,8 +16,9 @@ import hashlib
 
 import six
 
-from .tile import Tile, TileIndex
+from .tile import TileIndex
 from .serial import Hilbert
+
 
 _MetaTileIndex = collections.namedtuple('_MetaTileIndex', 'z x y stride')
 
@@ -33,7 +34,7 @@ class MetaTileIndex(_MetaTileIndex):
 
     `MetaTileIndex` is a `tuple` is immutable once created.
 
-    >>> from stonemason.provider.pyramid import MetaTileIndex, TileIndex
+    >>> from stonemason.pyramid import MetaTileIndex, TileIndex
     >>> index = MetaTileIndex(2, 0, 0, 2)
     >>> index
     MetaTileIndex(2/0/0@2)
@@ -82,10 +83,10 @@ class MetaTileIndex(_MetaTileIndex):
     def fission(self):
         """Fission the `MetaTileIndex` into `TileIndexes`.
 
-        Return a iterable of :class:`~stonemason.provider.pyramid.TileIndex`
+        Return a iterable of :class:`~stonemason.pyramid.TileIndex`
         of all the tiles covered by this metatile.
 
-        :return: :class:`~stonemason.provider.pyramid.TileIndex`
+        :return: :class:`~stonemason.pyramid.TileIndex`
         """
         z, x, y, stride = self
         for xi in range(x, x + stride):
@@ -100,13 +101,13 @@ class MetaTileIndex(_MetaTileIndex):
         """ Create a `MetaTileIndex` from given `TileIndex`.
 
         :param index: Given `TileIndex`
-        :type index: :class:`~stonemason.provider.pyramid.TileIndex`
+        :type index: :class:`~stonemason.pyramid.TileIndex`
 
         :param stride: Stride of the `MetaTile`
         :type stride: int
 
         :return: Created `MetaTileIndex`
-        :rtype:  :class:`~stonemason.provider.pyramid.MetaTileIndex`
+        :rtype:  :class:`~stonemason.pyramid.MetaTileIndex`
         """
         assert isinstance(index, TileIndex)
         return MetaTileIndex(index.z, index.x, index.y, stride)
@@ -125,7 +126,7 @@ class MetaTile(_MetaTile):
     Group tiles into metatile greatly reduces number of operations,
     so metatile is the basic unit of storage and map rendering.
 
-    >>> from stonemason.provider.pyramid import MetaTileIndex, MetaTile
+    >>> from stonemason.pyramid import MetaTileIndex, MetaTile
     >>> metatile = MetaTile(MetaTileIndex(2, 0, 0, 2),
     ...                     data=b'a metatile',
     ...                     mimetype='text/plain',
@@ -137,7 +138,7 @@ class MetaTile(_MetaTile):
     16
 
     :param index: Index of the metatile.
-    :type index: :class:`~stonemason.provider.pyramid.MetaTileIndex`
+    :type index: :class:`~stonemason.pyramid.MetaTileIndex`
 
     :param data: Arbitrary binary or textual data.
     :type data: bytes

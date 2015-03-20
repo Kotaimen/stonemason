@@ -3,8 +3,10 @@ Composer
 
 .. module::stonemason.renderer.composer
 
-Image Composer
-==============
+Map composing.
+
+Image
+=====
 
 .. autoclass:: stonemason.renderer.composer.ImageComposer
     :members:
@@ -15,8 +17,8 @@ ImageMagick
 .. autoclass:: stonemason.renderer.composer.ImageMagickComposer
     :members:
 
-Sample Command
---------------
+Sample
+------
 
 Below is a complex composer command which generates a `newspaper` effect
 with variable depth label haloing from for mapnik rendered images:

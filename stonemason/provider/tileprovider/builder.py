@@ -80,7 +80,7 @@ class TileProviderBuilder(object):
 
     Samples:
 
-    >>> from stonemason.provider.pyramid import Pyramid
+    >>> from stonemason.pyramid import Pyramid
     >>> from stonemason.provider.tileprovider import TileProviderBuilder
     >>> p = Pyramid()
     >>> builder = TileProviderBuilder(tag='test', pyramid=p)
@@ -102,7 +102,7 @@ class TileProviderBuilder(object):
 
         Name of the provider.
 
-    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
     :param pyramid:
 
         The tile system of the provider.

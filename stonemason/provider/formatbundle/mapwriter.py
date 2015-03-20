@@ -68,7 +68,7 @@ class MapWriter(object):  # pragma: no cover
         """ Re-corp a metatile into tiles.
 
         Same as :meth:`grid_crop_map` except this method accepts
-        :class:`~stonemason.provider.pyramid.MetaTile` data instead of map data.
+        :class:`~stonemason.pyramid.MetaTile` data instead of map data.
 
         :param data: Metatile data.
 

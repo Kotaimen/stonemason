@@ -4,8 +4,8 @@ Tile Server
 .. module:: stonemason.service.tileserver
 
 
-Tile Server Config
-==================
+Configuration
+=============
 
 .. autoclass:: stonemason.service.tileserver.FlaskAppConfig
     :members:
@@ -19,15 +19,15 @@ Tile Server Config
 .. autoclass:: stonemason.service.tileserver.CmdVariableConfig
 
 
-Tile Server Preference
-======================
+Preferences
+===========
 
 .. autoclass:: stonemason.service.tileserver.TileServerPreference
     :members:
 
 
-Tile Server
-===========
+WSGI Application
+================
 
 .. autoclass:: stonemason.service.tileserver.TileServerApp
     :members:

@@ -146,9 +146,9 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
     :param prefix: Prefix which will be prepend to generated s3 keys.
     :type prefix: str
 
-    :param pyramid: The :class:`~stonemason.provider.pyramid.Pyramid` of the
+    :param pyramid: The :class:`~stonemason.pyramid.Pyramid` of the
         storage describes tile pyramid model.
-    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
 
     :param format: `FormatBundle` of the storage which specifies:
 
@@ -234,9 +234,9 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
     :param prefix: Prefix which will be prepend to generated s3 keys.
     :type prefix: str
 
-    :param pyramid: The :class:`~stonemason.provider.pyramid.Pyramid` of the
+    :param pyramid: The :class:`~stonemason.pyramid.Pyramid` of the
         storage describes tile pyramid model.
-    :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
+    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
 
     :param format: `FormatBundle` of the storage which specifies:
 
