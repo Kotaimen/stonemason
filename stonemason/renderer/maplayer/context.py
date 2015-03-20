@@ -8,7 +8,7 @@ from collections import namedtuple
 
 _Foo = namedtuple(
     'LayerContext',
-    'pyramid target_bbox target_size target_scale target_resolution')
+    'pyramid target_bbox target_size')
 
 
 class MapContext(_Foo):
@@ -29,11 +29,8 @@ class MapContext(_Foo):
 
     """
 
-    def __new__(cls, pyramid=None,
-                target_bbox=None,
-                target_resolution=None,
-                target_scale=None,
-                target_size=None):
-        return _Foo.__new__(cls, pyramid, target_bbox, target_resolution,
-                            target_scale, target_size)
+    def __new__(cls, pyramid=None, target_bbox=None, target_size=None):
+        return _Foo.__new__(
+            cls, pyramid=pyramid, target_bbox=target_bbox,
+            target_size=target_size)
 

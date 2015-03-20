@@ -3,4 +3,4 @@
 __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
-
+from .mapnik_ import MapnikLayer
