@@ -3,15 +3,13 @@
 __author__ = 'ray'
 __date__ = '3/11/15'
 
-import os
-
 import mapnik
 from PIL import Image
 
-from ..maplayer import BaseLayer, ImageDesigner, MapContext
+from ..maplayer import LeafLayer, ImageDesigner, MapContext
 
 
-class MapnikLayer(BaseLayer, ImageDesigner):
+class MapnikLayer(LeafLayer, ImageDesigner):
     """Mapnik Layer
 
     Mapnik is a Free Toolkit for developing mapping applications.
@@ -44,7 +42,7 @@ class MapnikLayer(BaseLayer, ImageDesigner):
                  style_sheet='map.xml',
                  scale_factor=1.0,
                  buffer_size=0):
-        BaseLayer.__init__(self, name)
+        LeafLayer.__init__(self, name)
         assert isinstance(scale_factor, float)
         assert isinstance(buffer_size, int)
 

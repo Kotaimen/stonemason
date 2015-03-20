@@ -35,10 +35,10 @@ class MapLayer(object):
         return self._name
 
     def __repr__(self):
-        return '%s()' % (self.__class__.__name__)
+        return '%s(name=%r)' % (self.__class__.__name__, self.name)
 
 
-class BaseLayer(MapLayer):
+class LeafLayer(MapLayer):
     """Primitive Layer
 
     A `BaseLayer` acts as a leaf layer of a Map. It takes a `RenderContext`
@@ -47,7 +47,7 @@ class BaseLayer(MapLayer):
     pass
 
 
-class TransformLayer(MapLayer):
+class Transformer(MapLayer):
     """Transform Layer
 
     A `TransformLayer` accepts a `Layer` object and transform its representation
@@ -66,10 +66,11 @@ class TransformLayer(MapLayer):
         self._layer = layer
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self._layer)
+        return '%s(name=%r, %r)' % (
+            self.__class__.__name__, self.name, self._layer)
 
 
-class CompositeLayer(MapLayer):
+class Compositor(MapLayer):
     """Composite Layer
 
     A `CompositeLayer` accepts a list of map layers and compose them into a
@@ -89,7 +90,8 @@ class CompositeLayer(MapLayer):
 
     def __repr__(self):
         layer_reprs = ', '.join(repr(l) for l in self._layers)
-        return '%s(%r)' % (self.__class__.__name__, layer_reprs)
+        return '%s(name=%r, %s)' % (
+            self.__class__.__name__, self.name, layer_reprs)
 
 
 
