@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 """
-    stonemason.renderer.maplayer.layer
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.renderer.map.layer
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Implements theme and relative theme elements.
 
@@ -38,11 +38,10 @@ class MapLayer(object):
         return '%s(name=%r)' % (self.__class__.__name__, self.name)
 
 
-class LeafLayer(MapLayer):
-    """Primitive Layer
+class BaseLayer(MapLayer):
+    """Base Layer
 
-    A `BaseLayer` acts as a leaf layer of a Map. It takes a `RenderContext`
-    and return the supported representation of its objects.
+    A `BaseLayer` acts as a leaf layer of a Map. It takes no child layers.
     """
     pass
 
@@ -92,9 +91,6 @@ class Compositor(MapLayer):
         layer_reprs = ', '.join(repr(l) for l in self._layers)
         return '%s(name=%r, %s)' % (
             self.__class__.__name__, self.name, layer_reprs)
-
-
-
 
 
 

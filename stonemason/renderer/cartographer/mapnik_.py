@@ -6,10 +6,10 @@ __date__ = '3/11/15'
 import mapnik
 from PIL import Image
 
-from ..maplayer import LeafLayer, ImageDesigner, MapContext
+from ..map import BaseLayer, ImageRenderer, RenderContext
 
 
-class MapnikLayer(LeafLayer, ImageDesigner):
+class MapnikRenderer(BaseLayer, ImageRenderer):
     """Mapnik Layer
 
     Mapnik is a Free Toolkit for developing mapping applications.
@@ -42,7 +42,7 @@ class MapnikLayer(LeafLayer, ImageDesigner):
                  style_sheet='map.xml',
                  scale_factor=1.0,
                  buffer_size=0):
-        LeafLayer.__init__(self, name)
+        BaseLayer.__init__(self, name)
         assert isinstance(scale_factor, float)
         assert isinstance(buffer_size, int)
 
@@ -55,7 +55,7 @@ class MapnikLayer(LeafLayer, ImageDesigner):
         self._map.buffer_size = buffer_size
 
     def image(self, context):
-        assert isinstance(context, MapContext)
+        assert isinstance(context, RenderContext)
 
         projcs = context.pyramid.projcs
         proj = mapnik.Projection('+init=%s' % projcs)
