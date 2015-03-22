@@ -58,7 +58,7 @@ class MapnikRenderer(BaseLayer, ImageRenderer):
         assert isinstance(context, RenderContext)
 
         projcs = context.pyramid.projcs
-        proj = mapnik.Projection('+init=%s' % projcs)
+        proj = mapnik.Projection(projcs)
 
         bbox = mapnik.Box2d(*context.target_bbox)
         map_width, map_height = context.target_size

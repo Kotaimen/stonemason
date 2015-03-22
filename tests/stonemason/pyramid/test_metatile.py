@@ -49,17 +49,23 @@ class TestMetaTileIndex(unittest.TestCase):
         self.assertEqual(index2.y, 0)
         self.assertEqual(index2.stride, 8)
 
+    def test_to_tileindex(self):
+        index1 = MetaTileIndex(3, 1, 2, 4)
+        index2 = index1.to_tile_index()
+        self.assertEqual(index2, TileIndex(1, 0, 0))
+
     def test_repr(self):
         index = MetaTileIndex(2, 2, 3, 8)
         self.assertEqual(str(index), 'MetaTileIndex(2/0/0@4)')
 
     def test_fission(self):
         index1 = MetaTileIndex(2, 0, 0, 2)
-        self.assertSetEqual(set(index1.fission()),
-                            {TileIndex(2, 0, 0),
-                             TileIndex(2, 0, 1),
-                             TileIndex(2, 1, 0),
-                             TileIndex(2, 1, 1), })
+        self.assertSetEqual(
+            set(index1.fission()),
+            set([TileIndex(2, 0, 0),
+                 TileIndex(2, 0, 1),
+                 TileIndex(2, 1, 0),
+                 TileIndex(2, 1, 1), ]))
 
 
 class TestMetaTile(unittest.TestCase):

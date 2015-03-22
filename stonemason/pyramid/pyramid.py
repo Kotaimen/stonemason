@@ -64,8 +64,10 @@ class Pyramid(_Pyramid):
         Only bounding box is supported now, which is specified using a
         tuple ``(left, top, right, bottom)``.
         Default value is ``(-20037508.34,-20037508.34,20037508.34,20037508.34)``,
-        which is the default coverage of GoogleMaps.
-    :type projbounds: tuple
+        which is the default coverage of GoogleMaps, if omitted, will be
+        calculated from `geogbounds` using projection defined by`geogcs` to
+        `projcs`.
+    :type projbounds: tuple or None
 
     :param geogbounds: Boundary of the data in geographic coordinate system.
         Specified by a tuple ``(left, top, right, bottom)``.  Default value
@@ -85,11 +87,13 @@ class Pyramid(_Pyramid):
                 geogbounds=(-180, -85.0511, 180, 85.0511)):
         levels = list(levels)
         assert isinstance(levels, list)
-        assert isinstance(stride, int) and stride & ( stride - 1 ) == 0
-        assert isinstance(projbounds, (tuple, list)) and len(projbounds) == 4
-        assert isinstance(geogbounds, (tuple, list)) and len(geogbounds) == 4
+        assert isinstance(stride, int) and stride & (stride - 1) == 0
         assert isinstance(projcs, six.string_types)
-        assert isinstance(geogcs, (six.string_types, None))
+        # geographic coordinate system is optional
+        assert isinstance(geogcs, (six.string_types, None.__class__))
+        # projection bounds is optional
+        assert isinstance(projbounds, (tuple, list, None.__class__))
+        assert isinstance(geogbounds, (tuple, list))
 
         return _Pyramid.__new__(cls, levels, stride, projcs, geogcs,
                                 projbounds, geogbounds)
