@@ -53,6 +53,38 @@ class Envelope(_Envelope):
 class TileMapSystem(object):
     """Defines geographic attributes of a `pyramid` tile map system.
 
+    `TileMapSystem` use attributes of :class:`~stonemason.pyramid.Pyramid` to
+    initialize itself:
+
+    ``Pyramid.geogcs``
+        Geographic coordinate system, can be any string supported by
+        :func:`~osgeo.ogr.SpatialReference.SetFromUserInput`.
+        A instance of :class:`osgeo.osr.SpatialReference` is created from it.
+        Note the actual list of supported spatial references depends on
+        `GDAL` installation and may vary between distributions.
+
+    ``Pyramid.projcs``
+        Projection coordinate system, can be any string supported by
+        :func:`~osgeo.ogr.SpatialReference.SetFromUserInput`.
+        A instance of :class:`osgeo.osr.SpatialReference` is created from it.
+        When set to ``None``, `TileMapSystem` will try to figure
+        out one from ``geogcs``, which may fail under certain circumstances.
+
+    ``Pyramid.geogbounds``
+        Boundary of the map in geography coordinate system.  Specified using
+        envelope ``(min_lon, min_lat, max_lon, max_lat)``.  A instance of
+        :class:`osgeo.ogr.Geometry` is created from it.  Note, the envelope is
+        not considered as a ogr simple geometry and may behaviour incorrectly
+        for some GCS if it crosses meridian line.
+
+    ``Pyramid.projbounds``
+        Boundary of the map in projection coordinate system.  Specified using
+        envelope ``(left, bottom, right, top)``.  A instance of
+        :class:`osgeo.ogr.Geometry` is created from it. When set to ``None``,
+        this will be calculated by projecting ``geogbounds`` form ``geogcs``
+        to ``projcs``.  Note this calculation may fail or give a incorrect
+        result due to limitations in GDAL.
+
     :param pyramid: The `pyramid` defines the tile map system
     :type pyramid: :class:`~stonemason.pyramid.Pyramid`
     """
@@ -153,9 +185,12 @@ class TileMapSystem(object):
         if pyramid.geogcs is not None:
             self._geogcs.SetFromUserInput(pyramid.geogcs)
         else:
-            # geogcs must matching projcs
-            geogcs_attr = self._projcs.GetAttrValue('geogcs')
-            self._geogcs.SetFromUserInput(geogcs_attr)
+            # try figure out geogcs of the projection if its not specified
+            code = self._projcs.GetAuthorityCode('geogcs')
+            authority = self._projcs.GetAuthorityName('geogcs')
+            if code is None or authority is None:
+                raise TileMapError("Cannot figure out geogcs automaticlly.")
+            self._geogcs.SetFromUserInput('%s:%s' % (authority, code))
 
     def _init_projections(self, pyramid):
         self._forward_projection = osr.CoordinateTransformation(self._geogcs,
@@ -173,6 +208,27 @@ class TileMapSystem(object):
         else:
             self._projbounds = Envelope(*pyramid.projbounds) \
                 .to_geometry(self._projcs)
+
+    def _calc_max_bbox(self):
+        envelope = self.proj_bounds.GetEnvelope()
+        min_x, max_x, min_y, max_y = envelope
+
+        size_x = abs(max_x - min_x)
+        size_y = abs(max_y - min_y)
+
+        scale = max([size_x, size_y])
+
+        # fit projection bounds to a square box, if necessary
+        if size_x > size_y:
+            offset_x = min_x
+            offset_y = min_y - (size_x - size_y) / 2
+        elif size_x < size_y:
+            offset_x = min_x - (size_y - size_x) / 2
+            offset_y = min_y
+        else:
+            offset_x = min_x
+            offset_y = min_y
+        return offset_x, offset_y, scale
 
     def calc_tile_envelope(self, index):
         """ Calculates envelope of given `TileIndex` of `MetaTileIndex` under
@@ -192,27 +248,8 @@ class TileMapSystem(object):
 
         assert isinstance(index, TileIndex)
 
-
-        # HACK: ogr geometry returns (minx, maxx, miny, maxy) but we are
-        # expecting (minx, miny, mixx, maxy)
-        envelope = self.proj_bounds.GetEnvelope()
-        min_x, max_x, min_y, max_y = envelope
-
-        stride_x = abs(max_x - min_x)
-        stride_y = abs(max_y - min_y)
-
-        scale = max([stride_x, stride_y])
-
-        # first fit projection bounds to a square box, if necessary
-        if stride_x > stride_y:
-            offset_x = min_x
-            offset_y = min_y - (stride_x - stride_y) / 2
-        elif stride_x < stride_y:
-            offset_x = min_x - (stride_y - stride_x) / 2
-            offset_y = min_y
-        else:
-            offset_x = min_x
-            offset_y = min_y
+        # XXX: should've cached this
+        offset_x, offset_y, scale = self._calc_max_bbox()
 
         z, x, y = index.z, index.x, index.y
 
