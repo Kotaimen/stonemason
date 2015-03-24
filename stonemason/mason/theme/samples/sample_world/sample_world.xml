@@ -11,7 +11,7 @@
   <Parameter name="scale">2</Parameter>
   <Parameter name="metatile">1</Parameter>
   <Parameter name="id"><![CDATA[World]]></Parameter>
-  <Parameter name="_updated">1426091555000</Parameter>
+  <Parameter name="_updated">1427169154000</Parameter>
   <Parameter name="tilejson"><![CDATA[2.0.0]]></Parameter>
   <Parameter name="scheme"><![CDATA[xyz]]></Parameter>
 </Parameters>
@@ -37,14 +37,8 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>100000000</MaxScaleDenominator>
-    <MinScaleDenominator>50000000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>6500000</MaxScaleDenominator>
-    <MinScaleDenominator>3000000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -61,14 +55,20 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
+    <MaxScaleDenominator>100000000</MaxScaleDenominator>
+    <MinScaleDenominator>50000000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>6500000</MaxScaleDenominator>
+    <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2) and ([labelrank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -84,14 +84,8 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>100000000</MaxScaleDenominator>
-    <MinScaleDenominator>50000000</MinScaleDenominator>
-    <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>6500000</MaxScaleDenominator>
-    <MinScaleDenominator>3000000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -108,14 +102,20 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
+    <MaxScaleDenominator>100000000</MaxScaleDenominator>
+    <MinScaleDenominator>50000000</MinScaleDenominator>
+    <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>6500000</MaxScaleDenominator>
+    <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([labelrank] &lt;= 4) and ([scalerank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -131,8 +131,8 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>6500000</MaxScaleDenominator>
-    <MinScaleDenominator>3000000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -155,14 +155,32 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>6500000</MaxScaleDenominator>
+    <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 3) and ([labelrank] &lt;= 4)</Filter>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 2)</Filter>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>12500000</MaxScaleDenominator>
+    <MinScaleDenominator>6500000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 2)</Filter>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>25000000</MaxScaleDenominator>
+    <MinScaleDenominator>12500000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
@@ -172,32 +190,14 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>6500000</MaxScaleDenominator>
-    <MinScaleDenominator>3000000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>12500000</MaxScaleDenominator>
-    <MinScaleDenominator>6500000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>25000000</MaxScaleDenominator>
-    <MinScaleDenominator>12500000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 2)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
-  </Rule>
-  <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>6500000</MaxScaleDenominator>
+    <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -207,8 +207,8 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>6500000</MaxScaleDenominator>
-    <MinScaleDenominator>3000000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -231,8 +231,8 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>6500000</MaxScaleDenominator>
+    <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -242,8 +242,8 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>6500000</MaxScaleDenominator>
-    <MinScaleDenominator>3000000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -260,14 +260,26 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>6500000</MaxScaleDenominator>
+    <MinScaleDenominator>3000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 5)</Filter>
+    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 5)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
@@ -277,31 +289,19 @@
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
+    <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>750000</MaxScaleDenominator>
-    <Filter>([scalerank] &lt;= 5)</Filter>
-    <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
     <TextSymbolizer face-name="DejaVu Serif Bold" size="10" fill="#8b0000" halo-fill="#ffffe0" halo-radius="1" placement="interior" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -328,7 +328,7 @@
 </Style>
 <Style name="countries-land" filter-mode="first">
   <Rule>
-    <LineSymbolizer stroke="#00008b" stroke-width="1" stroke-linejoin="round" />
+    <LineSymbolizer stroke="#00008b" stroke-width="1" stroke-linejoin="round" clip="false" />
     <PolygonSymbolizer fill="#ffffe0" />
   </Rule>
 </Style>
@@ -346,16 +346,53 @@
     </Datasource>
   </Layer>
 
+<Style name="graticules_10" filter-mode="first" comp-op="multiply" opacity="0.5">
+  <Rule>
+    <MaxScaleDenominator>500000000</MaxScaleDenominator>
+    <LineSymbolizer stroke-width="0.5" stroke-dasharray="3, 1" clip="false" stroke="#0000ff" />
+  </Rule>
+</Style>
+<Layer name="graticules_10"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    <StyleName>graticules_10</StyleName>
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_graticules_10.shp]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Style name="geographic_lines-text" filter-mode="first">
+  <Rule>
+    <MaxScaleDenominator>50000000</MaxScaleDenominator>
+    <TextSymbolizer face-name="DejaVu Serif Book" placement="line" fill="#000000" size="10" halo-fill="#ffffff" halo-radius="1" dy="10" spacing="200" clip="false" ><![CDATA[[name]]]></TextSymbolizer>
+  </Rule>
+</Style>
+<Style name="geographic_lines-line" filter-mode="first" comp-op="hard-light">
+  <Rule>
+    <MaxScaleDenominator>500000000</MaxScaleDenominator>
+    <LineSymbolizer stroke-width="2" stroke-linecap="round" stroke-dasharray="2, 4" stroke="#8b0000" clip="false" />
+  </Rule>
+</Style>
+<Layer name="geographic_lines"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    <StyleName>geographic_lines-line</StyleName>
+    <StyleName>geographic_lines-text</StyleName>
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_geographic_lines.shp]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
 <Style name="places-text" filter-mode="first">
   <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -395,14 +432,14 @@
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -436,14 +473,14 @@
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -471,14 +508,14 @@
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 5)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -500,14 +537,14 @@
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 6)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -523,14 +560,14 @@
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 7)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
   <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 7)</Filter>
     <TextSymbolizer face-name="DejaVu Sans Book" size="10" minimum-distance="2" dx="4" dy="4" fill="#000000" placement-type="simple" placements="NE,SE,N,E,W" halo-fill="rgba(255, 255, 224, 0.5)" halo-radius="1" ><![CDATA[[name]]]></TextSymbolizer>
   </Rule>
@@ -557,20 +594,32 @@
 </Style>
 <Style name="places-marker" filter-mode="first">
   <Rule>
+    <MaxScaleDenominator>25000000</MaxScaleDenominator>
+    <MinScaleDenominator>12500000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 2)</Filter>
+    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>1500000</MaxScaleDenominator>
+    <MinScaleDenominator>750000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 2)</Filter>
+    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>3000000</MaxScaleDenominator>
+    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 2)</Filter>
+    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
+  </Rule>
+  <Rule>
     <MaxScaleDenominator>100000000</MaxScaleDenominator>
     <MinScaleDenominator>50000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
   <Rule>
-    <MaxScaleDenominator>1500000</MaxScaleDenominator>
-    <MinScaleDenominator>750000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 2)</Filter>
-    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>3000000</MaxScaleDenominator>
-    <MinScaleDenominator>1500000</MinScaleDenominator>
+    <MaxScaleDenominator>50000000</MaxScaleDenominator>
+    <MinScaleDenominator>25000000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
@@ -583,18 +632,6 @@
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 2)</Filter>
-    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>50000000</MaxScaleDenominator>
-    <MinScaleDenominator>25000000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 2)</Filter>
-    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>25000000</MaxScaleDenominator>
-    <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 2)</Filter>
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
@@ -604,6 +641,12 @@
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
   <Rule>
+    <MaxScaleDenominator>25000000</MaxScaleDenominator>
+    <MinScaleDenominator>12500000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 3)</Filter>
+    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
+  </Rule>
+  <Rule>
     <MaxScaleDenominator>1500000</MaxScaleDenominator>
     <MinScaleDenominator>750000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
@@ -612,18 +655,6 @@
   <Rule>
     <MaxScaleDenominator>3000000</MaxScaleDenominator>
     <MinScaleDenominator>1500000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 3)</Filter>
-    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>6500000</MaxScaleDenominator>
-    <MinScaleDenominator>3000000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 3)</Filter>
-    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>12500000</MaxScaleDenominator>
-    <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
@@ -634,14 +665,26 @@
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
   <Rule>
-    <MaxScaleDenominator>25000000</MaxScaleDenominator>
-    <MinScaleDenominator>12500000</MinScaleDenominator>
+    <MaxScaleDenominator>6500000</MaxScaleDenominator>
+    <MinScaleDenominator>3000000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 3)</Filter>
+    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>12500000</MaxScaleDenominator>
+    <MinScaleDenominator>6500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
   <Rule>
     <MaxScaleDenominator>750000</MaxScaleDenominator>
     <Filter>([scalerank] &lt;= 3)</Filter>
+    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>25000000</MaxScaleDenominator>
+    <MinScaleDenominator>12500000</MinScaleDenominator>
+    <Filter>([scalerank] &lt;= 4)</Filter>
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
   <Rule>
@@ -665,12 +708,6 @@
   <Rule>
     <MaxScaleDenominator>12500000</MaxScaleDenominator>
     <MinScaleDenominator>6500000</MinScaleDenominator>
-    <Filter>([scalerank] &lt;= 4)</Filter>
-    <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
-  </Rule>
-  <Rule>
-    <MaxScaleDenominator>25000000</MaxScaleDenominator>
-    <MinScaleDenominator>12500000</MinScaleDenominator>
     <Filter>([scalerank] &lt;= 4)</Filter>
     <MarkersSymbolizer width="4" fill="#000000" stroke="#ffffe0" stroke-width="0.5" />
   </Rule>
