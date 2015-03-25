@@ -89,3 +89,16 @@ except subprocess.CalledProcessError:
 
 def skipUnlessHasImageMagick():
     return skipUnless(HAS_IMAGEMAGICK, 'imagemagick not installed.')
+
+
+import memcache
+c = memcache.Client(servers=['127.0.0.1:11211'])
+r = c.get_stats()
+if r:
+    HAS_LOCAL_MEMCACHE = True
+else:
+    HAS_LOCAL_MEMCACHE = False
+del c, r
+
+def skipUnlessHasLocalMemcacheServer():
+    return skipUnless(HAS_LOCAL_MEMCACHE, 'imagemagick not installed.')
