@@ -41,6 +41,13 @@ class TestGDAL(unittest.TestCase):
         self.assertAlmostEqual(point[0], 20037508.342789248)
         self.assertAlmostEqual(point[1], 0.)
 
+        # verify extra epsg projections, which is ignored by ubuntu 14.04 gdal
+        # distribution due to copyright limits, copy the file manually to
+        # gdal data directory is required
+        crs3 = osr.SpatialReference()
+        crs3.SetFromUserInput('EPSG:102010')
+        self.assertTrue(crs3.IsProjected())
+
 
 if __name__ == '__main__':
     unittest.main()
