@@ -43,9 +43,9 @@ class RenderContext(_RenderContext):
             target_size=target_size)
 
 
-class ImageRenderer(object):
+class ImageMapRenderer(object):
     def image(self, context):
-        """Rendering an image representation of a layer
+        """Rendering an image representation of a map layer
 
         :param context: Context.
         :type context: :class:`stonemason.renderer.maplayer.RenderContext`
@@ -58,7 +58,7 @@ class ImageRenderer(object):
         raise NotImplementedError
 
 
-class RasterRenderer(object):
+class RasterMapRenderer(object):
     def raster(self, context):
         """Rendering a Raster representation of a layer
 
@@ -73,7 +73,7 @@ class RasterRenderer(object):
         raise NotImplementedError
 
 
-class VectorRenderer(object):
+class VectorMapRenderer(object):
     def vector(self, context):
         """Rendering a vector representation of a layer
 

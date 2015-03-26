@@ -3,6 +3,6 @@
 __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
-from .layer import MapLayer, BaseLayer, Transformer, Compositor
-from .renderer import ImageRenderer, RasterRenderer, VectorRenderer
+from .layer import MapLayer, BaseLayer, TransformLayer, CompositeLayer
+from .renderer import ImageMapRenderer, RasterMapRenderer, VectorMapRenderer
 from .renderer import RenderContext

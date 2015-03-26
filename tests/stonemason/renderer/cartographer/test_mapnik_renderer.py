@@ -10,7 +10,7 @@ from tests import skipUnlessHasMapnik, HAS_MAPNIK, ImageTestCase
 
 if HAS_MAPNIK:
     from PIL import Image
-    from stonemason.renderer.cartographer import MapnikRenderer
+    from stonemason.renderer.cartographer import MapnikMapRenderer
     from stonemason.renderer.map import RenderContext
     from stonemason.pyramid import Pyramid, MetaTileIndex, TileIndex
     from stonemason.pyramid.geo import TileMapSystem
@@ -22,7 +22,7 @@ class TestMapnikLayer(ImageTestCase):
         theme_root = os.path.join(SAMPLE_THEME_DIRECTORY, 'sample_world')
         style_sheet = os.path.join(theme_root, 'sample_world.xml')
 
-        self._layer = MapnikRenderer('mapnik', style_sheet=style_sheet)
+        self._layer = MapnikMapRenderer('mapnik', style_sheet=style_sheet)
 
     def test_image(self):
         pyramid = Pyramid(

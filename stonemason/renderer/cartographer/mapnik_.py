@@ -6,10 +6,10 @@ __date__ = '3/11/15'
 import mapnik
 from PIL import Image
 
-from ..map import BaseLayer, ImageRenderer, RenderContext
+from ..map import BaseLayer, ImageMapRenderer, RenderContext
 
 
-class MapnikRenderer(BaseLayer, ImageRenderer):
+class MapnikMapRenderer(BaseLayer, ImageMapRenderer):
     """Mapnik Layer
 
     Mapnik is a Free Toolkit for developing mapping applications.

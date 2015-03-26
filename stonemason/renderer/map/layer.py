@@ -46,7 +46,7 @@ class BaseLayer(MapLayer):
     pass
 
 
-class Transformer(MapLayer):
+class TransformLayer(MapLayer):
     """Transform Layer
 
     A `TransformLayer` accepts a `Layer` object and transform its representation
@@ -69,7 +69,7 @@ class Transformer(MapLayer):
             self.__class__.__name__, self.name, self._layer)
 
 
-class Compositor(MapLayer):
+class CompositeLayer(MapLayer):
     """Composite Layer
 
     A `CompositeLayer` accepts a list of map layers and compose them into a
@@ -83,7 +83,7 @@ class Compositor(MapLayer):
 
     """
 
-    def __init__(self, name, *layers):
+    def __init__(self, name, layers):
         MapLayer.__init__(self, name)
         self._layers = layers
 
