@@ -9,7 +9,10 @@ import time
 from stonemason.pyramid import Tile, TileIndex
 from stonemason.provider.tilecache import MemTileCache, TileCacheError
 
+from tests import skipUnlessHasLocalMemcacheServer
 
+
+@skipUnlessHasLocalMemcacheServer()
 class TestMemTileCache(unittest.TestCase):
     def setUp(self):
         self.cache = MemTileCache(binary=False)
@@ -99,6 +102,7 @@ class TestMemTileCache(unittest.TestCase):
         self.assertTrue(self.cache.stats())
 
 
+@skipUnlessHasLocalMemcacheServer()
 class TestMemTileCacheConnectionFailure(unittest.TestCase):
     def test_conn_fail(self):
         self.assertRaises(TileCacheError,

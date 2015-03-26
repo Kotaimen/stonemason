@@ -404,6 +404,17 @@ class ThemeStorage(ThemeElement):
         return self.attributes['parameters']
 
 
+class ThemeDesign(ThemeElement):
+    def __init__(self, name, **attributes):
+        ThemeElement.__init__(
+            self, name,
+            layers=attributes.get('layers', dict()))
+
+    @property
+    def layers(self):
+        return self.attributes['layers']
+
+
 class Theme(ThemeRoot):
     """Stonemason Theme
 
@@ -502,6 +513,10 @@ class Theme(ThemeRoot):
         theme_storage = ThemeStorage('storage', **storage_attrs)
         self.put_element(theme_storage.name, theme_storage)
 
+        design_attrs = configs.get('design', dict())
+        theme_design = ThemeDesign('design', **design_attrs)
+        self.put_element(theme_design.name, theme_design)
+
     @property
     def metadata(self):
         """Metadata Parameters of the theme"""
@@ -521,6 +536,11 @@ class Theme(ThemeRoot):
     def storage(self):
         """Storage parameters of the theme"""
         return self.get_element('storage')
+
+    @property
+    def design(self):
+        """Design parameters of the theme"""
+        return self.get_element('design')
 
     def describe(self):
         """Description of the theme"""

@@ -13,6 +13,7 @@ __date__ = '1/18/15'
 import collections
 import time
 import hashlib
+import math
 
 import six
 
@@ -111,6 +112,18 @@ class MetaTileIndex(_MetaTileIndex):
         """
         assert isinstance(index, TileIndex)
         return MetaTileIndex(index.z, index.x, index.y, stride)
+
+    def to_tile_index(self):
+        """ Returns corresponding `TileIndex` of this `MetaTileIndex` which
+        covers the same area.
+
+        :return: Tile index
+        :rtype: :class:`~stonemason.pyramid.TileIndex`
+        """
+        z = self.z - int(math.log(self.stride, 2))
+        x = self.x // self.stride
+        y = self.y // self.stride
+        return TileIndex(z, x, y)
 
 
 _MetaTile = collections.namedtuple('_MetaTile',

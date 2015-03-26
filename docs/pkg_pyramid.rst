@@ -86,3 +86,9 @@ Serial
 .. autoclass:: stonemason.pyramid.Legacy
     :members:
 
+
+Tile Map
+========
+
+.. autoclass:: stonemason.pyramid.geo.TileMapSystem
+    :members:

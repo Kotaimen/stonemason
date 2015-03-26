@@ -20,6 +20,9 @@ DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), 'data')
 # For temporary test output, visual confirm
 TEST_DIRECTORY = os.path.join(os.path.dirname(__file__), 'output')
 
+if not os.path.exists(TEST_DIRECTORY):
+    os.mkdir(TEST_DIRECTORY)
+
 SAMPLE_THEME_DIRECTORY = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.pardir,
     'stonemason', 'mason', 'theme', 'samples',
@@ -89,3 +92,18 @@ except subprocess.CalledProcessError:
 
 def skipUnlessHasImageMagick():
     return skipUnless(HAS_IMAGEMAGICK, 'imagemagick not installed.')
+
+
+import memcache
+
+c = memcache.Client(servers=['127.0.0.1:11211'])
+r = c.get_stats()
+if r:
+    HAS_LOCAL_MEMCACHE = True
+else:
+    HAS_LOCAL_MEMCACHE = False
+del c, r
+
+
+def skipUnlessHasLocalMemcacheServer():
+    return skipUnless(HAS_LOCAL_MEMCACHE, 'imagemagick not installed.')
