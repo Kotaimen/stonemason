@@ -131,7 +131,7 @@ class TileProviderBuilder(object):
         self._cache = cache
         self._storage = storage
 
-    def build(self, mode=TileProvider.TILEPROVIDER_MODE_READONLY):
+    def build(self, readonly=False):
         """Build a `TileProvider`
 
         :rtype: :class:`~stonemason.provider.tileprovider.TileProvider`
@@ -146,7 +146,7 @@ class TileProviderBuilder(object):
             storage=self._storage,
         )
 
-        provider.mode = mode
+        provider.readonly = readonly
 
         return provider
 
