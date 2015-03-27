@@ -6,7 +6,7 @@ __date__ = '3/11/15'
 import mapnik
 from PIL import Image
 
-from ..map import BaseLayer, ImageMapRenderer, RenderContext
+from stonemason.renderer.map import BaseLayer, ImageMapRenderer, RenderContext
 
 
 class MapnikMapRenderer(BaseLayer, ImageMapRenderer):

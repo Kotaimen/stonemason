@@ -73,12 +73,22 @@ class TestMapnikLayer(ImageTestCase):
         index = MetaTileIndex(4, 0, 0, 16)
         bbox = tms.calc_tile_envelope(index)
 
-        context = RenderContext(pyramid=tms.pyramid,
-                                map_bbox=bbox,
-                                map_size=(1024, 1024),
-                                scale_factor=2)
-        test_file = os.path.join(TEST_DIRECTORY, 'EPSG_102010.png')
+        context1 = RenderContext(pyramid=tms.pyramid,
+                                 map_bbox=bbox,
+                                 map_size=(1024, 1024),
+                                 scale_factor=1)
+        context2 = RenderContext(pyramid=tms.pyramid,
+                                 map_bbox=bbox,
+                                 map_size=(1024, 1024),
+                                 scale_factor=2)
 
-        image = self._layer.image(context)
+        image1 = self._layer.image(context1)
+        image2 = self._layer.image(context2)
 
-        image.save(test_file, 'png')
+        self.assertImageNotEqual(image1, image2)
+
+        output1 = os.path.join(TEST_DIRECTORY, 'EPSG_102010@1x.png')
+        output2 = os.path.join(TEST_DIRECTORY, 'EPSG_102010@2x.png')
+
+        image1.save(output1, 'png')
+        image1.save(output2, 'png')

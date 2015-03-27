@@ -5,7 +5,7 @@ __date__ = '3/12/15'
 
 from stonemason.provider.formatbundle import MapType
 from stonemason.pyramid import Pyramid, MetaTile, MetaTileIndex
-from stonemason.renderer.map import RenderContext, ImageMapRenderer
+from stonemason.renderer.map import ImageMapRenderer, RenderContext
 
 from .design import RendererExprParser
 
