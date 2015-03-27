@@ -30,8 +30,8 @@ class TestMapnikLayer(ImageTestCase):
 
         context = RenderContext(
             pyramid=pyramid,
-            target_bbox=(-10037508.34, -10037508.34, 10037508.34, 10037508.34),
-            target_size=(512, 512),
+            map_bbox=(-10037508.34, -10037508.34, 10037508.34, 10037508.34),
+            map_size=(512, 512),
         )
 
         image = self._layer.image(context)
@@ -53,15 +53,14 @@ class TestMapnikLayer(ImageTestCase):
         index = MetaTileIndex(4, 0, 0, 16)
         bbox = tms.calc_tile_envelope(index)
         context = RenderContext(pyramid=tms.pyramid,
-                                target_bbox=bbox,
-                                target_size=(512, 512))
+                                map_bbox=bbox,
+                                map_size=(512, 512))
 
         test_file = os.path.join(TEST_DIRECTORY, 'EPSG_2964.png')
 
         image = self._layer.image(context)
 
         image.save(test_file, 'png')
-
 
     def test_render_with_tms2(self):
         pyramid = Pyramid(projcs='EPSG:102010',
@@ -75,8 +74,9 @@ class TestMapnikLayer(ImageTestCase):
         bbox = tms.calc_tile_envelope(index)
 
         context = RenderContext(pyramid=tms.pyramid,
-                                target_bbox=bbox,
-                                target_size=(512, 512))
+                                map_bbox=bbox,
+                                map_size=(1024, 1024),
+                                scale_factor=2)
         test_file = os.path.join(TEST_DIRECTORY, 'EPSG_102010.png')
 
         image = self._layer.image(context)
