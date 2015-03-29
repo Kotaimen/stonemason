@@ -11,7 +11,7 @@ import os
 
 from .theme import ThemeError, InvalidThemeValue
 from .theme import Theme, ThemeElement
-from .theme import ThemeMetadata, ThemePyramid, ThemeCache, ThemeStorage
+from .theme import ThemeMetadata, ThemePyramid, ThemeStorage, ThemeDesign
 
 from .manager import ThemeManagerError, DuplicatedTheme
 from .manager import ThemeManager, MemThemeManager

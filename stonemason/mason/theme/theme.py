@@ -283,64 +283,6 @@ class ThemePyramid(ThemeElement):
         return self.attributes['projbounds']
 
 
-class ThemeCache(ThemeElement):
-    """Cache Theme Element
-
-    The `ThemeCache` contains parameters to setup a
-    :class:`~stonemason.provider.tilecache.TileCache` instances.
-
-    Samples:
-
-    >>> from stonemason.mason.theme.theme import ThemeCache
-    >>> c = ThemeCache('cache',
-    ...                 prototype='memcache',
-    ...                 parameters=dict(servers=['127.0.0.1']))
-    >>> c.name
-    'cache'
-    >>> c.prototype
-    'memcache'
-    >>> c.parameters
-    {'servers': ['127.0.0.1']}
-
-    :param name:
-
-        A string literal represents the name of the `ThemeElement`
-
-    :type name: str
-
-    :param prototype:
-
-        A string literal indicates the type of `TileCache` to create. For now,
-        only ``null`` and ``memcache`` is available. Default value is ``null``.
-
-    :type prototype: str
-
-    :param parameters:
-
-        A dict object contains parameters to setup a `TileCache` instance.
-        Default to `{}`.
-
-    :type parameters: dict
-
-    """
-
-    def __init__(self, name, **attributes):
-        ThemeElement.__init__(
-            self, name,
-            prototype=attributes.get('prototype', 'null'),
-            parameters=attributes.get('parameters', dict()))
-
-    @property
-    def prototype(self):
-        """Prototype of the cache"""
-        return self.attributes['prototype']
-
-    @property
-    def parameters(self):
-        """Parameters of the cache"""
-        return self.attributes['parameters']
-
-
 class ThemeStorage(ThemeElement):
     """Storage Theme Element
 
@@ -408,7 +350,13 @@ class ThemeDesign(ThemeElement):
     def __init__(self, name, **attributes):
         ThemeElement.__init__(
             self, name,
-            layers=attributes.get('layers', dict()))
+            tileformat=attributes.get('tileformat',
+                                      dict(format='JPEG', extension='jpg')),
+            layers=attributes.get('layers', dict(root=dict(type='dummy'))))
+
+    @property
+    def tileformat(self):
+        return self.attributes['tileformat']
 
     @property
     def layers(self):
@@ -505,10 +453,6 @@ class Theme(ThemeRoot):
         theme_pyramid = ThemePyramid('pyramid', **pyramid_attrs)
         self.put_element(theme_pyramid.name, theme_pyramid)
 
-        cache_attrs = configs.get('cache', dict())
-        theme_cache = ThemeCache('cache', **cache_attrs)
-        self.put_element(theme_cache.name, theme_cache)
-
         storage_attrs = configs.get('storage', dict())
         theme_storage = ThemeStorage('storage', **storage_attrs)
         self.put_element(theme_storage.name, theme_storage)
@@ -528,11 +472,6 @@ class Theme(ThemeRoot):
         return self.get_element('pyramid')
 
     @property
-    def cache(self):
-        """Cache Parameters of the theme"""
-        return self.get_element('cache')
-
-    @property
     def storage(self):
         """Storage parameters of the theme"""
         return self.get_element('storage')
@@ -548,8 +487,8 @@ class Theme(ThemeRoot):
             name=self.name,
             pyramid=self.pyramid.attributes,
             metadata=self.metadata.attributes,
-            cache=self.cache.attributes,
-            storage=self.storage.attributes
+            storage=self.storage.attributes,
+            rederer=self.design.attributes
         )
 
         return description

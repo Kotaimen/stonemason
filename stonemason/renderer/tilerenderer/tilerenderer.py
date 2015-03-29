@@ -3,40 +3,47 @@
 __author__ = 'ray'
 __date__ = '3/12/15'
 
-from stonemason.provider.formatbundle import MapType
 from stonemason.pyramid import Pyramid, MetaTile, MetaTileIndex
+from stonemason.provider.formatbundle import FormatBundle
 from stonemason.renderer.map import RenderContext, ImageMapRenderer
-
-from .design import RendererExprParser
 
 
 class MetaTileRenderer(object):
-    def __init__(self, pyramid):
-        assert isinstance(pyramid, Pyramid)
-        self._pyramid = pyramid
-
-    def render_metatile(self, metatile_index):
+    def render_metatile(self, meta_index):
         raise NotImplementedError
 
 
+class NullMetaTileRenderer(MetaTileRenderer):
+    def render_metatile(self, meta_index):
+        return None
+
+
 class ImageMetaTileRenderer(MetaTileRenderer):
-    def __init__(self, pyramid, image_renderer):
+    def __init__(self, pyramid, bundle, image_renderer):
+        assert isinstance(pyramid, Pyramid)
+        assert isinstance(bundle, FormatBundle)
         assert isinstance(image_renderer, ImageMapRenderer)
-        MetaTileRenderer.__init__(self, pyramid)
+        MetaTileRenderer.__init__(self)
+        self._pyramid = pyramid
+        self._bundle = bundle
         self._renderer = image_renderer
 
-    def render_metatile(self, metatile_index):
-        assert isinstance(metatile_index, MetaTileIndex)
+    def render_metatile(self, meta_index):
+        assert isinstance(meta_index, MetaTileIndex)
 
         context = RenderContext(
             pyramid=self._pyramid,
             target_bbox=None,
-            target_size=metatile_index.stride * 256
+            target_size=meta_index.stride * 256
         )
 
         im = self._renderer.image(context)
+        if im is None:
+            return None
 
-        metatile = MetaTile(index=metatile_index, data=im.tostring())
+        parameters = self._bundle.tile_format.parameters
+
+        metatile = MetaTile(index=meta_index, data=im.tostring(**parameters))
 
         return metatile
 
@@ -48,15 +55,3 @@ class RasterMetaTileRenderer(MetaTileRenderer):
 class VectorMetaTileRenderer(MetaTileRenderer):
     pass
 
-
-class MetaTileRendererBuilder(object):
-    def build(self, theme):
-        maptype = MapType(theme.maptype)
-        pyramid = Pyramid(**theme.pyramid.attributes)
-
-        if maptype.type == 'image':
-            renderer = RendererExprParser(pyramid).parse_from_dict(
-                theme.design.layers, 'root').interpret()
-            return ImageMetaTileRenderer(pyramid, renderer)
-        else:
-            raise NotImplementedError

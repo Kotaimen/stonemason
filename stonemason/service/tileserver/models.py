@@ -41,7 +41,7 @@ class MasonModel(object):
                 parameters=dict(servers=cache_servers)
             )
 
-        mason = Mason(external_cache=cache_config)
+        mason = Mason(cache_config=cache_config, cache_on=True)
         for theme in self._themes:
             mason.load_theme(theme)
 
