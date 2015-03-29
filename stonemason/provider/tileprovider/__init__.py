@@ -9,4 +9,8 @@
 __author__ = 'kotaimen'
 __date__ = '1/5/15'
 
-from .provider import TileProvider
+from .provider import TileProvider, NullTileProvider
+from .storage import StorageTileProvider
+from .renderer import RendererTileProvider
+from .hybrid import HybridTileProvider
+
