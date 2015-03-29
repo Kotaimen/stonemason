@@ -2,7 +2,7 @@
 
 """
     stonemason.pyramid.tile
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~
     Square area in a map.
 
 """
@@ -22,13 +22,9 @@ _TileIndex = collections.namedtuple('_TileIndex', 'z x y')
 
 
 class TileIndex(_TileIndex):
-    """Coordinate of a map Tile.
-
-    Coordinate (aka: index) of a map :class:`~stonemason.pyramid.Tile`
-    using GoogleMaps style tile map system.
+    """Coordinate uniquely reference a map :class:`~stonemason.pyramid.Tile`.
 
     `TileIndex` is a `tuple` and thus is immutable once created.
-
 
     >>> from stonemason.pyramid import TileIndex
     >>> index = TileIndex(3, 4, 5)
@@ -72,10 +68,8 @@ _Tile = collections.namedtuple('_Tile', 'index data mimetype mtime etag')
 
 
 class Tile(_Tile):
-    """A piece of square area in a map.
-
-    A `tile` is a piece of square area in a rendered digital map, sliced
-    using quad-tree grid system, called :class:`~stonemason.pyramid.Pyramid`.
+    """A piece of square area in a map, sliced using quad-tree grid coverage
+    model.
 
     Tile is uniquely referenced by its :class:`~stonemason.pyramid.TileIndex`.
 

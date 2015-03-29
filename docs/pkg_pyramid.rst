@@ -1,13 +1,10 @@
-Tile System
-***********
+Tile Map System
+***************
 
 .. module::stonemason.pyramid
 
-:mod:`stonemason.pyramid` contains definitions of `tile`, `metatile`
-and the quad tree `pyramid`.
-
-All classes in this package is implemented using :func:`collections.namedtuple`
-thus is immutable and pickle serializable.
+:mod:`stonemason.pyramid` defines the tile map coverage model and tile
+data schema.
 
 Pyramid
 =======
@@ -35,8 +32,8 @@ MetaTile
     :members:
 
 
-Hilbert Curves
-==============
+Hilbert Curve
+=============
 
 .. function:: stonemason.util.geo.hilbert.hil_xy_from_s(s, n)
 
@@ -77,8 +74,8 @@ Hilbert Curves
     :rtype: int
 
 
-Serial
-======
+Sequential Enumeration
+======================
 
 .. autoclass:: stonemason.pyramid.Hilbert
     :members:
@@ -87,8 +84,8 @@ Serial
     :members:
 
 
-Tile Map
-========
+Coverage Model
+==============
 
 .. autoclass:: stonemason.pyramid.geo.TileMapSystem
     :members:

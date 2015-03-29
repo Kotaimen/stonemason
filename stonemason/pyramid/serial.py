@@ -2,9 +2,11 @@
 
 """
     stonemason.pyramid.serial
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Convert tile index to a serial number
+
+
 """
 __author__ = 'kotaimen'
 __date__ = '1/10/15'

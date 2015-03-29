@@ -29,8 +29,8 @@ _Envelope = collections.namedtuple('_Envelope', 'left bottom right top')
 
 
 class Envelope(_Envelope):
-    """A rectangular area on the projection surface, defined by two points
-    ``(left, bottom, right, top)``.
+    """A rectangular area on the projection surface, defined by two corner
+    points ``(left, bottom, right, top)``.
     """
 
     @staticmethod
@@ -53,39 +53,43 @@ class Envelope(_Envelope):
 class TileMapSystem(object):
     """Defines geographic attributes of a `pyramid` tile map system.
 
-    `TileMapSystem` use attributes of :class:`~stonemason.pyramid.Pyramid` to
-    initialize itself:
+    .. note:: `TileMapSystem` uses `GDAL <http://www.gdal.org/>`_ for spatial
+        calculations, the actual list of supported spatial references and
+        coordinate transforms depends on `GDAL` installation and may vary
+        between distributions.
 
-    ``Pyramid.geogcs``
-        Geographic coordinate system, can be any string supported by
-        :func:`~osgeo.ogr.SpatialReference.SetFromUserInput`.
-        A instance of :class:`osgeo.osr.SpatialReference` is created from it.
-        Note the actual list of supported spatial references depends on
-        `GDAL` installation and may vary between distributions.
+    .. seealso:: `Geometry`_, `SpatialReference`_, `CoordinateTransformation`_
 
-    ``Pyramid.projcs``
-        Projection coordinate system, can be any string supported by
-        :func:`~osgeo.ogr.SpatialReference.SetFromUserInput`.
-        A instance of :class:`osgeo.osr.SpatialReference` is created from it.
-        When set to ``None``, `TileMapSystem` will try to figure
-        out one from ``geogcs``, which may fail under certain circumstances.
+    .. _Geometry: http://gdal.org/python/osgeo.ogr.Geometry-class.html
+    .. _SpatialReference: http://gdal.org/python/osgeo.osr.SpatialReference-class.html
+    .. _CoordinateTransformation: http://gdal.org/python/osgeo.osr.CoordinateTransformation-class.html
 
-    ``Pyramid.geogbounds``
-        Boundary of the map in geography coordinate system.  Specified using
-        envelope ``(min_lon, min_lat, max_lon, max_lat)``.  A instance of
-        :class:`osgeo.ogr.Geometry` is created from it.  Note, the envelope is
-        not considered as a ogr simple geometry and may behaviour incorrectly
-        for some GCS if it crosses meridian line.
+    :param pyramid: The `pyramid` defines the tile map system, the following
+        attributes are used to create `TileMapSystem`:
 
-    ``Pyramid.projbounds``
-        Boundary of the map in projection coordinate system.  Specified using
-        envelope ``(left, bottom, right, top)``.  A instance of
-        :class:`osgeo.ogr.Geometry` is created from it. When set to ``None``,
-        this will be calculated by projecting ``geogbounds`` form ``geogcs``
-        to ``projcs``.  Note this calculation may fail or give a incorrect
-        result due to limitations in GDAL.
+        ``Pyramid.geogcs``
+            Geographic coordinate system, can be any string supported by
+            :func:`~osgeo.ogr.SpatialReference.SetFromUserInput`.
 
-    :param pyramid: The `pyramid` defines the tile map system
+        ``Pyramid.projcs``
+            Projection coordinate system, can be any string supported by
+            :func:`~osgeo.ogr.SpatialReference.SetFromUserInput`.
+            When set to ``None``, `TileMapSystem` will try to figure
+            out one from ``geogcs``.
+
+        ``Pyramid.geogbounds``
+            Boundary of the map in geography coordinate system.  Specified using
+            envelope ``(min_lon, min_lat, max_lon, max_lat)``.
+            The envelope is not considered as a ogr simple geometry and may
+            behaviour incorrectly for some GCS if it crosses meridian line.
+
+        ``Pyramid.projbounds``
+            Boundary of the map in projection coordinate system.  Specified using
+            envelope ``(left, bottom, right, top)``.  When set to ``None``,
+            this will be calculated by projecting ``geogbounds`` form ``geogcs``
+            to ``projcs``.  Note this calculation may fail or give a incorrect
+            result due to limitations in GDAL.
+
     :type pyramid: :class:`~stonemason.pyramid.Pyramid`
     """
 
@@ -165,7 +169,7 @@ class TileMapSystem(object):
 
     @property
     def pyramid(self):
-        """Normalized pyramid in the tile map system.
+        """Normalized pyramid object.
 
         :rtype: :class:`~stonemason.pyramid.Pyramid`
         """

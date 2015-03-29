@@ -1,14 +1,17 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.util.geo.hilbert
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.pyramid.hilbert
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Hilbert curve calculations.
 
     Hilbert curve algorithms are taken from (and modified):
       Henry S. Warren, Jr., Hakers's Delight Second Edition, 2012.
       Chapter 16: Hilbert's Curve
+
+    Cython saves our headache of implement unsigned integer shifting in
+    pure Python.
 """
 
 __author__ = 'kotaimen'
@@ -58,7 +61,7 @@ def hil_s_from_xy(unsigned long long x, unsigned long long y, int n):
 
         x = x ^ y
         y = y ^ (x & (yi - 1))
-        x = x ^ y;
+        x = x ^ y
 
         x = x ^ (-xi & (yi - 1))
         y = y ^ (-xi & (yi - 1))

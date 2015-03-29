@@ -2,16 +2,15 @@
 
 """
     stonemason.pyramid.pyramid
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    The Quad Tree tile system, with optional CRS&Boundary check.
+    Tile system coverage model.
 
 """
 __author__ = 'kotaimen'
 __date__ = '1/10/15'
 
 import collections
-import re
 
 import six
 
@@ -21,16 +20,19 @@ _Pyramid = collections.namedtuple('_Pyramid',
 
 
 class Pyramid(_Pyramid):
-    """Quad-tree grid system of a `tile` map.
+    """Quad-tree coverage model of a tile map system.
 
     Coordinate system parameter accepts projection string formats supported by
     `OSRSetFromUserInput`_, which includes:
 
-     - Well known name eg: ``WGS84``
-     - EPSG Code, eg: ``EPSG:3857``
-     - PROJ.4 definitions, eg: ``+proj=longlat +datum=WGS84 +no_defs``
+        - Well known name eg: ``WGS84``
+        - EPSG Code, eg: ``EPSG:3857``
+        - PROJ.4 definitions, eg: ``+proj=longlat +datum=WGS84 +no_defs``
 
-    Note `Pyramid` itself does not verify projection strings nor data bounds
+    .. note::
+        `Pyramid` itself does not verify projection strings nor data bounds,
+        to do that, use the constructed `Pyramid` object to create
+        a :class:`~stonemason.pyramid.geo.TileMapSystem`.
 
     .. _OSRSetFromUserInput: http://www.gdal.org/ogr__srs__api_8h.html#a927749db01cec3af8aa5e577d032956b
 
@@ -43,7 +45,7 @@ class Pyramid(_Pyramid):
     Pyramid(levels=[4, 5, 6], stride=4, projcs='EPSG:3857', geogcs='WGS84', ... geogbounds=(-180, -85.0511, 180, 85.0511))
 
     :param levels: Zoom levels of the pyramid, must be a list of integers,
-        default value is ``0-22``.
+        default value is ``0~22``.
     :type levels: list
 
     :param stride: Stride of the MetaTile in this pyramid, default
@@ -56,24 +58,20 @@ class Pyramid(_Pyramid):
     :type projcs: str
 
     :param geogcs: Geographic coordinate system used by the projection, default
-        value is ``WGS84``.  This value should be consistent with `projcs`, if
-        omitted, it will be calculated automatically from `projcs`.
+        value is ``WGS84``.  This value should be consistent with `projcs`.
     :type geogcs: str or None
 
     :param projbounds: Boundary of the map in projection coordinate system.
         Only bounding box is supported now, which is specified using a
         tuple ``(left, top, right, bottom)``.
         Default value is ``(-20037508.34,-20037508.34,20037508.34,20037508.34)``,
-        which is the default coverage of GoogleMaps, if omitted, will be
-        calculated from `geogbounds` using projection defined by`geogcs` to
-        `projcs`.
+        which is the default coverage of GoogleMaps.
     :type projbounds: tuple or None
 
     :param geogbounds: Boundary of the data in geographic coordinate system.
         Specified by a tuple ``(left, top, right, bottom)``.  Default value
         is ``(-180,-85.0511,180,85.0511)``, which is the default coverage of
-        GoogleMaps on ``WGS84``.  Note this boundary does not have to be
-        consistent with projection bounds.
+        GoogleMaps on ``WGS84`` datumn.
     :type projbounds: tuple
     """
 
