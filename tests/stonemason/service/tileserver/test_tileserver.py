@@ -56,8 +56,8 @@ class TestTileServerApp(unittest.TestCase):
             self.assertIn('name', theme)
             self.assertIn('metadata', theme)
             self.assertIn('pyramid', theme)
-            self.assertIn('cache', theme)
             self.assertIn('storage', theme)
+
 
     def test_get_theme(self):
         resp = self.client.get('/themes/antique')
@@ -68,7 +68,6 @@ class TestTileServerApp(unittest.TestCase):
         self.assertIn('name', theme)
         self.assertIn('metadata', theme)
         self.assertIn('pyramid', theme)
-        self.assertIn('cache', theme)
         self.assertIn('storage', theme)
 
     def test_get_tile_tags(self):
