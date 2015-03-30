@@ -6,7 +6,7 @@ __date__ = '3/11/15'
 import mapnik
 from PIL import Image
 
-from ..map import BaseLayer, ImageMapRenderer, RenderContext
+from stonemason.renderer.map import BaseLayer, ImageMapRenderer, RenderContext
 
 
 class MapnikMapRenderer(BaseLayer, ImageMapRenderer):
@@ -26,29 +26,20 @@ class MapnikMapRenderer(BaseLayer, ImageMapRenderer):
                         style sheet.
     :type style_sheet: str
 
-    :param scale_factor: A fractional value that is used as a multiplier
-                         throughout the rendering pipeline. Using `scale_factor`
-                         to scale up or down rendering sizes such as line width,
-                         line dash-array separation, svg and png icon size,
-                         font size, halo size, glyph spacing, and many more.
-    :type scale_factor: float
-
     :param buffer_size: A positive integer value used indicate the extra
                         area to render to avoid cutting symbols in target map.
     :type buffer_size: int
 
     """
+
     def __init__(self, name,
                  style_sheet='map.xml',
-                 scale_factor=1.0,
                  buffer_size=0):
         BaseLayer.__init__(self, name)
-        assert isinstance(scale_factor, float)
         assert isinstance(buffer_size, int)
 
         # check theme path
         self._style_sheet = style_sheet
-        self._scale_factor = scale_factor
 
         self._map = mapnik.Map(32, 32)
         mapnik.load_map(self._map, self._style_sheet)
@@ -60,15 +51,15 @@ class MapnikMapRenderer(BaseLayer, ImageMapRenderer):
         projcs = context.pyramid.projcs
         proj = mapnik.Projection(projcs)
 
-        bbox = mapnik.Box2d(*context.target_bbox)
-        map_width, map_height = context.target_size
+        bbox = mapnik.Box2d(*context.map_bbox)
+        map_width, map_height = context.map_size
 
         self._map.srs = proj.params()
         self._map.resize(map_width, map_height)
         self._map.zoom_to_box(bbox)
 
         image = mapnik.Image(map_width, map_height)
-        mapnik.render(self._map, image, self._scale_factor)
+        mapnik.render(self._map, image, context.scale_factor)
 
         raw_data = image.tostring()
 
