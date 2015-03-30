@@ -28,10 +28,10 @@ Elements
 .. autoclass:: stonemason.mason.theme.ThemePyramid
     :members:
 
-.. autoclass:: stonemason.mason.theme.ThemeCache
+.. autoclass:: stonemason.mason.theme.ThemeStorage
     :members:
 
-.. autoclass:: stonemason.mason.theme.ThemeStorage
+.. autoclass:: stonemason.mason.theme.ThemeDesign
     :members:
 
 

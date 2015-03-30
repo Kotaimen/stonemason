@@ -30,8 +30,8 @@ class TestMapnikLayer(ImageTestCase):
 
         context = RenderContext(
             pyramid=pyramid,
-            target_bbox=(-10037508.34, -10037508.34, 10037508.34, 10037508.34),
-            target_size=(512, 512),
+            map_bbox=(-10037508.34, -10037508.34, 10037508.34, 10037508.34),
+            map_size=(512, 512),
         )
 
         image = self._layer.image(context)
@@ -53,15 +53,14 @@ class TestMapnikLayer(ImageTestCase):
         index = MetaTileIndex(4, 0, 0, 16)
         bbox = tms.calc_tile_envelope(index)
         context = RenderContext(pyramid=tms.pyramid,
-                                target_bbox=bbox,
-                                target_size=(512, 512))
+                                map_bbox=bbox,
+                                map_size=(512, 512))
 
         test_file = os.path.join(TEST_DIRECTORY, 'EPSG_2964.png')
 
         image = self._layer.image(context)
 
         image.save(test_file, 'png')
-
 
     def test_render_with_tms2(self):
         pyramid = Pyramid(projcs='EPSG:102010',
@@ -74,11 +73,22 @@ class TestMapnikLayer(ImageTestCase):
         index = MetaTileIndex(4, 0, 0, 16)
         bbox = tms.calc_tile_envelope(index)
 
-        context = RenderContext(pyramid=tms.pyramid,
-                                target_bbox=bbox,
-                                target_size=(512, 512))
-        test_file = os.path.join(TEST_DIRECTORY, 'EPSG_102010.png')
+        context1 = RenderContext(pyramid=tms.pyramid,
+                                 map_bbox=bbox,
+                                 map_size=(1024, 1024),
+                                 scale_factor=1)
+        context2 = RenderContext(pyramid=tms.pyramid,
+                                 map_bbox=bbox,
+                                 map_size=(1024, 1024),
+                                 scale_factor=2)
 
-        image = self._layer.image(context)
+        image1 = self._layer.image(context1)
+        image2 = self._layer.image(context2)
 
-        image.save(test_file, 'png')
+        self.assertImageNotEqual(image1, image2)
+
+        output1 = os.path.join(TEST_DIRECTORY, 'EPSG_102010@1x.png')
+        output2 = os.path.join(TEST_DIRECTORY, 'EPSG_102010@2x.png')
+
+        image1.save(output1, 'png')
+        image1.save(output2, 'png')
