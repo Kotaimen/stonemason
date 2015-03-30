@@ -54,30 +54,29 @@ class TestMakeClusterStorage(unittest.TestCase):
         shutil.rmtree(root, ignore_errors=True)
 
     def test_make_s3_storage(self):
-        self.mock = moto.mock_s3()
-        self.mock.start()
-        self.conn = boto.connect_s3()
-        self.conn.create_bucket('test_storage')
+        with moto.mock_s3():
+            self.conn = boto.connect_s3()
+            self.conn.create_bucket('test_storage')
 
-        maptype = MapType('image')
-        tileformat = TileFormat('JPEG')
-        bundle = FormatBundle(maptype, tileformat)
+            maptype = MapType('image')
+            tileformat = TileFormat('JPEG')
+            bundle = FormatBundle(maptype, tileformat)
 
-        pyramid = Pyramid()
+            pyramid = Pyramid()
 
-        prototype = 's3'
-        parameters = {
-            'bucket': 'test_storage',
-            'prefix': 'testlayer',
-        }
+            prototype = 's3'
+            parameters = {
+                'bucket': 'test_storage',
+                'prefix': 'testlayer',
+            }
 
-        storage = make_cluster_storage(
-            prototype=prototype,
-            pyramid=pyramid,
-            bundle=bundle,
-            **parameters)
+            storage = make_cluster_storage(
+                prototype=prototype,
+                pyramid=pyramid,
+                bundle=bundle,
+                **parameters)
 
-        self.assertIsInstance(storage, ClusterStorage)
+            self.assertIsInstance(storage, ClusterStorage)
 
 
 class TestMakeTileRenderer(unittest.TestCase):
