@@ -33,8 +33,8 @@ class ImageMetaTileRenderer(MetaTileRenderer):
 
         context = RenderContext(
             pyramid=self._pyramid,
-            target_bbox=None,
-            target_size=meta_index.stride * 256
+            map_bbox=None,
+            map_size=meta_index.stride * 256
         )
 
         im = self._renderer.image(context)
