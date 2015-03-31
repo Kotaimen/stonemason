@@ -4,8 +4,7 @@
     stonemason.pyramid.serial
     ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Convert tile index to a serial number
-
+    Sequential enumeration of tile index.
 
 """
 __author__ = 'kotaimen'

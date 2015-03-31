@@ -6,30 +6,11 @@
 
 """
 
-from collections import namedtuple
+from stonemason.pyramid import TileIndex, MetaTileIndex
+from stonemason.provider.tilecache import NullTileCache, MemTileCache
 
-from .builder import TileProviderFactory
-from .theme import Theme, ThemeManager
-
-
-class MasonError(Exception):
-    """Base Mason Error"""
-    pass
-
-
-class ThemeNotExist(MasonError):
-    """`Theme` is not found"""
-    pass
-
-
-class ThemeAlreadyLoaded(MasonError):
-    """`Theme` has already been loaded"""
-    pass
-
-
-class ThemeNotLoaded(MasonError):
-    """`Theme` has not been loaded"""
-    pass
+from .mapbuilder import MapBuilder
+from .exceptions import DuplicatedMapError
 
 
 class Mason(object):
@@ -55,43 +36,60 @@ class Mason(object):
     def __init__(self,
                  readonly=False,
                  logger=None,
-                 external_cache=None):
+                 cache_config=None,
+                 cache_on=True):
         assert isinstance(readonly, bool)
 
         self._logger = logger
         self._readonly = readonly
-        self._external_cache = external_cache
+        self._cache_on = cache_on
 
-        self._builder = TileProviderFactory()
-        self._providers = dict()
+        if cache_config is None:
+            self._cache = NullTileCache()
+        else:
+            self._cache = MemTileCache(cache_config.get('parameters', dict()))
+
+        self._maps = dict()
 
     def load_theme(self, theme):
         """Load the named theme"""
-        tag = theme.name
+        mason_map = MapBuilder().build_from_theme(theme)
+        if mason_map.name in self._maps:
+            raise DuplicatedMapError('Map already exists "%s"' % mason_map.name)
 
-        if tag in self._providers:
-            raise ThemeAlreadyLoaded(tag)
-
-        provider = self._builder.create_from_theme(
-            tag, theme, external_cache=self._external_cache)
-
-        if self._readonly:
-            provider.readonly = True
-
-        self._providers[tag] = provider
+        self._maps[mason_map.name] = mason_map
 
     def get_tile(self, tag, z, x, y, scale, ext):
         """Get a tile with the given tag and parameters"""
 
         try:
-            provider = self._providers[tag]
+            mason_map = self._maps[tag]
         except KeyError:
             return None
-        else:
-            tile = provider.get_tile(z, x, y)
-            return tile
+
+        index = TileIndex(z, x, y)
+
+        if self._cache_on:
+            tile = self._cache.get(mason_map.name, index)
+            if tile is not None:
+                return tile
+
+        meta_index = MetaTileIndex.from_tile_index(
+            index, mason_map.provider.pyramid.stride)
+
+        cluster = mason_map.provider.get_tilecluster(meta_index)
+        if cluster is None:  # cluster miss
+            return None
+
+        if self._cache_on:
+            self._cache.put_multi(mason_map.name, cluster.tiles)
+
+        # cluster hit
+        tile = cluster[index]
+
+        return tile
 
     def get_tile_tags(self):
         """Get all available tile tags"""
-        return list(tag for tag in self._providers)
+        return list(name for name in self._maps)
 

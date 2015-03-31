@@ -28,7 +28,8 @@ class TestClusterfier(unittest.TestCase):
 
     def test_basic(self):
         storage = DiskMetaTileStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=self.format)
 

@@ -130,9 +130,13 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
         value is ``hilbert``.
     :type dir_mode: str
 
-    :param pyramid: The :class:`~stonemason.pyramid.Pyramid` of the
-        storage describes tile pyramid model.
-    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
+    :param levels: Zoom levels of the pyramid, must be a list of integers,
+        default value is ``0-22``.
+    :type levels: list
+
+    :param stride: Stride of the MetaTile in this pyramid, default
+        value is ``1``.
+    :type stride: int
 
     :param format: `FormatBundle` of the storage which specifies:
 
@@ -154,7 +158,8 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
     :type gzip: bool
     """
 
-    def __init__(self, root='.', dir_mode='hilbert', pyramid=None,
+    def __init__(self, root='.', dir_mode='hilbert',
+                 levels=range(0, 22), stride=1,
                  format=None, readonly=False, gzip=False):
         assert isinstance(root, six.string_types)
         if not isinstance(format, FormatBundle):
@@ -169,7 +174,7 @@ class DiskMetaTileStorage(StorageMixin, MetaTileStorage):
         object_persistence = MetaTileSerializer()
 
         StorageMixin.__init__(self, storage, object_persistence, key_mode,
-                              pyramid=pyramid, prefix=root,
+                              levels=levels, stride=stride, prefix=root,
                               mimetype=format.tile_format.mimetype,
                               extension=format.tile_format.extension,
                               gzip=gzip, readonly=readonly)
@@ -201,9 +206,13 @@ class DiskClusterStorage(StorageMixin, ClusterStorage):
         value is ``hilbert``.
     :type dir_mode: str
 
-    :param pyramid: The :class:`~stonemason.pyramid.Pyramid` of the
-        storage describes tile pyramid model.
-    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
+    :param levels: Zoom levels of the pyramid, must be a list of integers,
+        default value is ``0-22``.
+    :type levels: list
+
+    :param stride: Stride of the MetaTile in this pyramid, default
+        value is ``1``.
+    :type stride: int
 
     :param format: `FormatBundle` of the storage which specifies:
 
@@ -228,7 +237,8 @@ class DiskClusterStorage(StorageMixin, ClusterStorage):
     :type splitter: :class:`~stonemason.provider.tilestorage.Splitter`
     """
 
-    def __init__(self, root='.', dir_mode='hilbert', pyramid=None, format=None,
+    def __init__(self, root='.', dir_mode='hilbert',
+                 levels=range(0, 22), stride=1, format=None,
                  readonly=False, compressed=False, splitter=None):
         assert isinstance(root, six.string_types)
         if not isinstance(format, FormatBundle):
@@ -243,7 +253,7 @@ class DiskClusterStorage(StorageMixin, ClusterStorage):
                                                    writer=format.writer)
 
         StorageMixin.__init__(self, storage, object_persistence, key_mode,
-                              pyramid=pyramid, prefix=root,
+                              levels=levels, stride=stride, prefix=root,
                               mimetype=format.tile_format.mimetype,
                               extension='.zip',
                               gzip=False, readonly=readonly)

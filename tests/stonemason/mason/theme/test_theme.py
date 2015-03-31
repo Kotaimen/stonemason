@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+import six
 import unittest
 
 from stonemason.mason.theme import *
@@ -51,8 +52,8 @@ class TestThemePyramid(unittest.TestCase):
 
         self.assertEqual(list(range(0, 23)), m.levels)
         self.assertEqual(1, m.stride)
-        self.assertEqual('WGS84', m.geogcs)
-        self.assertEqual('EPSG:3857', m.projcs)
+        self.assertEqual(six.b('WGS84'), m.geogcs)
+        self.assertEqual(six.b('EPSG:3857'), m.projcs)
         self.assertTupleEqual((-180, -85.0511, 180, 85.0511), m.geogbounds)
 
     def test_init(self):
@@ -60,30 +61,13 @@ class TestThemePyramid(unittest.TestCase):
 
         self.assertEqual(range(0, 5), m.levels)
         self.assertEqual(2, m.stride)
-        self.assertEqual('EPSG:4301', m.geogcs)
-        self.assertEqual('EPSG:4326', m.projcs)
+        self.assertEqual(six.b('EPSG:4301'), m.geogcs)
+        self.assertEqual(six.b('EPSG:4326'), m.projcs)
         self.assertEqual((-45., -45., 45., 45.), m.geogbounds)
         self.assertEqual((-44., -44., 44., 44.), m.projbounds)
 
 
-class TestCacheTheme(unittest.TestCase):
-    def setUp(self):
-        self._expected = dict(
-            prototype='memcache',
-            parameters=dict(hosts=['1.1.1.1']))
-
-    def test_default(self):
-        m = ThemeCache(name='cache')
-        self.assertEqual('null', m.prototype)
-        self.assertDictEqual(dict(), m.parameters)
-
-    def test_init(self):
-        m = ThemeCache(name='cache', **self._expected)
-        self.assertEqual('memcache', m.prototype)
-        self.assertDictEqual(dict(hosts=['1.1.1.1']), m.parameters)
-
-
-class TestStorageTheme(unittest.TestCase):
+class TestThemeStorage(unittest.TestCase):
     def setUp(self):
         self._expected = dict(
             prototype='disk',
@@ -100,13 +84,31 @@ class TestStorageTheme(unittest.TestCase):
         self.assertDictEqual(dict(root='.'), m.parameters)
 
 
+class TestThemeDesign(unittest.TestCase):
+    def setUp(self):
+        self._expected = dict(
+            layers={
+                'root': {
+                    'type': 'dummy'
+                }
+            }
+        )
+
+    def test_defaut(self):
+        m = ThemeDesign(name='design')
+        self.assertEqual({'root': {'type': 'dummy'}}, m.layers)
+
+    def test_init(self):
+        m = ThemeDesign(name='design', **self._expected)
+        self.assertEqual(self._expected['layers'], m.layers)
+
+
 class TestTheme(unittest.TestCase):
     def setUp(self):
         self._expected = dict(
             name='test',
             metadata=dict(version='1.0.0'),
             pyramid=dict(levels=[0, 1, 2]),
-            cache=dict(prototype='memcache'),
             storage=dict(prototype='disk', parameters=dict(root='.'))
         )
 
@@ -120,8 +122,6 @@ class TestTheme(unittest.TestCase):
         self.assertEqual(
             ThemePyramid(name='dummy').attributes, t.pyramid.attributes)
         self.assertEqual(
-            ThemeCache(name='dummy').attributes, t.cache.attributes)
-        self.assertEqual(
             ThemeStorage(name='dummy').attributes, t.storage.attributes)
 
     def test_init(self):
@@ -132,8 +132,6 @@ class TestTheme(unittest.TestCase):
             self._expected['metadata']['version'], t.metadata.version)
         self.assertEqual(
             self._expected['pyramid']['levels'], t.pyramid.levels)
-        self.assertEqual(
-            self._expected['cache']['prototype'], t.cache.prototype)
         self.assertEqual(
             self._expected['storage']['prototype'], t.storage.prototype)
         self.assertEqual(

@@ -18,8 +18,8 @@ class TestJsonThemeLoader(unittest.TestCase):
         loader = JsonThemeLoader(SAMPLE_THEME)
         loader.load_into(m)
 
-        theme = m.get('antique')
-        self.assertEqual('antique', theme.name)
+        theme = m.get('sample')
+        self.assertEqual('sample', theme.name)
 
 
 class TestDirectoryThemeLoader(unittest.TestCase):
@@ -30,5 +30,5 @@ class TestDirectoryThemeLoader(unittest.TestCase):
         loader = LocalThemeLoader(SAMPLE_THEME_DIRECTORY)
         loader.load_into(m)
 
-        theme = m.get('antique')
-        self.assertEqual('antique', theme.name)
+        theme = m.get('sample')
+        self.assertEqual('sample', theme.name)

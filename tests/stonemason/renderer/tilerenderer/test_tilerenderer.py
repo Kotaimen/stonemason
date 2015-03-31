@@ -6,11 +6,16 @@ __date__ = '3/25/15'
 import unittest
 
 from stonemason.mason.theme import Theme
+from stonemason.pyramid import Pyramid, MetaTileIndex
+from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import ImageMetaTileRenderer
-from stonemason.renderer.tilerenderer import MetaTileRendererBuilder
+from stonemason.renderer.tilerenderer import RendererExprParser
+
+from tests import skipUnlessHasGDAL
 
 
-class TestMetaTileRendererBuilder(unittest.TestCase):
+@skipUnlessHasGDAL()
+class TestImageMetaTileRenderer(unittest.TestCase):
     def test_build_base_renderer(self):
         d = {
             'design': {
@@ -24,10 +29,18 @@ class TestMetaTileRendererBuilder(unittest.TestCase):
 
         theme = Theme(**d)
 
-        builder = MetaTileRendererBuilder()
-        renderer = builder.build(theme)
+        maptype = MapType(theme.maptype)
+        tileformat = TileFormat('JPEG')
+        bundle = FormatBundle(maptype, tileformat)
 
-        self.assertIsInstance(renderer, ImageMetaTileRenderer)
+        pyramid = Pyramid(**theme.pyramid.attributes)
+
+        renderer = RendererExprParser(pyramid).parse_from_dict(
+            d['design']['layers'], 'root').interpret()
+        tilerenderer = ImageMetaTileRenderer(pyramid, bundle, renderer)
+
+        meta_index = MetaTileIndex(1, 0, 0, 2)
+        self.assertIsNone(tilerenderer.render_metatile(meta_index))
 
     def test_build_transform_renderer(self):
         d = {
@@ -46,10 +59,18 @@ class TestMetaTileRendererBuilder(unittest.TestCase):
 
         theme = Theme(**d)
 
-        builder = MetaTileRendererBuilder()
-        renderer = builder.build(theme)
+        maptype = MapType(theme.maptype)
+        tileformat = TileFormat('JPEG')
+        bundle = FormatBundle(maptype, tileformat)
 
-        self.assertIsInstance(renderer, ImageMetaTileRenderer)
+        pyramid = Pyramid(**theme.pyramid.attributes)
+
+        renderer = RendererExprParser(pyramid).parse_from_dict(
+            d['design']['layers'], 'root').interpret()
+        tilerenderer = ImageMetaTileRenderer(pyramid, bundle, renderer)
+
+        meta_index = MetaTileIndex(1, 0, 0, 2)
+        self.assertIsNone(tilerenderer.render_metatile(meta_index))
 
     def test_build_composite_renderer(self):
         d = {
@@ -71,7 +92,15 @@ class TestMetaTileRendererBuilder(unittest.TestCase):
 
         theme = Theme(**d)
 
-        builder = MetaTileRendererBuilder()
-        renderer = builder.build(theme)
+        maptype = MapType(theme.maptype)
+        tileformat = TileFormat('JPEG')
+        bundle = FormatBundle(maptype, tileformat)
 
-        self.assertIsInstance(renderer, ImageMetaTileRenderer)
+        pyramid = Pyramid(**theme.pyramid.attributes)
+
+        renderer = RendererExprParser(pyramid).parse_from_dict(
+            d['design']['layers'], 'root').interpret()
+        tilerenderer = ImageMetaTileRenderer(pyramid, bundle, renderer)
+
+        meta_index = MetaTileIndex(1, 0, 0, 2)
+        self.assertIsNone(tilerenderer.render_metatile(meta_index))
