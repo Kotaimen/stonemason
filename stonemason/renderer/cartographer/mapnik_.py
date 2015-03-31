@@ -3,6 +3,8 @@
 __author__ = 'ray'
 __date__ = '3/11/15'
 
+import os
+
 import mapnik
 from PIL import Image
 
@@ -42,7 +44,11 @@ class MapnikMapRenderer(BaseLayer, ImageMapRenderer):
         self._style_sheet = style_sheet
 
         self._map = mapnik.Map(32, 32)
-        mapnik.load_map(self._map, self._style_sheet)
+
+        filename = self._style_sheet.encode('utf-8')
+        filename = os.path.realpath(filename)
+
+        mapnik.load_map(self._map, filename)
         self._map.buffer_size = buffer_size
 
     def image(self, context):

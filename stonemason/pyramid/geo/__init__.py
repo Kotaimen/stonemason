@@ -6,4 +6,6 @@ __date__ = '3/20/15'
 try:
     from .tms import TileMapError, TileMapSystem, Envelope
 except ImportError:
-    pass
+    TileMapError = None
+    TileMapSystem = None
+    Envelope = None

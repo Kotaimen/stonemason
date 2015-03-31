@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+import six
 import unittest
 
 from stonemason.mason.theme import *
@@ -51,8 +52,8 @@ class TestThemePyramid(unittest.TestCase):
 
         self.assertEqual(list(range(0, 23)), m.levels)
         self.assertEqual(1, m.stride)
-        self.assertEqual('WGS84', m.geogcs)
-        self.assertEqual('EPSG:3857', m.projcs)
+        self.assertEqual(six.b('WGS84'), m.geogcs)
+        self.assertEqual(six.b('EPSG:3857'), m.projcs)
         self.assertTupleEqual((-180, -85.0511, 180, 85.0511), m.geogbounds)
 
     def test_init(self):
@@ -60,8 +61,8 @@ class TestThemePyramid(unittest.TestCase):
 
         self.assertEqual(range(0, 5), m.levels)
         self.assertEqual(2, m.stride)
-        self.assertEqual('EPSG:4301', m.geogcs)
-        self.assertEqual('EPSG:4326', m.projcs)
+        self.assertEqual(six.b('EPSG:4301'), m.geogcs)
+        self.assertEqual(six.b('EPSG:4326'), m.projcs)
         self.assertEqual((-45., -45., 45., 45.), m.geogbounds)
         self.assertEqual((-44., -44., 44., 44.), m.projbounds)
 

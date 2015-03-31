@@ -14,10 +14,11 @@ from stonemason.pyramid import Pyramid
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.mason.mapbuilder import MapBuilder, make_cluster_storage, \
     make_metatile_renderer
-from stonemason.provider.tileprovider import StorageTileProvider, \
-    RendererTileProvider, HybridTileProvider
+from stonemason.provider.tileprovider import HybridTileProvider
 from stonemason.provider.tilestorage import ClusterStorage
 from stonemason.renderer.tilerenderer import MetaTileRenderer
+
+from tests import skipUnlessHasGDAL
 
 
 class TestMakeClusterStorage(unittest.TestCase):
@@ -79,6 +80,7 @@ class TestMakeClusterStorage(unittest.TestCase):
             self.assertIsInstance(storage, ClusterStorage)
 
 
+@skipUnlessHasGDAL()
 class TestMakeTileRenderer(unittest.TestCase):
     def test_make_image_tilerenderer(self):
         maptype = MapType('image')
@@ -102,30 +104,15 @@ class TestMakeTileRenderer(unittest.TestCase):
         self.assertIsInstance(renderer, MetaTileRenderer)
 
 
+@skipUnlessHasGDAL()
 class TestMapBuilder(unittest.TestCase):
     def setUp(self):
         self._builder = MapBuilder()
 
-    def test_build_map_with_storage_provider(self):
+    def test_build_map_from_theme(self):
         theme = Theme(name='test')
 
-        mason_map = self._builder.build_from_theme(theme, mode='storage')
-        self.assertEqual('test', mason_map.name)
-        self.assertIsInstance(mason_map.metadata, dict)
-        self.assertIsInstance(mason_map.provider, StorageTileProvider)
-
-    def test_build_map_with_renderer_provider(self):
-        theme = Theme(name='test')
-
-        mason_map = self._builder.build_from_theme(theme, mode='renderer')
-        self.assertEqual('test', mason_map.name)
-        self.assertIsInstance(mason_map.metadata, dict)
-        self.assertIsInstance(mason_map.provider, RendererTileProvider)
-
-    def test_build_map_with_hybrid_provider(self):
-        theme = Theme(name='test')
-
-        mason_map = self._builder.build_from_theme(theme, mode='hybrid')
+        mason_map = self._builder.build_from_theme(theme)
         self.assertEqual('test', mason_map.name)
         self.assertIsInstance(mason_map.metadata, dict)
         self.assertIsInstance(mason_map.provider, HybridTileProvider)

@@ -51,70 +51,37 @@ def make_metatile_renderer(prototype, bundle, pyramid, **parameters):
 
 
 class MapBuilder(object):
-    PROVIDER_MODE = ['storage', 'renderer', 'hybrid', 'null']
 
-    def build_from_theme(self, theme, mode='storage'):
+    def build_from_theme(self, theme):
         assert isinstance(theme, Theme)
-        assert mode in self.PROVIDER_MODE
 
         name = theme.name
         maptype = MapType(theme.maptype)
         metadata = theme.metadata.attributes
         pyramid = Pyramid(**theme.pyramid.attributes)
 
-        if mode == 'null':
-            provider = NullTileProvider()
-            return MasonMap(name, metadata, provider)
-        elif mode == 'storage':
-            tileformat = TileFormat(**theme.storage.tileformat)
-            bundle = FormatBundle(maptype, tileformat)
 
-            storage = make_cluster_storage(
-                prototype=theme.storage.prototype,
-                bundle=bundle,
-                pyramid=pyramid,
-                **theme.storage.parameters
-            )
-            provider = StorageTileProvider(maptype, pyramid, storage)
+        tileformat = TileFormat(**theme.design.tileformat)
+        bundle = FormatBundle(maptype, tileformat)
 
-            return MasonMap(name, metadata, provider)
-        elif mode == 'renderer':
-            tileformat = TileFormat(**theme.design.tileformat)
-            bundle = FormatBundle(maptype, tileformat)
+        storage = make_cluster_storage(
+            prototype=theme.storage.prototype,
+            bundle=bundle,
+            pyramid=pyramid,
+            **theme.storage.parameters
+        )
+        storage_provider = StorageTileProvider(maptype, pyramid, storage)
 
-            renderer = make_metatile_renderer(
-                prototype=maptype.type,
-                bundle=bundle,
-                pyramid=pyramid,
-                **theme.design.attributes
-            )
-            provider = RendererTileProvider(maptype, pyramid, bundle, renderer)
+        renderer = make_metatile_renderer(
+            prototype=maptype.type,
+            bundle=bundle,
+            pyramid=pyramid,
+            **theme.design.attributes
+        )
+        renderer_provider = RendererTileProvider(
+            maptype, pyramid, bundle, renderer)
 
-            return MasonMap(name, metadata, provider)
-        elif mode == 'hybrid':
-            tileformat = TileFormat(**theme.design.tileformat)
-            bundle = FormatBundle(maptype, tileformat)
+        provider = HybridTileProvider(storage_provider, renderer_provider)
 
-            storage = make_cluster_storage(
-                prototype=theme.storage.prototype,
-                bundle=bundle,
-                pyramid=pyramid,
-                **theme.storage.parameters
-            )
-            storage_provider = StorageTileProvider(maptype, pyramid, storage)
+        return MasonMap(name, metadata, provider)
 
-            renderer = make_metatile_renderer(
-                prototype=maptype.type,
-                bundle=bundle,
-                pyramid=pyramid,
-                **theme.design.attributes
-            )
-            renderer_provider = RendererTileProvider(
-                maptype, pyramid, bundle, renderer)
-
-            provider = HybridTileProvider(storage_provider, renderer_provider)
-
-            return MasonMap(name, metadata, provider)
-
-        else:
-            raise MapBuildError('Unknown provider mode "%s"' % mode)

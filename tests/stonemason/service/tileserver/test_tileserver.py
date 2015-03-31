@@ -10,10 +10,10 @@ import os
 import json
 import unittest
 
-import six
-
 from stonemason.service.tileserver import TileServerApp
 from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
+
+from tests import skipUnlessHasGDAL
 
 
 class TestTileServerAppSetup(unittest.TestCase):
@@ -38,6 +38,7 @@ class TestTileServerAppSetup(unittest.TestCase):
         self.assertIn('STONEMASON_DEBUG', app.config)
 
 
+@skipUnlessHasGDAL()
 class TestTileServerApp(unittest.TestCase):
     def setUp(self):
         self.app = TileServerApp(
@@ -60,7 +61,7 @@ class TestTileServerApp(unittest.TestCase):
 
 
     def test_get_theme(self):
-        resp = self.client.get('/themes/antique')
+        resp = self.client.get('/themes/sample')
         data = json.loads(resp.data.decode('utf-8'))
 
         theme = data['result']
@@ -76,14 +77,14 @@ class TestTileServerApp(unittest.TestCase):
 
         tags = data['result']
 
-        self.assertIn('antique', tags)
+        self.assertIn('sample', tags)
 
     def test_get_tile(self):
         resp = self.client.get('/tiles/antique/1/1/1.jpg')
         self.assertEqual(404, resp.status_code)
 
     def test_get_map(self):
-        resp = self.client.get('/maps/antique')
+        resp = self.client.get('/maps/sample')
         self.assertEqual(200, resp.status_code)
 
     def test_health_check(self):

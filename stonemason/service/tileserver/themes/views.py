@@ -3,7 +3,7 @@
 __author__ = 'ray'
 __date__ = '2/27/15'
 
-from flask import jsonify
+from flask import jsonify, abort
 from flask.views import MethodView
 
 from ..models import ThemeModel
@@ -42,5 +42,8 @@ class ThemeView(MethodView):
 
         else:
             theme = self._theme_model.get_theme(tag)
+            if theme is None:
+                abort(404)
+
             return jsonify(result=theme.describe())
 

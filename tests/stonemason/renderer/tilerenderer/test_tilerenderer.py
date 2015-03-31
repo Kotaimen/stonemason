@@ -11,7 +11,10 @@ from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import ImageMetaTileRenderer
 from stonemason.renderer.tilerenderer import RendererExprParser
 
+from tests import skipUnlessHasGDAL
 
+
+@skipUnlessHasGDAL()
 class TestImageMetaTileRenderer(unittest.TestCase):
     def test_build_base_renderer(self):
         d = {

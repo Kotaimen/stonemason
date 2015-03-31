@@ -3,9 +3,14 @@
 __author__ = 'ray'
 __date__ = '3/12/15'
 
+import io
+
+from PIL import Image
+
 from stonemason.pyramid import Pyramid, MetaTile, MetaTileIndex
 from stonemason.provider.formatbundle import FormatBundle
 from stonemason.renderer.map import RenderContext, ImageMapRenderer
+from stonemason.pyramid.geo import TileMapSystem
 
 
 class MetaTileRenderer(object):
@@ -24,7 +29,7 @@ class ImageMetaTileRenderer(MetaTileRenderer):
         assert isinstance(bundle, FormatBundle)
         assert isinstance(image_renderer, ImageMapRenderer)
         MetaTileRenderer.__init__(self)
-        self._pyramid = pyramid
+        self._tms = TileMapSystem(pyramid)
         self._bundle = bundle
         self._renderer = image_renderer
 
@@ -32,18 +37,26 @@ class ImageMetaTileRenderer(MetaTileRenderer):
         assert isinstance(meta_index, MetaTileIndex)
 
         context = RenderContext(
-            pyramid=self._pyramid,
-            map_bbox=None,
-            map_size=meta_index.stride * 256
+            pyramid=self._tms.pyramid,
+            map_bbox=self._tms.calc_tile_envelope(meta_index),
+            map_size=(meta_index.stride * 256, meta_index.stride * 256),
         )
 
         im = self._renderer.image(context)
         if im is None:
             return None
 
-        parameters = self._bundle.tile_format.parameters
+        assert isinstance(im, Image.Image)
 
-        metatile = MetaTile(index=meta_index, data=im.tostring(**parameters))
+        buffer = io.BytesIO()
+        im.save(buffer,
+                format=self._bundle.tile_format.format,
+                parameters=self._bundle.tile_format.parameters)
+
+        data = buffer.getvalue()
+        del buffer
+
+        metatile = MetaTile(index=meta_index, data=data)
 
         return metatile
 
