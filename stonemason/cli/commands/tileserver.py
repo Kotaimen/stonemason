@@ -12,6 +12,7 @@ __author__ = 'kotaimen'
 __date__ = '3/2/15'
 
 import multiprocessing
+import pprint
 
 import click
 import gunicorn.app.base
@@ -69,8 +70,18 @@ class TileServer(gunicorn.app.base.BaseApplication):
               tile server is used (specified by -dd option).''')
 @click.option('--read-only', is_flag=True,
               help='start the server in read only mode.', )
+@click.option('--write-wsgi',
+              type=click.Path(dir_okay=False, resolve_path=True, writable=True),
+              default=None,
+              help='''Write a WSGI application file using current given
+              configuration and exit.''')
+@click.option('--dry-run', is_flag=True, default=False,
+              help='''Create the server instance without running it,
+              then exit.''')
 @pass_context
-def tile_server_command(ctx, bind, read_only, workers, threads, cache, max_age):
+def tile_server_command(ctx, bind, read_only, workers,
+                        threads, cache, max_age,
+                        write_wsgi, dry_run):
     """Starts tile server using given themes configuration.
 
     Debug option:
@@ -115,11 +126,25 @@ def tile_server_command(ctx, bind, read_only, workers, threads, cache, max_age):
     # Flask based WSGI application
     app = TileServerApp(**app_config)
 
+    if write_wsgi:
+        if ctx.verbose:
+            click.secho('Writing WSGI application to %s' % write_wsgi,
+                        fg='green')
+        with open(write_wsgi, 'w') as fp:
+            fp.write('''#! -*- coding: ascii -*-
+from stonemason.service.tileserver import TileServerApp
+config = \
+%s
+application = TileServerApp(**config)
+''' % pprint.pformat(app_config, indent=4))
+        return 0
+
     if ctx.debug > 1:
         # run Flask server in debug mode
         if ctx.verbose:
             click.secho('Starting Flask debug tile server.', fg='green')
-        app.run(host=host, port=port, debug=ctx.debug)
+        if not dry_run:
+            app.run(host=host, port=port, debug=ctx.debug)
     else:
         # otherwise, start gunicorn server
 
@@ -143,4 +168,5 @@ def tile_server_command(ctx, bind, read_only, workers, threads, cache, max_age):
             'preload_app': False
         }
         server = TileServer(app, options)
-        server.run()
+        if not dry_run:
+            server.run()
