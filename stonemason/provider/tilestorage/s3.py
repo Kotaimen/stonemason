@@ -146,9 +146,14 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
     :param prefix: Prefix which will be prepend to generated s3 keys.
     :type prefix: str
 
-    :param pyramid: The :class:`~stonemason.pyramid.Pyramid` of the
-        storage describes tile pyramid model.
-    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
+    :param levels: Zoom levels of the pyramid, must be a list of integers,
+        default value is ``0-22``.
+    :type levels: list
+
+    :param stride: Stride of the MetaTile in this pyramid, default
+        value is ``1``.
+    :type stride: int
+
 
     :param format: `FormatBundle` of the storage which specifies:
 
@@ -169,7 +174,7 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',
                  key_mode='simple', prefix='my_storage',
-                 pyramid=None, format=None,
+                 levels=range(0, 22), stride=1, format=None,
                  readonly=False):
         if not isinstance(format, FormatBundle):
             raise TileStorageError('Must specify format explicitly.')
@@ -182,7 +187,7 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
         object_persistence = MetaTileSerializer()
 
         StorageMixin.__init__(self, s3storage, object_persistence, key_mode,
-                              pyramid=pyramid, prefix=prefix,
+                              levels=levels, stride=stride, prefix=prefix,
                               mimetype=format.tile_format.mimetype,
                               extension=format.tile_format.extension,
                               gzip=False, readonly=readonly)
@@ -234,9 +239,13 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
     :param prefix: Prefix which will be prepend to generated s3 keys.
     :type prefix: str
 
-    :param pyramid: The :class:`~stonemason.pyramid.Pyramid` of the
-        storage describes tile pyramid model.
-    :type pyramid: :class:`~stonemason.pyramid.Pyramid`
+    :param levels: Zoom levels of the pyramid, must be a list of integers,
+        default value is ``0-22``.
+    :type levels: list
+
+    :param stride: Stride of the MetaTile in this pyramid, default
+        value is ``1``.
+    :type stride: int
 
     :param format: `FormatBundle` of the storage which specifies:
 
@@ -260,7 +269,7 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',
                  key_mode='simple', prefix='my_storage',
-                 pyramid=None, format=None,
+                 levels=range(0, 22), stride=1, format=None,
                  readonly=False, compressed=False, splitter=None):
         if not isinstance(format, FormatBundle):
             raise TileStorageError('Must specify format explicitly.')
@@ -274,7 +283,7 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
                                                    writer=format.writer)
 
         StorageMixin.__init__(self, s3storage, object_persistence, key_mode,
-                              pyramid=pyramid, prefix=prefix,
+                              levels=levels, stride=stride, prefix=prefix,
                               mimetype=format.tile_format.mimetype,
                               extension='.zip',
                               gzip=False, readonly=readonly)

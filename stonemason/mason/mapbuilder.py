@@ -8,7 +8,7 @@ from stonemason.provider.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.provider.tileprovider import StorageTileProvider, \
-    RendererTileProvider, HybridTileProvider, NullTileProvider
+    RendererTileProvider, HybridTileProvider
 from stonemason.renderer.tilerenderer import \
     NullMetaTileRenderer, ImageMetaTileRenderer, RendererExprParser
 
@@ -32,7 +32,8 @@ def make_cluster_storage(prototype, bundle, pyramid, **parameters):
     if setup is None:
         raise MapBuildError('Unknown storage type: "%s"' % prototype)
 
-    return setup(pyramid=pyramid, format=bundle, **parameters)
+    return setup(levels=pyramid.levels, stride=pyramid.stride,
+                 format=bundle, **parameters)
 
 
 def make_metatile_renderer(prototype, bundle, pyramid, **parameters):
@@ -51,7 +52,6 @@ def make_metatile_renderer(prototype, bundle, pyramid, **parameters):
 
 
 class MapBuilder(object):
-
     def build_from_theme(self, theme):
         assert isinstance(theme, Theme)
 
@@ -59,7 +59,6 @@ class MapBuilder(object):
         maptype = MapType(theme.maptype)
         metadata = theme.metadata.attributes
         pyramid = Pyramid(**theme.pyramid.attributes)
-
 
         tileformat = TileFormat(**theme.design.tileformat)
         bundle = FormatBundle(maptype, tileformat)
