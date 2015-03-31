@@ -43,7 +43,7 @@ class TestStonemasonCLI(unittest.TestCase):
             self.assertNotEqual(result.exit_code, 0)
 
             result = runner.invoke(cli, ['--themes=themes_', '-v', 'check'], )
-            self.assertEqual(result.exit_code, -1)
+            self.assertEqual(result.exit_code, 0)
 
     def test_tileserver_command(self):
         runner = CliRunner()
