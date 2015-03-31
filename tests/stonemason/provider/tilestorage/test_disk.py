@@ -30,7 +30,8 @@ class TestDiskClusterStorage(unittest.TestCase):
 
     def test_basic(self):
         storage = DiskClusterStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=self.format)
         storage.put(self.metatile)
@@ -43,7 +44,8 @@ class TestDiskClusterStorage(unittest.TestCase):
 
     def test_putfail(self):
         storage = DiskClusterStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=FormatBundle(MapType('image'), TileFormat('JPEG')))
 
@@ -59,7 +61,8 @@ class TestDiskClusterStorage(unittest.TestCase):
 
     def test_readonly(self):
         storage = DiskClusterStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=self.format,
             readonly=True)
@@ -68,7 +71,8 @@ class TestDiskClusterStorage(unittest.TestCase):
 
     def test_pathmode_simple(self):
         storage = DiskClusterStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=self.format,
             dir_mode='simple')
@@ -81,7 +85,8 @@ class TestDiskClusterStorage(unittest.TestCase):
 
     def test_pathmode_legacy(self):
         storage = DiskClusterStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=self.format,
             dir_mode='legacy')
@@ -93,7 +98,8 @@ class TestDiskClusterStorage(unittest.TestCase):
 
     def test_pathmode_hilbert(self):
         storage = DiskClusterStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=self.format,
             dir_mode='hilbert')
@@ -120,7 +126,8 @@ class TestDiskMetaTileStorage(unittest.TestCase):
 
     def test_basic(self):
         storage = DiskMetaTileStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=self.format)
         storage.put(self.metatile)
@@ -137,7 +144,8 @@ class TestDiskMetaTileStorage(unittest.TestCase):
 
     def test_gzip(self):
         storage = DiskMetaTileStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=self.format,
             dir_mode='simple',
@@ -151,7 +159,8 @@ class TestDiskMetaTileStorage(unittest.TestCase):
 
     def test_extension(self):
         storage = DiskMetaTileStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             root=self.root,
             format=FormatBundle(MapType('image'),
                                 TileFormat('PNG', extension='.dat')),

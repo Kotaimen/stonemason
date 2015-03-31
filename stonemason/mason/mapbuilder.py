@@ -32,7 +32,8 @@ def make_cluster_storage(prototype, bundle, pyramid, **parameters):
     if setup is None:
         raise MapBuildError('Unknown storage type: "%s"' % prototype)
 
-    return setup(pyramid=pyramid, format=bundle, **parameters)
+    return setup(levels=pyramid.levels, stride=pyramid.stride,
+                 format=bundle, **parameters)
 
 
 def make_metatile_renderer(prototype, bundle, pyramid, **parameters):

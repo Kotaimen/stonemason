@@ -251,7 +251,9 @@ class StorageMixin(object):
     """Mixin class assembles all the concepts."""
 
     def __init__(self, storage, serializer, key_mode,
-                 pyramid=None, prefix=None,
+                 levels=range(0, 23),
+                 stride=1,
+                 prefix=None,
                  mimetype=None, extension=None,
                  gzip=False, readonly=False):
         assert isinstance(storage, PersistenceStorageConcept)
@@ -260,11 +262,8 @@ class StorageMixin(object):
         self._storage = storage
         self._serializer = serializer
         self._key_mode = key_mode
-
-        # tile pyramid
-        assert isinstance(pyramid, Pyramid)
-        self._pyramid = pyramid
-
+        self._levels = levels
+        self._stride = stride
         # prefix
         assert isinstance(prefix, six.string_types)
         self._prefix = prefix
@@ -304,11 +303,10 @@ class StorageMixin(object):
         if self._readonly:
             raise ReadonlyStorage
         assert isinstance(metatile, MetaTile)
-        if metatile.index.z not in self._pyramid.levels:
-            raise InvalidMetaTileIndex('MetaTile level unefined in Pyramid.')
-        if metatile.index.stride != self._pyramid.stride:
-            raise InvalidMetaTileIndex(
-                'MetaTile stride incompatible with storage.')
+        if metatile.index.z not in self._levels:
+            raise InvalidMetaTileIndex('Invalid MetaTile level.')
+        if metatile.index.stride != self._stride:
+            raise InvalidMetaTileIndex('Invalid MetaTile stride.')
         if metatile.mimetype != self._mimetype:
             raise InvalidMetaTile('MetaTile mimetype inconsistent with storage')
 

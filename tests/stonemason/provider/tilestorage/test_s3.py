@@ -40,7 +40,8 @@ class TestS3ClusterStorage(unittest.TestCase):
     def test_basic(self):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
                                    prefix='testlayer',
-                                   pyramid=self.pyramid,
+                                   levels=self.pyramid.levels,
+                                   stride=self.pyramid.stride,
                                    format=self.format)
         storage.put(self.metatile)
 
@@ -60,7 +61,8 @@ class TestS3ClusterStorage(unittest.TestCase):
     def test_keymode_simple(self):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
                                    prefix='testlayer',
-                                   pyramid=self.pyramid,
+                                   levels=self.pyramid.levels,
+                                   stride=self.pyramid.stride,
                                    format=self.format)
         storage.put(self.metatile)
 
@@ -70,7 +72,8 @@ class TestS3ClusterStorage(unittest.TestCase):
     def test_keymode_legacy(self):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
                                    prefix='testlayer',
-                                   pyramid=self.pyramid,
+                                   levels=self.pyramid.levels,
+                                   stride=self.pyramid.stride,
                                    key_mode='legacy',
                                    format=self.format)
         storage.put(self.metatile)
@@ -82,7 +85,8 @@ class TestS3ClusterStorage(unittest.TestCase):
     def test_keymode_hilbert(self):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
                                    prefix='testlayer',
-                                   pyramid=self.pyramid,
+                                   levels=self.pyramid.levels,
+                                   stride=self.pyramid.stride,
                                    key_mode='hilbert',
                                    format=self.format)
         storage.put(self.metatile)
@@ -114,7 +118,8 @@ class TestS3MetaTileStorage(unittest.TestCase):
 
     def test_basic(self):
         storage = S3MetaTileStorage(
-            pyramid=self.pyramid,
+            levels=self.pyramid.levels,
+            stride=self.pyramid.stride,
             bucket=TEST_BUCKET_NAME,
             prefix='testlayer',
             format=self.format)
