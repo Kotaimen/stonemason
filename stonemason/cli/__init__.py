@@ -16,3 +16,4 @@ from .main import cli
 from .commands.tileserver import tile_server_command
 from .commands.check import check_command
 from .commands.init import init_theme_root_command
+from .commands.tilerenderer import tile_renderer_command

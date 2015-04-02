@@ -44,6 +44,16 @@ class TileServer(gunicorn.app.base.BaseApplication):
         return self.application
 
 
+def write_wsgi_file(app_config, write_wsgi):
+    with open(write_wsgi, 'w') as fp:
+        fp.write('''#! -*- coding: ascii -*-
+from stonemason.service.tileserver import TileServerApp
+config = \
+%s
+application = TileServerApp(**config)
+''' % pprint.pformat(app_config, indent=4))
+
+
 @cli.command('tileserver', short_help='frontend tile server.')
 @click.option('-b', '--bind', default='127.0.0.1:7086', type=str,
               help='address and port to bind to.')
@@ -64,9 +74,9 @@ class TileServer(gunicorn.app.base.BaseApplication):
               ''')
 @click.option('--max-age', default=300, type=int,
               envvar='STONEMASON_MAX_AGE',
-              help='''Max-age of cache control header returned by tile api.
-              Default is 300, which is 24 hours.  Set to 0 disables cache
-              control header, which is the default behaviour when debugging
+              help='''Max-age of cache control header returned by tile api,
+              default is 300. Set to 0 disables cache control header,
+              which is the default behaviour when debugging
               tile server is used (specified by -dd option).''')
 @click.option('--read-only', is_flag=True,
               help='start the server in read only mode.', )
@@ -126,27 +136,22 @@ def tile_server_command(ctx, bind, read_only, workers,
     # Flask based WSGI application
     app = TileServerApp(**app_config)
 
+    # write wsgi file
     if write_wsgi:
         if ctx.verbose:
             click.secho('Writing WSGI application to %s' % write_wsgi,
                         fg='green')
-        with open(write_wsgi, 'w') as fp:
-            fp.write('''#! -*- coding: ascii -*-
-from stonemason.service.tileserver import TileServerApp
-config = \
-%s
-application = TileServerApp(**config)
-''' % pprint.pformat(app_config, indent=4))
+        write_wsgi_file(app_config, write_wsgi)
         return 0
 
-    if ctx.debug > 1:
-        # run Flask server in debug mode
+    elif ctx.debug > 1:
+        # run in flask debug mude
         if ctx.verbose:
             click.secho('Starting Flask debug tile server.', fg='green')
         if not dry_run:
             app.run(host=host, port=port, debug=ctx.debug)
     else:
-        # otherwise, start gunicorn server
+        # start a gunicorn server
 
         if workers == 0:
             # by default, use cpu num * 2
