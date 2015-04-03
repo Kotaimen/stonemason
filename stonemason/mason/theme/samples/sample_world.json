@@ -3,15 +3,16 @@
   "maptype": "image",
   "metadata": {
     "version": "1.0.0",
-    "description": "Daniel Reeve's Map of Middle-earth is well known to fans of The Lord of the Rings. So we took his idea and made this parchment map of our own earth. Be careful, Sea monsters are waiting for you if you dig deep into sea.",
-    "attribution": "K&R",
-    "thumbnail": "https://raw.githubusercontent.com/Kotaimen/maps-ModernAntique/master/sample.jpg",
-    "center": [139.79, 35.71],
-    "center_zoom": 6
+    "description": "A sample world.",
+    "attribution": "Data: Natural Earth, Tile: K&R",
+    "center": [0, 0],
+    "center_zoom": 0
   },
 
   "pyramid": {
-    "stride": 16
+    "stride": 2,
+    "geogcs": "WGS84",
+    "projcs": "EPSG:3857"
   },
 
   "cache": {
@@ -25,7 +26,9 @@
     "layers": {
       "root": {
         "type": "image.mapnik",
-        "style_sheet": "sample_world/sample_world.xml"
+        "style_sheet": "sample_world/sample_world.xml",
+        "default_scale": 1,
+        "buffer_size": 256
       }
     }
   }
