@@ -76,3 +76,11 @@ RUN         pip install -rrequirements-dev.txt
 RUN         pip install .
 RUN         python setup.py build_ext -if
 RUN         tox -e py27geo
+
+#
+# Start the sample theme tile server
+#
+EXPOSE      8080
+RUN         stonemason init
+RUN         stonemason check
+CMD         stonemason -dd tileserver -b 0.0.0.0:8080
