@@ -7,10 +7,11 @@ import unittest
 import os
 
 from click.testing import CliRunner
-
 from stonemason.cli import cli
 
+from tests import skipUnlessHasMapnik
 
+@skipUnlessHasMapnik()
 class TestStonemasonTileServer(unittest.TestCase):
     def test_export_wsgi(self):
         runner = CliRunner()

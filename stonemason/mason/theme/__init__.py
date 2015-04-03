@@ -18,7 +18,8 @@ from .manager import ThemeManager, MemThemeManager
 from .loader import ThemeLoader, JsonThemeLoader, LocalThemeLoader
 
 
-SAMPLE_THEME_DIRECTORY = os.path.join(
-    os.path.dirname(__file__), 'samples', 'sample_world')
+SAMPLE_THEME_DIRECTORY = os.path.join(os.path.dirname(__file__), 'samples')
 
-SAMPLE_THEME = os.path.join(SAMPLE_THEME_DIRECTORY, 'sample_theme.json')
+SAMPLE_THEME_NAME = 'sample_world.json'
+
+SAMPLE_THEME = os.path.join(SAMPLE_THEME_DIRECTORY, SAMPLE_THEME_NAME)

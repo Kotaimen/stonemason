@@ -8,14 +8,14 @@ import unittest
 from stonemason.mason.theme import MemThemeManager
 from stonemason.mason.theme import JsonThemeLoader, LocalThemeLoader
 
-from stonemason.mason.theme import SAMPLE_THEME, SAMPLE_THEME_DIRECTORY
+from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY, SAMPLE_THEME_NAME
+
 
 class TestJsonThemeLoader(unittest.TestCase):
-
     def test_load(self):
         m = MemThemeManager()
 
-        loader = JsonThemeLoader(SAMPLE_THEME)
+        loader = JsonThemeLoader(SAMPLE_THEME_DIRECTORY, SAMPLE_THEME_NAME)
         loader.load_into(m)
 
         theme = m.get('sample')
@@ -23,7 +23,6 @@ class TestJsonThemeLoader(unittest.TestCase):
 
 
 class TestDirectoryThemeLoader(unittest.TestCase):
-
     def test_load(self):
         m = MemThemeManager()
 

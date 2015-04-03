@@ -11,7 +11,9 @@ from click.testing import CliRunner
 
 from stonemason.cli import cli
 
+from tests import skipUnlessHasMapnik
 
+@skipUnlessHasMapnik()
 class TestStonemasonCLI(unittest.TestCase):
     def test_main(self):
         runner = CliRunner()

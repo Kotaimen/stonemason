@@ -12,6 +12,8 @@ from click.testing import CliRunner
 from stonemason.cli import cli
 from stonemason.cli.commands.tilerenderer import parse_levels
 
+from tests import skipUnlessHasMapnik
+
 
 class TestHelpers(unittest.TestCase):
     def test_parse_levels(self):
@@ -39,7 +41,7 @@ class TestHelpers(unittest.TestCase):
                           parse_levels,
                           None, None, '1,a')
 
-
+@skipUnlessHasMapnik()
 class TestStonemasonTileRenderer(unittest.TestCase):
     def test_tilerender(self):
         runner = CliRunner()

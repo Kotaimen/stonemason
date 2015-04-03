@@ -7,7 +7,7 @@ import unittest
 
 from stonemason.mason import *
 from stonemason.mason.theme import MemThemeManager, JsonThemeLoader
-from stonemason.mason.theme import SAMPLE_THEME
+from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY, SAMPLE_THEME_NAME
 
 from tests import skipUnlessHasGDAL
 
@@ -17,7 +17,7 @@ class TestMason(unittest.TestCase):
     def setUp(self):
         self._manager = MemThemeManager()
 
-        loader = JsonThemeLoader(SAMPLE_THEME)
+        loader = JsonThemeLoader(SAMPLE_THEME_DIRECTORY, SAMPLE_THEME_NAME)
         loader.load_into(self._manager)
 
         self._mason = Mason()
