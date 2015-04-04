@@ -19,6 +19,15 @@ Temporary filename
 .. autofunction:: stonemason.util.tempfn.generate_temp_filename
 
 
+TicTac Timer
+============
+
+.. autofunction:: stonemason.util.timer.human_duration
+
+.. autoclass::  stonemason.util.timer.Timer
+    :members:
+
+
 Image Cropping
 ==============
 
