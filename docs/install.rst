@@ -80,7 +80,7 @@ older ubuntu versions, install from `ubuntu-gis` PPA is recommended::
     $ sudo apt-get install libgeos-dev gdal-bin python-gdal
 
 For copyright reasons, `GDAL` debian package don't have some projection
-data files included, this requires extra patching form source:
+data files included, this requires extra patching form source::
 
     $ wget http://download.osgeo.org/gdal/1.10.1/gdal-1.10.1.tar.gz
     $ tar x gdal-1.10.1.tar.gz
