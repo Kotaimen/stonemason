@@ -9,14 +9,14 @@ After you have installed everything using :doc:`install` manual, or, from `pip`,
 the `stonemason` CLI should be available as ``stonemason``::
 
     $ stonemason --version
-    Stonemason 0.0.1.dev0
+    Stonemason 0.2.0
 
 If you prefer to run `stonemason` in "in place" mode, the
 package itself is also executable::
 
     $ cd stonemason
     $ python -m stonemason
-    Stonemason 0.0.1.dev0
+    Stonemason 0.2.0
 
 `stonemason` uses `Click <http://click.pocoo.org>`_ as argument parser, so
 getting help is a bit different from other multi command tools like `git`::
@@ -28,7 +28,7 @@ getting help is a bit different from other multi command tools like `git`::
 Initialize Theme Root
 =====================
 
-`stonemason` must have a `theme root` predefined, where all map designs,
+`stonemason` must have a `themes root` predefined, where all map designs,
 render directives, storage configurations are assembled together.
 
 Themes root can be passed as ``--themes`` option, or defined in
@@ -40,18 +40,23 @@ structure and configurations for you, with a simple sample theme::
     $ mkdir ~/themes
     $ stonemason --themes=themes init
     Initialization complete, start a tile server using:
-        export STONEMASON_THEMES=/home/ubuntu/themes
-
-
-.. warning:: Because we have not finished map renderer, the init
-    command doesn't work out of box, yet.
+        export STONEMASON_THEMES=/Users/kotaimen/proj/python/stonemason/themes
+        stonemason -dd tileserver
+    Or check configuration using:
+        stonemason --themes=/Users/kotaimen/proj/python/stonemason/themes check
 
 Check Theme Configuration
 =========================
 
-To verify theme configuration, use ``check`` subcommand:
+To verify theme configuration, use ``check`` subcommand::
 
     $ stonemason --themes=themes -v check
+    Checking themes configuration at /Users/kotaimen/proj/python/stonemason/themes...
+    name="sample"
+        ...
+        ...
+    Check completed.
+
 
 Configure a Memcache
 ====================
@@ -94,12 +99,11 @@ Tile Server
 
 After created a sample themes root, you can start the tile server::
 
-    $ cd ~/themes
-    $ export STONEMASON_THEMES=`pwd`
+    $ export STONEMASON_THEMES=`~/themes`
     $ stonemason -dd tileserver --bind=127.0.0.1:8000
 
 The ``-dd`` option means a debugging flask server will be started, to start
-To production server using `Gunicorn`, don't supply the ``--debug`` option::
+To production server using `Gunicorn`, don't supply the ``-dd`` option::
 
     $ stonemason tileserver --bind=0.0.0.0:8000
     [2015-03-02 18:09:30 +0800] [42985] [INFO] Starting gunicorn 19.2.1
@@ -107,6 +111,20 @@ To production server using `Gunicorn`, don't supply the ``--debug`` option::
     [2015-03-02 18:09:30 +0800] [42985] [INFO] Using worker: sync
     [2015-03-02 18:09:30 +0800] [43013] [INFO] Booting worker with pid: 43013
     [2015-03-02 18:09:31 +0800] [43014] [INFO] Booting worker with pid: 43014
+
+
+Open http://localhost:7086 in the browser, you should see a start page like
+this:
+
+.. figure:: _static/quickstart-sample-homepage.png
+    :width: 67 %
+    :alt: Sapmle map home page
+    :align: center
+
+    Start page
+
+.. note:: The console requires internet connection since javascript assets
+    are downloaded from our CDN distribution.
 
 
 When `Gunicorn` server is used, you can specify number of worker processes used
@@ -119,9 +137,10 @@ and number of threads per worker::
     [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054
     [2015-03-02 18:10:00 +0800] [43055] [INFO] Booting worker with pid: 43055
 
-If you have `memcache` server configured above, use it to speedup::
 
-    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2 --threads=4 --cache=localhost:11211
+If you have `memcache` server configured above, use it to caching tiles::
+
+    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2 --threads=2 --cache=localhost:11211
 
 Or define it in envvar ``STONEMASON_CACHE``::
 
@@ -131,85 +150,125 @@ If a memcache cluster is used, separate each node with ``;`` or space::
 
     $ export STONEMASON_CACHE=10.0.16.1:11211;10.0.16.2:11211
 
-TODO: Insert a screenshot here.
+This caches rendered tiles and speed up map browsing considerably, to view
+map, click the little marker icon on the right top of the panel:
 
+.. figure:: _static/quickstart-sample-world1.png
+    :width: 80 %
+    :alt: Sample World
+    :align: center
+
+    Sample World (Google Mercator)
+
+Modify Theme
+============
+
+Open the ``sample_world.json`` file in themes root directory above in a text
+editor, locate ``pyramid`` section:
+
+.. code-block:: javascript
+   :emphasize-lines: 14-27
+
+    {
+      "name": "sample",
+      "maptype": "image",
+      "metadata": {
+        "version": "1.0.0",
+        "description": "A sample world.",
+        "attribution": "Data: Natural Earth, Tile: K&R",
+        "center": [
+          0,
+          0
+        ],
+        "center_zoom": 0
+      },
+      "pyramid": {
+        "stride": 2,
+        "geogcs": "WGS84",
+        "projcs": "EPSG:54030",
+        "levels": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "cache": {
+        "prototype": "null"
+      },
+      "design": {
+        "tileformat": {
+          "format": "PNG",
+          "extension": "png"
+        },
+        "layers": {
+          "root": {
+            "type": "image.mapnik",
+            "style_sheet": "sample_world/sample_world.xml",
+            "default_scale": 2,
+            "buffer_size": 256
+          }
+        }
+      }
+    }
+
+
+Change ``"projcs"`` from ``"EPSG:3857"`` to ``"EPSG:54030"`` and restart the
+tile server, now you have a map with `Robinson` projection!
+
+.. figure:: _static/quickstart-sample-world2.png
+    :width: 80 %
+    :alt: Sample World
+    :align: center
+
+    Sample World (Robinson)
 
 Deployment
 ==========
 
+If you want to use another `WSGI` server or customized `Gunicorn`
+configuration, generate one using tileserver's ``--write-wsgi`` option::
+
+    $ stonemason tileserver --cache=localhost:11211 --write-wsgi=application.py
+
+This writes ``application.py``:
+
+.. code-block:: python
+
+    #! -*- coding: ascii -*-
+    from stonemason.service.tileserver import TileServerApp
+    config = {   'STONEMASON_CACHE': 'localhost:11211',
+        'STONEMASON_DEBUG': False,
+        'STONEMASON_MAX_AGE': 300,
+        'STONEMASON_READ_ONLY': False,
+        'STONEMASON_THEMES': '/home/ubuntu/themes',
+        'STONEMASON_VERBOSE': 0}
+    application = TileServerApp(**config)
+
+To serve this application using `Gunicorn`, run::
+
+    $ gunicorn -b 0.0.0.0:8080 application -w 4
+
+
+Docker
+======
+
+
 Here is a sample `Docker` configuration which assumes a dist package in
 ``dist/`` and themes in ``themes/`` along the ``Dockerfile``:
 
-.. code-block:: Dockerfile
-
-    FROM        ubuntu:trusty
-    MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
-
-    ENV         DEBIAN_FRONTEND noninteractive
-
-    ENV         STONEMASON stonemason-0.0.1.dev1
-    ENV         STONEMASON_THEMES /opt/stonemason/themes
-
-    WORKDIR     ${STONEMASON_THEMES}
-
-    WORKDIR     ${STONEMASON_THEMES}
-
-    RUN         apt-get update && \
-                apt-get -y install python-dev python-pip && \
-                apt-get -y install libjpeg-dev libz-dev libtiff-dev libfreetype6-dev libwebp-dev liblcms2-dev
-
-    # Set the locale otherwise Click will complain,
-    # See http://click.pocoo.org/3/python3/
-    RUN         locale-gen en_US.UTF-8
-    ENV         LANG en_US.UTF-8
-    ENV         LANGUAGE en_US:en
-    ENV         LC_ALL en_US.UTF-8
-
-    # Speedup pip install by install "must have" prerequests first
-    RUN         pip install pillow flask boto gunicorn six Click
-
-    ADD         dist/${STONEMASON}.tar.gz /tmp/
-    RUN         pip install /tmp/${STONEMASON}/
-
-    COPY        themes ${STONEMASON_THEMES}/
-
-    # Install stonemason
-    ADD         dist/${STONEMASON}.tar.gz /tmp/
-    RUN         pip install /tmp/${STONEMASON}/
-
-    COPY        themes ${STONEMASON_THEMES}/
-
-    # Check configuration
-    RUN         find ${STONEMASON_THEMES}
-    RUN         stonemason -v check
-
-    # Start tile server
-    EXPOSE      7086
-    CMD         stonemason tileserver --bind 0.0.0.0:7086
+.. literalinclude:: ../Dockerfile
+   :language: Dockerfile
 
 To start tileserver in docker container, use::
 
     $ docker build -t stonemason .
     $ docker run -p 0.0.0.0:7086:7086 stonemason stonemason tileserver --bind 0.0.0.0:7086 --workers=1
     [2015-03-02 18:10:00 +0800] [43027] [INFO] Starting gunicorn 19.2.1
-    [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://127.0.0.1:7086 (43027)
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://0.0.0.0:7086 (43027)
     [2015-03-02 18:10:00 +0800] [43027] [INFO] Using worker: threads
     [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054
-
-
-If you want to use another ``WSGI`` server or customized `Gunicorn`
-configuration, write a ``application.py`` first:
-
-.. code-block:: python
-
-    from stonemason.service.tileserver import TileServerApp
-    config = {
-        'STONEMASON_THEMES': 'where_themes_root_lies'
-    }
-    application = TileServerApp(config)
-
-Then point the ``WSGI`` server to ``application.py``::
-
-    $ gunicorn -b 0.0.0.0:7086 application
-
 
