@@ -6,6 +6,8 @@
 
 """
 
+import six
+
 from stonemason.pyramid import TileIndex, MetaTileIndex
 from stonemason.provider.tilecache import NullTileCache, MemTileCache
 
@@ -59,12 +61,22 @@ class Mason(object):
 
         self._maps[mason_map.name] = mason_map
 
-    def get_tile(self, tag, z, x, y, scale, ext):
-        """Get a tile with the given tag and parameters"""
-
+    def get_map(self, tag):
         try:
             mason_map = self._maps[tag]
         except KeyError:
+            return None
+        return mason_map
+
+    def get_maps(self):
+        """Get all available tile tags"""
+        return self._maps
+
+    def get_tile(self, tag, z, x, y, scale, ext):
+        """Get a tile with the given tag and parameters"""
+
+        mason_map = self.get_map(tag)
+        if mason_map is None:
             return None
 
         index = TileIndex(z, x, y)
@@ -88,8 +100,3 @@ class Mason(object):
         tile = cluster[index]
 
         return tile
-
-    def get_tile_tags(self):
-        """Get all available tile tags"""
-        return list(name for name in self._maps)
-

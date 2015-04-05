@@ -5,25 +5,25 @@ __date__ = '2/24/15'
 
 import unittest
 
+from stonemason.mason.theme import MapTheme
 from stonemason.mason.theme import MemThemeManager
-from stonemason.mason.theme import JsonThemeLoader, LocalThemeLoader
+from stonemason.mason.theme import PythonThemeLoader, LocalThemeLoader
 
 from stonemason.mason.theme import SAMPLE_THEME, SAMPLE_THEME_DIRECTORY
 
-class TestJsonThemeLoader(unittest.TestCase):
 
+class TestPyThemeLoader(unittest.TestCase):
     def test_load(self):
         m = MemThemeManager()
 
-        loader = JsonThemeLoader(SAMPLE_THEME)
+        loader = PythonThemeLoader(SAMPLE_THEME)
         loader.load_into(m)
 
         theme = m.get('sample')
-        self.assertEqual('sample', theme.name)
+        self.assertIsInstance(theme, MapTheme)
 
 
-class TestDirectoryThemeLoader(unittest.TestCase):
-
+class TestLocalThemeLoader(unittest.TestCase):
     def test_load(self):
         m = MemThemeManager()
 
@@ -31,4 +31,4 @@ class TestDirectoryThemeLoader(unittest.TestCase):
         loader.load_into(m)
 
         theme = m.get('sample')
-        self.assertEqual('sample', theme.name)
+        self.assertIsInstance(theme, MapTheme)

@@ -9,7 +9,7 @@ import unittest
 import moto
 import boto
 
-from stonemason.mason.theme import Theme
+from stonemason.mason.theme import MapTheme
 from stonemason.pyramid import Pyramid
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.mason.mapbuilder import MapBuilder, make_cluster_storage, \
@@ -29,10 +29,9 @@ class TestMakeClusterStorage(unittest.TestCase):
 
         pyramid = Pyramid()
 
-        prototype = 'null'
-        parameters = {}
+        config = {'prototype': 'null'}
 
-        storage = make_cluster_storage(prototype, bundle, pyramid, **parameters)
+        storage = make_cluster_storage(bundle, pyramid, **config)
 
         self.assertIsInstance(storage, ClusterStorage)
 
@@ -45,10 +44,9 @@ class TestMakeClusterStorage(unittest.TestCase):
 
         pyramid = Pyramid()
 
-        prototype = 'disk'
-        parameters = {'root': root}
+        config = {'prototype': 'disk', 'root': root}
 
-        storage = make_cluster_storage(prototype, bundle, pyramid, **parameters)
+        storage = make_cluster_storage(bundle, pyramid, **config)
 
         self.assertIsInstance(storage, ClusterStorage)
 
@@ -65,17 +63,16 @@ class TestMakeClusterStorage(unittest.TestCase):
 
             pyramid = Pyramid()
 
-            prototype = 's3'
-            parameters = {
+            config = {
+                'prootype': 's3',
                 'bucket': 'test_storage',
                 'prefix': 'testlayer',
             }
 
             storage = make_cluster_storage(
-                prototype=prototype,
                 pyramid=pyramid,
                 bundle=bundle,
-                **parameters)
+                **config)
 
             self.assertIsInstance(storage, ClusterStorage)
 
@@ -89,8 +86,8 @@ class TestMakeTileRenderer(unittest.TestCase):
 
         pyramid = Pyramid()
 
-        prototype = 'image'
-        parameters = {
+        config = {
+            'prototype': 'image',
             'layers': {
                 'root': {
                     'type': 'dummy'
@@ -98,8 +95,7 @@ class TestMakeTileRenderer(unittest.TestCase):
             }
         }
 
-        renderer = make_metatile_renderer(
-            prototype, bundle, pyramid, **parameters)
+        renderer = make_metatile_renderer(bundle, pyramid, **config)
 
         self.assertIsInstance(renderer, MetaTileRenderer)
 
@@ -110,7 +106,7 @@ class TestMapBuilder(unittest.TestCase):
         self._builder = MapBuilder()
 
     def test_build_map_from_theme(self):
-        theme = Theme(name='test')
+        theme = MapTheme(name='test')
 
         mason_map = self._builder.build_from_theme(theme)
         self.assertEqual('test', mason_map.name)

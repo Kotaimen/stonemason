@@ -7,6 +7,7 @@ from flask import jsonify, abort
 from flask.views import MethodView
 
 from ..models import ThemeModel
+from ..helper import render_map_theme
 
 
 class ThemeView(MethodView):
@@ -36,7 +37,7 @@ class ThemeView(MethodView):
             collection = list()
 
             for theme in self._theme_model:
-                collection.append(theme.describe())
+                collection.append(render_map_theme(theme))
 
             return jsonify(result=collection)
 
@@ -45,5 +46,5 @@ class ThemeView(MethodView):
             if theme is None:
                 abort(404)
 
-            return jsonify(result=theme.describe())
+            return jsonify(result=render_map_theme(theme))
 

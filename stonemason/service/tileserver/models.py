@@ -57,8 +57,11 @@ class MasonModel(object):
     def get_tile(self, tag, z, x, y, scale, ext):
         return self.mason.get_tile(tag, z, x, y, scale, ext)
 
-    def get_tile_tags(self):
-        return self.mason.get_tile_tags()
+    def get_map(self, tag):
+        return self.mason.get_map(tag)
+
+    def get_maps(self):
+        return self.mason.get_maps()
 
     @property
     def cache_control(self):

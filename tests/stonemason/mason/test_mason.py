@@ -6,7 +6,7 @@ __date__ = '2/3/15'
 import unittest
 
 from stonemason.mason import *
-from stonemason.mason.theme import MemThemeManager, JsonThemeLoader
+from stonemason.mason.theme import MemThemeManager, PythonThemeLoader
 from stonemason.mason.theme import SAMPLE_THEME
 
 from tests import skipUnlessHasGDAL
@@ -17,7 +17,7 @@ class TestMason(unittest.TestCase):
     def setUp(self):
         self._manager = MemThemeManager()
 
-        loader = JsonThemeLoader(SAMPLE_THEME)
+        loader = PythonThemeLoader(SAMPLE_THEME)
         loader.load_into(self._manager)
 
         self._mason = Mason()
@@ -27,17 +27,17 @@ class TestMason(unittest.TestCase):
         self.assertIsNotNone(theme)
         self._mason.load_theme(theme)
 
-        self.assertListEqual(['sample'], self._mason.get_tile_tags())
+        self.assertIsNotNone(self._mason.get_map('sample'))
         self.assertRaises(DuplicatedMapError, self._mason.load_theme, theme)
 
-    def test_get_tile_tags(self):
-        self.assertListEqual([], self._mason.get_tile_tags())
+    def test_get_maps(self):
+        self.assertDictEqual(dict(), self._mason.get_maps())
 
         theme = self._manager.get('sample')
         self.assertIsNotNone(theme)
-        self._mason.load_theme(theme)
 
-        self.assertListEqual(['sample'], self._mason.get_tile_tags())
+        self._mason.load_theme(theme)
+        self.assertIn('sample', self._mason.get_maps())
 
     def test_get_tile(self):
         theme = self._manager.get('sample')

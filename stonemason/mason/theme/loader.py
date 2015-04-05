@@ -11,17 +11,25 @@ __author__ = 'ray'
 __date__ = '2/8/15'
 
 import os
-import json
 
-from .theme import Theme
+from .theme import MapTheme
 from .manager import ThemeManager
+from .exceptions import ThemeError
 
 
-def is_valid_theme_filename(filename):
+def is_map_theme(filename):
     """Check if is a theme file"""
-    # TODO: USE YAML FORMAT INSTEAD
     _, ext = os.path.splitext(filename)
-    return ext == '.json'
+    return ext == '.mason'
+
+
+def make_abspath_func(root):
+    def func(path):
+        if not os.path.isabs(path):
+            path = os.path.join(root, path)
+        return path
+
+    return func
 
 
 class ThemeLoader(object):  # pragma: no cover
@@ -36,42 +44,33 @@ class ThemeLoader(object):  # pragma: no cover
         :param manager: A :class:`~stonemason.mason.theme.ThemeManager` object.
         :type manager: :class:`~stonemason.mason.theme.ThemeManager`
 
-        :return: A list of the names of loaded themes.
-        :rtype: list
         """
         raise NotImplementedError
 
 
-class JsonThemeLoader(ThemeLoader):
-    """Json Theme Loader
-
-    A `FileThemeLoader` could parses and loads a json theme into a theme
-    manager.
-
-    :param filename: A string literal represents the full path of a file.
-    :type filename: str
-
-    """
-
+class PythonThemeLoader(ThemeLoader):
     def __init__(self, filename):
         self._filename = filename
+        self._theme_root = os.path.dirname(filename)
 
     def load_into(self, manager):
-        """Load themes into the manager"""
         assert isinstance(manager, ThemeManager)
 
+        env_g = {}
+        env_l = {'URI': make_abspath_func(self._theme_root)}
         with open(self._filename, 'r') as fp:
-            configs = json.loads(fp.read())
+            code = compile(fp.read(), self._filename, 'exec')
+            exec (code, env_g, env_l)
 
-            theme = Theme(**configs)
-            manager.put(theme.name, theme)
+        try:
+            theme_config = env_l['THEME']
+            if not isinstance(theme_config, dict):
+                raise ThemeError('"THEME" should be a dict object')
+        except KeyError:
+            raise ThemeError('Missing Theme object"THEME"')
 
-            return [theme.name]
-
-
-class YAMLThemeLoader(ThemeLoader):
-    # TODO: Implement yaml theme format
-    pass
+        map_theme = MapTheme(**theme_config)
+        manager.put(map_theme.name, map_theme)
 
 
 class LocalThemeLoader(ThemeLoader):
@@ -79,27 +78,25 @@ class LocalThemeLoader(ThemeLoader):
 
     A `LocalThemeLoader` could parse and load themes in a given directory.
 
-    :param dirname: A string literal represents the full path of a directory.
-    :type dirname: str
+    :param collection_root: Full path of a theme directory.
+    :type collection_root: str
 
     """
 
-    def __init__(self, dirname):
-        self._dirname = dirname
+    def __init__(self, collection_root):
+        self._collection_root = collection_root
 
     def load_into(self, manager):
-        """Load themes into the manager"""
         assert isinstance(manager, ThemeManager)
 
-        loaded = list()
-
-        for basename in os.listdir(self._dirname):
-
-            filename = os.path.join(self._dirname, basename)
-            if not is_valid_theme_filename(filename):
+        for basename in os.listdir(self._collection_root):
+            if not is_map_theme(basename):
                 continue
 
-            file_loader = JsonThemeLoader(filename)
-            loaded.extend(file_loader.load_into(manager))
+            filename = os.path.join(self._collection_root, basename)
 
-        return loaded
+            loader = PythonThemeLoader(filename)
+            loader.load_into(manager)
+
+
+

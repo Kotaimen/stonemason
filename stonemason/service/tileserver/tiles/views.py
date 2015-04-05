@@ -4,7 +4,7 @@ __author__ = 'ray'
 __date__ = '2/27/15'
 
 from werkzeug.http import http_date
-from flask import abort, make_response, jsonify
+from flask import abort, make_response
 from flask.views import MethodView
 
 from ..models import MasonModel
@@ -68,27 +68,4 @@ class TilesView(MethodView):
         response.headers['Cache-Control'] = self._model.cache_control
 
         return response
-
-
-class TagsView(MethodView):
-    """Tag View
-
-    Get loaded theme names.
-
-    :param mason_model: A :class:`~stonemason.service.models.MasonModel` that
-                        contains mason themes.
-    :type mason_model: :class:`~stonemason.service.models.MasonModel`
-
-    """
-
-    def __init__(self, mason_model):
-        assert isinstance(mason_model, MasonModel)
-        self._model = mason_model
-
-    def get(self):
-        """Get a list of loaded theme names"""
-        tags = self._model.get_tile_tags()
-        return jsonify(result=tags)
-
-
 

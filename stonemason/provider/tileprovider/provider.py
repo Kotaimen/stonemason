@@ -4,19 +4,19 @@ __author__ = 'ray'
 __date__ = '3/27/15'
 
 from stonemason.pyramid import Pyramid
-from stonemason.provider.formatbundle import MapType
+from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 
 
 class TileProvider(object):  # pragma: no cover
-    def __init__(self, maptype, pyramid):
-        assert isinstance(maptype, MapType)
+    def __init__(self, bundle, pyramid):
+        assert isinstance(bundle, FormatBundle)
         assert isinstance(pyramid, Pyramid)
-        self._maptype = maptype
+        self._bundle = bundle
         self._pyramid = pyramid
 
     @property
-    def maptype(self):
-        return self._maptype
+    def formatbundle(self):
+        return self._bundle
 
     @property
     def pyramid(self):
@@ -30,8 +30,10 @@ class TileProvider(object):  # pragma: no cover
 
 
 class NullTileProvider(TileProvider):
-    def __init__(self, **kwargs):
-        TileProvider.__init__(self, MapType(), Pyramid())
+    def __init__(self):
+        dummy_bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
+        dummy_pyramid = Pyramid()
+        TileProvider.__init__(self, dummy_bundle, dummy_pyramid)
 
     def get_tilecluster(self, meta_index):
         return None

@@ -5,7 +5,7 @@ __date__ = '2/27/15'
 
 from flask import Blueprint
 
-from .views import TilesView, TagsView
+from .views import TilesView
 
 
 def create_blueprint(**kwargs):
@@ -25,15 +25,6 @@ def create_blueprint(**kwargs):
         rule='/tiles/<tag>/<int:z>/<int:x>/<int:y>.<ext>',
         view_func=tiles_view,
         defaults={'scale': '1x'},
-        methods=['GET']
-    )
-
-    tags_view = TagsView.as_view('tags', **kwargs)
-
-    blueprint.add_url_rule(
-        endpoint='tile_tags',
-        rule='/tiles',
-        view_func=tags_view,
         methods=['GET']
     )
 

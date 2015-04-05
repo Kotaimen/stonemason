@@ -7,6 +7,7 @@ from flask.views import MethodView
 from flask import render_template
 
 from ..models import MasonModel, ThemeModel
+from ..helper import render_mason_map
 
 
 class AdminView(MethodView):
@@ -32,8 +33,7 @@ class AdminView(MethodView):
     def get(self):
         """Retrieve an overview of all loaded maps."""
         collection = list()
-        for tag in self._mason_model.get_tile_tags():
-            theme = self._theme_model.get_theme(tag)
-            collection.append(theme.describe())
+        for name, mason_map in self._mason_model.get_maps().items():
+            collection.append(render_mason_map(mason_map))
 
-        return render_template('index.html', themes=collection)
+        return render_template('index.html', collection=collection)

@@ -6,7 +6,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 
-    <title>Stonemason - {{ theme.tag }}</title>
+    <title>Stonemason - {{ mason_map.name }}</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet"
@@ -37,15 +37,15 @@
 
     var map = L.map('map').setView(
         L.latLng(
-            {{ theme.metadata.center[1] }},
-            {{ theme.metadata.center[0] }}
+            {{ mason_map.metadata.center[1] }},
+            {{ mason_map.metadata.center[0] }}
         ),
-        {{ theme.metadata.center_zoom }});
+        {{ mason_map.metadata.center_zoom }});
 
-    L.tileLayer('/tiles/{{ theme.name }}/{z}/{x}/{y}.{{ theme.storage.tileformat.extension }}', {
-        attribution: "{{ theme.metadata.attribution }}",
-        minZoom: {{ theme.pyramid.levels|first  }},
-        maxZoom: {{ theme.pyramid.levels|last  }},
+    L.tileLayer('/tiles/{{ mason_map.name }}/{z}/{x}/{y}.{{ mason_map.provider.tileformat.extension }}', {
+        attribution: "{{ mason_map.metadata.attribution }}",
+        minZoom: {{ mason_map.provider.pyramid.levels|first  }},
+        maxZoom: {{ mason_map.provider.pyramid.levels|last  }},
         detectRetina: true,
         errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png',
     }).addTo(map);

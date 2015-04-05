@@ -7,6 +7,7 @@ from flask.views import MethodView
 from flask import render_template, abort
 
 from ..models import MasonModel, ThemeModel
+from ..helper import render_mason_map
 
 
 class MapView(MethodView):
@@ -31,10 +32,9 @@ class MapView(MethodView):
 
     def get(self, tag):
         """Retrieve a map site with the given tag."""
-        tags = self._mason_model.get_tile_tags()
-        if tag not in tags:
+        mason_map = self._mason_model.get_map(tag)
+        if mason_map is None:
             abort(404)
 
-        theme = self._theme_model.get_theme(tag)
-
-        return render_template('map.html', theme=theme.describe())
+        return render_template(
+            'map.html', mason_map=render_mason_map(mason_map))

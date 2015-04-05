@@ -21,87 +21,87 @@
     <style type="text/css">
 
         @media screen and (max-width: 768px) {
-            #grid[data-columns]::before {
-                content: '1 .column.size-1of1';
-            }
+        #grid[data-columns]::before {
+        content: '1 .column.size-1of1';
+        }
         }
 
         @media screen and (min-width: 768px) and (max-width: 992px) {
-            #grid[data-columns]::before {
-                content: '2 .column.size-1of2';
-            }
+        #grid[data-columns]::before {
+        content: '2 .column.size-1of2';
+        }
         }
 
         @media screen and (min-width: 992px) {
-            #grid[data-columns]::before {
-                content: '3 .column.size-1of3';
-            }
+        #grid[data-columns]::before {
+        content: '3 .column.size-1of3';
+        }
         }
 
         .column {
-            float: left;
+        float: left;
         }
 
         .size-1of1 {
-            width: 100%;
+        width: 100%;
         }
 
         .size-1of2 {
-            width: 50%;
+        width: 50%;
         }
 
         .size-1of3 {
-            width: 33.3333%;
+        width: 33.3333%;
         }
 
         #grid .item {
-            padding: 8px;
+        padding: 8px;
         }
 
         .panel {
-            margin-bottom: 0;
+        margin-bottom: 0;
         }
 
         .container-wrapper {
-            margin-top: 50px;
+        margin-top: 50px;
         }
 
         /*
-         * Sidebar
-         */
+        * Sidebar
+        */
 
         /* Hide for mobile, show later */
         .sidebar {
-            display: none;
+        display: none;
         }
 
         @media (min-width: 768px) {
-            .sidebar {
-                position: fixed;
-                top: 50px;
-                bottom: 0;
-                left: 0;
-                z-index: 1000;
-                display: block;
-                padding: 20px;
-                overflow-x: hidden;
-                overflow-y: auto;
-                /* Scrollable contents if viewport is shorter than content. */
-                /*background-color: #f5f5f5;*/
-                /*border-right: 1px solid #eee;*/
-            }
+        .sidebar {
+        position: fixed;
+        top: 50px;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        /* Scrollable contents if viewport is shorter than content. */
+        /*background-color: #f5f5f5;*/
+        /*border-right: 1px solid #eee;*/
+        }
         }
 
         /* Sidebar navigation */
         .nav-sidebar {
-            margin-right: -21px; /* 20px padding + 1px border */
-            margin-bottom: 20px;
-            margin-left: -20px;
+        margin-right: -21px; /* 20px padding + 1px border */
+        margin-bottom: 20px;
+        margin-left: -20px;
         }
 
         .nav-sidebar > li > a {
-            padding-right: 20px;
-            padding-left: 20px;
+        padding-right: 20px;
+        padding-left: 20px;
         }
 
     </style>
@@ -153,15 +153,15 @@
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 <div id="grid" data-columns>
 
-                    {% for theme in themes %}
+                    {% for mason_map in collection %}
 
                     <div class="item">
 
                         <div class="panel panel-default">
 
                             <div class="panel-heading">
-                                <h3 class="text-capitalize">{{ theme.name }}
-                                    <a href="maps/{{ theme.name }}"
+                                <h3 class="text-capitalize">{{ mason_map.name }}
+                                    <a href="maps/{{ mason_map.name }}"
                                        class="btn btn-default btn-sml pull-right"
                                        role="button">
                                     <span class="glyphicon glyphicon-map-marker"
@@ -170,31 +170,31 @@
                                     </a>
                                 </h3>
 
-                                <code>{{ theme.metadata.version }}</code>
+                                <code>{{ mason_map.metadata.version }}</code>
 
                             </div>
 
                             <div class="panel-body">
                                 <p>
-                                    {{ theme.metadata.description|e }}
+                                    {{ mason_map.metadata.abstract|e }}
                                 </p>
                             </div>
 
                             <table class="table table-default">
                                 <tr>
                                     <td>CRS</td>
-                                    <td><code>{{ theme.pyramid.crs|e }}</code>
+                                    <td><code>{{ mason_map.provider.pyramid.geogcs|e }}</code>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Projection</td>
-                                    <td><code>{{ theme.pyramid.proj|e }}</code>
+                                    <td><code>{{ mason_map.provider.pyramid.projcs|e }}</code>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Zoom Levels</td>
-                                    <td>{{ theme.pyramid.levels[0] }}~{{
-                                        theme.pyramid.levels[-1] }}
+                                    <td>{{ mason_map.provider.pyramid.levels[0] }}~{{
+                                        mason_map.provider.pyramid.levels[-1] }}
                                     </td>
                                 </tr>
 
@@ -203,7 +203,7 @@
 
                             <div class="panel-footer">
                                 <p class="text-right">
-                                    {{ theme.metadata.attribution|e }}
+                                    {{ mason_map.metadata.abstract|e }}
                                 </p>
                             </div>
 
