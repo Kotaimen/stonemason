@@ -48,11 +48,11 @@ class Timer(object):
 
     >>> import time
     >>> from stonemason.util.timer import Timer
-    >>> with Timer():
-    ...     time.sleep(0.01) #doctest: +ELLIPSIS
+    >>> with Timer(writer=print): #doctest: +SKIP
+    ...     time.sleep(0.01)
     Time taken: ...ms
-    >>> with Timer():
-    ...     time.sleep(1) #doctest: +ELLIPSIS
+    >>> with Timer(writer=print):  #doctest: +SKIP
+    ...     time.sleep(1)
     Time taken: ...s
 
     :param message: Formatted message, must include ``%(time)s``, default
@@ -70,7 +70,7 @@ class Timer(object):
 
     def __init__(self,
                  message='Time taken: %(time)s',
-                 writer=sys.stdout.write,
+                 writer=sys.stderr.write,
                  newline=True):
         self._message = message
         self._writer = writer
