@@ -42,6 +42,6 @@ def check_command(ctx):
             click.secho('\t%r' % theme.pyramid, fg='green')
             click.secho('\t%r' % theme.metadata, fg='green')
             click.secho('\t%r' % theme.storage, fg='green')
-            mason.load_theme(theme)
+        mason.load_theme(theme)
 
     click.echo('Check completed.')
