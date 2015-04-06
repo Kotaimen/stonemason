@@ -6,4 +6,4 @@ __date__ = '1/5/15'
 from .mason import Mason
 from .masonmap import MasonMap, Metadata
 from .mapbuilder import MapBuilder
-from .exceptions import MasonError, MapBuildError, DuplicatedMapError
+from .exceptions import MasonError, MapNotFound, DuplicatedMap, MapBuildError

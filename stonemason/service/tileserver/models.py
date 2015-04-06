@@ -6,7 +6,7 @@ __date__ = '2/27/15'
 import re
 
 from stonemason.mason.theme import MemThemeManager, LocalThemeLoader
-from stonemason.mason import Mason
+from stonemason.mason import Mason, MapNotFound
 
 
 class ThemeModel(object):
@@ -25,25 +25,21 @@ class ThemeModel(object):
 
 class MasonModel(object):
     def __init__(self, themes, cache_servers=None, max_age=300):
-        assert isinstance(themes, list)
-        self._themes = themes
         self._mason = None
         self._cache_servers = cache_servers
         self._max_age = max_age
+        self._themes = themes
 
     def do_init(self):
         cache_config = None
 
         if self._cache_servers is not None:
             cache_servers = re.split(r'[; ]+', self._cache_servers)
-            cache_config = dict(
-                prototype='memcache',
-                parameters=dict(servers=cache_servers)
-            )
+            cache_config = dict(servers=cache_servers)
 
-        mason = Mason(cache_config=cache_config, cache_on=True)
+        mason = Mason(cache_config=cache_config)
         for theme in self._themes:
-            mason.load_theme(theme)
+            mason.load_map_from_theme(theme)
 
         return mason
 
@@ -51,17 +47,22 @@ class MasonModel(object):
     def mason(self):
         if self._mason is None:
             self._mason = self.do_init()
-
         return self._mason
 
-    def get_tile(self, tag, z, x, y, scale, ext):
-        return self.mason.get_tile(tag, z, x, y, scale, ext)
+    def get_tile(self, name, z, x, y, scale, ext):
+        try:
+            return self.mason.get_tile(name, z, x, y)
+        except MapNotFound:
+            return None
 
     def get_map(self, tag):
-        return self.mason.get_map(tag)
+        try:
+            return self.mason.get_map(tag)
+        except MapNotFound:
+            return None
 
-    def get_maps(self):
-        return self.mason.get_maps()
+    def __iter__(self):
+        return iter(self.mason)
 
     @property
     def cache_control(self):

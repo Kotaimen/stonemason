@@ -11,92 +11,71 @@ import six
 from stonemason.pyramid import TileIndex, MetaTileIndex
 from stonemason.provider.tilecache import NullTileCache, MemTileCache
 
+from .masonmap import MasonMap
 from .mapbuilder import MapBuilder
-from .exceptions import DuplicatedMapError
+from .exceptions import MapNotFound, DuplicatedMap
 
 
 class Mason(object):
-    """Stonemason Facade
-
-    `Mason` is the facade of `Stonemason`. A `Mason` object provides tiles of
-    various kinds of themes from caches, storage and renders.
-
-    Themes could be loaded or unloaded by their names. Though, these with
-    duplicated names are not allowed.
-
-    In `Mason`, tiles are served according to their tags which, for now,
-    equals to the name of their themes.
-
-    :param theme_store: A `ThemeManager` instance that contains piles of themes.
-    :type theme_store: :class:`stonemason.mason.theme.ThemeManager`
-
-    :param readonly: A bool variable that controls serving mode of `Mason`.
-    :type readonly: bool
-
-    """
-
-    def __init__(self,
-                 readonly=False,
-                 logger=None,
-                 cache_config=None,
-                 cache_on=True):
-        assert isinstance(readonly, bool)
-
+    def __init__(self, logger=None, cache_config=None):
+        self._gallery = dict()
         self._logger = logger
-        self._readonly = readonly
-        self._cache_on = cache_on
 
-        if cache_config is None:
-            self._cache = NullTileCache()
+        # create cache
+        if cache_config is not None:
+            assert isinstance(cache_config, dict)
+            self._cache = MemTileCache(**cache_config)
         else:
-            self._cache = MemTileCache(cache_config.get('parameters', dict()))
+            self._cache = NullTileCache()
 
-        self._maps = dict()
-
-    def load_theme(self, theme):
-        """Load the named theme"""
+    def load_map_from_theme(self, theme):
         mason_map = MapBuilder().build_from_theme(theme)
-        if mason_map.name in self._maps:
-            raise DuplicatedMapError('Map already exists "%s"' % mason_map.name)
+        self.put_map(mason_map.name, mason_map)
 
-        self._maps[mason_map.name] = mason_map
+    def has_map(self, name):
+        return name in self._gallery
 
-    def get_map(self, tag):
+    def put_map(self, name, mason_map):
+        assert isinstance(mason_map, MasonMap)
+        if self.has_map(name):
+            raise DuplicatedMap(name)
+        self._gallery[name] = mason_map
+
+    def get_map(self, name):
         try:
-            mason_map = self._maps[tag]
+            return self._gallery[name]
         except KeyError:
-            return None
-        return mason_map
+            raise MapNotFound(name)
 
-    def get_maps(self):
-        """Get all available tile tags"""
-        return self._maps
+    def get_tile(self, name, z, x, y):
+        mason_map = self.get_map(name)
 
-    def get_tile(self, tag, z, x, y, scale, ext):
-        """Get a tile with the given tag and parameters"""
-
-        mason_map = self.get_map(tag)
-        if mason_map is None:
-            return None
+        tag = mason_map.name
 
         index = TileIndex(z, x, y)
 
-        if self._cache_on:
-            tile = self._cache.get(mason_map.name, index)
-            if tile is not None:
-                return tile
+        # get tile from cache
+        tile = self._cache.get(tag, index)
+        if tile is not None:
+            # cache hit
+            return tile
 
-        meta_index = MetaTileIndex.from_tile_index(
-            index, mason_map.provider.pyramid.stride)
+        # create meta index
+        stride = mason_map.provider.pyramid.stride
+        meta_index = MetaTileIndex.from_tile_index(index, stride)
 
+        # get tile cluster
         cluster = mason_map.provider.get_tilecluster(meta_index)
-        if cluster is None:  # cluster miss
+        if cluster is None:
             return None
 
-        if self._cache_on:
-            self._cache.put_multi(mason_map.name, cluster.tiles)
+        # populate cache with tiles in the cluster
+        self._cache.put_multi(tag, cluster.tiles)
 
-        # cluster hit
+        # get tile from the cluster
         tile = cluster[index]
 
         return tile
+
+    def __iter__(self):
+        return iter(self._gallery)

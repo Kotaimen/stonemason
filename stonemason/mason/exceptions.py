@@ -8,11 +8,14 @@ class MasonError(Exception):
     pass
 
 
+class MapNotFound(MasonError):
+    pass
+
+
+class DuplicatedMap(MasonError):
+    pass
+
+
 class MapBuildError(MasonError):
     pass
-
-
-class DuplicatedMapError(MasonError):
-    pass
-
 

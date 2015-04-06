@@ -8,8 +8,15 @@ import unittest
 from stonemason.mason import *
 from stonemason.mason.theme import MemThemeManager, PythonThemeLoader
 from stonemason.mason.theme import SAMPLE_THEME
+from stonemason.provider.tileprovider import NullTileProvider
 
 from tests import skipUnlessHasGDAL
+
+
+class DummyMasonMap(MasonMap):
+    def __init__(self, name='dummy'):
+        MasonMap.__init__(
+            self, name, metadata=Metadata(), provider=NullTileProvider())
 
 
 @skipUnlessHasGDAL()
@@ -22,27 +29,46 @@ class TestMason(unittest.TestCase):
 
         self._mason = Mason()
 
-    def test_load_theme(self):
+    def test_load_map_from_theme(self):
         theme = self._manager.get('sample')
         self.assertIsNotNone(theme)
-        self._mason.load_theme(theme)
+
+        self._mason.load_map_from_theme(theme)
 
         self.assertIsNotNone(self._mason.get_map('sample'))
-        self.assertRaises(DuplicatedMapError, self._mason.load_theme, theme)
+        self.assertRaises(MasonError, self._mason.load_map_from_theme, theme)
 
-    def test_get_maps(self):
-        self.assertDictEqual(dict(), self._mason.get_maps())
+    def test_put_get_map(self):
+        mason_map = DummyMasonMap()
+        self._mason.put_map(mason_map.name, mason_map)
 
-        theme = self._manager.get('sample')
-        self.assertIsNotNone(theme)
+        mason_map = self._mason.get_map(mason_map.name)
+        self.assertIsNotNone(mason_map)
 
-        self._mason.load_theme(theme)
-        self.assertIn('sample', self._mason.get_maps())
+    def test_has_map(self):
+        mason_map = DummyMasonMap()
+
+        self._mason.put_map(mason_map.name, mason_map)
+        self.assertTrue(self._mason.has_map(mason_map.name))
+        self.assertFalse(self._mason.has_map('not exists'))
+
+    def test_iter_maps(self):
+        mason_map1 = DummyMasonMap('test1')
+        mason_map2 = DummyMasonMap('test2')
+        mason_map3 = DummyMasonMap('test3')
+
+        self._mason.put_map(mason_map1.name, mason_map1)
+        self._mason.put_map(mason_map2.name, mason_map2)
+        self._mason.put_map(mason_map3.name, mason_map3)
+
+        collection = list((m for m in self._mason))
+        self.assertIn('test1', collection)
+        self.assertIn('test2', collection)
+        self.assertIn('test3', collection)
 
     def test_get_tile(self):
-        theme = self._manager.get('sample')
-        self.assertIsNotNone(theme)
-        self._mason.load_theme(theme)
+        mason_map = DummyMasonMap()
+        self._mason.put_map(mason_map.name, mason_map)
 
-        tile = self._mason.get_tile('sample', 0, 0, 0, 1, 'png')
-        self.assertIsNotNone(tile)
+        tile = self._mason.get_tile('dummy', 0, 0, 0)
+        self.assertIsNone(tile)

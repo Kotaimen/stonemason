@@ -55,7 +55,7 @@ class TilesView(MethodView):
 
         """
 
-        tile = self._model.mason.get_tile(tag, z, x, y, scale, ext)
+        tile = self._model.get_tile(tag, z, x, y, scale, ext)
         if tile is None:
             abort(404)
 

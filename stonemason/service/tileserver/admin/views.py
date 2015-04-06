@@ -33,7 +33,8 @@ class AdminView(MethodView):
     def get(self):
         """Retrieve an overview of all loaded maps."""
         collection = list()
-        for name, mason_map in self._mason_model.get_maps().items():
+        for name in self._mason_model:
+            mason_map = self._mason_model.get_map(name)
             collection.append(render_mason_map(mason_map))
 
         return render_template('index.html', collection=collection)
