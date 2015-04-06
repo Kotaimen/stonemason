@@ -8,17 +8,18 @@ name = 'sample'
 metadata = dict(
     title='This is a sample',
     version='0.0.1',
-    abstract="Daniel Reeve's Map of Middle-earth is well known to fans "
-             "of The Lord of the Rings. So we took his idea and made this "
-             "parchment map of our own earth. Be careful, sea monsters "
-             "are waiting for you if you dig deep into sea.",
+    abstract='A sample world.',
+    attribution='Data: Natural Earth, Tile: K&R',
     center=(0, 0),
     center_zoom=6
 )
 
 provider = dict(
     pyramid={
-        'stride': 2
+        'stride': 2,
+        'geogcs': "WGS84",
+        'projcs': "EPSG:3857"
+
     },
     maptype="image",
     tileformat={
@@ -31,7 +32,9 @@ provider = dict(
         'layers': {
             'root': {
                 'type': 'image.mapnik',
-                'style_sheet': "{{ theme_root }}/sample_world/sample_world.xml"
+                'style_sheet': "{{ theme_root }}/sample_world/sample_world.xml",
+                'default_scale': 1,
+                'buffer_size': 256
             }
         }
     }

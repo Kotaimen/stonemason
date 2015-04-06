@@ -8,4 +8,6 @@ __date__ = '3/31/15'
 
 name = 'sample.hd'
 
+provider['renderer']['layers']['root']['default_scale'] = 2
+
 THEME = dict(name=name, metadata=metadata, provider=provider)
