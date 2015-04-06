@@ -41,6 +41,7 @@ class TestHelpers(unittest.TestCase):
                           parse_levels,
                           None, None, '1,a')
 
+
 @skipUnlessHasMapnik()
 class TestStonemasonTileRenderer(unittest.TestCase):
     def test_tilerender(self):
@@ -51,11 +52,15 @@ class TestStonemasonTileRenderer(unittest.TestCase):
 
             result = runner.invoke(cli, [
                 '-v',
-                'tilerenderer', 'sample_world',
-                '--workers=2', '--levels=2-4',
+                'tilerenderer', 'sample',
+                '--workers=1', '--levels=1-2',
                 '--envelope',
-                '0', '-80', '180', '80'])
+                '0', '-80', '180', '80',
+                '--log', 'test.log'])
             self.assertEqual(result.exit_code, 0)
+
+            self.assertTrue(os.path.exists('test.log'))
+            self.assertEqual(len(open('test.log').read()), 0)
 
 
 if __name__ == '__main__':

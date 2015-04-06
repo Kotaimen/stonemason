@@ -12,11 +12,12 @@ __date__ = '3/31/15'
 
 import os
 import re
+import multiprocessing
 
 import click
 
-from stonemason.mason import Mason
-from stonemason.mason.theme import MemThemeManager, LocalThemeLoader
+from stonemason.util.timer import Timer, human_duration
+from stonemason.service.renderman import renderman, RenderDirective, Stats
 
 from ..main import cli
 from ..context import pass_context, Context
@@ -53,9 +54,12 @@ def parse_levels(ctx, param, value):
 @click.option('-c', '--csv', default=None,
               type=click.Path(dir_okay=False, exists=True),
               help='''render according to given CSV tile index list.''')
+@click.option('--log', default='render.log', type=click.Path(dir_okay=False),
+              help='''Specify a file name for render error logs, default
+              value is "render.log"''')
 @click.argument('theme_name', type=str)
 @pass_context
-def tile_renderer_command(ctx, theme_name, workers, levels, envelope, csv):
+def tile_renderer_command(ctx, theme_name, workers, levels, envelope, csv, log):
     """Start a tile rendering process on this node.
 
     Specify name of the theme to render, then either use levels and envelope,
@@ -63,14 +67,27 @@ def tile_renderer_command(ctx, theme_name, workers, levels, envelope, csv):
     """
     assert isinstance(ctx, Context)
 
-    # manager = MemThemeManager()
-    # loader = LocalThemeLoader(ctx.themes)
-    # loader.load_into(manager)
-    #
-    # mason = Mason()
-    # mason.load_theme(manager.get(theme_name))
-    #
-    # if ctx.verbose:
-    # click.secho('Rendering theme "%s"' % theme_name, fg='green')
-    #     click.secho('Using %d' % workers, fg='green')
+    if workers == 0:
+        workers = multiprocessing.cpu_count()
 
+    directive = RenderDirective(themes=ctx.themes,
+                                theme_name=theme_name,
+                                levels=levels,
+                                envelope=envelope,
+                                csv=csv,
+                                workers=workers,
+                                logfile=log)
+    timer = Timer()
+    timer.tic()
+    stat = renderman(directive)
+    timer.tac()
+
+    click.secho('Succeeded MetaTiles : %d' % stat.rendered, fg='green')
+    click.secho('   Failed MetaTiles : %d' % stat.failed, fg='green')
+    click.secho('     Total CPU Time : %s' % human_duration(stat.total_time),
+                fg='green')
+    click.secho('         Time Taken : %s' % human_duration(timer.get_time()),
+                fg='green')
+    click.secho('       Render Speed : %s/MetaTile' % \
+                human_duration(stat.total_time / stat.rendered),
+                fg='green')
