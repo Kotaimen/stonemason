@@ -7,7 +7,7 @@ from stonemason.mason import MasonMap
 from stonemason.mason.theme import MapTheme
 
 
-def render_mason_map(mason_map):
+def jsonify_mason_map(mason_map):
     assert isinstance(mason_map, MasonMap)
     template = {
         'name': mason_map.name,
@@ -33,7 +33,7 @@ def render_mason_map(mason_map):
     return template
 
 
-def render_map_theme(map_theme):
+def jsonify_map_theme(map_theme):
     assert isinstance(map_theme, MapTheme)
     template = {
         'name': map_theme.name,

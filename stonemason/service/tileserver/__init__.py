@@ -13,10 +13,8 @@ from flask import Flask
 
 from .models import ThemeModel, MasonModel
 from . import themes
-from . import tiles
 from . import maps
 from . import health
-from . import admin
 from . import default_settings
 
 
@@ -350,15 +348,7 @@ class TileServerApp(Flask):
         themes_blueprint = themes.create_blueprint(
             theme_model=self._theme_model)
 
-        tiles_blueprint = tiles.create_blueprint(
-            mason_model=self._mason_model
-        )
-
         maps_blueprint = maps.create_blueprint(
-            mason_model=self._mason_model,
-        )
-
-        admin_blueprint = admin.create_blueprint(
             mason_model=self._mason_model,
         )
 
@@ -366,7 +356,5 @@ class TileServerApp(Flask):
 
         # register blueprints
         self.register_blueprint(themes_blueprint)
-        self.register_blueprint(tiles_blueprint)
         self.register_blueprint(maps_blueprint)
         self.register_blueprint(health_blueprint)
-        self.register_blueprint(admin_blueprint)
