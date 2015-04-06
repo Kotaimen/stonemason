@@ -5,13 +5,13 @@ __date__ = '2/27/15'
 
 import re
 
-from stonemason.mason.theme import MemThemeManager, LocalThemeLoader
+from stonemason.mason.theme import MemThemeManager, FileSystemThemeLoader
 from stonemason.mason import Mason, MapNotFound
 
 
 class ThemeModel(object):
     def __init__(self, theme_dir):
-        theme_loader = LocalThemeLoader(theme_dir)
+        theme_loader = FileSystemThemeLoader(theme_dir)
 
         self._manager = MemThemeManager()
         theme_loader.load_into(self._manager)

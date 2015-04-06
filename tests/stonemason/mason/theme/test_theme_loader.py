@@ -5,30 +5,19 @@ __date__ = '2/24/15'
 
 import unittest
 
-from stonemason.mason.theme import MapTheme
 from stonemason.mason.theme import MemThemeManager
-from stonemason.mason.theme import PythonThemeLoader, LocalThemeLoader
+from stonemason.mason.theme import FileSystemThemeLoader
 
-from stonemason.mason.theme import SAMPLE_THEME, SAMPLE_THEME_DIRECTORY
+from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 
 
-class TestPyThemeLoader(unittest.TestCase):
+class TestFileSystemThemeLoader(unittest.TestCase):
     def test_load(self):
         m = MemThemeManager()
 
-        loader = PythonThemeLoader(SAMPLE_THEME)
+        loader = FileSystemThemeLoader(SAMPLE_THEME_DIRECTORY)
         loader.load_into(m)
 
-        theme = m.get('sample')
-        self.assertIsInstance(theme, MapTheme)
+        self.assertTrue(m.has('sample'))
+        self.assertTrue(m.has('sample.hd'))
 
-
-class TestLocalThemeLoader(unittest.TestCase):
-    def test_load(self):
-        m = MemThemeManager()
-
-        loader = LocalThemeLoader(SAMPLE_THEME_DIRECTORY)
-        loader.load_into(m)
-
-        theme = m.get('sample')
-        self.assertIsInstance(theme, MapTheme)

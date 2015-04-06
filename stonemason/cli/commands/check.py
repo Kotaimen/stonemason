@@ -18,7 +18,7 @@ from ..main import cli
 from ..context import pass_context, Context
 
 from stonemason.mason import Mason
-from stonemason.mason.theme import MemThemeManager, LocalThemeLoader
+from stonemason.mason.theme import MemThemeManager, FileSystemThemeLoader
 
 
 @cli.command('check', short_help='check theme configuration.')
@@ -32,7 +32,7 @@ def check_command(ctx):
         raise click.Abort()
 
     manager = MemThemeManager()
-    loader = LocalThemeLoader(ctx.themes)
+    loader = FileSystemThemeLoader(ctx.themes)
     loader.load_into(manager)
 
     mason = Mason()

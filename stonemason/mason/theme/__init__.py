@@ -11,7 +11,7 @@ import os
 
 from .theme import MapTheme
 from .manager import ThemeManager, MemThemeManager
-from .loader import ThemeLoader, PythonThemeLoader, LocalThemeLoader
+from .loader import ThemeLoader, FileSystemThemeLoader
 
 from .exceptions import ThemeError, ThemeManagerError
 

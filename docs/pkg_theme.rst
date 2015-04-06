@@ -14,9 +14,7 @@ Loaders
 .. autoclass:: stonemason.mason.theme.ThemeLoader
     :members:
 
-.. autoclass:: stonemason.mason.theme.PythonThemeLoader
-
-.. autoclass:: stonemason.mason.theme.LocalThemeLoader
+.. autoclass:: stonemason.mason.theme.FileSystemThemeLoader
 
 
 Managers

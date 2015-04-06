@@ -6,8 +6,8 @@ __date__ = '2/3/15'
 import unittest
 
 from stonemason.mason import *
-from stonemason.mason.theme import MemThemeManager, PythonThemeLoader
-from stonemason.mason.theme import SAMPLE_THEME
+from stonemason.mason.theme import MemThemeManager, FileSystemThemeLoader
+from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 from stonemason.provider.tileprovider import NullTileProvider
 
 from tests import skipUnlessHasGDAL
@@ -24,7 +24,7 @@ class TestMason(unittest.TestCase):
     def setUp(self):
         self._manager = MemThemeManager()
 
-        loader = PythonThemeLoader(SAMPLE_THEME)
+        loader = FileSystemThemeLoader(SAMPLE_THEME_DIRECTORY)
         loader.load_into(self._manager)
 
         self._mason = Mason()
