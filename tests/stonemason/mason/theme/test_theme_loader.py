@@ -6,28 +6,18 @@ __date__ = '2/24/15'
 import unittest
 
 from stonemason.mason.theme import MemThemeManager
-from stonemason.mason.theme import JsonThemeLoader, LocalThemeLoader
+from stonemason.mason.theme import FileSystemThemeLoader
 
-from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY, SAMPLE_THEME_NAME
+from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 
 
-class TestJsonThemeLoader(unittest.TestCase):
+class TestFileSystemThemeLoader(unittest.TestCase):
     def test_load(self):
         m = MemThemeManager()
 
-        loader = JsonThemeLoader(SAMPLE_THEME_DIRECTORY, SAMPLE_THEME_NAME)
+        loader = FileSystemThemeLoader(SAMPLE_THEME_DIRECTORY)
         loader.load_into(m)
 
-        theme = m.get('sample')
-        self.assertEqual('sample', theme.name)
+        self.assertTrue(m.has('sample'))
+        self.assertTrue(m.has('sample.hd'))
 
-
-class TestDirectoryThemeLoader(unittest.TestCase):
-    def test_load(self):
-        m = MemThemeManager()
-
-        loader = LocalThemeLoader(SAMPLE_THEME_DIRECTORY)
-        loader.load_into(m)
-
-        theme = m.get('sample')
-        self.assertEqual('sample', theme.name)

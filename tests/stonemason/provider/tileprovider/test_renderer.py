@@ -28,15 +28,14 @@ class DummyMetaTileRenderer(MetaTileRenderer):
 class TestStorageProviderWithDummyStorage(unittest.TestCase):
     def setUp(self):
         maptype = MapType()
-        pyramid = Pyramid(stride=2)
         tileformat = TileFormat('PNG')
-
         bundle = FormatBundle(maptype, tileformat)
+
+        pyramid = Pyramid(stride=2)
 
         renderer = DummyMetaTileRenderer()
 
-        self._provider = RendererTileProvider(
-            maptype, pyramid, bundle, renderer)
+        self._provider = RendererTileProvider(bundle, pyramid, renderer)
 
     def test_get_tilecluster(self):
         meta_index = MetaTileIndex(2, 0, 0, 2)
@@ -59,15 +58,14 @@ class TestStorageProviderWithDummyStorage(unittest.TestCase):
 class TestStorageProviderWithNullStorage(unittest.TestCase):
     def setUp(self):
         maptype = MapType()
-        pyramid = Pyramid()
         tileformat = TileFormat('JPEG')
-
         bundle = FormatBundle(maptype, tileformat)
+
+        pyramid = Pyramid()
 
         renderer = NullMetaTileRenderer()
 
-        self._provider = RendererTileProvider(
-            maptype, pyramid, bundle, renderer)
+        self._provider = RendererTileProvider(bundle, pyramid, renderer)
 
     def test_get_tilecluster(self):
         meta_index = MetaTileIndex(0, 0, 0, 1)

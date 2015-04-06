@@ -7,28 +7,10 @@ import six
 import unittest
 
 from stonemason.pyramid import Pyramid, TileIndex, Tile, MetaTileIndex
-from stonemason.provider.formatbundle import MapType
+from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.provider.tilestorage import NullClusterStorage
 from stonemason.provider.tilestorage import ClusterStorage, TileCluster
 from stonemason.provider.tileprovider import StorageTileProvider
-from stonemason.provider.tileprovider import NullTileProvider
-
-
-class TestNullTileProvider(unittest.TestCase):
-    def setUp(self):
-        self._provider = NullTileProvider()
-
-    def test_get_tilecluster(self):
-        meta_index = MetaTileIndex(0, 0, 0, 1)
-
-        cluster = self._provider.get_tilecluster(meta_index)
-        self.assertIsNone(cluster)
-
-    def test_get_metatile(self):
-        meta_index = MetaTileIndex(0, 0, 0, 1)
-
-        metatile = self._provider.get_metatile(meta_index)
-        self.assertIsNone(metatile)
 
 
 class DummyClusterStorage(ClusterStorage):
@@ -45,11 +27,14 @@ class DummyClusterStorage(ClusterStorage):
 class TestStorageProviderWithDummyStorage(unittest.TestCase):
     def setUp(self):
         maptype = MapType()
+        tileformat = TileFormat('PNG')
+        bundle = FormatBundle(maptype, tileformat)
+
         pyramid = Pyramid()
 
         storage = DummyClusterStorage()
 
-        self._provider = StorageTileProvider(maptype, pyramid, storage)
+        self._provider = StorageTileProvider(bundle, pyramid, storage)
 
     def test_get_tilecluster(self):
         meta_index = MetaTileIndex(0, 0, 0, 1)
@@ -68,11 +53,14 @@ class TestStorageProviderWithDummyStorage(unittest.TestCase):
 class TestStorageProviderWithNullStorage(unittest.TestCase):
     def setUp(self):
         maptype = MapType()
+        tileformat = TileFormat('PNG')
+        bundle = FormatBundle(maptype, tileformat)
+
         pyramid = Pyramid()
 
         storage = NullClusterStorage()
 
-        self._provider = StorageTileProvider(maptype, pyramid, storage)
+        self._provider = StorageTileProvider(bundle, pyramid, storage)
 
     def test_get_tilecluster(self):
         meta_index = MetaTileIndex(0, 0, 0, 1)

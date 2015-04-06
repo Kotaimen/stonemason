@@ -1,0 +1,40 @@
+# -*- encoding: utf-8 -*-
+
+__author__ = 'ray'
+__date__ = '3/31/15'
+
+name = 'sample'
+
+metadata = dict(
+    title='This is a sample',
+    version='0.0.1',
+    abstract="Daniel Reeve's Map of Middle-earth is well known to fans "
+             "of The Lord of the Rings. So we took his idea and made this "
+             "parchment map of our own earth. Be careful, sea monsters "
+             "are waiting for you if you dig deep into sea.",
+    center=(0, 0),
+    center_zoom=6
+)
+
+provider = dict(
+    pyramid={
+        'stride': 2
+    },
+    maptype="image",
+    tileformat={
+        "format": "PNG",
+        "extension": "png"
+    },
+    storage={},
+    renderer={
+        'prototype': 'image',
+        'layers': {
+            'root': {
+                'type': 'image.mapnik',
+                'style_sheet': "{{ theme_root }}/sample_world/sample_world.xml"
+            }
+        }
+    }
+)
+
+THEME = dict(name=name, metadata=metadata, provider=provider)

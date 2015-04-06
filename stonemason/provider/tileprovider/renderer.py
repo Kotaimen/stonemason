@@ -3,7 +3,6 @@
 __author__ = 'ray'
 __date__ = '3/29/15'
 
-from stonemason.provider.formatbundle import FormatBundle
 from stonemason.provider.tilestorage import TileCluster
 from stonemason.renderer.tilerenderer import MetaTileRenderer
 
@@ -11,9 +10,8 @@ from .provider import TileProvider
 
 
 class RendererTileProvider(TileProvider):
-    def __init__(self, maptype, pyramid, bundle, renderer):
-        TileProvider.__init__(self, maptype, pyramid)
-        assert isinstance(bundle, FormatBundle)
+    def __init__(self, bundle, pyramid, renderer):
+        TileProvider.__init__(self, bundle, pyramid)
         assert isinstance(renderer, MetaTileRenderer)
         self._bundle = bundle
         self._renderer = renderer

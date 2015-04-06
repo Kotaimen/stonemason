@@ -9,8 +9,8 @@ from .provider import TileProvider
 
 
 class StorageTileProvider(TileProvider):
-    def __init__(self, maptype, pyramid, storage):
-        TileProvider.__init__(self, maptype, pyramid)
+    def __init__(self, bundle, pyramid, storage):
+        TileProvider.__init__(self, bundle, pyramid)
         assert isinstance(storage, ClusterStorage)
         self._storage = storage
 

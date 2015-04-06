@@ -9,17 +9,15 @@
 
 import os
 
-from .theme import ThemeError, InvalidThemeValue
-from .theme import Theme, ThemeElement
-from .theme import ThemeMetadata, ThemePyramid, ThemeStorage, ThemeDesign
-
-from .manager import ThemeManagerError, DuplicatedTheme
+from .theme import MapTheme
 from .manager import ThemeManager, MemThemeManager
-from .loader import ThemeLoader, JsonThemeLoader, LocalThemeLoader
+from .loader import ThemeLoader, FileSystemThemeLoader
+
+from .exceptions import ThemeError, ThemeManagerError
 
 
 SAMPLE_THEME_DIRECTORY = os.path.join(os.path.dirname(__file__), 'samples')
 
-SAMPLE_THEME_NAME = 'sample_world.json'
+SAMPLE_THEME_NAME = 'sample_world.mason'
 
 SAMPLE_THEME = os.path.join(SAMPLE_THEME_DIRECTORY, SAMPLE_THEME_NAME)

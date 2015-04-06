@@ -47,7 +47,7 @@ class TestStonemasonTileRenderer(unittest.TestCase):
     def test_tilerender(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
-            result = runner.invoke(cli, ['init'])
+            result  = runner.invoke(cli, ['init'])
             self.assertEqual(result.exit_code, 0)
 
             result = runner.invoke(cli, [

@@ -5,7 +5,7 @@ __date__ = '3/25/15'
 
 import unittest
 
-from stonemason.mason.theme import Theme
+from stonemason.mason.theme import MapTheme
 from stonemason.pyramid import Pyramid, MetaTileIndex
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import ImageMetaTileRenderer
@@ -27,13 +27,13 @@ class TestImageMetaTileRenderer(unittest.TestCase):
             }
         }
 
-        theme = Theme(**d)
+        theme = MapTheme(**d)
 
         maptype = MapType(theme.maptype)
         tileformat = TileFormat('JPEG')
         bundle = FormatBundle(maptype, tileformat)
 
-        pyramid = Pyramid(**theme.pyramid.attributes)
+        pyramid = Pyramid(**theme.pyramid)
 
         renderer = RendererExprParser(pyramid).parse_from_dict(
             d['design']['layers'], 'root').interpret()
@@ -57,13 +57,13 @@ class TestImageMetaTileRenderer(unittest.TestCase):
             }
         }
 
-        theme = Theme(**d)
+        theme = MapTheme(**d)
 
         maptype = MapType(theme.maptype)
         tileformat = TileFormat('JPEG')
         bundle = FormatBundle(maptype, tileformat)
 
-        pyramid = Pyramid(**theme.pyramid.attributes)
+        pyramid = Pyramid(**theme.pyramid)
 
         renderer = RendererExprParser(pyramid).parse_from_dict(
             d['design']['layers'], 'root').interpret()
@@ -90,13 +90,13 @@ class TestImageMetaTileRenderer(unittest.TestCase):
             }
         }
 
-        theme = Theme(**d)
+        theme = MapTheme(**d)
 
         maptype = MapType(theme.maptype)
         tileformat = TileFormat('JPEG')
         bundle = FormatBundle(maptype, tileformat)
 
-        pyramid = Pyramid(**theme.pyramid.attributes)
+        pyramid = Pyramid(**theme.pyramid)
 
         renderer = RendererExprParser(pyramid).parse_from_dict(
             d['design']['layers'], 'root').interpret()

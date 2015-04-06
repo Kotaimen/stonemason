@@ -11,33 +11,18 @@ __author__ = 'ray'
 __date__ = '2/8/15'
 
 import os
-import six
-import json
 
-from .theme import Theme
+import jinja2
+
+from .theme import MapTheme
 from .manager import ThemeManager
+from .exceptions import ThemeLoaderError
 
 
-def is_valid_theme_filename(filename):
+def is_valid_theme_file(filename):
     """Check if is a theme file"""
-    # TODO: USE YAML FORMAT INSTEAD
     _, ext = os.path.splitext(filename)
-    return ext == '.json'
-
-
-def patch_file_path(root, configs):
-    if 'design' in configs:
-        if 'layers' in configs['design']:
-            layers = configs['design']['layers']
-            assert isinstance(layers, dict)
-            for name, layer in six.iteritems(layers):
-                for k, v in six.iteritems(layer):
-                    if k == 'style_sheet':
-                        if not os.path.isabs(v):
-                            v = os.path.join(root, v)
-                            configs['design']['layers'][name][k] = v
-
-    return configs
+    return ext == '.mason'
 
 
 class ThemeLoader(object):  # pragma: no cover
@@ -52,71 +37,42 @@ class ThemeLoader(object):  # pragma: no cover
         :param manager: A :class:`~stonemason.mason.theme.ThemeManager` object.
         :type manager: :class:`~stonemason.mason.theme.ThemeManager`
 
-        :return: A list of the names of loaded themes.
-        :rtype: list
         """
         raise NotImplementedError
 
 
-class JsonThemeLoader(ThemeLoader):
-    """Json Theme Loader
-
-    A `FileThemeLoader` could parses and loads a json theme into a theme
-    manager.
-
-    :param filename: A string literal represents the full path of a file.
-    :type filename: str
-
-    """
-
-    def __init__(self, theme_root, theme_name):
+class FileSystemThemeLoader(ThemeLoader):
+    def __init__(self, theme_root):
+        self._env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(theme_root))
         self._theme_root = theme_root
-        self._theme_file = os.path.join(self._theme_root, theme_name)
 
     def load_into(self, manager):
-        """Load themes into the manager"""
         assert isinstance(manager, ThemeManager)
 
-        with open(self._theme_file, 'r') as fp:
-            configs = json.loads(fp.read())
-
-            # TODO: Fix this temporary patch
-            configs = patch_file_path(self._theme_root, configs)
-
-            theme = Theme(**configs)
-            manager.put(theme.name, theme)
-
-            return [theme.name]
-
-
-class YAMLThemeLoader(ThemeLoader):
-    # TODO: Implement yaml theme format
-    pass
-
-
-class LocalThemeLoader(ThemeLoader):
-    """Local Theme Directory Loader
-
-    A `LocalThemeLoader` could parse and load themes in a given directory.
-
-    :param dirname: A string literal represents the full path of a directory.
-    :type dirname: str
-
-    """
-
-    def __init__(self, theme_dir):
-        self._theme_dir = theme_dir
-
-    def load_into(self, manager):
-        """Load themes into the manager"""
-        assert isinstance(manager, ThemeManager)
-
-        loaded = list()
-
-        for theme_name in os.listdir(self._theme_dir):
-            if not is_valid_theme_filename(theme_name):
+        for theme_name in os.listdir(self._theme_root):
+            if not is_valid_theme_file(theme_name):
                 continue
-            loader = JsonThemeLoader(self._theme_dir, theme_name)
-            loaded.extend(loader.load_into(manager))
 
-        return loaded
+            env_l = {}
+            env_g = {}
+
+            template = self._env.get_template(theme_name)
+            template_variables = dict(theme_root=self._theme_root)
+            source = template.render(**template_variables).encode('utf-8')
+            # print (source)
+            exec (source, env_g, env_l)
+
+            try:
+                theme_config = env_l['THEME']
+                if not isinstance(theme_config, dict):
+                    raise ThemeLoaderError('"THEME" should be a dict object')
+            except KeyError:
+                raise ThemeLoaderError('Missing Theme object"THEME"')
+
+            map_theme = MapTheme(**theme_config)
+            manager.put(map_theme.name, map_theme)
+
+
+
+

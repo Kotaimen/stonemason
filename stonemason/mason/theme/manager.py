@@ -12,17 +12,8 @@ __date__ = '2/20/15'
 
 import six
 
-from .theme import Theme
-
-
-class ThemeManagerError(Exception):
-    """Base Theme Error"""
-    pass
-
-
-class DuplicatedTheme(ThemeManagerError):
-    """Duplicated Theme Error"""
-    pass
+from .theme import MapTheme
+from .exceptions import ThemeManagerError
 
 
 class ThemeManager(object):  # pragma: no cover
@@ -82,24 +73,6 @@ class ThemeManager(object):  # pragma: no cover
         """
         raise NotImplementedError
 
-    def iternames(self):
-        """Iterate theme names in the manager.
-
-        :return: Return a generator of names in the manager.
-        :rtype: generator
-
-        """
-        raise NotImplementedError
-
-    def iterthemes(self):
-        """Iterate themes in the manager.
-
-        :return: Return a generator of themes in the manager.
-        :rtype: generator
-
-        """
-        raise NotImplementedError
-
     def __iter__(self):
         """Iterate name and theme in the manager.
 
@@ -123,19 +96,19 @@ class MemThemeManager(ThemeManager):
 
     def put(self, name, theme):
         """Put a theme into the manager"""
-        assert isinstance(theme, Theme)
+        assert isinstance(theme, MapTheme)
 
         if self.has(name):
-            raise DuplicatedTheme(name)
+            raise ThemeManagerError('Duplicated themes: "%s"!' % name)
 
         self._themes[name] = theme
 
     def get(self, name):
         """Get the specified theme from the manager"""
-        if not self.has(name):
+        try:
+            return self._themes[name]
+        except KeyError:
             return None
-
-        return self._themes[name]
 
     def has(self, name):
         """Check if the specified theme is in the manager"""
@@ -143,18 +116,12 @@ class MemThemeManager(ThemeManager):
 
     def delete(self, name):
         """Remove the specified theme from the manager"""
-        if self.has(name):
+        try:
             del self._themes[name]
-
-    def iternames(self):
-        """Iterate theme names in the manager"""
-        return six.iterkeys(self._themes)
-
-    def iterthemes(self):
-        """Iterate themes in the manager"""
-        return six.itervalues(self._themes)
+        except KeyError:
+            pass  # do not complain if theme not exists
 
     def __iter__(self):
         """Iterate name and theme in the manager"""
-        return six.iteritems(self._themes)
+        return iter(self._themes)
 

@@ -48,19 +48,15 @@ class DummyClusterStorage(ClusterStorage):
 class TestHybridTileProviderWithDummy(unittest.TestCase):
     def setUp(self):
         maptype = MapType()
-        pyramid = Pyramid(stride=2)
         tileformat = TileFormat('PNG')
-
         bundle = FormatBundle(maptype, tileformat)
 
+        pyramid = Pyramid(stride=2)
+
         renderer = DummyMetaTileRenderer()
-        renderer_provider = RendererTileProvider(
-            maptype, pyramid, bundle, renderer)
-
         storage = DummyClusterStorage()
-        storage_provider = StorageTileProvider(maptype, pyramid, storage)
 
-        self._provider = HybridTileProvider(storage_provider, renderer_provider)
+        self._provider = HybridTileProvider(bundle, pyramid, storage, renderer)
 
     def test_get_tilecluster(self):
         meta_index = MetaTileIndex(1, 0, 0, 2)
