@@ -16,8 +16,7 @@ from .loader import ThemeLoader, PythonThemeLoader, LocalThemeLoader
 from .exceptions import ThemeError, ThemeManagerError
 
 
-SAMPLE_THEME_DIRECTORY = os.path.join(
-    os.path.dirname(__file__), 'samples', 'sample_world')
+SAMPLE_THEME_DIRECTORY = os.path.join(os.path.dirname(__file__), 'samples')
 
 SAMPLE_THEME_NAME = 'sample_world.mason'
 

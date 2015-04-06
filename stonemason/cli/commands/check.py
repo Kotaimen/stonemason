@@ -39,9 +39,12 @@ def check_command(ctx):
     for theme in manager.iterthemes():
         if ctx.verbose > 0:
             click.secho('name="%s"' % theme.name, fg='green')
-            click.secho('\t%r' % theme.pyramid, fg='green')
             click.secho('\t%r' % theme.metadata, fg='green')
+            click.secho('\t%r' % theme.pyramid, fg='green')
+            click.secho('\t%r' % theme.maptype, fg='green')
+            click.secho('\t%r' % theme.tileformat, fg='green')
             click.secho('\t%r' % theme.storage, fg='green')
-            mason.load_theme(theme)
+            click.secho('\t%r' % theme.renderer, fg='green')
+            mason.load_map_from_theme(theme)
 
     click.echo('Check completed.')

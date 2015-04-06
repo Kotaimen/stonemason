@@ -10,6 +10,7 @@ import click
 from click.testing import CliRunner
 
 from stonemason.cli import cli
+from tests import skipUnlessHasMapnik
 
 
 class TestStonemasonCLI(unittest.TestCase):
@@ -18,6 +19,7 @@ class TestStonemasonCLI(unittest.TestCase):
         result = runner.invoke(cli, [])
         self.assertEqual(result.exit_code, 0)
 
+    @skipUnlessHasMapnik()
     def test_check_command(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
@@ -35,14 +37,14 @@ class TestStonemasonCLI(unittest.TestCase):
             result = runner.invoke(cli, ['--themes=themes_', '-v', 'check'], )
             self.assertEqual(result.exit_code, 0)
 
-    # def test_tileserver_command(self):
-    #     runner = CliRunner()
-    #     with runner.isolated_filesystem():
-    #         result = runner.invoke(cli, ['init'])
-    #         self.assertEqual(result.exit_code, 0)
-    #
-    #         result = runner.invoke(cli, ['-dd', 'tileserver'])
-    #         self.assertEqual(result.exit_code, 0)
+            # def test_tileserver_command(self):
+            # runner = CliRunner()
+            #     with runner.isolated_filesystem():
+            #         result = runner.invoke(cli, ['init'])
+            #         self.assertEqual(result.exit_code, 0)
+            #
+            #         result = runner.invoke(cli, ['-dd', 'tileserver'])
+            #         self.assertEqual(result.exit_code, 0)
 
 
 if __name__ == '__main__':
