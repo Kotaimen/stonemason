@@ -8,6 +8,10 @@ class ThemeError(Exception):
     pass
 
 
-class ThemeManagerError(Exception):
-    """Base Theme Error"""
+class ThemeLoaderError(Exception):
     pass
+
+
+class ThemeManagerError(Exception):
+    pass
+

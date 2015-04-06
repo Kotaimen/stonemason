@@ -36,7 +36,8 @@ def check_command(ctx):
     loader.load_into(manager)
 
     mason = Mason()
-    for theme in manager.iterthemes():
+    for theme_name in manager:
+        theme = manager.get(theme_name)
         if ctx.verbose > 0:
             click.secho('name="%s"' % theme.name, fg='green')
             click.secho('\t%r' % theme.metadata, fg='green')
@@ -45,6 +46,6 @@ def check_command(ctx):
             click.secho('\t%r' % theme.tileformat, fg='green')
             click.secho('\t%r' % theme.storage, fg='green')
             click.secho('\t%r' % theme.renderer, fg='green')
-            mason.load_map_from_theme(theme)
+        mason.load_map_from_theme(theme)
 
     click.echo('Check completed.')

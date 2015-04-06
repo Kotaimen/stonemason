@@ -21,68 +21,50 @@ class DictTheme(object):
 
 
 class MapTheme(DictTheme):
-    THEME_NAME = ['name']
+    DEFAULT = {
+        'name': '',
+        'metadata': {},
+        'provider': {
+            'maptype': 'image',
+            'tileformat': {'format': 'PNG'},
+            'pyramid': {},
+            'storage': {'prototype': 'null'},
+            'renderer': {'prototype': 'null'}
+        }
 
-    THEME_METADATA = ['metadata']
-
-    THEME_PYRAMID = ['provider', 'pyramid']
-
-    THEME_MAPTYPE = ['provider', 'maptype']
-
-    THEME_TILEFORMAT = ['provider', 'tileformat']
-
-    THEME_STORAGE = ['provider', 'storage']
-
-    THEME_RENDERER = ['provider', 'renderer']
-
-    def __init__(self, **config):
-        DictTheme.__init__(self, **config)
-
-        self._name = self.get_attribute(
-            self.THEME_NAME, '')
-
-        self._metadata = self.get_attribute(
-            self.THEME_METADATA, dict())
-
-        self._pyramid = self.get_attribute(
-            self.THEME_PYRAMID, dict())
-
-        self._maptype = self.get_attribute(
-            self.THEME_MAPTYPE, 'image')
-
-        self._tileformat = self.get_attribute(
-            self.THEME_TILEFORMAT, {'format': 'PNG'})
-
-        self._storage = self.get_attribute(
-            self.THEME_STORAGE, {'prototype': 'null'})
-
-        self._renderer = self.get_attribute(
-            self.THEME_RENDERER, {'prototype': 'null'})
+    }
 
     @property
     def name(self):
-        return self._name
+        return self.get_attribute(
+            ['name'], self.DEFAULT['name'])
 
     @property
     def metadata(self):
-        return self._metadata
-
-    @property
-    def pyramid(self):
-        return self._pyramid
+        return self.get_attribute(
+            ['metadata'], self.DEFAULT['metadata'])
 
     @property
     def maptype(self):
-        return self._maptype
+        return self.get_attribute(
+            ['provider', 'maptype'], self.DEFAULT['provider']['maptype'])
 
     @property
     def tileformat(self):
-        return self._tileformat
+        return self.get_attribute(
+            ['provider', 'tileformat'], self.DEFAULT['provider']['tileformat'])
+
+    @property
+    def pyramid(self):
+        return self.get_attribute(
+            ['provider', 'pyramid'], self.DEFAULT['provider']['pyramid'])
 
     @property
     def storage(self):
-        return self._storage
+        return self.get_attribute(
+            ['provider', 'storage'], self.DEFAULT['provider']['storage'])
 
     @property
     def renderer(self):
-        return self._renderer
+        return self.get_attribute(
+            ['provider', 'renderer'], self.DEFAULT['provider']['renderer'])

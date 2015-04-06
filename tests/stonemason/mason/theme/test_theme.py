@@ -5,7 +5,7 @@ __date__ = '4/1/15'
 
 import unittest
 
-from stonemason.mason.theme import ThemeError, MapTheme
+from stonemason.mason.theme import MapTheme
 
 
 class TestMapTheme(unittest.TestCase):
@@ -33,9 +33,7 @@ class TestMapTheme(unittest.TestCase):
             }
         }
 
-        self.theme = MapTheme(**self.expected)
-
-    def test_build_theme_default(self):
+    def test_default_theme(self):
         theme = MapTheme()
         self.assertEqual('', theme.name)
         self.assertEqual('image', theme.maptype)
@@ -44,7 +42,7 @@ class TestMapTheme(unittest.TestCase):
         self.assertEqual(dict(prototype='null'), theme.storage)
         self.assertEqual(dict(prototype='null'), theme.renderer)
 
-    def test_build_theme_from_dict(self):
+    def test_theme_from_dict(self):
         theme = MapTheme(**self.expected)
 
         self.assertEqual('test', theme.name)

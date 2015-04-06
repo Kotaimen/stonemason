@@ -24,17 +24,14 @@ class AdminView(MethodView):
 
     """
 
-    def __init__(self, mason_model, theme_model):
+    def __init__(self, mason_model):
         assert isinstance(mason_model, MasonModel)
-        assert isinstance(theme_model, ThemeModel)
         self._mason_model = mason_model
-        self._theme_model = theme_model
 
     def get(self):
         """Retrieve an overview of all loaded maps."""
         collection = list()
-        for name in self._mason_model:
-            mason_map = self._mason_model.get_map(name)
+        for mason_map in self._mason_model.iter_maps():
             collection.append(render_mason_map(mason_map))
 
         return render_template('index.html', collection=collection)

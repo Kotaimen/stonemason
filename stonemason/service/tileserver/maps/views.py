@@ -24,11 +24,9 @@ class MapView(MethodView):
 
     """
 
-    def __init__(self, mason_model, theme_model):
+    def __init__(self, mason_model):
         assert isinstance(mason_model, MasonModel)
-        assert isinstance(theme_model, ThemeModel)
         self._mason_model = mason_model
-        self._theme_model = theme_model
 
     def get(self, tag):
         """Retrieve a map site with the given tag."""

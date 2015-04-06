@@ -14,7 +14,7 @@ import os
 
 from .theme import MapTheme
 from .manager import ThemeManager
-from .exceptions import ThemeError
+from .exceptions import ThemeLoaderError
 
 
 def is_map_theme(filename):
@@ -65,9 +65,9 @@ class PythonThemeLoader(ThemeLoader):
         try:
             theme_config = env_l['THEME']
             if not isinstance(theme_config, dict):
-                raise ThemeError('"THEME" should be a dict object')
+                raise ThemeLoaderError('"THEME" should be a dict object')
         except KeyError:
-            raise ThemeError('Missing Theme object"THEME"')
+            raise ThemeLoaderError('Missing Theme object"THEME"')
 
         map_theme = MapTheme(**theme_config)
         manager.put(map_theme.name, map_theme)

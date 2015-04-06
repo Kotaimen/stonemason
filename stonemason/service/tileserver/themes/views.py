@@ -36,7 +36,7 @@ class ThemeView(MethodView):
         if tag is None:
             collection = list()
 
-            for theme in self._theme_model:
+            for theme in self._theme_model.iter_themes():
                 collection.append(render_map_theme(theme))
 
             return jsonify(result=collection)

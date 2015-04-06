@@ -73,24 +73,6 @@ class ThemeManager(object):  # pragma: no cover
         """
         raise NotImplementedError
 
-    def iternames(self):
-        """Iterate theme names in the manager.
-
-        :return: Return a generator of names in the manager.
-        :rtype: generator
-
-        """
-        raise NotImplementedError
-
-    def iterthemes(self):
-        """Iterate themes in the manager.
-
-        :return: Return a generator of themes in the manager.
-        :rtype: generator
-
-        """
-        raise NotImplementedError
-
     def __iter__(self):
         """Iterate name and theme in the manager.
 
@@ -139,15 +121,7 @@ class MemThemeManager(ThemeManager):
         except KeyError:
             pass  # do not complain if theme not exists
 
-    def iternames(self):
-        """Iterate theme names in the manager"""
-        return six.iterkeys(self._themes)
-
-    def iterthemes(self):
-        """Iterate themes in the manager"""
-        return six.itervalues(self._themes)
-
     def __iter__(self):
         """Iterate name and theme in the manager"""
-        return six.iteritems(self._themes)
+        return iter(self._themes)
 

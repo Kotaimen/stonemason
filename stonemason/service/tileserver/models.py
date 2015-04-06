@@ -13,14 +13,14 @@ class ThemeModel(object):
     def __init__(self, theme_dir):
         theme_loader = LocalThemeLoader(theme_dir)
 
-        self._theme_manager = MemThemeManager()
-        theme_loader.load_into(self._theme_manager)
-
-    def __iter__(self):
-        return self._theme_manager.iterthemes()
+        self._manager = MemThemeManager()
+        theme_loader.load_into(self._manager)
 
     def get_theme(self, tag):
-        return self._theme_manager.get(tag)
+        return self._manager.get(tag)
+
+    def iter_themes(self):
+        return (self._manager.get(k) for k in self._manager)
 
 
 class MasonModel(object):
@@ -49,6 +49,13 @@ class MasonModel(object):
             self._mason = self.do_init()
         return self._mason
 
+    @property
+    def cache_control(self):
+        if self._max_age == 0:
+            return 'max-age=0, nocache'
+        else:
+            return 'public, max-age=%d' % self._max_age
+
     def get_tile(self, name, z, x, y, scale, ext):
         try:
             return self.mason.get_tile(name, z, x, y)
@@ -61,13 +68,7 @@ class MasonModel(object):
         except MapNotFound:
             return None
 
-    def __iter__(self):
-        return iter(self.mason)
+    def iter_maps(self):
+        return (self.mason.get_map(k) for k in self.mason)
 
-    @property
-    def cache_control(self):
-        if self._max_age == 0:
-            return 'max-age=0, nocache'
-        else:
-            return 'public, max-age=%d' % self._max_age
 

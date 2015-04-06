@@ -339,7 +339,7 @@ class TileServerApp(Flask):
         self._theme_model = ThemeModel(
             theme_dir=self._preference.theme_dir)
 
-        theme_collection = list(t for t in self._theme_model)
+        theme_collection = list(self._theme_model.iter_themes())
 
         self._mason_model = MasonModel(
             theme_collection,
@@ -356,12 +356,10 @@ class TileServerApp(Flask):
 
         maps_blueprint = maps.create_blueprint(
             mason_model=self._mason_model,
-            theme_model=self._theme_model
         )
 
         admin_blueprint = admin.create_blueprint(
             mason_model=self._mason_model,
-            theme_model=self._theme_model
         )
 
         health_blueprint = health.create_blueprint()
