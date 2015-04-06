@@ -53,6 +53,20 @@ class Envelope(_Envelope):
 class TileMapSystem(object):
     """Defines geographic attributes of a `pyramid` tile map system.
 
+    >>> from stonemason.pyramid import Pyramid, MetaTileIndex
+    >>> from stonemason.pyramid.geo import TileMapSystem
+    >>> pyramid = Pyramid(geogcs='EPSG:4326', projcs='EPSG:3857')
+    >>> tms = TileMapSystem(pyramid)
+    >>> tms.geogcs # doctest: +ELLIPSIS
+    <osgeo.osr.SpatialReference; proxy of <Swig Object of type 'OSRSpatialReferenceShadow *' at ...> >
+    >>> tms.pyramid.geogcs
+    '+proj=longlat +datum=WGS84 +no_defs '
+    >>> tms.forward_projection # doctest: +ELLIPSIS
+    <osgeo.osr.CoordinateTransformation; proxy of <Swig Object of type 'OSRCoordinateTransformationShadow *' at ...> >
+    >>> index = MetaTileIndex(4, 12, 12, 8)
+    >>> tms.calc_tile_envelope(index)
+    _Envelope(left=0.0, bottom=-20037508.34, right=20037508.34, top=0.0)
+
     .. note:: `TileMapSystem` uses `GDAL <http://www.gdal.org/>`_ for spatial
         calculations, the actual list of supported spatial references and
         coordinate transforms depends on `GDAL` installation and may vary
