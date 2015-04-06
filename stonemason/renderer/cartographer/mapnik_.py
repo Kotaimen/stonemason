@@ -36,13 +36,14 @@ class MapnikMapRenderer(BaseLayer, ImageMapRenderer):
 
     def __init__(self, name,
                  style_sheet='map.xml',
+                 default_scale=None,
                  buffer_size=0):
         BaseLayer.__init__(self, name)
         assert isinstance(buffer_size, int)
 
         # check theme path
         self._style_sheet = style_sheet
-
+        self._default_scale = default_scale
         self._map = mapnik.Map(32, 32)
 
         filename = self._style_sheet.encode('utf-8')
@@ -53,6 +54,11 @@ class MapnikMapRenderer(BaseLayer, ImageMapRenderer):
 
     def image(self, context):
         assert isinstance(context, RenderContext)
+
+        if self._default_scale is None:
+            scale = context.scale_factor
+        else:
+            scale = self._default_scale
 
         projcs = context.pyramid.projcs
         proj = mapnik.Projection(projcs)
@@ -65,7 +71,7 @@ class MapnikMapRenderer(BaseLayer, ImageMapRenderer):
         self._map.zoom_to_box(bbox)
 
         image = mapnik.Image(map_width, map_height)
-        mapnik.render(self._map, image, context.scale_factor)
+        mapnik.render(self._map, image, scale)
 
         raw_data = image.tostring()
 

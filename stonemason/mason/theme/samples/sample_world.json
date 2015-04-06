@@ -1,0 +1,35 @@
+{
+  "name": "sample",
+  "maptype": "image",
+  "metadata": {
+    "version": "1.0.0",
+    "description": "A sample world.",
+    "attribution": "Data: Natural Earth, Tile: K&R",
+    "center": [0, 0],
+    "center_zoom": 0
+  },
+
+  "pyramid": {
+    "stride": 2,
+    "geogcs": "WGS84",
+    "projcs": "EPSG:3857"
+  },
+
+  "cache": {
+    "prototype": "null"
+  },
+  "design": {
+    "tileformat": {
+      "format": "PNG",
+      "extension": "png"
+    },
+    "layers": {
+      "root": {
+        "type": "image.mapnik",
+        "style_sheet": "sample_world/sample_world.xml",
+        "default_scale": 1,
+        "buffer_size": 256
+      }
+    }
+  }
+}

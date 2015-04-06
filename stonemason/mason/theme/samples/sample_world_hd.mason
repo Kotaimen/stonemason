@@ -1,0 +1,11 @@
+# -*- encoding: utf-8 -*-
+
+__author__ = 'ray'
+__date__ = '3/31/15'
+
+
+{% include 'sample_world.mason' %}
+
+name = 'sample.hd'
+
+THEME = dict(name=name, metadata=metadata, provider=provider)

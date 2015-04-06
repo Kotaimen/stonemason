@@ -9,12 +9,18 @@ Environment
 ===========
 
 Due to the complexity of integrate geospatial packages, using a Python 2.7
-interpreter on a Debian distribution or mac homebrew is highly recommended.
+interpreter on a Debian distribution or Mac homebrew is highly recommended.
 
 Binary Packages
 ===============
 
-Install binary packages first. .. note:: Python3 related packages are optional.
+
+.. sidebar:: Tip
+
+    Python3 related packages are all optional.
+
+
+Install binary packages first:
 
 **ubuntu**
 
@@ -65,13 +71,21 @@ highly recommended install them from system package manager::
     won't install `numpy` bindings properly. `stonemason` uses it in the custom
     relief shading renderer.
 
-`ubuntu-14.04-LTS` comes with reasonably recent `geos` and `gdal`, for
+`ubuntu-14.04-LTS` comes with reasonably recent `GEOS` and `GDAL`, for
 older ubuntu versions, install from `ubuntu-gis` PPA is recommended::
 
     $ sudo apt-get install -qq python-software-properties
     $ sudo add-apt-repository -y ppa:ubuntugis/ppa
     $ sudo apt-get update
     $ sudo apt-get install libgeos-dev gdal-bin python-gdal
+
+For copyright reasons, `GDAL` debian package don't have some projection
+data files included, this requires extra patching form source::
+
+    $ wget http://download.osgeo.org/gdal/1.10.1/gdal-1.10.1.tar.gz
+    $ tar x gdal-1.10.1.tar.gz
+    $ sudo cp gdal-1.10.1/data/*extra.wkt /usr/share/gdal/1.10/
+
 
 **Mac**
 
@@ -97,6 +111,7 @@ of new features and fixes without breaking xml stylesheet, much:
     $ sudo add-apt-repository -y ppa:mapnik/nightly-2.3
     $ sudo apt-get update
     $ sudo apt-get install python-mapnik
+
 
 Python Dependency
 =================
@@ -172,6 +187,7 @@ Or use Python3::
     ...
     ____________________________ summary _____________________________
       py27: commands succeeded
+      py27geo: commands succeeded
       py34: commands succeeded
       docs: commands succeeded
       congratulations :)
@@ -184,12 +200,12 @@ Or use Python3::
 Document
 ========
 
-Build html based document:
+Build html based document::
 
     $ cd docs
     $ make html
 
-To build PDF version textlive is required:
+To build PDF version `textlive` is required::
 
     $ sudo apt-get install texlive texlive-latex-extra
     $ make latexpdf

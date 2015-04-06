@@ -43,7 +43,6 @@ class TestMapnikLayer(ImageTestCase):
         expected = Image.open(test_file)
         self.assertImageEqual(expected, image)
 
-
     def test_render_with_tms1(self):
         pyramid = Pyramid(projcs='EPSG:2964',
                           geogcs=None,
