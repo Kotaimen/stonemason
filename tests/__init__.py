@@ -58,16 +58,12 @@ class ImageTestCase(unittest.TestCase):
 #
 # Conditional tests for optional decencies
 #
-try:
-    importlib.import_module('mapnik')
 
-    HAS_MAPNIK = True
-except ImportError:
-    HAS_MAPNIK = False
+carto = importlib.import_module('stonemason.renderer.cartographer')
 
 
 def skipUnlessHasMapnik():
-    return skipUnless(HAS_MAPNIK, 'python-mapnik not installed.')
+    return skipUnless(carto.HAS_MAPNIK, 'python-mapnik not installed.')
 
 
 geo = importlib.import_module('stonemason.pyramid.geo')

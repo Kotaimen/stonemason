@@ -8,8 +8,13 @@ from .dummy import DummyBaseRenderer, DummyTransformRenderer, \
 
 try:
     from .mapnik_ import MapnikMapRenderer
+    #: A boolean indicates whether Mapnik is available.
+    HAS_MAPNIK = True
 except ImportError:
-    MapnikMapRenderer = None
+    HAS_MAPNIK = False
+
+    class MapnikMapRenderer:
+        pass
 
 
 class UnknownRendererType(Exception):
