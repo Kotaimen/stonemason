@@ -14,6 +14,9 @@ Image
 ImageMagick
 -----------
 
+.. autodata:: stonemason.renderer.composer.HAS_IMAGEMAGICK
+    :annotation:
+
 .. autoclass:: stonemason.renderer.composer.ImageMagickComposer
     :members:
 

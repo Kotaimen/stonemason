@@ -77,15 +77,11 @@ def skipUnlessHasGDAL():
     return skipUnless(geo.HAS_GDAL, 'python-gdal not installed.')
 
 
-try:
-    output = subprocess.check_output(['convert', '-version'])
-    HAS_IMAGEMAGICK = True
-except subprocess.CalledProcessError:
-    HAS_IMAGEMAGICK = False
+composer = importlib.import_module('stonemason.renderer.composer')
 
 
 def skipUnlessHasImageMagick():
-    return skipUnless(HAS_IMAGEMAGICK, 'imagemagick not installed.')
+    return skipUnless(composer.HAS_IMAGEMAGICK, 'imagemagick not installed.')
 
 
 import memcache

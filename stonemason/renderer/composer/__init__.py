@@ -7,5 +7,14 @@ from .imagecomposer import ImageComposer, ComposerError
 
 try:
     from .imagemagick import ImageMagickComposer, ImageMagickError
+    #: A boolean indicates whether ImageMagick image processing utility
+    #: is available.
+    HAS_IMAGEMAGICK = True
 except ImportError:
-    ImageMagickComposer = None
+    HAS_IMAGEMAGICK = False
+
+    class ImageMagickComposer:
+        pass
+
+    class ImageMagickError:
+        pass
