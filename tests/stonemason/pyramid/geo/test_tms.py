@@ -6,7 +6,8 @@ __date__ = '3/21/15'
 import unittest
 
 from stonemason.pyramid import Pyramid, TileIndex, MetaTileIndex
-from tests import HAS_GDAL, skipUnlessHasGDAL
+from stonemason.pyramid.geo import HAS_GDAL
+from tests import skipUnlessHasGDAL
 
 if HAS_GDAL:
     from stonemason.pyramid.geo import TileMapSystem, Envelope

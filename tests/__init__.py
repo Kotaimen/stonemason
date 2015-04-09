@@ -70,17 +70,11 @@ def skipUnlessHasMapnik():
     return skipUnless(HAS_MAPNIK, 'python-mapnik not installed.')
 
 
-try:
-    importlib.import_module('osgeo.osr')
-    importlib.import_module('osgeo.ogr')
-    importlib.import_module('osgeo.gdal')
-    HAS_GDAL = True
-except ImportError:
-    HAS_GDAL = False
+geo = importlib.import_module('stonemason.pyramid.geo')
 
 
 def skipUnlessHasGDAL():
-    return skipUnless(HAS_GDAL, 'python-gdal not installed.')
+    return skipUnless(geo.HAS_GDAL, 'python-gdal not installed.')
 
 
 try:
