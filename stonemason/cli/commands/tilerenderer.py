@@ -17,7 +17,7 @@ import multiprocessing
 import click
 
 from stonemason.util.timer import Timer, human_duration
-from stonemason.service.renderman import renderman, RenderDirective, Stats
+from stonemason.service.renderman import renderman, RenderScript, RenderStats
 
 from ..main import cli
 from ..context import pass_context, Context
@@ -70,13 +70,13 @@ def tile_renderer_command(ctx, theme_name, workers, levels, envelope, csv, log):
     if workers == 0:
         workers = multiprocessing.cpu_count()
 
-    directive = RenderDirective(themes=ctx.themes,
-                                theme_name=theme_name,
-                                levels=levels,
-                                envelope=envelope,
-                                csv=csv,
-                                workers=workers,
-                                logfile=log)
+    directive = RenderScript(themes=ctx.themes,
+                             theme_name=theme_name,
+                             levels=levels,
+                             envelope=envelope,
+                             csv_file=csv,
+                             workers=workers,
+                             log_file=log)
     timer = Timer()
     timer.tic()
     stat = renderman(directive)
@@ -88,6 +88,7 @@ def tile_renderer_command(ctx, theme_name, workers, levels, envelope, csv, log):
                 fg='green')
     click.secho('         Time Taken : %s' % human_duration(timer.get_time()),
                 fg='green')
-    click.secho('       Render Speed : %s/MetaTile' % \
-                human_duration(stat.total_time / stat.rendered),
-                fg='green')
+    if stat.rendered > 0:
+        click.secho('       Render Speed : %s/MetaTile' % \
+                    human_duration(stat.total_time / stat.rendered),
+                    fg='green')
