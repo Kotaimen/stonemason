@@ -24,11 +24,11 @@ User's Guide
 .. toctree::
     :maxdepth: 1
 
-    install
-    quickstart
-    config
-    themes
-    xlarge
+    guide_install
+    guide_quickstart
+    guide_concept
+    guide_gallery
+    guide_config
 
 API Reference
 #############
@@ -36,12 +36,15 @@ API Reference
 .. toctree::
     :maxdepth: 2
 
-    pkg_service
+    pkg_mason
+    pkg_theme
 
 .. toctree::
     :maxdepth: 2
 
-    pkg_theme
+    pkg_tileserver
+    pkg_renderman
+
 
 .. toctree::
     :maxdepth: 2
@@ -52,9 +55,11 @@ API Reference
     pkg_tilestorage
     pkg_formatbundle
 
+
 .. toctree::
     :maxdepth: 2
 
+    pkg_tilerenderer
     pkg_composer
 
 .. toctree::

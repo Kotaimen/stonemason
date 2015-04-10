@@ -91,5 +91,8 @@ Coverage Model
 .. autodata:: stonemason.pyramid.geo.HAS_GDAL
     :annotation:
 
+.. autoclass:: stonemason.pyramid.geo.Envelope
+    :members:
+
 .. autoclass:: stonemason.pyramid.geo.TileMapSystem
     :members:
