@@ -153,15 +153,15 @@
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 <div id="grid" data-columns>
 
-                    {% for mason_map in collection %}
+                    {% for portrayal in collection %}
 
                     <div class="item">
 
                         <div class="panel panel-default">
 
                             <div class="panel-heading">
-                                <h3 class="text-capitalize">{{ mason_map.name }}
-                                    <a href="maps/{{ mason_map.name }}"
+                                <h3 class="text-capitalize">{{ portrayal.name }}
+                                    <a href="maps/{{ portrayal.name }}"
                                        class="btn btn-default btn-sml pull-right"
                                        role="button">
                                     <span class="glyphicon glyphicon-map-marker"
@@ -170,40 +170,55 @@
                                     </a>
                                 </h3>
 
-                                <code>{{ mason_map.metadata.version }}</code>
+                                <code>{{ portrayal.metadata.version }}</code>
 
                             </div>
 
                             <div class="panel-body">
                                 <p>
-                                    {{ mason_map.metadata.abstract|e }}
+                                    {{ portrayal.metadata.abstract|e }}
                                 </p>
                             </div>
 
                             <table class="table table-default">
                                 <tr>
                                     <td>CRS</td>
-                                    <td><code>{{ mason_map.pyramid.geogcs|e }}</code>
+                                    <td><code>{{ portrayal.pyramid.geogcs|e
+                                        }}</code>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Projection</td>
-                                    <td><code>{{ mason_map.pyramid.projcs|e }}</code>
+                                    <td><code>{{ portrayal.pyramid.projcs|e
+                                        }}</code>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Zoom Levels</td>
-                                    <td>{{ mason_map.pyramid.levels[0] }}~{{
-                                        mason_map.pyramid.levels[-1] }}
+                                    <td>{{ portrayal.pyramid.levels[0] }}~{{
+                                        portrayal.pyramid.levels[-1] }}
                                     </td>
                                 </tr>
 
+                                <tr>
+                                    <td>Tiles</td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            {% for matrix_tag in portrayal.tilematrix_set %}
+                                            <li>{{ matrix_tag }}</li>
+                                            {% endfor %}
+                                        </ul>
+
+                                    </td>
+
+                                </tr>
 
                             </table>
 
+
                             <div class="panel-footer">
                                 <p class="text-right">
-                                    {{ mason_map.metadata.attribution|e }}
+                                    {{ portrayal.metadata.attribution|e }}
                                 </p>
                             </div>
 

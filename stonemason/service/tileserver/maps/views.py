@@ -45,7 +45,7 @@ class PortrayalView(MethodView):
                 abort(404)
 
             return render_template(
-                'map.html', mason_map=jsonify_portrayal(portrayal))
+                'map.html', portrayal=jsonify_portrayal(portrayal))
 
 
 class TilesView(MethodView):
@@ -64,7 +64,7 @@ class TilesView(MethodView):
         assert isinstance(mason_model, MasonModel)
         self._model = mason_model
 
-    def get(self, theme, z, x, y, scale, ext):
+    def get(self, theme, z, x, y, tag):
         """Return a tile data and raise :http:statuscode:`404` if not found.
 
         :param theme: The Name of a theme. A string literal that uniquely
@@ -92,11 +92,6 @@ class TilesView(MethodView):
         :type ext: str
 
         """
-
-        if scale == '1x':
-            tag = '.%s' % ext
-        else:
-            tag = '@%s.%s' % (scale, ext)
 
         tile = self._model.get_tile(theme, tag, z, x, y)
         if tile is None:

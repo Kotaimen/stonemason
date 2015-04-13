@@ -3,6 +3,8 @@
 __author__ = 'ray'
 __date__ = '4/10/15'
 
+import re
+
 import six
 
 from stonemason.pyramid import Pyramid
@@ -16,7 +18,8 @@ from .theme import Theme, TileMatrixTheme
 from .portrayal import Portrayal
 from .metadata import Metadata
 from .tilematrix import TileMatrix, TileMatrixHybrid
-from .exceptions import UnknownStorageType, UnknownRendererType
+from .exceptions import UnknownStorageType, UnknownRendererType, \
+    InvalidTileMatrixTag
 
 
 def create_cluster_storage(bundle, pyramid, **config):
@@ -67,6 +70,11 @@ class TileMatrixBuilder(object):
     def build(self):
         if self._tag is None:
             self._tag = '%s' % self._tile_format.extension
+
+        if re.match('^[0-9].*', self._tag):
+            raise InvalidTileMatrixTag(
+                'Tag of TileMatrix should not start with a number')
+
         matrix = TileMatrixHybrid(self._tag, self._storage, self._renderer)
         return matrix
 
@@ -119,7 +127,7 @@ class TileMatrixBuilder(object):
             renderer = RendererExprParser(self._pyramid).parse_from_dict(
                 layers, 'root').interpret()
             self._renderer = ImageMetaTileRenderer(self._pyramid, bundle,
-                                                  renderer)
+                                                   renderer)
         else:
             raise UnknownRendererType(prototype)
 

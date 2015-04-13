@@ -19,5 +19,4 @@ class TestFileSystemThemeLoader(unittest.TestCase):
         loader.add_to(m)
 
         self.assertTrue(m.has('sample'))
-        self.assertTrue(m.has('sample.hd'))
 

@@ -18,3 +18,7 @@ class UnknownRendererType(MasonError):
 
 class DuplicatedPortrayal(MasonError):
     pass
+
+
+class InvalidTileMatrixTag(MasonError):
+    pass

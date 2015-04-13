@@ -32,16 +32,8 @@ def create_blueprint(**kwargs):
 
     blueprint.add_url_rule(
         endpoint='tile',
-        rule='/tiles/<theme>/<int:z>/<int:x>/<int:y>@<scale>.<ext>',
+        rule='/tiles/<theme>/<int:z>/<int:x>/<int:y><tag>',
         view_func=tiles_view,
-        methods=['GET']
-    )
-
-    blueprint.add_url_rule(
-        endpoint='tile@1x',
-        rule='/tiles/<theme>/<int:z>/<int:x>/<int:y>.<ext>',
-        view_func=tiles_view,
-        defaults={'scale': '1x'},
         methods=['GET']
     )
 
