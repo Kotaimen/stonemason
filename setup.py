@@ -144,7 +144,6 @@ package_data = {
     'stonemason.mason.theme':
         [
             'samples/sample_world.mason',
-            'samples/sample_world_hd.mason',
             'samples/sample_world/ne_50m_admin_0_countries_lakes.*',
             'samples/sample_world/ne_50m_populated_places_simple.*',
             'samples/sample_world/ne_50m_geographic_lines.*',

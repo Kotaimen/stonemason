@@ -93,7 +93,11 @@ class TilesView(MethodView):
 
         """
 
-        tag = '%s%s' % (scale, ext)
+        if scale == '1x':
+            tag = '.%s' % ext
+        else:
+            tag = '@%s.%s' % (scale, ext)
+
         tile = self._model.get_tile(theme, tag, z, x, y)
         if tile is None:
             abort(404)

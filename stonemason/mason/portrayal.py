@@ -4,14 +4,10 @@ __author__ = 'ray'
 __date__ = '4/9/15'
 
 from stonemason.pyramid import Pyramid
-from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
+from stonemason.provider.formatbundle import FormatBundle
 
 from .metadata import Metadata
 from .tilematrix import TileMatrix
-
-
-def load_portrayal_from_theme(theme):
-    pass
 
 
 class Portrayal(object):
@@ -55,11 +51,5 @@ class Portrayal(object):
         return tag in self._matrix_set
 
     def iter_tilematrix(self):
-        return self._matrix_set
+        return iter(self._matrix_set)
 
-
-class NullPortrayal(Portrayal):
-    def __init__(self, name='null'):
-        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
-        Portrayal.__init__(self, name, metadata=Metadata(), bundle=bundle,
-                           pyramid=Pyramid(), matrix_set=dict())

@@ -24,7 +24,8 @@ portrayal_maptype = 'image'
 
 portrayal_tileformat = dict(format='PNG', extension='png')
 
-normal_matrix = dict(
+matrix_1x = dict(
+    tag='.png',
     pyramid=portrayal_pyramid,
     maptype=portrayal_maptype,
     portrayal_tileformat=portrayal_tileformat,
@@ -42,6 +43,25 @@ normal_matrix = dict(
     }
 )
 
+matrix_2x = dict(
+    tag='@2x.png',
+    pyramid=portrayal_pyramid,
+    maptype=portrayal_maptype,
+    portrayal_tileformat=portrayal_tileformat,
+    storage={},
+    renderer={
+        'prototype': 'image',
+        'layers': {
+            'root': {
+                'type': 'image.mapnik',
+                'style_sheet': "{{ theme_root }}/sample_world/sample_world.xml",
+                'default_scale': 2,
+                'buffer_size': 256
+            }
+        }
+    }
+)
+
 
 THEME = dict(
     name=name,
@@ -50,7 +70,8 @@ THEME = dict(
     maptype=portrayal_maptype,
     tileformat=portrayal_tileformat,
     tilematrix_set=[
-        normal_matrix,
+        matrix_1x,
+        matrix_2x
     ]
 )
 

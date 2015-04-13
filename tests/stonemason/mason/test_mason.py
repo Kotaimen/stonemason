@@ -12,13 +12,24 @@ from PIL import Image
 from stonemason.mason.mason import Mason
 from stonemason.mason.mason import MasonTileVisitor, MasonMetaTileFarm
 from stonemason.mason.metadata import Metadata
-from stonemason.mason.portrayal import Portrayal, NullPortrayal
+from stonemason.mason.portrayal import Portrayal
 from stonemason.mason.tilematrix import TileMatrixHybrid
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.provider.tilestorage import MetaTileStorage
 
 from .test_tilematrix import DummyClusterStorage, DummyMetaTileRenderer
+
+
+class NullPortrayal(Portrayal):
+    def __init__(self):
+        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
+        Portrayal.__init__(
+            self,
+            name='test',
+            metadata=Metadata(),
+            bundle=bundle,
+            pyramid=Pyramid())
 
 
 class TestMason(unittest.TestCase):
