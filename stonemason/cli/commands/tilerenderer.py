@@ -70,16 +70,16 @@ def tile_renderer_command(ctx, theme_name, workers, levels, envelope, csv, log):
     if workers == 0:
         workers = multiprocessing.cpu_count()
 
-    directive = RenderScript(themes=ctx.themes,
-                             theme_name=theme_name,
-                             levels=levels,
-                             envelope=envelope,
-                             csv_file=csv,
-                             workers=workers,
-                             log_file=log)
+    script = RenderScript(themes=ctx.themes,
+                          theme_name=theme_name,
+                          levels=levels,
+                          envelope=envelope,
+                          csv_file=csv,
+                          workers=workers,
+                          log_file=log)
     timer = Timer()
     timer.tic()
-    stat = renderman(directive)
+    stat = renderman(script)
     timer.tac()
 
     click.secho('Succeeded MetaTiles : %d' % stat.rendered, fg='green')

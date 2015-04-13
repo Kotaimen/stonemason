@@ -16,10 +16,7 @@ try:
 except ImportError:
     HAS_GDAL = False
 
-if HAS_GDAL:
-    from .tms import TileMapError, TileMapSystem, Envelope
-
-else:
+if not HAS_GDAL:
     class TileMapError(Exception):
         pass
 
@@ -28,3 +25,6 @@ else:
 
     class Envelope(object):
         pass
+else:
+    from .tms import TileMapError, TileMapSystem, Envelope
+

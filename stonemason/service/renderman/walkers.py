@@ -11,10 +11,11 @@
 __author__ = 'kotaimen'
 __date__ = '4/3/15'
 
-import six
-from six.moves import xrange
 import csv
 import itertools
+
+import six
+from six.moves import xrange
 
 from stonemason.pyramid import MetaTileIndex
 from stonemason.pyramid.geo import TileMapSystem
@@ -22,7 +23,7 @@ from stonemason.pyramid.geo import TileMapSystem
 from .script import RenderScript
 
 
-class PyramidWalker(object):
+class PyramidWalker(object): # pragma: no cover
     """Walk through the pyramid and generate
     :class:`~stonemason.pyramid.MetaTileIndex` to render."""
 
@@ -53,17 +54,15 @@ class TileListWalker(object):
         self.csv_file = csv_file
 
     def __iter__(self):
-        sdiff = len(bin(self.stride)) - 3
-        with open(self.csv_file, 'rb') as fp:
+        with open(self.csv_file, 'r') as fp:
             reader = csv.reader(fp)
             for row in reader:
                 tz, tx, ty = tuple(map(int, row))
                 for z in self.levels:
-                    zdiff = z - tz
-                    if zdiff < sdiff:
-                        # skip this level if its smaller than min allowed layer
+                    if (self.stride >> z) > 0:
+                        # start rendering from corresponding metatile level
                         continue
-                    dim = 2 ** zdiff
+                    dim = 2 ** (z - tz)
                     for x in xrange(tx * dim, (tx + 1) * dim, self.stride):
                         for y in xrange(ty * dim, (ty + 1) * dim, self.stride):
                             yield MetaTileIndex(z, x, y, self.stride)
@@ -107,4 +106,4 @@ def create_walker(script, tms):
     elif script.envelope:
         raise NotImplementedError
     else:
-        return CompleteWalker(tms.pyramid.levels, tms.pyramid.stride)
+        return CompleteWalker(script.levels, tms.pyramid.stride)
