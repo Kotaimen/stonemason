@@ -232,14 +232,11 @@ class DiskClusterStorage(StorageMixin, ClusterStorage):
         stored on filesystem will be gzipped, default is ``False``.
     :type compressed: bool
 
-    :param splitter: A :class:`~stonemason.provider.tilestorage.Splitter` instance
-        to split `MetaTile` data into `Tile` data.
-    :type splitter: :class:`~stonemason.provider.tilestorage.Splitter`
     """
 
     def __init__(self, root='.', dir_mode='hilbert',
                  levels=range(0, 22), stride=1, format=None,
-                 readonly=False, compressed=False, splitter=None):
+                 readonly=False, compressed=False):
         assert isinstance(root, six.string_types)
         if not isinstance(format, FormatBundle):
             raise TileStorageError('Must specify format explicitly.')

@@ -6,14 +6,13 @@ __date__ = '3/20/15'
 import os
 
 from tests import SAMPLE_THEME_DIRECTORY, DATA_DIRECTORY, TEST_DIRECTORY
-from tests import skipUnlessHasMapnik, HAS_MAPNIK, ImageTestCase
+from tests import skipUnlessHasMapnik, ImageTestCase
 
-if HAS_MAPNIK:
-    from PIL import Image
-    from stonemason.renderer.cartographer import MapnikMapRenderer
-    from stonemason.renderer.map import RenderContext
-    from stonemason.pyramid import Pyramid, MetaTileIndex, TileIndex
-    from stonemason.pyramid.geo import TileMapSystem
+from PIL import Image
+from stonemason.renderer.cartographer import MapnikMapRenderer
+from stonemason.renderer.map import RenderContext
+from stonemason.pyramid import Pyramid, MetaTileIndex, TileIndex
+from stonemason.pyramid.geo import TileMapSystem
 
 
 @skipUnlessHasMapnik()

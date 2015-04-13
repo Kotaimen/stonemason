@@ -58,40 +58,26 @@ class ImageTestCase(unittest.TestCase):
 #
 # Conditional tests for optional decencies
 #
-try:
-    importlib.import_module('mapnik')
 
-    HAS_MAPNIK = True
-except ImportError:
-    HAS_MAPNIK = False
+carto = importlib.import_module('stonemason.renderer.cartographer')
 
 
 def skipUnlessHasMapnik():
-    return skipUnless(HAS_MAPNIK, 'python-mapnik not installed.')
+    return skipUnless(carto.HAS_MAPNIK, 'python-mapnik not installed.')
 
 
-try:
-    importlib.import_module('osgeo.osr')
-    importlib.import_module('osgeo.ogr')
-    importlib.import_module('osgeo.gdal')
-    HAS_GDAL = True
-except ImportError:
-    HAS_GDAL = False
+geo = importlib.import_module('stonemason.pyramid.geo')
 
 
 def skipUnlessHasGDAL():
-    return skipUnless(HAS_GDAL, 'python-gdal not installed.')
+    return skipUnless(geo.HAS_GDAL, 'python-gdal not installed.')
 
 
-try:
-    output = subprocess.check_output(['convert', '-version'])
-    HAS_IMAGEMAGICK = True
-except subprocess.CalledProcessError:
-    HAS_IMAGEMAGICK = False
+composer = importlib.import_module('stonemason.renderer.composer')
 
 
 def skipUnlessHasImageMagick():
-    return skipUnless(HAS_IMAGEMAGICK, 'imagemagick not installed.')
+    return skipUnless(composer.HAS_IMAGEMAGICK, 'imagemagick not installed.')
 
 
 import memcache

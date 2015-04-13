@@ -53,9 +53,7 @@ class TestStonemasonTileRenderer(unittest.TestCase):
             result = runner.invoke(cli, [
                 '-v',
                 'tilerenderer', 'sample',
-                '--workers=1', '--levels=1-2',
-                '--envelope',
-                '0', '-80', '180', '80',
+                '--workers=1', '--levels=2,3',
                 '--log', 'test.log'])
             self.assertEqual(result.exit_code, 0)
 

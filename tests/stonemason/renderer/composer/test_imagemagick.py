@@ -11,12 +11,9 @@ from distutils.version import LooseVersion
 
 from PIL import Image
 
-from tests import skipUnlessHasImageMagick, HAS_IMAGEMAGICK, \
-    TEST_DIRECTORY, DATA_DIRECTORY
+from stonemason.renderer.composer import ImageMagickComposer, ImageMagickError
 
-if HAS_IMAGEMAGICK:
-    from stonemason.renderer.composer import ImageMagickComposer, \
-        ImageMagickError
+from tests import skipUnlessHasImageMagick, DATA_DIRECTORY
 
 
 @skipUnlessHasImageMagick()

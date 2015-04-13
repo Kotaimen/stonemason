@@ -18,7 +18,7 @@ from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.provider.tilestorage import MetaTileStorage
 
-from test_tilematrix import DummyClusterStorage, DummyMetaTileRenderer
+from .test_tilematrix import DummyClusterStorage, DummyMetaTileRenderer
 
 
 class TestMason(unittest.TestCase):

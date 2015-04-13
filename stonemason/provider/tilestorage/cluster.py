@@ -93,7 +93,7 @@ class TileCluster(object):
         :type index: :class:`~stonemason.provider.MetaTileIndex`
         :return: Tile
         :rtype: :class:`~stonemason.provider.Tile`
-        :raise: :class:`~TileClusterError``
+        :raise: :class:`~TileClusterError`
         """
         assert isinstance(index, TileIndex)
         if MetaTileIndex.from_tile_index(index,

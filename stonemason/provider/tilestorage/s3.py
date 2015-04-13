@@ -270,7 +270,7 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
                  bucket='my_bucket', policy='private',
                  key_mode='simple', prefix='my_storage',
                  levels=range(0, 22), stride=1, format=None,
-                 readonly=False, compressed=False, splitter=None):
+                 readonly=False, compressed=False):
         if not isinstance(format, FormatBundle):
             raise TileStorageError('Must specify format explicitly.')
 

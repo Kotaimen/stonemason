@@ -2,8 +2,9 @@ Tile Map System
 ***************
 
 .. module::stonemason.pyramid
+.. module::stonemason.pyramid.geo
 
-:mod:`stonemason.pyramid` defines the tile map coverage model and tile
+Module :mod:`stonemason.pyramid` defines the tile map coverage model and tile
 data schema.
 
 Pyramid
@@ -86,6 +87,12 @@ Sequential Enumeration
 
 Coverage Model
 ==============
+
+.. autodata:: stonemason.pyramid.geo.HAS_GDAL
+    :annotation:
+
+.. autoclass:: stonemason.pyramid.geo.Envelope
+    :members:
 
 .. autoclass:: stonemason.pyramid.geo.TileMapSystem
     :members:

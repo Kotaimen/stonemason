@@ -6,7 +6,8 @@
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Multiprocessing based tile renderer.
 
-    A direct port of old mason tilerenderer.py
+    A direct port of old mason tilerenderer.py, using vanilla multiprocessing,
+    since it enables customising process initialization.
 """
 
 __author__ = 'kotaimen'
@@ -16,8 +17,6 @@ import multiprocessing
 import multiprocessing.pool
 import multiprocessing.sharedctypes
 import multiprocessing.queues
-import collections
-import ctypes
 import time
 import logging
 
@@ -27,6 +26,7 @@ from stonemason.pyramid import Pyramid
 from stonemason.pyramid.geo import TileMapSystem
 from stonemason.util.timer import Timer, human_duration
 
+from .script import RenderScript, RenderStats
 from .walkers import create_walker
 
 #
@@ -45,40 +45,10 @@ logger = None
 # Helpers
 #
 
-class RenderDirective(collections.namedtuple(
-    '_RenderDirective',
-    '''themes theme_name
-       levels envelope csv
-       workers logfile''')):
-    """Render directive from CLI command."""
-    pass
 
-
-class Stats(ctypes.Structure):
-    """Rendering progress and stats.
-
-    Must be a :class:`ctypes.Structure` to share between processes using
-    :mod:`multiprocessing.sharedctypes`.
-    """
-
-    _fields_ = [
-        ('progress', ctypes.c_longlong),
-        ('rendered', ctypes.c_longlong),
-        ('failed', ctypes.c_longlong),
-        ('total_time', ctypes.c_float),
-    ]
-
-    def __init__(self):
-        ctypes.Structure.__init__(self)
-        self.progress = 0
-        self.rendered = 0
-        self.failed = 0
-        self.time_taken = 0
-
-
-def create_mason(directive):
+def create_mason(script):
     """Create a new Mason facade instance from render directive."""
-    assert isinstance(directive, RenderDirective)
+    assert isinstance(script, RenderScript)
 
     theme_gallery = MemGallery()
     theme_loader = FileSystemCurator(directive.themes)
@@ -87,7 +57,7 @@ def create_mason(directive):
     mason = Mason()
     theme = theme_gallery.get(directive.theme_name)
     if theme is None:
-        raise RuntimeError('Theme "%s" not found' % directive.theme_name)
+        raise RuntimeError('Theme "%s" not found' % script.theme_name)
 
     assert isinstance(theme, Theme)
     mason.load_portrayal_from_theme(theme)
@@ -116,15 +86,15 @@ def setup_logger(log_file='render.log', level=logging.WARNING):
 # Process modules
 #
 
-def walker(directive, queue, stats):
+def walker(script, queue, stats):
     """ Spawn MetaTileIndexes into the queue using specified walker"""
-    assert isinstance(directive, RenderDirective)
+    assert isinstance(script, RenderScript)
     assert isinstance(queue, multiprocessing.queues.Queue)
     # assert isinstance(stats, Stats)
 
-    setup_logger(directive.logfile)
+    setup_logger(script.log_file)
 
-    mason = create_mason(directive)
+    mason = create_mason(script)
 
     # XXX: Mason should provide getters, and MasonMap is a really bad name...
     portrayal = mason.get_portrayal(directive.theme_name)
@@ -133,11 +103,7 @@ def walker(directive, queue, stats):
     assert isinstance(pyramid, Pyramid)
 
     tms = TileMapSystem(pyramid)
-    walker = create_walker(tms,
-                           directive.levels,
-                           pyramid.stride,
-                           directive.envelope,
-                           directive.csv)
+    walker = create_walker(script, tms)
 
     logger.info('Started spawning metatiles from #%d' % stats.progress)
 
@@ -150,14 +116,14 @@ def walker(directive, queue, stats):
         logger.info('Stopped after spawn #%d metatiles.' % n)
 
 
-def renderer(directive, queue, stats):
-    assert isinstance(directive, RenderDirective)
+def renderer(script, queue, stats):
+    assert isinstance(script, RenderScript)
     assert isinstance(queue, multiprocessing.queues.Queue)
     # assert isinstance(stats, Stats)
 
-    setup_logger(directive.logfile)
+    setup_logger(script.log_file)
 
-    mason = create_mason(directive)
+    mason = create_mason(script)
     mason_tile_visitor = MasonTileVisitor(mason)
 
     while True:
@@ -172,7 +138,7 @@ def renderer(directive, queue, stats):
         with Timer('  %s rendered in %%(time)s' % repr(index),
                    writer=logger.info, newline=False) as timer:
             try:
-                data = mason_tile_visitor.get_tile(directive.theme_name,
+                data = mason_tile_visitor.get_tile(script.theme_name,
                                                    '.png',
                                                    index.z,
                                                    index.x,
@@ -182,6 +148,7 @@ def renderer(directive, queue, stats):
                 logger.exception('Error while rendering %s' % repr(index))
             finally:
                 queue.task_done()
+                stats.progress += 1
 
         stats.total_time += timer.get_time()
         if data:
@@ -190,37 +157,42 @@ def renderer(directive, queue, stats):
             stats.skipped += 1
 
 
-def harbinger(directive):
-    pass
-
-
 #
 # Entry Point
 #
-def renderman(directive):
-    assert isinstance(directive, RenderDirective)
-    setup_logger(directive.logfile)
+def renderman(script):
+    """Start a new render job using given `script`, block until render
+    completes, and returns render status.
+
+    :param script: Render script defines the render job
+    :type script: :class:`~stonemason.service.renderman.RenderScript`
+    :return: Render status.
+    :rtype: :class:`~stonemason.service.renderman.RenderStats`
+    """
+
+    assert isinstance(script, RenderScript)
+    setup_logger(script.log_file)
 
     # shared stats
-    stats = multiprocessing.sharedctypes.Value(Stats)
+    stats = multiprocessing.sharedctypes.Value(RenderStats)
     # job queue
     queue = multiprocessing.JoinableQueue(maxsize=QUEUE_LIMIT)
 
     # start the tileindex spawner as producer
     producer = multiprocessing.Process(name='producer',
                                        target=walker,
-                                       args=(directive, queue, stats))
+                                       args=(script, queue, stats))
 
     producer.daemon = True
     producer.start()
 
     # create all renderer processes
     workers = []
-    for n in range(directive.workers):
+    for n in range(script.workers):
         logging.info('Creating renderer#%d', n)
         worker = multiprocessing.Process(name='renderer#%d' % n,
                                          target=renderer,
-                                         args=(directive, queue, stats))
+                                         args=(script, queue, stats))
         worker.daemon = True
         workers.append(worker)
 
@@ -235,7 +207,6 @@ def renderman(directive):
         worker.start()
         logging.info('Started renderer#%d', n)
         time.sleep(0.1)
-
     try:
         producer.join()
         queue.join()
@@ -244,5 +215,5 @@ def renderman(directive):
     else:
         logger.info('===== Completed =====')
     finally:
-        # return unwrapped object
+        # return unwrapped ctypes object
         return stats.get_obj()

@@ -133,6 +133,7 @@ class TestTileMatrixBuilder(unittest.TestCase):
 
         shutil.rmtree(root, ignore_errors=True)
 
+    @skipUnlessHasGDAL()
     def test_build_renderer(self):
         renderer_config = {
             'prototype': 'image',

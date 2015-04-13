@@ -38,14 +38,20 @@ def check_command(ctx):
     mason = Mason()
     for theme_name in gallery:
         theme = gallery.get(theme_name)
+        mason.load_portrayal_from_theme(theme)
+
         if ctx.verbose > 0:
             click.secho('name="%s"' % theme.name, fg='green')
             click.secho('\t%r' % theme.metadata, fg='green')
             click.secho('\t%r' % theme.pyramid, fg='green')
             click.secho('\t%r' % theme.maptype, fg='green')
             click.secho('\t%r' % theme.tileformat, fg='green')
-            click.secho('\t%r' % theme.storage, fg='green')
-            click.secho('\t%r' % theme.renderer, fg='green')
-        mason.load_portrayal_from_theme(theme)
+            for n, m in enumerate(theme.tilematrix_set):
+                click.secho('\t\tmatrix#%d' % n, fg='green')
+                click.secho('\t\t%r' % m.pyramid, fg='green')
+                click.secho('\t\t%r' % m.maptype, fg='green')
+                click.secho('\t\t%r' % m.tileformat, fg='green')
+                click.secho('\t\t%r' % m.storage, fg='green')
+                click.secho('\t\t%r' % m.renderer, fg='green')
 
     click.echo('Check completed.')
