@@ -7,9 +7,9 @@ import unittest
 
 from stonemason.pyramid import Pyramid
 from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
-from stonemason.mason_.metadata import Metadata
-from stonemason.mason_.portrayal import Portrayal
-from stonemason.mason_.tilematrix import NullTileMatrix
+from stonemason.mason.metadata import Metadata
+from stonemason.mason.portrayal import Portrayal
+from stonemason.mason.tilematrix import NullTileMatrix
 
 
 class TestPortrayal(unittest.TestCase):

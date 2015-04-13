@@ -5,7 +5,7 @@ __date__ = '2/24/15'
 
 import unittest
 
-from stonemason.mason_.theme import Theme, MemGallery
+from stonemason.mason.theme import Theme, MemGallery
 
 
 class TestMemThemeManager(unittest.TestCase):

@@ -14,7 +14,7 @@ from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, MetaTileIndex
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import MetaTileRenderer
 from stonemason.provider.tilestorage import ClusterStorage, TileCluster
-from stonemason.mason_.tilematrix import TileMatrixHybrid, NullTileMatrix
+from stonemason.mason.tilematrix import TileMatrixHybrid, NullTileMatrix
 
 from tests import DATA_DIRECTORY
 

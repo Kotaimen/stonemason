@@ -8,10 +8,10 @@ class ThemeError(Exception):
     pass
 
 
-class ThemeLoaderError(Exception):
+class InvalidThemeConfig(ThemeError):
     pass
 
 
-class ThemeManagerError(Exception):
-    pass
+
+
 

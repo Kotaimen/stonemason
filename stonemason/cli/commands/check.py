@@ -18,7 +18,7 @@ from ..main import cli
 from ..context import pass_context, Context
 
 from stonemason.mason import Mason
-from stonemason.mason.theme import MemThemeManager, FileSystemThemeLoader
+from stonemason.mason.theme import MemGallery, FileSystemCurator
 
 
 @cli.command('check', short_help='check theme configuration.')
@@ -31,13 +31,13 @@ def check_command(ctx):
     if not os.path.exists(ctx.themes):
         raise click.Abort()
 
-    manager = MemThemeManager()
-    loader = FileSystemThemeLoader(ctx.themes)
-    loader.load_into(manager)
+    gallery = MemGallery()
+    loader = FileSystemCurator(ctx.themes)
+    loader.add_to(gallery)
 
     mason = Mason()
-    for theme_name in manager:
-        theme = manager.get(theme_name)
+    for theme_name in gallery:
+        theme = gallery.get(theme_name)
         if ctx.verbose > 0:
             click.secho('name="%s"' % theme.name, fg='green')
             click.secho('\t%r' % theme.metadata, fg='green')
@@ -46,6 +46,6 @@ def check_command(ctx):
             click.secho('\t%r' % theme.tileformat, fg='green')
             click.secho('\t%r' % theme.storage, fg='green')
             click.secho('\t%r' % theme.renderer, fg='green')
-        mason.load_map_from_theme(theme)
+        mason.load_portrayal_from_theme(theme)
 
     click.echo('Check completed.')

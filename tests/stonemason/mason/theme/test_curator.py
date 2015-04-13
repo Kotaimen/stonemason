@@ -5,10 +5,10 @@ __date__ = '2/24/15'
 
 import unittest
 
-from stonemason.mason_.theme import MemGallery
-from stonemason.mason_.theme import FileSystemCurator
+from stonemason.mason.theme import MemGallery
+from stonemason.mason.theme import FileSystemCurator
 
-from stonemason.mason_.theme import SAMPLE_THEME_DIRECTORY
+from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 
 
 class TestFileSystemThemeLoader(unittest.TestCase):

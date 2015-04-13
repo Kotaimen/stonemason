@@ -42,10 +42,10 @@
         ),
         {{ mason_map.metadata.center_zoom }});
 
-    L.tileLayer('/tiles/{{ mason_map.name }}/{z}/{x}/{y}.{{ mason_map.provider.tileformat.extension }}', {
+    L.tileLayer('/tiles/{{ mason_map.name }}/{z}/{x}/{y}.{{ mason_map.tileformat.extension }}', {
         attribution: "{{ mason_map.metadata.attribution }}",
-        minZoom: {{ mason_map.provider.pyramid.levels|first  }},
-        maxZoom: {{ mason_map.provider.pyramid.levels|last  }},
+        minZoom: {{ mason_map.pyramid.levels|first  }},
+        maxZoom: {{ mason_map.pyramid.levels|last  }},
         detectRetina: true,
         errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png',
     }).addTo(map);

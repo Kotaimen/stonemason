@@ -14,18 +14,20 @@ metadata = dict(
     center_zoom=6
 )
 
-provider = dict(
-    pyramid={
-        'stride': 2,
-        'geogcs': "WGS84",
-        'projcs': "EPSG:3857"
+portrayal_pyramid = dict(
+    stride=2,
+    geogcs="WGS84",
+    projcs="EPSG:3857"
+)
 
-    },
-    maptype="image",
-    tileformat={
-        "format": "PNG",
-        "extension": "png"
-    },
+portrayal_maptype = 'image'
+
+portrayal_tileformat = dict(format='PNG', extension='png')
+
+normal_matrix = dict(
+    pyramid=portrayal_pyramid,
+    maptype=portrayal_maptype,
+    portrayal_tileformat=portrayal_tileformat,
     storage={},
     renderer={
         'prototype': 'image',
@@ -40,4 +42,16 @@ provider = dict(
     }
 )
 
-THEME = dict(name=name, metadata=metadata, provider=provider)
+
+THEME = dict(
+    name=name,
+    metadata=metadata,
+    pyramid=portrayal_pyramid,
+    maptype=portrayal_maptype,
+    tileformat=portrayal_tileformat,
+    tilematrix_set=[
+        normal_matrix,
+    ]
+)
+
+

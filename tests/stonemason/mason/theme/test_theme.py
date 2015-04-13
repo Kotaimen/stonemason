@@ -5,7 +5,7 @@ __date__ = '4/1/15'
 
 import unittest
 
-from stonemason.mason_.theme import Theme
+from stonemason.mason.theme import Theme
 
 
 class TestMapTheme(unittest.TestCase):

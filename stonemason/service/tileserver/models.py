@@ -5,42 +5,44 @@ __date__ = '2/27/15'
 
 import re
 
-from stonemason.mason.theme import MemThemeManager, FileSystemThemeLoader
-from stonemason.mason import Mason, MapNotFound
+from stonemason.mason.theme import MemGallery, FileSystemCurator
+from stonemason.mason import Mason, MasonTileVisitor
+from stonemason.provider.tilecache import MemTileCache, NullTileCache
 
 
 class ThemeModel(object):
     def __init__(self, theme_dir):
-        theme_loader = FileSystemThemeLoader(theme_dir)
+        theme_loader = FileSystemCurator(theme_dir)
 
-        self._manager = MemThemeManager()
-        theme_loader.load_into(self._manager)
+        self._gallery = MemGallery()
+        theme_loader.add_to(self._gallery)
 
-    def get_theme(self, tag):
-        return self._manager.get(tag)
+    def get_theme(self, name):
+        return self._gallery.get(name)
+
+    def put_theme(self, name, theme):
+        self._gallery.put(name, theme)
 
     def iter_themes(self):
-        return (self._manager.get(k) for k in self._manager)
+        return (self._gallery.get(n) for n in self._gallery)
 
 
 class MasonModel(object):
     def __init__(self, themes, cache_servers=None, max_age=300):
         self._mason = None
-        self._cache_servers = cache_servers
+        self._tile_visitor = None
         self._max_age = max_age
         self._themes = themes
 
+        if cache_servers is not None:
+            self._cache = MemTileCache(servers=cache_servers)
+        else:
+            self._cache = NullTileCache()
+
     def do_init(self):
-        cache_config = None
-
-        if self._cache_servers is not None:
-            cache_servers = re.split(r'[; ]+', self._cache_servers)
-            cache_config = dict(servers=cache_servers)
-
-        mason = Mason(cache_config=cache_config)
+        mason = Mason()
         for theme in self._themes:
-            mason.load_map_from_theme(theme)
-
+            mason.load_portrayal_from_theme(theme)
         return mason
 
     @property
@@ -50,25 +52,26 @@ class MasonModel(object):
         return self._mason
 
     @property
+    def mason_tile_visitor(self):
+        if self._tile_visitor is None:
+            self._tile_visitor = MasonTileVisitor(self.mason, self._cache)
+        return self._tile_visitor
+
+    @property
     def cache_control(self):
         if self._max_age == 0:
             return 'max-age=0, nocache'
         else:
             return 'public, max-age=%d' % self._max_age
 
-    def get_tile(self, name, z, x, y, scale, ext):
-        try:
-            return self.mason.get_tile(name, z, x, y)
-        except MapNotFound:
-            return None
+    def get_tile(self, name, tag, z, x, y):
+        tile = self.mason_tile_visitor.get_tile(name, tag, z, x, y)
+        return tile
 
-    def get_map(self, tag):
-        try:
-            return self.mason.get_map(tag)
-        except MapNotFound:
-            return None
+    def get_portrayal(self, name):
+        return self.mason.get_portrayal(name)
 
-    def iter_maps(self):
-        return (self.mason.get_map(k) for k in self.mason)
+    def iter_portrayals(self):
+        return (self.mason.get_portrayal(n) for n in self.mason)
 
 

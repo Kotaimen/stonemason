@@ -49,12 +49,12 @@ class Portrayal(object):
         self._matrix_set[tag] = tilematrix
 
     def get_tilematrix(self, tag):
-        return self._matrix_set[tag]
+        return self._matrix_set.get(tag)
 
     def has_tilematrix(self, tag):
         return tag in self._matrix_set
 
-    def get_tilematrix_set(self):
+    def iter_tilematrix(self):
         return self._matrix_set
 
 

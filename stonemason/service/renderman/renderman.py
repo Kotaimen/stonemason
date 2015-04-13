@@ -21,8 +21,8 @@ import ctypes
 import time
 import logging
 
-from stonemason.mason import Mason, MasonMap
-from stonemason.mason.theme import MemThemeManager, FileSystemThemeLoader, MapTheme
+from stonemason.mason import Mason, Portrayal, MasonTileVisitor
+from stonemason.mason.theme import MemGallery, FileSystemCurator, Theme
 from stonemason.pyramid import Pyramid
 from stonemason.pyramid.geo import TileMapSystem
 from stonemason.util.timer import Timer, human_duration
@@ -80,17 +80,17 @@ def create_mason(directive):
     """Create a new Mason facade instance from render directive."""
     assert isinstance(directive, RenderDirective)
 
-    theme_manager = MemThemeManager()
-    theme_loader = FileSystemThemeLoader(directive.themes)
-    theme_loader.load_into(theme_manager)
+    theme_gallery = MemGallery()
+    theme_loader = FileSystemCurator(directive.themes)
+    theme_loader.add_to(theme_gallery)
 
     mason = Mason()
-    theme = theme_manager.get(directive.theme_name)
+    theme = theme_gallery.get(directive.theme_name)
     if theme is None:
         raise RuntimeError('Theme "%s" not found' % directive.theme_name)
 
-    assert isinstance(theme, MapTheme)
-    mason.load_map_from_theme(theme)
+    assert isinstance(theme, Theme)
+    mason.load_portrayal_from_theme(theme)
 
     return mason
 
@@ -127,9 +127,9 @@ def walker(directive, queue, stats):
     mason = create_mason(directive)
 
     # XXX: Mason should provide getters, and MasonMap is a really bad name...
-    mason_map = mason.get_map(directive.theme_name)
-    assert isinstance(mason_map, MasonMap)
-    pyramid = mason_map.provider.pyramid
+    portrayal = mason.get_portrayal(directive.theme_name)
+    assert isinstance(portrayal, Portrayal)
+    pyramid = portrayal.pyramid
     assert isinstance(pyramid, Pyramid)
 
     tms = TileMapSystem(pyramid)
@@ -158,6 +158,7 @@ def renderer(directive, queue, stats):
     setup_logger(directive.logfile)
 
     mason = create_mason(directive)
+    mason_tile_visitor = MasonTileVisitor(mason)
 
     while True:
         index = queue.get()
@@ -171,10 +172,11 @@ def renderer(directive, queue, stats):
         with Timer('  %s rendered in %%(time)s' % repr(index),
                    writer=logger.info, newline=False) as timer:
             try:
-                data = mason.get_tile(directive.theme_name,
-                                      index.z,
-                                      index.x,
-                                      index.y)
+                data = mason_tile_visitor.get_tile(directive.theme_name,
+                                                   '.png',
+                                                   index.z,
+                                                   index.x,
+                                                   index.y)
             except Exception as e:
                 stats.failed += 1
                 logger.exception('Error while rendering %s' % repr(index))

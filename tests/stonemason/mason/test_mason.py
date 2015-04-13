@@ -9,11 +9,11 @@ import unittest
 import six
 from PIL import Image
 
-from stonemason.mason_.mason import Mason
-from stonemason.mason_.mason import MasonTileVisitor, MasonMetaTileFarm
-from stonemason.mason_.metadata import Metadata
-from stonemason.mason_.portrayal import Portrayal, NullPortrayal
-from stonemason.mason_.tilematrix import TileMatrixHybrid
+from stonemason.mason.mason import Mason
+from stonemason.mason.mason import MasonTileVisitor, MasonMetaTileFarm
+from stonemason.mason.metadata import Metadata
+from stonemason.mason.portrayal import Portrayal, NullPortrayal
+from stonemason.mason.tilematrix import TileMatrixHybrid
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.provider.tilestorage import MetaTileStorage
