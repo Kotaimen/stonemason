@@ -1,74 +1,109 @@
 # -*- encoding: utf-8 -*-
 
 __author__ = 'ray'
-__date__ = '2/3/15'
+__date__ = '4/10/15'
 
+import io
 import unittest
 
-from stonemason.mason import *
-from stonemason.mason.theme import MemThemeManager, FileSystemThemeLoader
-from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
-from stonemason.provider.tileprovider import NullTileProvider
+import six
+from PIL import Image
 
-from tests import skipUnlessHasGDAL
+from stonemason.mason_.mason import Mason
+from stonemason.mason_.mason import MasonTileVisitor, MasonMetaTileFarm
+from stonemason.mason_.metadata import Metadata
+from stonemason.mason_.portrayal import Portrayal, NullPortrayal
+from stonemason.mason_.tilematrix import TileMatrixHybrid
+from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
+from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
+from stonemason.provider.tilestorage import MetaTileStorage
+
+from test_tilematrix import DummyClusterStorage, DummyMetaTileRenderer
 
 
-class DummyMasonMap(MasonMap):
-    def __init__(self, name='dummy'):
-        MasonMap.__init__(
-            self, name, metadata=Metadata(), provider=NullTileProvider())
-
-
-@skipUnlessHasGDAL()
 class TestMason(unittest.TestCase):
     def setUp(self):
-        self._manager = MemThemeManager()
+        self.mason = Mason()
 
-        loader = FileSystemThemeLoader(SAMPLE_THEME_DIRECTORY)
-        loader.load_into(self._manager)
+    def test_put_get_has_portrayal(self):
+        name = 'test'
 
-        self._mason = Mason()
+        expected = NullPortrayal()
 
-    def test_load_map_from_theme(self):
-        theme = self._manager.get('sample')
-        self.assertIsNotNone(theme)
+        self.assertFalse(self.mason.has_portrayal(name))
 
-        self._mason.load_map_from_theme(theme)
+        self.mason.put_portrayal(name, expected)
+        self.assertTrue(self.mason.has_portrayal(name))
 
-        self.assertIsNotNone(self._mason.get_map('sample'))
-        self.assertRaises(MasonError, self._mason.load_map_from_theme, theme)
+        actually = self.mason.get_portrayal(name)
+        self.assertEqual(expected.name, actually.name)
 
-    def test_put_get_map(self):
-        mason_map = DummyMasonMap()
-        self._mason.put_map(mason_map.name, mason_map)
 
-        mason_map = self._mason.get_map(mason_map.name)
-        self.assertIsNotNone(mason_map)
+class TestMasonTileAccessor(unittest.TestCase):
+    def setUp(self):
+        mason = Mason()
 
-    def test_has_map(self):
-        mason_map = DummyMasonMap()
+        self.name = 'test-name'
+        self.tag = 'test-tag'
 
-        self._mason.put_map(mason_map.name, mason_map)
-        self.assertTrue(self._mason.has_map(mason_map.name))
-        self.assertFalse(self._mason.has_map('not exists'))
+        tilematrix = TileMatrixHybrid(
+            self.tag, DummyClusterStorage(), DummyMetaTileRenderer())
 
-    def test_iter_maps(self):
-        mason_map1 = DummyMasonMap('test1')
-        mason_map2 = DummyMasonMap('test2')
-        mason_map3 = DummyMasonMap('test3')
+        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
-        self._mason.put_map(mason_map1.name, mason_map1)
-        self._mason.put_map(mason_map2.name, mason_map2)
-        self._mason.put_map(mason_map3.name, mason_map3)
+        portrayal = Portrayal(self.name, Metadata(), bundle, Pyramid(stride=2))
+        portrayal.put_tilematrix(tilematrix.tag, tilematrix)
 
-        collection = list((m for m in self._mason))
-        self.assertIn('test1', collection)
-        self.assertIn('test2', collection)
-        self.assertIn('test3', collection)
+        mason.put_portrayal(portrayal.name, portrayal)
+
+        self.accessor = MasonTileVisitor(mason)
 
     def test_get_tile(self):
-        mason_map = DummyMasonMap()
-        self._mason.put_map(mason_map.name, mason_map)
+        tile = self.accessor.get_tile(self.name, self.tag, 1, 0, 0)
 
-        tile = self._mason.get_tile('dummy', 0, 0, 0)
-        self.assertIsNone(tile)
+        index = TileIndex(1, 0, 0)
+
+        expected = Tile(index=index, data=six.b('A tile'))
+        self.assertEqual(expected.index, tile.index)
+        self.assertEqual(expected.data, tile.data)
+
+
+class DummyMetaTileStorage(MetaTileStorage):
+    def __init__(self):
+        self._storage = dict()
+
+    def put(self, metatile):
+        self._storage[metatile.index] = metatile
+
+    def get(self, index):
+        return self._storage.get(index)
+
+
+class TestMasonMetatileRenderer(unittest.TestCase):
+    def setUp(self):
+        mason = Mason()
+
+        self.name = 'test-name'
+        self.tag = 'test-tag'
+
+        tilematrix = TileMatrixHybrid(
+            self.tag, DummyClusterStorage(), DummyMetaTileRenderer())
+
+        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
+
+        portrayal = Portrayal(self.name, Metadata(), bundle, Pyramid(stride=2))
+        portrayal.put_tilematrix(tilematrix.tag, tilematrix)
+
+        mason.put_portrayal(portrayal.name, portrayal)
+
+        self.storage = DummyMetaTileStorage()
+        self.renderer = MasonMetaTileFarm(mason, self.storage)
+
+    def test_render_metatile(self):
+        self.renderer.render_metatile(self.name, self.tag, 2, 0, 0, 2)
+
+        meta_index = MetaTileIndex(2, 0, 0, stride=2)
+        metatile = self.storage.get(meta_index)
+
+        grid_image = Image.open(io.BytesIO(metatile.data))
+        self.assertEqual((1024, 1024), grid_image.size)
