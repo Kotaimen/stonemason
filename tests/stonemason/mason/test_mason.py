@@ -97,8 +97,9 @@ class TestMasonMetatileRenderer(unittest.TestCase):
         self.name = 'test-name'
         self.tag = 'test-tag'
 
+        self.storage = DummyClusterStorage()
         tilematrix = TileMatrixHybrid(
-            self.tag, DummyClusterStorage(), DummyMetaTileRenderer())
+            self.tag, self.storage, DummyMetaTileRenderer())
 
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
@@ -107,14 +108,12 @@ class TestMasonMetatileRenderer(unittest.TestCase):
 
         mason.put_portrayal(portrayal.name, portrayal)
 
-        self.storage = DummyMetaTileStorage()
-        self.renderer = MasonMetaTileFarm(mason, self.storage)
+        self.renderer = MasonMetaTileFarm(mason)
 
     def test_render_metatile(self):
-        self.renderer.render_metatile(self.name, self.tag, 2, 0, 0, 2)
+        self.renderer.render_metatile(self.name, self.tag, 1, 0, 0, 2)
 
-        meta_index = MetaTileIndex(2, 0, 0, stride=2)
-        metatile = self.storage.get(meta_index)
+        meta_index = MetaTileIndex(1, 0, 0, stride=2)
+        cluster = self.storage.get(meta_index)
 
-        grid_image = Image.open(io.BytesIO(metatile.data))
-        self.assertEqual((1024, 1024), grid_image.size)
+        self.assertEqual(len(cluster.tiles), 4)

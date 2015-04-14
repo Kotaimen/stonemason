@@ -5,7 +5,6 @@ __date__ = '4/10/15'
 
 from stonemason.pyramid import TileIndex, MetaTileIndex
 from stonemason.provider.tilecache import TileCache, NullTileCache
-from stonemason.provider.tilestorage import MetaTileStorage, NullMetaTileStorage
 
 from .portrayal import Portrayal
 from .builder import create_portrayal_from_theme
@@ -91,13 +90,9 @@ class MasonTileVisitor(object):
 
 
 class MasonMetaTileFarm(object):
-    def __init__(self, mason, storage=None):
-        if storage is None:
-            storage = NullMetaTileStorage()
+    def __init__(self, mason):
         assert isinstance(mason, Mason)
-        assert isinstance(storage, MetaTileStorage)
         self._mason = mason
-        self._storage = storage
 
     def render_metatile(self, name, tag, z, x, y, stride):
         portrayal = self._mason.get_portrayal(name)
@@ -111,13 +106,8 @@ class MasonMetaTileFarm(object):
         # create meta index
         meta_index = MetaTileIndex(z, x, y, stride)
 
-        # get tile cluster
-        metatile = tilematrix.get_metatile(
-            portrayal.bundle, portrayal.pyramid, meta_index)
-        if metatile is None:
-            return False
-
-        self._storage.put(metatile)
-
-        return True
+        # render the metatile
+        return tilematrix.render_metatile(portrayal.bundle,
+                                          portrayal.pyramid,
+                                          meta_index)
 

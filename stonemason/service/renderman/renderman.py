@@ -58,8 +58,7 @@ def create_mason(script):
     mason = Mason()
     theme = theme_gallery.get(script.theme_name)
     if theme is None:
-        raise RuntimeError(
-            'Theme "%s %s" not found' % (script.theme_name, script.schema_tag))
+        raise RuntimeError('Theme "%s" not found' % script.theme_name)
 
     assert isinstance(theme, Theme)
     mason.load_portrayal_from_theme(theme)
@@ -98,7 +97,6 @@ def walker(script, queue, stats):
 
     mason = create_mason(script)
 
-    # XXX: Mason should provide getters, and MasonMap is a really bad name...
     portrayal = mason.get_portrayal(script.theme_name)
     assert isinstance(portrayal, Portrayal)
     pyramid = portrayal.pyramid

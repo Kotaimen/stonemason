@@ -21,6 +21,9 @@ class TileMatrix(object):
     def get_tilecluster(self, bundle, pyramid, meta_index):
         raise NotImplementedError
 
+    def render_metatile(self, bundle, pyramid, meta_index):
+        raise NotImplementedError
+
 
 class NullTileMatrix(TileMatrix):
     def __init__(self, tag='null'):
@@ -31,6 +34,9 @@ class NullTileMatrix(TileMatrix):
 
     def get_tilecluster(self, bundle, pyramid, meta_index):
         return None
+
+    def render_metatile(self, bundle, pyramid, meta_index):
+        return False
 
 
 class TileMatrixHybrid(TileMatrix):
@@ -55,6 +61,14 @@ class TileMatrixHybrid(TileMatrix):
 
     def get_metatile(self, bundle, pyramid, meta_index):
         metatile = self._renderer.render_metatile(meta_index)
-        if metatile:
-            self._storage.put(metatile)
         return metatile
+
+    def render_metatile(self, bundle, pyramid, meta_index):
+        if self._storage.get(meta_index) is not None:
+            return True
+        result = self._renderer.render_metatile(meta_index)
+        if result:
+            self._storage.put(result)
+            return True
+        else:
+            return False
