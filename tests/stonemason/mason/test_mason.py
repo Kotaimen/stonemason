@@ -13,7 +13,7 @@ from stonemason.mason.mason import Mason
 from stonemason.mason.mason import MasonTileVisitor, MasonMetaTileFarm
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.portrayal import Portrayal
-from stonemason.mason.tilematrix import TileMatrixHybrid
+from stonemason.mason.schema import HybridSchema
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.provider.tilestorage import MetaTileStorage
@@ -57,13 +57,13 @@ class TestMasonTileAccessor(unittest.TestCase):
         self.name = 'test-name'
         self.tag = 'test-tag'
 
-        tilematrix = TileMatrixHybrid(
+        tilematrix = HybridSchema(
             self.tag, DummyClusterStorage(), DummyMetaTileRenderer())
 
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
         portrayal = Portrayal(self.name, Metadata(), bundle, Pyramid(stride=2))
-        portrayal.put_tilematrix(tilematrix.tag, tilematrix)
+        portrayal.put_schema(tilematrix.tag, tilematrix)
 
         mason.put_portrayal(portrayal.name, portrayal)
 
@@ -98,13 +98,13 @@ class TestMasonMetatileRenderer(unittest.TestCase):
         self.tag = 'test-tag'
 
         self.storage = DummyClusterStorage()
-        tilematrix = TileMatrixHybrid(
+        tilematrix = HybridSchema(
             self.tag, self.storage, DummyMetaTileRenderer())
 
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
         portrayal = Portrayal(self.name, Metadata(), bundle, Pyramid(stride=2))
-        portrayal.put_tilematrix(tilematrix.tag, tilematrix)
+        portrayal.put_schema(tilematrix.tag, tilematrix)
 
         mason.put_portrayal(portrayal.name, portrayal)
 

@@ -49,7 +49,7 @@ def check_command(ctx):
             click.secho('\t%s' % repr(protrayal.metadata), fg='green')
             click.secho('\t%s' % repr(protrayal.pyramid), fg='green')
 
-        for n, m in enumerate(theme.tilematrix_set):
+        for n, m in enumerate(theme.schemas):
             click.echo('\tSchema: %s %s' % (protrayal.name, m.tag))
             if ctx.verbose:
                 click.secho('\t\tmaptype=%s' % repr(m.maptype), fg='green')

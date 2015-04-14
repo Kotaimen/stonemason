@@ -9,7 +9,7 @@ from stonemason.pyramid import Pyramid
 from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.portrayal import Portrayal
-from stonemason.mason.tilematrix import NullTileMatrix
+from stonemason.mason.schema import NullSchema
 
 
 class TestPortrayal(unittest.TestCase):
@@ -35,13 +35,13 @@ class TestPortrayal(unittest.TestCase):
     def test_put_get_has_tilematrix(self):
         tag = '2x.png'
 
-        expected = NullTileMatrix(tag)
+        expected = NullSchema(tag)
 
-        self.assertFalse(self.portrayal.has_tilematrix(tag))
+        self.assertFalse(self.portrayal.has_schema(tag))
 
-        self.portrayal.put_tilematrix(expected.tag, expected)
-        self.assertTrue(self.portrayal.has_tilematrix(tag))
+        self.portrayal.put_schema(expected.tag, expected)
+        self.assertTrue(self.portrayal.has_schema(tag))
 
-        actually = self.portrayal.get_tilematrix(tag)
+        actually = self.portrayal.get_schema(tag)
         self.assertEqual(expected.tag, actually.tag)
 

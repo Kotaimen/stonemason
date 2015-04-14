@@ -20,5 +20,5 @@ class DuplicatedPortrayal(MasonError):
     pass
 
 
-class InvalidTileMatrixTag(MasonError):
+class InvalidSchemaTag(MasonError):
     pass

@@ -56,7 +56,7 @@ class TestTileServerApp(unittest.TestCase):
         for theme in themes:
             self.assertIn('name', theme)
             self.assertIn('metadata', theme)
-            self.assertIn('tilematrix_set', theme)
+            self.assertIn('schemas', theme)
 
 
     def test_get_theme(self):
@@ -67,7 +67,7 @@ class TestTileServerApp(unittest.TestCase):
 
         self.assertIn('name', theme)
         self.assertIn('metadata', theme)
-        self.assertIn('tilematrix_set', theme)
+        self.assertIn('schemas', theme)
         
     def test_get_tile(self):
         resp = self.client.get('/tiles/antique/1/1/1.jpg')

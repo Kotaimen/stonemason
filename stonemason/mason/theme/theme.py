@@ -15,7 +15,7 @@ class DictTheme(object):
         return repr(self._config)
 
 
-class TileMatrixTheme(DictTheme):
+class SchemaTheme(DictTheme):
     @property
     def tag(self):
         return self.get_attribute('tag')
@@ -63,7 +63,7 @@ class Theme(DictTheme):
         return self.get_attribute('pyramid')
 
     @property
-    def tilematrix_set(self):
-        for matrix in self.get_attribute('tilematrix_set', default=list()):
-            yield TileMatrixTheme(**matrix)
+    def schemas(self):
+        for matrix in self.get_attribute('schemas', default=list()):
+            yield SchemaTheme(**matrix)
 

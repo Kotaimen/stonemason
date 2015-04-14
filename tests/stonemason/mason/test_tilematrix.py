@@ -14,7 +14,7 @@ from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, MetaTileIndex
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import MetaTileRenderer
 from stonemason.provider.tilestorage import ClusterStorage, TileCluster
-from stonemason.mason.tilematrix import TileMatrixHybrid, NullTileMatrix
+from stonemason.mason.schema import HybridSchema, NullSchema
 
 from tests import DATA_DIRECTORY
 
@@ -51,7 +51,7 @@ class TestHybridTileMatrix(unittest.TestCase):
         storage = DummyClusterStorage()
         renderer = DummyMetaTileRenderer()
 
-        self.matrix = TileMatrixHybrid('test', storage, renderer)
+        self.matrix = HybridSchema('test', storage, renderer)
 
     def test_get_tilecluster(self):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
@@ -92,7 +92,7 @@ class TestHybridTileMatrix(unittest.TestCase):
 
 class TestNullTileMatrix(unittest.TestCase):
     def setUp(self):
-        self.matrix = NullTileMatrix()
+        self.matrix = NullSchema()
 
     def test_get_tilecluster(self):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))

@@ -47,7 +47,7 @@ class TestMapTheme(unittest.TestCase):
         self.assertIsNone(theme.maptype)
         self.assertIsNone(theme.pyramid)
         self.assertIsNone(theme.tileformat)
-        self.assertListEqual(list(), list(theme.tilematrix_set))
+        self.assertListEqual(list(), list(theme.schemas))
 
     def test_theme_from_dict(self):
         theme = Theme(**self.expected)
@@ -58,7 +58,7 @@ class TestMapTheme(unittest.TestCase):
         self.assertEqual({'stride': 16}, theme.pyramid)
         self.assertEqual({'format': 'PNG'}, theme.tileformat)
 
-        for matrix in theme.tilematrix_set:
+        for matrix in theme.schemas:
             self.assertEqual('image', matrix.maptype)
             self.assertEqual({'stride': 16}, matrix.pyramid)
             self.assertEqual({'format': 'PNG'}, matrix.tileformat)

@@ -24,7 +24,7 @@ def jsonify_portrayal(portrayal):
         'tilematrix_set': []
     }
 
-    for tag in portrayal.iter_tilematrix():
+    for tag in portrayal.iter_schema():
         template['tilematrix_set'].append(tag)
 
     return template

@@ -63,8 +63,8 @@ class MasonTileVisitor(object):
         if portrayal is None:
             return None
 
-        tilematrix = portrayal.get_tilematrix(tag)
-        if tilematrix is None:
+        schema = portrayal.get_schema(tag)
+        if schema is None:
             return None
 
         # create meta index
@@ -72,7 +72,7 @@ class MasonTileVisitor(object):
         meta_index = MetaTileIndex.from_tile_index(index, stride)
 
         # get tile cluster
-        cluster = tilematrix.get_tilecluster(
+        cluster = schema.get_tilecluster(
             portrayal.bundle, portrayal.pyramid, meta_index)
         if cluster is None:
             return None
@@ -99,15 +99,15 @@ class MasonMetaTileFarm(object):
         if portrayal is None:
             return None
 
-        tilematrix = portrayal.get_tilematrix(tag)
-        if tilematrix is None:
+        schema = portrayal.get_schema(tag)
+        if schema is None:
             return None
 
         # create meta index
         meta_index = MetaTileIndex(z, x, y, stride)
 
         # render the metatile
-        return tilematrix.render_metatile(portrayal.bundle,
+        return schema.render_metatile(portrayal.bundle,
                                           portrayal.pyramid,
                                           meta_index)
 

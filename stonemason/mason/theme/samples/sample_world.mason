@@ -3,6 +3,8 @@
 __author__ = 'ray'
 __date__ = '3/31/15'
 
+import copy
+
 name = 'sample'
 
 metadata = dict(
@@ -14,22 +16,26 @@ metadata = dict(
     center_zoom=6
 )
 
-portrayal_pyramid = dict(
+pyramid = dict(
     stride=2,
     geogcs="WGS84",
-    projcs="EPSG:3857"
+    projcs="EPSG:3857",
+    levels=range(0, 9)
 )
 
-portrayal_maptype = 'image'
+maptype = 'image'
 
-portrayal_tileformat = dict(format='PNG', extension='png')
+tileformat = dict(format='PNG', extension='png')
 
-matrix_1x = dict(
+schema_1x = dict(
     tag='.png',
-    pyramid=portrayal_pyramid,
-    maptype=portrayal_maptype,
-    portrayal_tileformat=portrayal_tileformat,
-    storage={},
+    pyramid=pyramid,
+    maptype=maptype,
+    portrayal_tileformat=tileformat,
+    storage={
+        'prototype': 'disk',
+        'root': "{{ theme_root }}/cache/sample"
+    },
     renderer={
         'prototype': 'image',
         'layers': {
@@ -43,35 +49,20 @@ matrix_1x = dict(
     }
 )
 
-matrix_2x = dict(
-    tag='@2x.png',
-    pyramid=portrayal_pyramid,
-    maptype=portrayal_maptype,
-    portrayal_tileformat=portrayal_tileformat,
-    storage={},
-    renderer={
-        'prototype': 'image',
-        'layers': {
-            'root': {
-                'type': 'image.mapnik',
-                'style_sheet': "{{ theme_root }}/sample_world/sample_world.xml",
-                'default_scale': 2,
-                'buffer_size': 256
-            }
-        }
-    }
-)
-
+schema_2x = copy.deepcopy(schema_1x)
+schema_2x['tag'] = '@2x.png'
+schema_2x['storage']['root'] = "{{ theme_root }}/cache/sample@2x"
+schema_2x['renderer']['layers']['root']['default_scale'] = 2
 
 THEME = dict(
     name=name,
     metadata=metadata,
-    pyramid=portrayal_pyramid,
-    maptype=portrayal_maptype,
-    tileformat=portrayal_tileformat,
-    tilematrix_set=[
-        matrix_1x,
-        matrix_2x
+    pyramid=pyramid,
+    maptype=maptype,
+    tileformat=tileformat,
+    schemas=[
+        schema_1x,
+        schema_2x,
     ]
 )
 
