@@ -14,12 +14,12 @@ from stonemason.provider.tilestorage import NullClusterStorage, \
 from stonemason.renderer.tilerenderer import NullMetaTileRenderer, \
     ImageMetaTileRenderer, RendererExprParser
 
-from .theme import Theme, TileMatrixTheme
+from .theme import Theme, SchemaTheme
 from .portrayal import Portrayal
 from .metadata import Metadata
-from .tilematrix import TileMatrix, TileMatrixHybrid
+from .schema import Schema, HybridSchema
 from .exceptions import UnknownStorageType, UnknownRendererType, \
-    InvalidTileMatrixTag
+    InvalidSchemaTag
 
 
 def create_cluster_storage(bundle, pyramid, **config):
@@ -58,7 +58,7 @@ def create_metatile_renderer(bundle, pyramid, **config):
         raise UnknownRendererType(prototype)
 
 
-class TileMatrixBuilder(object):
+class SchemaBuilder(object):
     def __init__(self):
         self._tag = None
         self._map_type = MapType('image')
@@ -72,10 +72,10 @@ class TileMatrixBuilder(object):
             self._tag = '%s' % self._tile_format.extension
 
         if re.match('^[0-9].*', self._tag):
-            raise InvalidTileMatrixTag(
+            raise InvalidSchemaTag(
                 'Tag of TileMatrix should not start with a number')
 
-        matrix = TileMatrixHybrid(self._tag, self._storage, self._renderer)
+        matrix = HybridSchema(self._tag, self._storage, self._renderer)
         return matrix
 
     def build_tag(self, tag):
@@ -140,7 +140,7 @@ class PortrayalBuilder(object):
         self._tile_format = TileFormat('PNG')
         self._pyramid = Pyramid()
 
-        self._matrix_set = dict()
+        self._schemas = dict()
 
     def build(self):
         return Portrayal(
@@ -148,7 +148,7 @@ class PortrayalBuilder(object):
             metadata=self._metadata,
             bundle=FormatBundle(self._map_type, self._tile_format),
             pyramid=self._pyramid,
-            matrix_set=self._matrix_set
+            schemas=self._schemas
         )
 
     def build_name(self, name):
@@ -168,9 +168,9 @@ class PortrayalBuilder(object):
     def build_tile_format(self, **config):
         self._tile_format = TileFormat(**config)
 
-    def add_tile_matrix(self, tile_matrix):
-        assert isinstance(tile_matrix, TileMatrix)
-        self._matrix_set[tile_matrix.tag] = tile_matrix
+    def add_schema(self, schema):
+        assert isinstance(schema, Schema)
+        self._schemas[schema.tag] = schema
 
 
 def create_portrayal_from_theme(theme):
@@ -187,25 +187,25 @@ def create_portrayal_from_theme(theme):
     if theme.tileformat is not None:
         builder.build_tile_format(**theme.tileformat)
 
-    for matrix_theme in theme.tilematrix_set:
-        assert isinstance(matrix_theme, TileMatrixTheme)
-        matrix_builder = TileMatrixBuilder()
+    for schema_theme in theme.schemas:
+        assert isinstance(schema_theme, SchemaTheme)
+        schema_builder = SchemaBuilder()
 
-        if matrix_theme.tag is not None:
-            matrix_builder.build_tag(matrix_theme.tag)
-        if matrix_theme.pyramid is not None:
-            matrix_builder.build_pyramid(**matrix_theme.pyramid)
-        if matrix_theme.maptype is not None:
-            matrix_builder.build_map_type(matrix_theme.maptype)
-        if matrix_theme.tileformat is not None:
-            matrix_builder.build_tile_format(**matrix_theme.tileformat)
-        if matrix_theme.storage is not None:
-            matrix_builder.build_storage(**matrix_theme.storage)
-        if matrix_theme.renderer is not None:
-            matrix_builder.build_renderer(**matrix_theme.renderer)
+        if schema_theme.tag is not None:
+            schema_builder.build_tag(schema_theme.tag)
+        if schema_theme.pyramid is not None:
+            schema_builder.build_pyramid(**schema_theme.pyramid)
+        if schema_theme.maptype is not None:
+            schema_builder.build_map_type(schema_theme.maptype)
+        if schema_theme.tileformat is not None:
+            schema_builder.build_tile_format(**schema_theme.tileformat)
+        if schema_theme.storage is not None:
+            schema_builder.build_storage(**schema_theme.storage)
+        if schema_theme.renderer is not None:
+            schema_builder.build_renderer(**schema_theme.renderer)
 
-        matrix = matrix_builder.build()
+        matrix = schema_builder.build()
 
-        builder.add_tile_matrix(matrix)
+        builder.add_schema(matrix)
 
     return builder.build()

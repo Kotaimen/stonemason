@@ -12,7 +12,7 @@ import boto
 from stonemason.pyramid import Pyramid
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.mason.metadata import Metadata
-from stonemason.mason.builder import PortrayalBuilder, TileMatrixBuilder, \
+from stonemason.mason.builder import PortrayalBuilder, SchemaBuilder, \
     create_cluster_storage, create_metatile_renderer
 from stonemason.provider.tilestorage import ClusterStorage
 from stonemason.renderer.tilerenderer import MetaTileRenderer
@@ -99,7 +99,7 @@ class TestCreateMetaTileRenderer(unittest.TestCase):
 
 class TestTileMatrixBuilder(unittest.TestCase):
     def setUp(self):
-        self.builder = TileMatrixBuilder()
+        self.builder = SchemaBuilder()
 
     def test_build_default(self):
         tile_matrix = self.builder.build()

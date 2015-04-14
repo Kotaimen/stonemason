@@ -7,7 +7,7 @@ from stonemason.provider.tilestorage import ClusterStorage, TileCluster
 from stonemason.renderer.tilerenderer import MetaTileRenderer
 
 
-class TileMatrix(object):
+class Schema(object):
     def __init__(self, tag):
         self._tag = tag
 
@@ -22,9 +22,9 @@ class TileMatrix(object):
         raise NotImplementedError
 
 
-class NullTileMatrix(TileMatrix):
+class NullSchema(Schema):
     def __init__(self, tag='null'):
-        TileMatrix.__init__(self, tag)
+        Schema.__init__(self, tag)
 
     def get_metatile(self, bundle, pyramid, meta_index):
         return None
@@ -33,9 +33,9 @@ class NullTileMatrix(TileMatrix):
         return None
 
 
-class TileMatrixHybrid(TileMatrix):
+class HybridSchema(Schema):
     def __init__(self, tag, storage, renderer):
-        TileMatrix.__init__(self, tag)
+        Schema.__init__(self, tag)
         assert isinstance(storage, ClusterStorage)
         assert isinstance(renderer, MetaTileRenderer)
         self._storage = storage
