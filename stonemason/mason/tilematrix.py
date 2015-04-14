@@ -55,4 +55,6 @@ class TileMatrixHybrid(TileMatrix):
 
     def get_metatile(self, bundle, pyramid, meta_index):
         metatile = self._renderer.render_metatile(meta_index)
+        if metatile:
+            self._storage.put(metatile)
         return metatile

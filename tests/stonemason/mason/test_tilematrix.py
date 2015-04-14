@@ -42,6 +42,9 @@ class DummyClusterStorage(ClusterStorage):
         ]
         return TileCluster(index=index, tiles=tiles)
 
+    def put(self, metatile):
+        pass
+
 
 class TestHybridTileMatrix(unittest.TestCase):
     def setUp(self):
