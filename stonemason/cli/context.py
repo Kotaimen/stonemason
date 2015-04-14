@@ -23,7 +23,7 @@ class Context(object):
     and pass them to sub commands."""
 
     def __init__(self):
-        self.themes = None
+        self.gallery = None
         self.verbose = 0
         self.debug = 0
 

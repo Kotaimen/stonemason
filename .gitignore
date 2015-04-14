@@ -65,4 +65,4 @@ stonemason/pyramid/*.c
 tests/output/
 
 # Themes
-themes/
+map_gallery/

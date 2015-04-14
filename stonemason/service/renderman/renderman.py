@@ -20,9 +20,10 @@ import multiprocessing.queues
 import time
 import logging
 
-from stonemason.mason import Mason, Portrayal, MasonTileVisitor
+from stonemason.mason import Mason, Portrayal, MasonTileVisitor, \
+    MasonMetaTileFarm
 from stonemason.mason.theme import MemGallery, FileSystemCurator, Theme
-from stonemason.pyramid import Pyramid
+from stonemason.pyramid import Pyramid, MetaTileIndex
 from stonemason.pyramid.geo import TileMapSystem
 from stonemason.util.timer import Timer, human_duration
 
@@ -51,13 +52,14 @@ def create_mason(script):
     assert isinstance(script, RenderScript)
 
     theme_gallery = MemGallery()
-    theme_loader = FileSystemCurator(directive.themes)
+    theme_loader = FileSystemCurator(script.gallery)
     theme_loader.add_to(theme_gallery)
 
     mason = Mason()
-    theme = theme_gallery.get(directive.theme_name)
+    theme = theme_gallery.get(script.theme_name)
     if theme is None:
-        raise RuntimeError('Theme "%s" not found' % script.theme_name)
+        raise RuntimeError(
+            'Theme "%s %s" not found' % (script.theme_name, script.schema_tag))
 
     assert isinstance(theme, Theme)
     mason.load_portrayal_from_theme(theme)
@@ -97,7 +99,7 @@ def walker(script, queue, stats):
     mason = create_mason(script)
 
     # XXX: Mason should provide getters, and MasonMap is a really bad name...
-    portrayal = mason.get_portrayal(directive.theme_name)
+    portrayal = mason.get_portrayal(script.theme_name)
     assert isinstance(portrayal, Portrayal)
     pyramid = portrayal.pyramid
     assert isinstance(pyramid, Pyramid)
@@ -124,7 +126,7 @@ def renderer(script, queue, stats):
     setup_logger(script.log_file)
 
     mason = create_mason(script)
-    mason_tile_visitor = MasonTileVisitor(mason)
+    visitor = MasonMetaTileFarm(mason)
 
     while True:
         index = queue.get()
@@ -133,25 +135,29 @@ def renderer(script, queue, stats):
         if index is None:
             break
 
+        assert isinstance(index, MetaTileIndex)
+
         logger.info('Rendering %s', repr(index))
 
         with Timer('  %s rendered in %%(time)s' % repr(index),
                    writer=logger.info, newline=False) as timer:
             try:
-                data = mason_tile_visitor.get_tile(script.theme_name,
-                                                   '.png',
-                                                   index.z,
-                                                   index.x,
-                                                   index.y)
+                result = visitor.render_metatile(script.theme_name,
+                                                 script.schema_tag,
+                                                 index.z,
+                                                 index.x,
+                                                 index.y,
+                                                 index.stride)
             except Exception as e:
                 stats.failed += 1
                 logger.exception('Error while rendering %s' % repr(index))
+                raise
             finally:
                 queue.task_done()
                 stats.progress += 1
 
         stats.total_time += timer.get_time()
-        if data:
+        if result:
             stats.rendered += 1
         else:
             stats.skipped += 1

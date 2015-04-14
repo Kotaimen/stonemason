@@ -21,49 +21,49 @@
     <style type="text/css">
 
         @media screen and (max-width: 768px) {
-        #grid[data-columns]::before {
-        content: '1 .column.size-1of1';
-        }
+            #grid[data-columns]::before {
+                content: '1 .column.size-1of1';
+            }
         }
 
         @media screen and (min-width: 768px) and (max-width: 992px) {
-        #grid[data-columns]::before {
-        content: '2 .column.size-1of2';
-        }
+            #grid[data-columns]::before {
+                content: '2 .column.size-1of2';
+            }
         }
 
         @media screen and (min-width: 992px) {
-        #grid[data-columns]::before {
-        content: '3 .column.size-1of3';
-        }
+            #grid[data-columns]::before {
+                content: '3 .column.size-1of3';
+            }
         }
 
         .column {
-        float: left;
+            float: left;
         }
 
         .size-1of1 {
-        width: 100%;
+            width: 100%;
         }
 
         .size-1of2 {
-        width: 50%;
+            width: 50%;
         }
 
         .size-1of3 {
-        width: 33.3333%;
+            width: 33.3333%;
         }
 
         #grid .item {
-        padding: 8px;
+            padding: 8px;
         }
 
         .panel {
-        margin-bottom: 0;
+            margin-bottom: 0;
         }
 
         .container-wrapper {
-        margin-top: 50px;
+            margin-top: 50px;
         }
 
         /*
@@ -72,36 +72,36 @@
 
         /* Hide for mobile, show later */
         .sidebar {
-        display: none;
+            display: none;
         }
 
         @media (min-width: 768px) {
-        .sidebar {
-        position: fixed;
-        top: 50px;
-        bottom: 0;
-        left: 0;
-        z-index: 1000;
-        display: block;
-        padding: 20px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        /* Scrollable contents if viewport is shorter than content. */
-        /*background-color: #f5f5f5;*/
-        /*border-right: 1px solid #eee;*/
-        }
+            .sidebar {
+                position: fixed;
+                top: 50px;
+                bottom: 0;
+                left: 0;
+                z-index: 1000;
+                display: block;
+                padding: 20px;
+                overflow-x: hidden;
+                overflow-y: auto;
+                /* Scrollable contents if viewport is shorter than content. */
+                /*background-color: #f5f5f5;*/
+                /*border-right: 1px solid #eee;*/
+            }
         }
 
         /* Sidebar navigation */
         .nav-sidebar {
-        margin-right: -21px; /* 20px padding + 1px border */
-        margin-bottom: 20px;
-        margin-left: -20px;
+            margin-right: -21px; /* 20px padding + 1px border */
+            margin-bottom: 20px;
+            margin-left: -20px;
         }
 
         .nav-sidebar > li > a {
-        padding-right: 20px;
-        padding-left: 20px;
+            padding-right: 20px;
+            padding-left: 20px;
         }
 
     </style>
@@ -155,77 +155,78 @@
 
                     {% for portrayal in collection %}
 
-                    <div class="item">
+                        <div class="item">
 
-                        <div class="panel panel-default">
+                            <div class="panel panel-default">
 
-                            <div class="panel-heading">
-                                <h3 class="text-capitalize">{{ portrayal.name }}
-                                    <a href="maps/{{ portrayal.name }}"
-                                       class="btn btn-default btn-sml pull-right"
-                                       role="button">
+                                <div class="panel-heading">
+                                    <h3 class="text-capitalize">{{ portrayal.name }}
+                                        <a href="maps/{{ portrayal.name }}"
+                                           class="btn btn-default btn-sml pull-right"
+                                           role="button">
                                     <span class="glyphicon glyphicon-map-marker"
                                           aria-hidden="true">
                                     </span>
-                                    </a>
-                                </h3>
+                                        </a>
+                                    </h3>
 
-                                <code>{{ portrayal.metadata.version }}</code>
+                                    <code>{{ portrayal.metadata.version }}</code>
+
+                                </div>
+
+                                <div class="panel-body">
+                                    <p>
+                                        {{ portrayal.metadata.abstract|e }}
+                                    </p>
+                                </div>
+
+                                <table class="table table-default">
+                                    <tr>
+                                        <td>CRS</td>
+                                        <td>
+                                            <code>{{ portrayal.pyramid.geogcs|e }}</code>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Projection</td>
+                                        <td>
+                                            <code>{{ portrayal.pyramid.projcs|e }}</code>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Zoom Levels</td>
+                                        <td>{{ portrayal.pyramid.levels[0] }}~{{ portrayal.pyramid.levels[-1] }}
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Schemas</td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                {% for matrix_tag in portrayal.tilematrix_set %}
+                                                    <li>
+                                                        <code>{{ portrayal.name+matrix_tag }}</code>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+
+
+                                <div class="panel-footer">
+                                    <p class="text-right">
+                                        {{ portrayal.metadata.attribution|e }}
+                                    </p>
+                                </div>
+
 
                             </div>
-
-                            <div class="panel-body">
-                                <p>
-                                    {{ portrayal.metadata.abstract|e }}
-                                </p>
-                            </div>
-
-                            <table class="table table-default">
-                                <tr>
-                                    <td>CRS</td>
-                                    <td><code>{{ portrayal.pyramid.geogcs|e
-                                        }}</code>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Projection</td>
-                                    <td><code>{{ portrayal.pyramid.projcs|e
-                                        }}</code>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Zoom Levels</td>
-                                    <td>{{ portrayal.pyramid.levels[0] }}~{{
-                                        portrayal.pyramid.levels[-1] }}
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Tiles</td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            {% for matrix_tag in portrayal.tilematrix_set %}
-                                            <li>{{ matrix_tag }}</li>
-                                            {% endfor %}
-                                        </ul>
-
-                                    </td>
-
-                                </tr>
-
-                            </table>
-
-
-                            <div class="panel-footer">
-                                <p class="text-right">
-                                    {{ portrayal.metadata.attribution|e }}
-                                </p>
-                            </div>
-
 
                         </div>
-
-                    </div>
                     {% endfor %}
 
                 </div>

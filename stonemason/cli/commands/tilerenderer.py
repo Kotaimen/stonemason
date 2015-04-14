@@ -58,8 +58,11 @@ def parse_levels(ctx, param, value):
               help='''Specify a file name for render error logs, default
               value is "render.log"''')
 @click.argument('theme_name', type=str)
+@click.argument('schema_tag', type=str)
 @pass_context
-def tile_renderer_command(ctx, theme_name, workers, levels, envelope, csv, log):
+def tile_renderer_command(ctx, theme_name, schema_tag,
+                          levels, envelope,
+                          workers, csv, log):
     """Start a tile rendering process on this node.
 
     Specify name of the theme to render, then either use levels and envelope,
@@ -70,8 +73,9 @@ def tile_renderer_command(ctx, theme_name, workers, levels, envelope, csv, log):
     if workers == 0:
         workers = multiprocessing.cpu_count()
 
-    script = RenderScript(themes=ctx.themes,
+    script = RenderScript(gallery=ctx.gallery,
                           theme_name=theme_name,
+                          schema_tag=schema_tag,
                           levels=levels,
                           envelope=envelope,
                           csv_file=csv,

@@ -24,20 +24,20 @@ from .context import CONTEXT_SETTINGS, Context
               times.''')
 @click.option('-v', '--verbose', default=False, count=True,
               help='being verbose.')
-@click.option('-t', '--themes',
+@click.option('-g', '--gallery',
               type=click.Path(exists=False, file_okay=False,
                               readable=True, resolve_path=True),
-              required=False, default='themes',
-              help='''themes root, by default, it looks "themes" under
+              required=False, default='map_gallery',
+              help='''gallery root, by default, it looks "map_gallery" under
               current directory.  This option also can be specified
-              using envvar STONEMASON_THEMES.''')
+              using envvar STONEMASON_GALLERY.''')
 @click.version_option(stonemason.__version__, message='Stonemason %(version)s')
 @click.pass_context
-def cli(ctx, debug, verbose, themes):
+def cli(ctx, debug, verbose, gallery):
     """Stonemason Tile Map Toolkit.
 
     Create, manage, render and serve map tiles.
-    First initialize a themes root using the "init" command:
+    First initialize a gallery root using the "init" command:
 
         stonemason init
 
@@ -46,8 +46,8 @@ def cli(ctx, debug, verbose, themes):
         stonemason COMMAND --help
     """
     ctx.obj = Context()
-    ctx.obj.themes = os.path.abspath(themes)
+    ctx.obj.gallery = os.path.abspath(gallery)
     if verbose > 0:
-        click.secho('Themes root: %s' % ctx.obj.themes, fg='green')
+        click.secho('Gallery: %s' % ctx.obj.gallery, fg='green')
     ctx.obj.verbose = verbose
     ctx.obj.debug = debug
