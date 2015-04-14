@@ -16,7 +16,7 @@ import collections
 _RenderScript = collections.namedtuple(
     '_RenderScript',
     '''
-    themes theme_name
+    gallery theme_name schema_tag
     levels envelope csv_file
     workers log_file
     progress
@@ -36,11 +36,14 @@ class RenderScript(_RenderScript):
         :class:`~stonemason.pyramid.geo.TileMapSystem`,
         :class:`~stonemason.services.renderman.PyramidWalker`.
 
-    :param themes: Themes root directory.
-    :type themes: str
+    :param gallery: Gallery root directory.
+    :type gallery: str
 
     :param theme_name: Name of the theme to render.
     :type theme_name: str
+
+    :param schema_tag: Tag of the schema to render.
+    :type schema_tag: str
 
     :param levels: A list of Tile levels to render.
     :type levels: list
@@ -62,11 +65,11 @@ class RenderScript(_RenderScript):
     :type progress: int
     """
 
-    def __new__(cls, themes='', theme_name='',
+    def __new__(cls, gallery='', theme_name='', schema_tag='',
                 levels=None, envelope=(), csv_file=None,
                 workers=1, log_file=None, progress=0):
         return _RenderScript.__new__(cls,
-                                     themes, theme_name,
+                                     gallery, theme_name, schema_tag,
                                      levels, envelope, csv_file,
                                      workers, log_file, progress)
 
