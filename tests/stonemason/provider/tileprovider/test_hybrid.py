@@ -5,19 +5,16 @@ __date__ = '3/29/15'
 
 import os
 import io
-import six
 import unittest
 
+import six
 from PIL import Image
 
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex, MetaTile
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import MetaTileRenderer
-from stonemason.provider.tilestorage import ClusterStorage, TileCluster
-from stonemason.provider.tileprovider import RendererTileProvider
-from stonemason.provider.tileprovider import StorageTileProvider
+from stonemason.tilestorage import ClusterStorage, TileCluster
 from stonemason.provider.tileprovider import HybridTileProvider
-
 from tests import DATA_DIRECTORY
 
 

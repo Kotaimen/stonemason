@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilestorage.s3
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilestorage.s3
+    ~~~~~~~~~~~~~~~~~~~~~~~~~
     S3 based storages.
 
 """
@@ -13,13 +13,12 @@ __date__ = '1/29/15'
 import email
 import time
 
-import boto, boto.s3
+import boto
+import boto.s3
 from boto.s3.key import Key
-
 import six
 
 from stonemason.provider.formatbundle import FormatBundle
-
 from .tilestorage import ClusterStorage, MetaTileStorage, \
     PersistenceStorageConcept, create_key_mode, MetaTileSerializer, \
     TileClusterSerializer, StorageMixin
@@ -261,9 +260,9 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
         :exc:`ReadOnlyStorage` if `readonly` is set.
     :type readonly: bool
 
-    :param splitter: A :class:`~stonemason.provider.tilestorage.Splitter` instance
+    :param splitter: A :class:`~stonemason.tilestorage.Splitter` instance
         to split `MetaTile` data into `Tile` data.
-    :type splitter: :class:`~stonemason.provider.tilestorage.Splitter`
+    :type splitter: :class:`~stonemason.tilestorage.Splitter`
     """
 
     def __init__(self, access_key=None, secret_key=None,

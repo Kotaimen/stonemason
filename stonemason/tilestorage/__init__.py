@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilestorage
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilestorage
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Persistence storage of metatiles.
 """

@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilestorage.cluster
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilestorage.cluster
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Metatile split into Tiles.
 """
 
@@ -23,6 +23,7 @@ from .exceptions import TileClusterError
 
 
 
+
 # The index file name
 CLUSTER_ZIP_INDEX = 'index.json'
 CLUSTER_ZIP_INDEX_LEGACY = 'tiles.json'
@@ -36,7 +37,7 @@ class TileCluster(object):
     `MetaTile`.
 
 
-    >>> from stonemason.provider.tilestorage import TileCluster
+    >>> from stonemason.tilestorage import TileCluster
     >>> from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
     >>> from stonemason.pyramid import MetaTile, MetaTileIndex, TileIndex
     >>> from PIL import Image
@@ -119,7 +120,7 @@ class TileCluster(object):
         :type writer: :class:`~stonemason.provider.formatbundle.MapWriter`
 
         :return: created cluster object.
-        :rtype: :class:`~stonemason.provider.tilestorage.TileCluster`
+        :rtype: :class:`~stonemason.tilestorage.TileCluster`
         """
         assert isinstance(metatile, MetaTile)
         assert isinstance(writer, MapWriter)
@@ -159,8 +160,8 @@ class TileCluster(object):
                          in the zip file.
         :type metadata: dict
         :return: Created cluster object.
-        :rtype: :class:`~stonemason.provider.tilestorage.TileCluster`
-        :raises: :class:`~stonemason.provider.tilestorage.TileClusterError`
+        :rtype: :class:`~stonemason.tilestorage.TileCluster`
+        :raises: :class:`~stonemason.tilestorage.TileClusterError`
         """
 
         try:
@@ -253,7 +254,7 @@ class TileCluster(object):
 
         :param zip_file: A file object points to the zip file.
         :param compressed: Whether to compress zip file, default is ``False``.
-        :raises: :class:`~stonemason.provider.tilestorage.TileClusterError`
+        :raises: :class:`~stonemason.tilestorage.TileClusterError`
         """
 
         keys = list('%d-%d-%d' % tile.index for tile in self._tiles)

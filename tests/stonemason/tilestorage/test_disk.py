@@ -10,7 +10,7 @@ import tempfile
 
 from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.provider.tilestorage import DiskClusterStorage, \
+from stonemason.tilestorage import DiskClusterStorage, \
     DiskMetaTileStorage, TileCluster, \
     InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
 from tests import DATA_DIRECTORY

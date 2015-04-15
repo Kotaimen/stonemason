@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilestorage.clusterfier
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilestorage.clusterfier
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Convert a `MetaTileStorage` to a `ClusterStorage` on-the-fly.
 """
 

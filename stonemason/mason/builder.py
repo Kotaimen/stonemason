@@ -9,11 +9,10 @@ import six
 
 from stonemason.pyramid import Pyramid
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.provider.tilestorage import NullClusterStorage, \
+from stonemason.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
 from stonemason.renderer.tilerenderer import NullMetaTileRenderer, \
     ImageMetaTileRenderer, RendererExprParser
-
 from .theme import Theme, SchemaTheme
 from .portrayal import Portrayal
 from .metadata import Metadata

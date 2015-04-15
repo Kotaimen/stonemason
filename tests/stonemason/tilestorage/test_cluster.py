@@ -13,7 +13,7 @@ from PIL import Image
 
 from stonemason.pyramid import MetaTile, MetaTileIndex, \
     TileIndex
-from stonemason.provider.tilestorage import TileCluster
+from stonemason.tilestorage import TileCluster
 from stonemason.provider.formatbundle import MapType, TileFormat, MapWriter, \
     find_writer
 from tests import DATA_DIRECTORY, ImageTestCase

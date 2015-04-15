@@ -7,14 +7,14 @@ Implements persistent tile storage.  For performance and cost reasons, only
 `MetaTile`s and `TileClusters` can be placed in the storage. There are two
 types of storage:
 
-    :class:`~stonemason.provider.tilestorage.ClusterStorage`
+    :class:`~stonemason.tilestorage.ClusterStorage`
         stores a cluster of tiles as zipped file.
 
-    :class:`~stonemason.provider.tilestorage.MetaTileStorage`
+    :class:`~stonemason.tilestorage.MetaTileStorage`
         stores raw, uncropped metatile data.
 
 A MetaTileStorage can be converted to a read only ClusterStorage using a
-:class:`~stonemason.provider.tilestorage.Clusterfier`, but not vise versa.
+:class:`~stonemason.tilestorage.Clusterfier`, but not vise versa.
 
 Currently there are two types of storage backends:
 
@@ -30,7 +30,7 @@ More backends will be added in the future.
 Exceptions
 ==========
 
-.. automodule:: stonemason.provider.tilestorage.exceptions
+.. automodule:: stonemason.tilestorage.exceptions
     :members:
     :undoc-members:
 
@@ -38,7 +38,7 @@ Exceptions
 Tile Cluster
 ============
 
-.. autoclass:: stonemason.provider.tilestorage.TileCluster
+.. autoclass:: stonemason.tilestorage.TileCluster
     :members: __getitem__
 
 Cluster File Format
@@ -122,33 +122,33 @@ JSON fields:
 MetaTile Storage
 ================
 
-.. autoclass:: stonemason.provider.tilestorage.MetaTileStorage
+.. autoclass:: stonemason.tilestorage.MetaTileStorage
     :members:
 
-.. autoclass:: stonemason.provider.tilestorage.NullMetaTileStorage
+.. autoclass:: stonemason.tilestorage.NullMetaTileStorage
     :members:
 
-.. autoclass:: stonemason.provider.tilestorage.DiskMetaTileStorage
+.. autoclass:: stonemason.tilestorage.DiskMetaTileStorage
     :members:
 
-.. autoclass:: stonemason.provider.tilestorage.S3MetaTileStorage
+.. autoclass:: stonemason.tilestorage.S3MetaTileStorage
     :members:
 
 
 Cluster Storage
 ===============
 
-.. autoclass:: stonemason.provider.tilestorage.ClusterStorage
+.. autoclass:: stonemason.tilestorage.ClusterStorage
     :members:
 
-.. autoclass:: stonemason.provider.tilestorage.NullClusterStorage
+.. autoclass:: stonemason.tilestorage.NullClusterStorage
     :members:
 
-.. autoclass:: stonemason.provider.tilestorage.DiskClusterStorage
+.. autoclass:: stonemason.tilestorage.DiskClusterStorage
     :members:
 
-.. autoclass:: stonemason.provider.tilestorage.S3ClusterStorage
+.. autoclass:: stonemason.tilestorage.S3ClusterStorage
     :members:
 
-.. autoclass:: stonemason.provider.tilestorage.Clusterfier
+.. autoclass:: stonemason.tilestorage.Clusterfier
     :members:

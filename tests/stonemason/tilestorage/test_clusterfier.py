@@ -11,7 +11,7 @@ import tempfile
 from tests import DATA_DIRECTORY
 from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.provider.tilestorage import Clusterfier, \
+from stonemason.tilestorage import Clusterfier, \
     DiskMetaTileStorage, TileCluster
 
 

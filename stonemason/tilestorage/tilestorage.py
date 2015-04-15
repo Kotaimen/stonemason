@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilestorage.tilestorage
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilestorage.tilestorage
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Persistence storage of tiles.
 """
@@ -15,10 +15,11 @@ import gzip
 
 import six
 
-from stonemason.pyramid import MetaTileIndex, MetaTile, Hilbert, Legacy, Pyramid
+from stonemason.pyramid import MetaTileIndex, MetaTile, Hilbert, Legacy
 from stonemason.provider.formatbundle import MapWriter
 from .cluster import TileCluster
 from .exceptions import *
+
 
 
 
@@ -42,9 +43,9 @@ class ClusterStorage(object):  # pragma: no cover
         found ind the storage
 
         :param index: MetaTile index of the tile cluster.
-        :type index: :class:`~stonemason.provider.tilestorage.MetaTileIndex`
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
         :returns: Retrieved TileCluster.
-        :rtype: :class:`~stonemason.provider.tilestorage.TileCluster` or ``None``
+        :rtype: :class:`~stonemason.tilestorage.TileCluster` or ``None``
         """
         raise NotImplementedError
 
@@ -67,7 +68,7 @@ class ClusterStorage(object):  # pragma: no cover
 
 
         :param index: MetaTile index of the TileCluster.
-        :type index: :class:`~stonemason.provider.tilestorage.MetaTileIndex`
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
         """
         raise NotImplementedError
 
@@ -86,9 +87,9 @@ class MetaTileStorage(object):  # pragma: no cover
         found ind the storage
 
         :param index: MetaTile index of the MetaTile.
-        :type index: :class:`~stonemason.provider.tilestorage.MetaTileIndex`
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
         :returns: Retrieved tile cluster.
-        :rtype: :class:`~stonemason.provider.tilestorage.MetaTile`
+        :rtype: :class:`~stonemason.tilestorage.MetaTile`
         """
         raise NotImplementedError
 
@@ -110,7 +111,7 @@ class MetaTileStorage(object):  # pragma: no cover
 
 
         :param index: MetaTile index of the tile cluster.
-        :type index: :class:`~stonemason.provider.tilestorage.MetaTileIndex`
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
         """
         raise NotImplementedError
 

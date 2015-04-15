@@ -12,8 +12,8 @@ import boto.s3
 
 from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.provider.tilestorage import S3ClusterStorage, \
-    S3MetaTileStorage, TileCluster
+from stonemason.tilestorage import S3ClusterStorage, S3MetaTileStorage, \
+    TileCluster
 
 
 TEST_BUCKET_NAME = 'tilestorage'

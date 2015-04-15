@@ -6,6 +6,7 @@ __date__ = '3/28/15'
 import shutil
 import tempfile
 import unittest
+
 import moto
 import boto
 
@@ -14,9 +15,8 @@ from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.builder import PortrayalBuilder, SchemaBuilder, \
     create_cluster_storage, create_metatile_renderer
-from stonemason.provider.tilestorage import ClusterStorage
+from stonemason.tilestorage import ClusterStorage
 from stonemason.renderer.tilerenderer import MetaTileRenderer
-
 from tests import skipUnlessHasGDAL
 
 

@@ -3,7 +3,7 @@
 __author__ = 'ray'
 __date__ = '3/29/15'
 
-from stonemason.provider.tilestorage import TileCluster, ClusterStorage
+from stonemason.tilestorage import TileCluster, ClusterStorage
 from stonemason.renderer.tilerenderer import MetaTileRenderer
 
 from .provider import TileProvider

@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilestorage.disk
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilestorage.disk
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Disk based storages.
 
 """
@@ -17,11 +17,9 @@ import six
 
 from stonemason.util.tempfn import generate_temp_filename
 from stonemason.provider.formatbundle import FormatBundle
-
 from .tilestorage import ClusterStorage, MetaTileStorage, \
     PersistenceStorageConcept, create_key_mode, MetaTileSerializer, \
     TileClusterSerializer, StorageMixin
-
 from .exceptions import TileStorageError
 
 

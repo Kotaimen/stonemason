@@ -3,13 +3,14 @@
 __author__ = 'ray'
 __date__ = '2/2/15'
 
-import six
 import unittest
+
+import six
 
 from stonemason.pyramid import Pyramid, TileIndex, Tile, MetaTileIndex
 from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.provider.tilestorage import NullClusterStorage
-from stonemason.provider.tilestorage import ClusterStorage, TileCluster
+from stonemason.tilestorage import ClusterStorage, TileCluster, \
+    NullClusterStorage
 from stonemason.provider.tileprovider import StorageTileProvider
 
 
