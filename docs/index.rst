@@ -50,7 +50,6 @@ API Reference
     :maxdepth: 2
 
     pkg_pyramid
-    pkg_tileprovider
     pkg_tilecache
     pkg_tilestorage
     pkg_formatbundle
