@@ -37,9 +37,9 @@
 
     var layers = {};
 
-    {% for matrix_tag in portrayal.tilematrix_set %}
+    {% for schema_tag in portrayal.schemas %}
 
-        var layer = L.tileLayer('/tiles/{{ portrayal.name }}/{z}/{x}/{y}{{ matrix_tag }}', {
+        var layer = L.tileLayer('/tiles/{{ portrayal.name }}/{z}/{x}/{y}{{ schema_tag }}', {
             attribution: "{{ portrayal.metadata.attribution }}",
             minZoom: {{ portrayal.pyramid.levels|first  }},
             maxZoom: {{ portrayal.pyramid.levels|last  }},
@@ -47,7 +47,7 @@
             errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png'
         });
 
-        layers['{{ portrayal.name+matrix_tag }}'] = layer;
+        layers['{{ portrayal.name+schema_tag }}'] = layer;
 
     {% endfor %}
 

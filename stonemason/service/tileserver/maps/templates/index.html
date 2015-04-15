@@ -203,9 +203,9 @@
                                         <td>Schemas</td>
                                         <td>
                                             <ul class="list-unstyled">
-                                                {% for matrix_tag in portrayal.tilematrix_set %}
+                                                {% for schema_tag in portrayal.schemas %}
                                                     <li>
-                                                        <code>{{ portrayal.name+matrix_tag }}</code>
+                                                        <code>{{ portrayal.name+schema_tag }}</code>
                                                     </li>
                                                 {% endfor %}
                                             </ul>

@@ -21,11 +21,11 @@ def jsonify_portrayal(portrayal):
         'maptype': portrayal.bundle.map_type,
         'tileformat': portrayal.bundle.tile_format,
         'pyramid': portrayal.pyramid,
-        'tilematrix_set': []
+        'schemas': []
     }
 
     for tag in portrayal.iter_schema():
-        template['tilematrix_set'].append(tag)
+        template['schemas'].append(tag)
 
     return template
 
