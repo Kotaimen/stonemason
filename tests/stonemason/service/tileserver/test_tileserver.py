@@ -21,7 +21,7 @@ class TestTileServerAppSetup(unittest.TestCase):
         app = TileServerApp()
         self.assertEqual(False, app.config['STONEMASON_DEBUG'])
         self.assertEqual(False, app.config['STONEMASON_TESTING'])
-        self.assertEqual('.', app.config['STONEMASON_THEMES'])
+        self.assertEqual('.', app.config['STONEMASON_GALLERY'])
         self.assertEqual(None, app.config['STONEMASON_CACHE'])
         self.assertEqual(0, app.config['STONEMASON_VERBOSE'])
 
@@ -42,7 +42,7 @@ class TestTileServerAppSetup(unittest.TestCase):
 class TestTileServerApp(unittest.TestCase):
     def setUp(self):
         self.app = TileServerApp(
-            STONEMASON_THEMES=SAMPLE_THEME_DIRECTORY,
+            STONEMASON_GALLERY=SAMPLE_THEME_DIRECTORY,
             STONEMASON_TESTING=True)
 
         self.client = self.app.test_client()

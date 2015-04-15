@@ -2,7 +2,7 @@
 
 """
     stonemason.services.renderman.script
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Render job and status.
 """
 

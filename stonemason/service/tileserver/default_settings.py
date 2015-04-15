@@ -15,7 +15,7 @@ STONEMASON_DEBUG = False
 STONEMASON_TESTING = False
 
 # An absolute path of theme directory.
-STONEMASON_THEMES = '.'
+STONEMASON_GALLERY = '.'
 
 # A string of memcache cache servers seperated by ``;`` or blank.
 STONEMASON_CACHE = None
