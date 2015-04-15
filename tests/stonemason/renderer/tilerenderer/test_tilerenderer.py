@@ -6,10 +6,9 @@ __date__ = '3/25/15'
 import unittest
 
 from stonemason.pyramid import Pyramid, MetaTileIndex
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import ImageMetaTileRenderer
 from stonemason.renderer.tilerenderer import RendererExprParser
-
 from tests import skipUnlessHasGDAL
 
 

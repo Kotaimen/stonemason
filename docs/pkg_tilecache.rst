@@ -1,7 +1,7 @@
 Tile Cache
 **********
 
-.. module:: stonemsaon.provider.tilecache
+.. module:: stonemsaon.tilecache
 
 A `TileCache` temporary stores recently accessed tiles for faster access, or
 as a intermediate storage for tiles retrieved from a `TileStorage`.
@@ -12,25 +12,25 @@ Only a `memcached` backend is implemented as of now.
 Exceptions
 ==========
 
-.. autoexception:: stonemason.provider.tilecache.TileCacheError
+.. autoexception:: stonemason.tilecache.TileCacheError
     :members:
 
-.. autoexception:: stonemason.provider.tilecache.MemTileCacheError
+.. autoexception:: stonemason.tilecache.MemTileCacheError
     :members:
 
 TileCache
 =========
 
-.. autoclass:: stonemason.provider.tilecache.TileCache
+.. autoclass:: stonemason.tilecache.TileCache
    :members:
 
-.. autoclass:: stonemason.provider.tilecache.NullTileCache
+.. autoclass:: stonemason.tilecache.NullTileCache
    :members:
 
 Memcached
 =========
 
-.. autoclass:: stonemason.provider.tilecache.MemTileCache
+.. autoclass:: stonemason.tilecache.MemTileCache
     :members:
 
 

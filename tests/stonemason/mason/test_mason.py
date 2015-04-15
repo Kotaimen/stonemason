@@ -3,11 +3,9 @@
 __author__ = 'ray'
 __date__ = '4/10/15'
 
-import io
 import unittest
 
 import six
-from PIL import Image
 
 from stonemason.mason.mason import Mason
 from stonemason.mason.mason import MasonTileVisitor, MasonMetaTileFarm
@@ -15,9 +13,8 @@ from stonemason.mason.metadata import Metadata
 from stonemason.mason.portrayal import Portrayal
 from stonemason.mason.schema import HybridSchema
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
-from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
-from stonemason.provider.tilestorage import MetaTileStorage
-
+from stonemason.formatbundle import FormatBundle, MapType, TileFormat
+from stonemason.tilestorage import MetaTileStorage
 from .test_tilematrix import DummyClusterStorage, DummyMetaTileRenderer
 
 

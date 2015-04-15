@@ -4,7 +4,7 @@ __author__ = 'ray'
 __date__ = '4/9/15'
 
 from stonemason.pyramid import Pyramid
-from stonemason.provider.formatbundle import FormatBundle
+from stonemason.formatbundle import FormatBundle
 
 from .metadata import Metadata
 from .schema import Schema

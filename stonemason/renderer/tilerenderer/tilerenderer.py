@@ -8,7 +8,7 @@ import io
 from PIL import Image
 
 from stonemason.pyramid import Pyramid, MetaTile, MetaTileIndex
-from stonemason.provider.formatbundle import FormatBundle
+from stonemason.formatbundle import FormatBundle
 from stonemason.renderer.map import RenderContext, ImageMapRenderer
 from stonemason.pyramid.geo import TileMapSystem
 

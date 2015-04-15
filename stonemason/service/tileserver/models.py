@@ -3,11 +3,9 @@
 __author__ = 'ray'
 __date__ = '2/27/15'
 
-import re
-
 from stonemason.mason.theme import MemGallery, FileSystemCurator
 from stonemason.mason import Mason, MasonTileVisitor
-from stonemason.provider.tilecache import MemTileCache, NullTileCache
+from stonemason.tilecache import MemTileCache, NullTileCache
 
 
 class ThemeModel(object):
