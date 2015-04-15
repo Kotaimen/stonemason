@@ -56,7 +56,11 @@ class ImageMetaTileRenderer(MetaTileRenderer):
         data = buffer.getvalue()
         del buffer
 
-        metatile = MetaTile(index=meta_index, data=data)
+        metatile = MetaTile(
+            index=meta_index,
+            mimetype=self._bundle._tile_format.mimetype,
+            data=data,
+        )
 
         return metatile
 

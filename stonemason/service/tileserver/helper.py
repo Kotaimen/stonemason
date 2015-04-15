@@ -3,47 +3,33 @@
 __author__ = 'ray'
 __date__ = '4/4/15'
 
-from stonemason.mason import MasonMap
-from stonemason.mason.theme import MapTheme
+from stonemason.mason import Portrayal
+from stonemason.mason.theme import Theme
 
 
-def jsonify_mason_map(mason_map):
-    assert isinstance(mason_map, MasonMap)
+def jsonify_portrayal(portrayal):
+    assert isinstance(portrayal, Portrayal)
     template = {
-        'name': mason_map.name,
+        'name': portrayal.name,
         'metadata': {
-            'version': mason_map.metadata.get('version', ''),
-            'abstract': mason_map.metadata.get('abstract', ''),
-            'attribution': mason_map.metadata.get('attribution', 'K&R'),
-            'center': mason_map.metadata.get('center', (0, 0)),
-            'center_zoom': mason_map.metadata.get('center_zoom', 6)
+            'version': portrayal.metadata.version,
+            'abstract': portrayal.metadata.abstract,
+            'attribution': portrayal.metadata.attribution,
+            'center': portrayal.metadata.center,
+            'center_zoom': portrayal.metadata.center_zoom
         },
-        'provider': {
-            'tileformat': {
-                'extension': mason_map.provider.formatbundle.tile_format.extension,
-                'mimetype': mason_map.provider.formatbundle.tile_format.mimetype
-            },
-            'pyramid': {
-                'projcs': mason_map.provider.pyramid.projcs,
-                'geogcs': mason_map.provider.pyramid.geogcs,
-                'levels': mason_map.provider.pyramid.levels,
-            }
-        }
+        'maptype': portrayal.bundle.map_type,
+        'tileformat': portrayal.bundle.tile_format,
+        'pyramid': portrayal.pyramid,
+        'tilematrix_set': []
     }
+
+    for tag in portrayal.iter_schema():
+        template['tilematrix_set'].append(tag)
+
     return template
 
 
 def jsonify_map_theme(map_theme):
-    assert isinstance(map_theme, MapTheme)
-    template = {
-        'name': map_theme.name,
-        'metadata': map_theme.metadata,
-        'provider': {
-            'maptype': map_theme.maptype,
-            'tileformat': map_theme.tileformat,
-            'pyrammid': map_theme.pyramid,
-            'storage': map_theme.storage,
-            'renderer': map_theme.renderer
-        }
-    }
-    return template
+    assert isinstance(map_theme, Theme)
+    return repr(map_theme)

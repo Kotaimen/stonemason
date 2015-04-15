@@ -9,10 +9,10 @@ from flask.views import MethodView
 from flask import render_template
 
 from ..models import MasonModel
-from ..helper import jsonify_mason_map
+from ..helper import jsonify_portrayal
 
 
-class MapView(MethodView):
+class PortrayalView(MethodView):
     """Map View
 
     A map site with named tag.
@@ -30,22 +30,22 @@ class MapView(MethodView):
         assert isinstance(mason_model, MasonModel)
         self._mason_model = mason_model
 
-    def get(self, tag=None):
+    def get(self, theme=None):
         """Retrieve a map site with the given tag."""
-        if tag is None:
+        if theme is None:
             """Retrieve an overview of all loaded maps."""
             collection = list()
-            for mason_map in self._mason_model.iter_maps():
-                collection.append(jsonify_mason_map(mason_map))
+            for portrayal in self._mason_model.iter_portrayals():
+                collection.append(jsonify_portrayal(portrayal))
 
             return render_template('index.html', collection=collection)
         else:
-            mason_map = self._mason_model.get_map(tag)
-            if mason_map is None:
+            portrayal = self._mason_model.get_portrayal(theme)
+            if portrayal is None:
                 abort(404)
 
             return render_template(
-                'map.html', mason_map=jsonify_mason_map(mason_map))
+                'map.html', portrayal=jsonify_portrayal(portrayal))
 
 
 class TilesView(MethodView):
@@ -64,12 +64,12 @@ class TilesView(MethodView):
         assert isinstance(mason_model, MasonModel)
         self._model = mason_model
 
-    def get(self, tag, z, x, y, scale, ext):
+    def get(self, theme, z, x, y, tag):
         """Return a tile data and raise :http:statuscode:`404` if not found.
 
-        :param tag: The Name of a theme. A string literal that uniquely
+        :param theme: The Name of a theme. A string literal that uniquely
                     identify a theme.
-        :type tag: str
+        :type theme: str
 
         :param z: A positive integer that represents the zoom level of a tile.
         :type z: int
@@ -93,7 +93,7 @@ class TilesView(MethodView):
 
         """
 
-        tile = self._model.get_tile(tag, z, x, y, scale, ext)
+        tile = self._model.get_tile(theme, tag, z, x, y)
         if tile is None:
             abort(404)
 

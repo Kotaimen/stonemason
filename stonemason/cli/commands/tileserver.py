@@ -92,7 +92,7 @@ application = TileServerApp(**config)
 def tile_server_command(ctx, bind, read_only, workers,
                         threads, cache, max_age,
                         write_wsgi, dry_run):
-    """Starts tile server using given themes configuration.
+    """Starts tile server using given gallery configuration.
 
     Debug option:
 
@@ -125,7 +125,7 @@ def tile_server_command(ctx, bind, read_only, workers,
         max_age = 0
 
     app_config = {
-        'STONEMASON_THEMES': ctx.themes,
+        'STONEMASON_THEMES': ctx.gallery,
         'STONEMASON_READ_ONLY': read_only,
         'STONEMASON_DEBUG': bool(ctx.debug),
         'STONEMASON_VERBOSE': ctx.verbose,

@@ -1,81 +1,113 @@
 # -*- encoding: utf-8 -*-
-"""
-    stonemason.mason.mason
-    ~~~~~~~~~~~~~~~~~~~~~~
-    Facade of StoneMason.
 
-"""
-
-import six
+__author__ = 'ray'
+__date__ = '4/10/15'
 
 from stonemason.pyramid import TileIndex, MetaTileIndex
-from stonemason.provider.tilecache import NullTileCache, MemTileCache
+from stonemason.provider.tilecache import TileCache, NullTileCache
 
-from .masonmap import MasonMap
-from .mapbuilder import MapBuilder
-from .exceptions import MapNotFound, DuplicatedMap
+from .portrayal import Portrayal
+from .builder import create_portrayal_from_theme
+from .theme import Theme
+from .exceptions import DuplicatedPortrayal
 
 
 class Mason(object):
-    def __init__(self, logger=None, cache_config=None):
+    def __init__(self, logger=None):
         self._gallery = dict()
         self._logger = logger
 
-        # create cache
-        if cache_config is not None:
-            assert isinstance(cache_config, dict)
-            self._cache = MemTileCache(**cache_config)
-        else:
-            self._cache = NullTileCache()
+    def load_portrayal_from_theme(self, theme):
+        assert isinstance(theme, Theme)
 
-    def load_map_from_theme(self, theme):
-        mason_map = MapBuilder().build_from_theme(theme)
-        self.put_map(mason_map.name, mason_map)
+        portrayal = create_portrayal_from_theme(theme)
+        if self.has_portrayal(portrayal.name):
+            raise DuplicatedPortrayal(portrayal.name)
 
-    def has_map(self, name):
+        self._gallery[portrayal.name] = portrayal
+
+    def get_portrayal(self, name):
+        return self._gallery.get(name)
+
+    def put_portrayal(self, name, portrayal):
+        assert isinstance(portrayal, Portrayal)
+        self._gallery[name] = portrayal
+
+    def has_portrayal(self, name):
         return name in self._gallery
 
-    def put_map(self, name, mason_map):
-        assert isinstance(mason_map, MasonMap)
-        if self.has_map(name):
-            raise DuplicatedMap(name)
-        self._gallery[name] = mason_map
+    def __iter__(self):
+        return iter(self._gallery)
 
-    def get_map(self, name):
-        try:
-            return self._gallery[name]
-        except KeyError:
-            raise MapNotFound(name)
 
-    def get_tile(self, name, z, x, y):
-        mason_map = self.get_map(name)
+class MasonTileVisitor(object):
+    def __init__(self, mason, cache=None):
+        if cache is None:
+            cache = NullTileCache()
+        assert isinstance(mason, Mason)
+        assert isinstance(cache, TileCache)
+        self._mason = mason
+        self._cache = cache
 
-        tag = mason_map.name
-
+    def get_tile(self, name, tag, z, x, y):
         index = TileIndex(z, x, y)
 
         # get tile from cache
-        tile = self._cache.get(tag, index)
+        key = self._make_cache_key(name, tag)
+        tile = self._cache.get(key, index)
         if tile is not None:
             # cache hit
             return tile
 
+        portrayal = self._mason.get_portrayal(name)
+        if portrayal is None:
+            return None
+
+        schema = portrayal.get_schema(tag)
+        if schema is None:
+            return None
+
         # create meta index
-        stride = mason_map.provider.pyramid.stride
+        stride = portrayal.pyramid.stride
         meta_index = MetaTileIndex.from_tile_index(index, stride)
 
         # get tile cluster
-        cluster = mason_map.provider.get_tilecluster(meta_index)
+        cluster = schema.get_tilecluster(
+            portrayal.bundle, portrayal.pyramid, meta_index)
         if cluster is None:
             return None
 
         # populate cache with tiles in the cluster
-        self._cache.put_multi(tag, cluster.tiles)
+        self._cache.put_multi(key, cluster.tiles)
 
         # get tile from the cluster
         tile = cluster[index]
 
         return tile
 
-    def __iter__(self):
-        return iter(self._gallery)
+    def _make_cache_key(self, name, tag):
+        return '%s-%s' % (name, tag)
+
+
+class MasonMetaTileFarm(object):
+    def __init__(self, mason):
+        assert isinstance(mason, Mason)
+        self._mason = mason
+
+    def render_metatile(self, name, tag, z, x, y, stride):
+        portrayal = self._mason.get_portrayal(name)
+        if portrayal is None:
+            return None
+
+        schema = portrayal.get_schema(tag)
+        if schema is None:
+            return None
+
+        # create meta index
+        meta_index = MetaTileIndex(z, x, y, stride)
+
+        # render the metatile
+        return schema.render_metatile(portrayal.bundle,
+                                          portrayal.pyramid,
+                                          meta_index)
+

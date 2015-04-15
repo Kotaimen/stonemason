@@ -10,13 +10,10 @@
 __author__ = 'ray'
 __date__ = '2/20/15'
 
-import six
-
-from .theme import MapTheme
-from .exceptions import ThemeManagerError
+from .theme import Theme
 
 
-class ThemeManager(object):  # pragma: no cover
+class Gallery(object):  # pragma: no cover
     """Theme Manager Interface
 
     In stonemason, `ThemeManager` serves as a container and manager for storing
@@ -83,7 +80,7 @@ class ThemeManager(object):  # pragma: no cover
         raise NotImplementedError
 
 
-class MemThemeManager(ThemeManager):
+class MemGallery(Gallery):
     """Memory Theme Manager
 
     `MemThemeManager` is a in-memory implementation of `ThemeManager`. It
@@ -96,11 +93,7 @@ class MemThemeManager(ThemeManager):
 
     def put(self, name, theme):
         """Put a theme into the manager"""
-        assert isinstance(theme, MapTheme)
-
-        if self.has(name):
-            raise ThemeManagerError('Duplicated themes: "%s"!' % name)
-
+        assert isinstance(theme, Theme)
         self._themes[name] = theme
 
     def get(self, name):

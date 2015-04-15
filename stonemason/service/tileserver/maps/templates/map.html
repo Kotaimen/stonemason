@@ -6,7 +6,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 
-    <title>Stonemason - {{ mason_map.name }}</title>
+    <title>Stonemason - {{ portrayal.name }}</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet"
@@ -15,12 +15,12 @@
     <style type="text/css">
 
         body {
-        padding: 0;
-        margin: 0;
+            padding: 0;
+            margin: 0;
         }
 
         html, body, #map {
-        height: 100%;
+            height: 100%;
         }
 
     </style>
@@ -35,20 +35,34 @@
 
 <script type="text/javascript">
 
-    var map = L.map('map').setView(
-        L.latLng(
-            {{ mason_map.metadata.center[1] }},
-            {{ mason_map.metadata.center[0] }}
-        ),
-        {{ mason_map.metadata.center_zoom }});
+    var layers = {};
 
-    L.tileLayer('/tiles/{{ mason_map.name }}/{z}/{x}/{y}.{{ mason_map.provider.tileformat.extension }}', {
-        attribution: "{{ mason_map.metadata.attribution }}",
-        minZoom: {{ mason_map.provider.pyramid.levels|first  }},
-        maxZoom: {{ mason_map.provider.pyramid.levels|last  }},
-        detectRetina: true,
-        errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png',
-    }).addTo(map);
+    {% for matrix_tag in portrayal.tilematrix_set %}
+
+        var layer = L.tileLayer('/tiles/{{ portrayal.name }}/{z}/{x}/{y}{{ matrix_tag }}', {
+            attribution: "{{ portrayal.metadata.attribution }}",
+            minZoom: {{ portrayal.pyramid.levels|first  }},
+            maxZoom: {{ portrayal.pyramid.levels|last  }},
+            detectRetina: true,
+            errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png'
+        });
+
+        layers['{{ portrayal.name+matrix_tag }}'] = layer;
+
+    {% endfor %}
+
+    var center = L.latLng({{ portrayal.metadata.center[1] }}, {{ portrayal.metadata.center[0] }});
+    var zoom = {{ portrayal.metadata.center_zoom }};
+    var map = L.map('map',
+            {
+                layers: [layer]
+            });
+
+    map.setView(center, zoom);
+
+
+    L.control.layers(layers).addTo(map);
+
 
 </script>
 

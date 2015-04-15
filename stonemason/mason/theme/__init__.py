@@ -9,11 +9,11 @@
 
 import os
 
-from .theme import MapTheme
-from .manager import ThemeManager, MemThemeManager
-from .loader import ThemeLoader, FileSystemThemeLoader
+from .theme import Theme, SchemaTheme
+from .gallery import Gallery, MemGallery
+from .curator import Curator, FileSystemCurator
 
-from .exceptions import ThemeError, ThemeManagerError
+from .exceptions import ThemeError
 
 
 SAMPLE_THEME_DIRECTORY = os.path.join(os.path.dirname(__file__), 'samples')

@@ -3,68 +3,67 @@
 __author__ = 'ray'
 __date__ = '3/30/15'
 
-from functools import reduce
-
 
 class DictTheme(object):
     def __init__(self, **config):
         self._config = config
 
-    def get_attribute(self, key_list, default=None):
-        try:
-            return reduce(lambda d, k: d[k], key_list, self._config)
-        except KeyError:
-            return default
+    def get_attribute(self, key, default=None):
+        return self._config.get(key, default)
 
-    def put_attribute(self, key_list, val):
-        self.get_attribute(key_list[:-1])[key_list[-1]] = val
+    def __repr__(self):
+        return repr(self._config)
 
 
-class MapTheme(DictTheme):
-    DEFAULT = {
-        'name': '',
-        'metadata': {},
-        'provider': {
-            'maptype': 'image',
-            'tileformat': {'format': 'PNG'},
-            'pyramid': {},
-            'storage': {'prototype': 'null'},
-            'renderer': {'prototype': 'null'}
-        }
-
-    }
-
+class SchemaTheme(DictTheme):
     @property
-    def name(self):
-        return self.get_attribute(
-            ['name'], self.DEFAULT['name'])
-
-    @property
-    def metadata(self):
-        return self.get_attribute(
-            ['metadata'], self.DEFAULT['metadata'])
+    def tag(self):
+        return self.get_attribute('tag')
 
     @property
     def maptype(self):
-        return self.get_attribute(
-            ['provider', 'maptype'], self.DEFAULT['provider']['maptype'])
+        return self.get_attribute('maptype')
 
     @property
     def tileformat(self):
-        return self.get_attribute(
-            ['provider', 'tileformat'], self.DEFAULT['provider']['tileformat'])
+        return self.get_attribute('tileformat')
 
     @property
     def pyramid(self):
-        return self.get_attribute(
-            ['provider', 'pyramid'], self.DEFAULT['provider']['pyramid'])
+        return self.get_attribute('pyramid')
 
     @property
     def storage(self):
-        return self.get_attribute(
-            ['provider', 'storage'], self.DEFAULT['provider']['storage'])
+        return self.get_attribute('storage')
 
     @property
     def renderer(self):
-        return self.get_attribute(
-            ['provider', 'renderer'], self.DEFAULT['provider']['renderer'])
+        return self.get_attribute('renderer')
+
+
+class Theme(DictTheme):
+    @property
+    def name(self):
+        return self.get_attribute('name')
+
+    @property
+    def metadata(self):
+        return self.get_attribute('metadata')
+
+    @property
+    def maptype(self):
+        return self.get_attribute('maptype')
+
+    @property
+    def tileformat(self):
+        return self.get_attribute('tileformat')
+
+    @property
+    def pyramid(self):
+        return self.get_attribute('pyramid')
+
+    @property
+    def schemas(self):
+        for matrix in self.get_attribute('schemas', default=list()):
+            yield SchemaTheme(**matrix)
+

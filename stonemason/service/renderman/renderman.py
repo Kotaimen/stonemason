@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+
 """
     stonemason.service.renderman.renderman
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -19,10 +20,10 @@ import multiprocessing.queues
 import time
 import logging
 
-from stonemason.mason import Mason, MasonMap
-from stonemason.mason.theme import MemThemeManager, \
-    FileSystemThemeLoader, MapTheme
-from stonemason.pyramid import Pyramid
+from stonemason.mason import Mason, Portrayal, MasonTileVisitor, \
+    MasonMetaTileFarm
+from stonemason.mason.theme import MemGallery, FileSystemCurator, Theme
+from stonemason.pyramid import Pyramid, MetaTileIndex
 from stonemason.pyramid.geo import TileMapSystem
 from stonemason.util.timer import Timer, human_duration
 
@@ -50,17 +51,17 @@ def create_mason(script):
     """Create a new Mason facade instance from render directive."""
     assert isinstance(script, RenderScript)
 
-    theme_manager = MemThemeManager()
-    theme_loader = FileSystemThemeLoader(script.themes)
-    theme_loader.load_into(theme_manager)
+    theme_gallery = MemGallery()
+    theme_loader = FileSystemCurator(script.gallery)
+    theme_loader.add_to(theme_gallery)
 
     mason = Mason()
-    theme = theme_manager.get(script.theme_name)
+    theme = theme_gallery.get(script.theme_name)
     if theme is None:
         raise RuntimeError('Theme "%s" not found' % script.theme_name)
 
-    assert isinstance(theme, MapTheme)
-    mason.load_map_from_theme(theme)
+    assert isinstance(theme, Theme)
+    mason.load_portrayal_from_theme(theme)
 
     return mason
 
@@ -96,10 +97,9 @@ def walker(script, queue, stats):
 
     mason = create_mason(script)
 
-    # XXX: Mason should provide getters, and MasonMap is a really bad name...
-    mason_map = mason.get_map(script.theme_name)
-    assert isinstance(mason_map, MasonMap)
-    pyramid = mason_map.provider.pyramid
+    portrayal = mason.get_portrayal(script.theme_name)
+    assert isinstance(portrayal, Portrayal)
+    pyramid = portrayal.pyramid
     assert isinstance(pyramid, Pyramid)
 
     tms = TileMapSystem(pyramid)
@@ -124,6 +124,7 @@ def renderer(script, queue, stats):
     setup_logger(script.log_file)
 
     mason = create_mason(script)
+    visitor = MasonMetaTileFarm(mason)
 
     while True:
         index = queue.get()
@@ -132,24 +133,29 @@ def renderer(script, queue, stats):
         if index is None:
             break
 
+        assert isinstance(index, MetaTileIndex)
+
         logger.info('Rendering %s', repr(index))
 
         with Timer('  %s rendered in %%(time)s' % repr(index),
                    writer=logger.info, newline=False) as timer:
             try:
-                data = mason.get_tile(script.theme_name,
-                                      index.z,
-                                      index.x,
-                                      index.y)
+                result = visitor.render_metatile(script.theme_name,
+                                                 script.schema_tag,
+                                                 index.z,
+                                                 index.x,
+                                                 index.y,
+                                                 index.stride)
             except Exception as e:
                 stats.failed += 1
                 logger.exception('Error while rendering %s' % repr(index))
+                raise
             finally:
                 queue.task_done()
                 stats.progress += 1
 
         stats.total_time += timer.get_time()
-        if data:
+        if result:
             stats.rendered += 1
         else:
             stats.skipped += 1

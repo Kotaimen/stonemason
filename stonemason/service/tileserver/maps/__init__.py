@@ -5,17 +5,17 @@ __date__ = '2/27/15'
 
 from flask import Blueprint
 
-from .views import MapView, TilesView
+from .views import PortrayalView, TilesView
 
 
 def create_blueprint(**kwargs):
     blueprint = Blueprint('maps', __name__, template_folder='templates')
 
-    map_view = MapView.as_view('maps', **kwargs)
+    map_view = PortrayalView.as_view('maps', **kwargs)
 
     blueprint.add_url_rule(
         endpoint='maps',
-        rule='/maps/<tag>',
+        rule='/maps/<theme>',
         view_func=map_view,
         methods=['GET']
     )
@@ -24,7 +24,7 @@ def create_blueprint(**kwargs):
         endpoint='overview',
         rule='/',
         view_func=map_view,
-        defaults={'tag': None},
+        defaults={'theme': None},
         methods=['GET']
     )
 
@@ -32,16 +32,8 @@ def create_blueprint(**kwargs):
 
     blueprint.add_url_rule(
         endpoint='tile',
-        rule='/tiles/<tag>/<int:z>/<int:x>/<int:y>@<scale>.<ext>',
+        rule='/tiles/<theme>/<int:z>/<int:x>/<int:y><tag>',
         view_func=tiles_view,
-        methods=['GET']
-    )
-
-    blueprint.add_url_rule(
-        endpoint='tile@1x',
-        rule='/tiles/<tag>/<int:z>/<int:x>/<int:y>.<ext>',
-        view_func=tiles_view,
-        defaults={'scale': '1x'},
         methods=['GET']
     )
 

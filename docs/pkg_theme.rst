@@ -11,18 +11,9 @@ serve tiles from different kinds of storage.
 Loaders
 =======
 
-.. autoclass:: stonemason.mason.theme.ThemeLoader
-    :members:
-
-.. autoclass:: stonemason.mason.theme.FileSystemThemeLoader
 
 
 Managers
 ========
-
-.. autoclass:: stonemason.mason.theme.ThemeManager
-    :members:
-
-.. autoclass:: stonemason.mason.theme.MemThemeManager
 
 

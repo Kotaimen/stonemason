@@ -306,7 +306,8 @@ class StorageMixin(object):
         if metatile.index.z not in self._levels:
             raise InvalidMetaTileIndex('Invalid MetaTile level.')
         if metatile.index.stride != self._stride:
-            raise InvalidMetaTileIndex('Invalid MetaTile stride.')
+            if metatile.index.z >> metatile.index.stride > 0:
+                raise InvalidMetaTileIndex('Invalid MetaTile stride.')
         if metatile.mimetype != self._mimetype:
             raise InvalidMetaTile('MetaTile mimetype inconsistent with storage')
 

@@ -79,7 +79,7 @@ class MetaTileIndex(_MetaTileIndex):
         return _MetaTileIndex.__new__(cls, z, x, y, stride)
 
     def __hash__(self):
-        return Hilbert.coord2serial(*self)
+        return Hilbert.coord2serial(self.z, self.x, self.y)
 
     def fission(self):
         """Fission the `MetaTileIndex` into `TileIndexes`.

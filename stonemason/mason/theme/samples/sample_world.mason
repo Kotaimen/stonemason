@@ -3,6 +3,8 @@
 __author__ = 'ray'
 __date__ = '3/31/15'
 
+import copy
+
 name = 'sample'
 
 metadata = dict(
@@ -14,19 +16,26 @@ metadata = dict(
     center_zoom=6
 )
 
-provider = dict(
-    pyramid={
-        'stride': 2,
-        'geogcs': "WGS84",
-        'projcs': "EPSG:3857"
+pyramid = dict(
+    stride=2,
+    geogcs="WGS84",
+    projcs="EPSG:3857",
+    levels=range(0, 9)
+)
 
+maptype = 'image'
+
+tileformat = dict(format='PNG', extension='png')
+
+schema_1x = dict(
+    tag='.png',
+    pyramid=pyramid,
+    maptype=maptype,
+    portrayal_tileformat=tileformat,
+    storage={
+        'prototype': 'disk',
+        'root': "{{ theme_root }}/cache/sample"
     },
-    maptype="image",
-    tileformat={
-        "format": "PNG",
-        "extension": "png"
-    },
-    storage={},
     renderer={
         'prototype': 'image',
         'layers': {
@@ -40,4 +49,21 @@ provider = dict(
     }
 )
 
-THEME = dict(name=name, metadata=metadata, provider=provider)
+schema_2x = copy.deepcopy(schema_1x)
+schema_2x['tag'] = '@2x.png'
+schema_2x['storage']['root'] = "{{ theme_root }}/cache/sample@2x"
+schema_2x['renderer']['layers']['root']['default_scale'] = 2
+
+THEME = dict(
+    name=name,
+    metadata=metadata,
+    pyramid=pyramid,
+    maptype=maptype,
+    tileformat=tileformat,
+    schemas=[
+        schema_1x,
+        schema_2x,
+    ]
+)
+
+
