@@ -53,6 +53,10 @@ class TileFormat(_TileFormat):
         ``TIFF``
             TIFF image
 
+        ``WBP``
+            WEBP image, note
+
+
         If custom formats are used, `extension` and `mimetype` must also be
         specified.
     :type format: str
@@ -77,6 +81,7 @@ class TileFormat(_TileFormat):
         'JPEG': 'image/jpeg',
         'PNG': 'image/png',
         'TIFF': 'image/tiff',
+        'WEBP': 'image/webp',
     }
 
     def __new__(cls, format=None, extension=None, mimetype=None,
