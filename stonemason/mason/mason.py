@@ -4,7 +4,7 @@ __author__ = 'ray'
 __date__ = '4/10/15'
 
 from stonemason.pyramid import TileIndex, MetaTileIndex
-from stonemason.provider.tilecache import TileCache, NullTileCache
+from stonemason.tilecache import TileCache, NullTileCache
 
 from .portrayal import Portrayal
 from .builder import create_portrayal_from_theme

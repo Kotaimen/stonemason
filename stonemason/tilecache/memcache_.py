@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilecache.memcache_
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilecache.memcache_
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Memcached tile cache
 """
@@ -16,7 +16,6 @@ import random
 import memcache
 
 from stonemason.pyramid import Tile, TileIndex
-
 from .tilecache import TileCache, TileCacheError
 
 
@@ -40,7 +39,7 @@ class MemTileCache(TileCache):
     .. _nutcracker:  <https://github.com/twitter/twemproxy>
 
     >>> from stonemason.pyramid import Tile,TileIndex
-    >>> from stonemason.provider.tilecache import MemTileCache
+    >>> from stonemason.tilecache import MemTileCache
     >>> cache = MemTileCache(servers=['localhost:11211',])
     >>> cache.put('layer', Tile(TileIndex(3, 4, 5), b'tile'))
     >>> cache.has('layer', TileIndex(3, 4, 5))

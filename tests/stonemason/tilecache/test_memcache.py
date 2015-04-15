@@ -7,8 +7,7 @@ import unittest
 import time
 
 from stonemason.pyramid import Tile, TileIndex
-from stonemason.provider.tilecache import MemTileCache, TileCacheError
-
+from stonemason.tilecache import MemTileCache, TileCacheError
 from tests import skipUnlessHasLocalMemcacheServer
 
 

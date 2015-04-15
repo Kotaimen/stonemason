@@ -113,7 +113,7 @@ class TileCluster(object):
         data into smaller tiles.
 
         :param metatile: The metatile.
-        :type metatile: :class:`~stonemason.provider.tilecache.TileCluster`
+        :type metatile: :class:`~stonemason.tilecache.TileCluster`
 
         :param writer: A `MapWriter` to resplit metatile data into small tiles.
         :type writer: :class:`~stonemason.provider.formatbundle.MapWriter`

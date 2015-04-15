@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilecache.tilecache
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilecache.tilecache
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     A do nothing tile cache.
 """
@@ -75,7 +75,7 @@ class TileCache(object):  # pragma: no cover
         :param ttl: Number of seconds before expiration, `0` means never.
         :type ttl: int
         :return: None
-        :raise: :class:`~stonemason.provider.tilecache.TileCacheError` when fail.
+        :raise: :class:`~stonemason.tilecache.TileCacheError` when fail.
         """
         raise NotImplementedError
 

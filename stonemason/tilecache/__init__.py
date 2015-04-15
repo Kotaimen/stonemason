@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.tilecache
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.tilecache
+    ~~~~~~~~~~~~~~~~~~~~
 
     A cache of tiles.
 """
