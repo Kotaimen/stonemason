@@ -10,11 +10,10 @@ import unittest
 from PIL import Image
 
 from stonemason.pyramid import Pyramid, MetaTileIndex, MetaTile
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import NullMetaTileRenderer
 from stonemason.renderer.tilerenderer import MetaTileRenderer
 from stonemason.provider.tileprovider import RendererTileProvider
-
 from tests import DATA_DIRECTORY
 
 

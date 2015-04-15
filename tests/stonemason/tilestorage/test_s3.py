@@ -11,7 +11,7 @@ import boto
 import boto.s3
 
 from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.tilestorage import S3ClusterStorage, S3MetaTileStorage, \
     TileCluster
 

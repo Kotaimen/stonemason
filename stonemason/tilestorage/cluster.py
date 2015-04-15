@@ -18,8 +18,9 @@ import six
 
 from stonemason.util.guesstypes import guess_mimetype, guess_extension
 from stonemason.pyramid import Tile, TileIndex, MetaTile, MetaTileIndex
-from stonemason.provider.formatbundle import MapWriter
+from stonemason.formatbundle import MapWriter
 from .exceptions import TileClusterError
+
 
 
 
@@ -38,7 +39,7 @@ class TileCluster(object):
 
 
     >>> from stonemason.tilestorage import TileCluster
-    >>> from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+    >>> from stonemason.formatbundle import MapType, TileFormat, FormatBundle
     >>> from stonemason.pyramid import MetaTile, MetaTileIndex, TileIndex
     >>> from PIL import Image
     >>> import io
@@ -109,7 +110,7 @@ class TileCluster(object):
     def from_metatile(metatile, writer):
         """Create a `TileCluster` object from a `MetaTile`.
 
-        Besides `metatile`, a :class:`~stonemason.provider.formatbundle.MapWriter`
+        Besides `metatile`, a :class:`~stonemason.formatbundle.MapWriter`
         instance must also be provided.  It is used to re-split metatile
         data into smaller tiles.
 
@@ -117,7 +118,7 @@ class TileCluster(object):
         :type metatile: :class:`~stonemason.tilecache.TileCluster`
 
         :param writer: A `MapWriter` to resplit metatile data into small tiles.
-        :type writer: :class:`~stonemason.provider.formatbundle.MapWriter`
+        :type writer: :class:`~stonemason.formatbundle.MapWriter`
 
         :return: created cluster object.
         :rtype: :class:`~stonemason.tilestorage.TileCluster`

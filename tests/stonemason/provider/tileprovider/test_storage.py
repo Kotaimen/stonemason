@@ -8,7 +8,7 @@ import unittest
 import six
 
 from stonemason.pyramid import Pyramid, TileIndex, Tile, MetaTileIndex
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.tilestorage import ClusterStorage, TileCluster, \
     NullClusterStorage
 from stonemason.provider.tileprovider import StorageTileProvider

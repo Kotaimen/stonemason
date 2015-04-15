@@ -8,7 +8,7 @@ import re
 import six
 
 from stonemason.pyramid import Pyramid
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
 from stonemason.renderer.tilerenderer import NullMetaTileRenderer, \

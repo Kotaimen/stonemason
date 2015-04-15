@@ -18,7 +18,7 @@ import boto.s3
 from boto.s3.key import Key
 import six
 
-from stonemason.provider.formatbundle import FormatBundle
+from stonemason.formatbundle import FormatBundle
 from .tilestorage import ClusterStorage, MetaTileStorage, \
     PersistenceStorageConcept, create_key_mode, MetaTileSerializer, \
     TileClusterSerializer, StorageMixin
@@ -161,7 +161,7 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
           ``.gz`` is appended to extension.
         - How to split a `MetaTile` into tiles.
 
-    :type format: :class:`~stonemason.provider.formatbundle.FormatBundle`
+    :type format: :class:`~stonemason.formatbundle.FormatBundle`
 
     :param readonly: Whether the storage is created in read only mode, default
         is ``False``, :meth:`put` and :meth:`retire` always raises
@@ -253,7 +253,7 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
           ``.gz`` is appended to extension.
         - How to split a `MetaTile` into tiles.
 
-    :type format: :class:`~stonemason.provider.formatbundle.FormatBundle`
+    :type format: :class:`~stonemason.formatbundle.FormatBundle`
 
     :param readonly: Whether the storage is created in read only mode, default
         is ``False``, :meth:`put` and :meth:`retire` always raises

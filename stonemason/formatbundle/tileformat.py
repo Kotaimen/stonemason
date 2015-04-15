@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.formatbundle.tileformat
+    stonemason.formatbundle.tileformat
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Tile formats
@@ -25,10 +25,10 @@ class TileFormat(_TileFormat):
 
     Map data is always a typed object, like :class:`PIL.Image.Image`, then
     serialize into a :class:`bytes` string, then stores as tile data, according
-    to :class:`~stonemason.provider.formatbundle.TileFormat` specified in
-    :class:`~stonemason.provider.formatbundle.FormatBundle`.
+    to :class:`~stonemason.formatbundle.TileFormat` specified in
+    :class:`~stonemason.formatbundle.FormatBundle`.
 
-    >>> from stonemason.provider.formatbundle import TileFormat
+    >>> from stonemason.formatbundle import TileFormat
     >>> format = TileFormat('JPEG', parameters={'quality': 80})
     >>> format.format
     'JPEG'
@@ -66,8 +66,8 @@ class TileFormat(_TileFormat):
     :type mimetype: str
 
     :param parameters: Optional format parameters as a dictionary, the actual
-        meaning of parameters depends on :class:`~stonemason.provider.formatbundle.MapType`
-        and :class:`~stonemason.provider.formatbundle.MapWriter` used.
+        meaning of parameters depends on :class:`~stonemason.formatbundle.MapType`
+        and :class:`~stonemason.formatbundle.MapWriter` used.
     :type parameters: dict
     """
     __slots__ = ()

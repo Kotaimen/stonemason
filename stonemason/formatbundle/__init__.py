@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.formatbundle
+    stonemason.formatbundle
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Bundles map/tile format definition and conversion.

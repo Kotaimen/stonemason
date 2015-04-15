@@ -4,7 +4,7 @@ __author__ = 'ray'
 __date__ = '3/27/15'
 
 from stonemason.pyramid import Pyramid
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 
 
 class TileProvider(object):  # pragma: no cover

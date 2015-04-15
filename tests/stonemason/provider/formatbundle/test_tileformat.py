@@ -5,7 +5,7 @@ __date__ = '2/19/15'
 
 import unittest
 
-from stonemason.provider.formatbundle import TileFormat, InvalidTileFormat
+from stonemason.formatbundle import TileFormat, InvalidTileFormat
 
 
 class TestTileFormat(unittest.TestCase):

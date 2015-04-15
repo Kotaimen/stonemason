@@ -13,7 +13,7 @@ from stonemason.mason.metadata import Metadata
 from stonemason.mason.portrayal import Portrayal
 from stonemason.mason.schema import HybridSchema
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
-from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
+from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.tilestorage import MetaTileStorage
 from .test_tilematrix import DummyClusterStorage, DummyMetaTileRenderer
 

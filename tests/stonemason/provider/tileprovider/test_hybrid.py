@@ -11,7 +11,7 @@ import six
 from PIL import Image
 
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex, MetaTile
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer.tilerenderer import MetaTileRenderer
 from stonemason.tilestorage import ClusterStorage, TileCluster
 from stonemason.provider.tileprovider import HybridTileProvider

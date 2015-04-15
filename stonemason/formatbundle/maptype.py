@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 """
-    stonemason.provider.formatbundle.maptype
+    stonemason.formatbundle.maptype
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Map types.
@@ -45,7 +45,7 @@ class MapType(_MapType):
     ``cloud``
         Point cloud data from 3D laser scanning.
 
-    >>> from stonemason.provider.formatbundle import MapType
+    >>> from stonemason.formatbundle import MapType
     >>> maptype = MapType('image')
     >>> maptype
     MapType(image)

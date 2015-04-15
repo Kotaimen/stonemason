@@ -2,7 +2,7 @@
 
 
 """
-    stonemason.provider.formatbundle
+    stonemason.formatbundle
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Bundles map/tile format definition and conversion.
@@ -20,7 +20,7 @@ class FormatBundle(object):
     """ Bundles map type and tile format together and try finding a
     matching writer.
 
-    >>> from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+    >>> from stonemason.formatbundle import MapType, TileFormat, FormatBundle
     >>> format = FormatBundle(MapType('image'), TileFormat('JPEG'))
     >>> format
     FormatBundle(MapType(image), TileFormat(JPEG|image/jpeg|.jpg))
@@ -32,12 +32,12 @@ class FormatBundle(object):
     <class PIL.Image.Image at ...>
 
     :param map_type: Map type of the bundle.
-    :type map_type: :class:`~stonemason.provider.formatbundle.MapType`
+    :type map_type: :class:`~stonemason.formatbundle.MapType`
 
     :param tile_format: Tile format of the bundle.
-    :type tile_format: :class:`~stonemason.provider.formatbundle.TileFormat`
+    :type tile_format: :class:`~stonemason.formatbundle.TileFormat`
 
-    :raises: :exc:`~stonemason.provider.formatbundle.NoMatchingMapWriter`
+    :raises: :exc:`~stonemason.formatbundle.NoMatchingMapWriter`
     """
 
     def __init__(self, map_type, tile_format):

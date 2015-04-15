@@ -5,7 +5,7 @@ __date__ = '2/19/15'
 
 import unittest
 
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle, \
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle, \
     MapWriter, NoMatchingMapWriter
 
 

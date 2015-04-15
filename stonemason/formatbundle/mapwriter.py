@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 """
-    stonemason.provider.formatbundle.mapwriter
+    stonemason.formatbundle.mapwriter
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Map serializers.
@@ -14,7 +14,6 @@ import io
 from PIL import Image
 
 from stonemason.util.postprocessing.gridcrop import shave, grid_crop_into_data
-
 from .exceptions import NoMatchingMapWriter
 from .tileformat import TileFormat
 from .maptype import MapType
@@ -24,7 +23,7 @@ class MapWriter(object):  # pragma: no cover
     """Serialize rendered map as tile data.
 
     :param tile_format: Tile format of the bundle.
-    :type tile_format: :class:`~stonemason.provider.formatbundle.TileFormat`
+    :type tile_format: :class:`~stonemason.formatbundle.TileFormat`
     """
 
     def __init__(self, tile_format):

@@ -9,9 +9,7 @@ import io
 
 from PIL import Image
 
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle, \
-    MapWriter
-
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from tests import DATA_DIRECTORY
 
 

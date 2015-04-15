@@ -12,7 +12,7 @@ __date__ = '2/9/15'
 from .tilestorage import ClusterStorage, MetaTileStorage
 from .cluster import TileCluster
 
-from stonemason.provider.formatbundle import MapWriter
+from stonemason.formatbundle import MapWriter
 
 class Clusterfier(ClusterStorage):
     """Convert a `MetaTileStorage` to a `ClusterStorage` on-the-fly.
@@ -21,7 +21,7 @@ class Clusterfier(ClusterStorage):
     :type storage: :class:`~stonemason.provider.storage.MetaTileStorage`
 
     :param writer: A `MapWriter` to resplit metatile data into small tiles.
-    :type writer: :class:`~stonemason.provider.formatbundle.MapWriter`
+    :type writer: :class:`~stonemason.formatbundle.MapWriter`
     """
 
     def __init__(self, storage, writer):

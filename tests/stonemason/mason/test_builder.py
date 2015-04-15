@@ -11,7 +11,7 @@ import moto
 import boto
 
 from stonemason.pyramid import Pyramid
-from stonemason.provider.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.builder import PortrayalBuilder, SchemaBuilder, \
     create_cluster_storage, create_metatile_renderer

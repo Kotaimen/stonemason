@@ -6,7 +6,7 @@ __date__ = '4/10/15'
 import unittest
 
 from stonemason.pyramid import Pyramid
-from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
+from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.portrayal import Portrayal
 from stonemason.mason.schema import NullSchema

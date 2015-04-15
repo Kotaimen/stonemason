@@ -16,9 +16,10 @@ import gzip
 import six
 
 from stonemason.pyramid import MetaTileIndex, MetaTile, Hilbert, Legacy
-from stonemason.provider.formatbundle import MapWriter
+from stonemason.formatbundle import MapWriter
 from .cluster import TileCluster
 from .exceptions import *
+
 
 
 

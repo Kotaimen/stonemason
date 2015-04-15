@@ -5,7 +5,7 @@ __date__ = '2/19/15'
 
 import unittest
 
-from stonemason.provider.formatbundle import MapType, InvalidMapType
+from stonemason.formatbundle import MapType, InvalidMapType
 
 
 class TestMapType(unittest.TestCase):
