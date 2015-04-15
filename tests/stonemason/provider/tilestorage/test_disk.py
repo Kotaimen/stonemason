@@ -49,7 +49,7 @@ class TestDiskClusterStorage(unittest.TestCase):
             root=self.root,
             format=FormatBundle(MapType('image'), TileFormat('JPEG')))
 
-        self.assertRaises(InvalidMetaTileIndex,
+        self.assertRaises(InvalidMetaTile,
                           storage.put,
                           MetaTile(MetaTileIndex(3, 4, 5, 2)))
         self.assertRaises(InvalidMetaTileIndex,
