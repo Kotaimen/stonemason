@@ -42,6 +42,9 @@ class DiskStorage(PersistenceStorageConcept):
     def __init__(self):
         pass
 
+    def exists(self, key):
+        return os.path.exists(key)
+
     def retrieve(self, key):
         pathname = key
         if not os.path.exists(pathname):

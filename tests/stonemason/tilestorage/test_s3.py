@@ -47,6 +47,7 @@ class TestS3ClusterStorage(unittest.TestCase):
 
         cluster = storage.get(self.metatile.index)
         self.assertIsInstance(cluster, TileCluster)
+        self.assertTrue(storage.has(self.metatile.index))
 
         tile = cluster.tiles[0]
 
@@ -54,8 +55,13 @@ class TestS3ClusterStorage(unittest.TestCase):
         self.assertAlmostEqual(tile.mtime, self.metatile.mtime, 0)
         self.assertEqual(tile.mimetype, self.metatile.mimetype)
 
+        self.assertListEqual(self.pyramid.levels, storage.levels)
+        self.assertEqual(self.pyramid.stride, storage.stride)
+
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
+        self.assertFalse(storage.has(self.metatile.index))
+
         storage.close()
 
     def test_keymode_simple(self):
@@ -126,14 +132,21 @@ class TestS3MetaTileStorage(unittest.TestCase):
         storage.put(self.metatile)
 
         metatile = storage.get(self.metatile.index)
+        self.assertTrue(storage.has(self.metatile.index))
+
         self.assertIsInstance(metatile, MetaTile)
         self.assertEqual(metatile.index, self.metatile.index)
         self.assertAlmostEqual(metatile.mtime, self.metatile.mtime, 0)
         self.assertEqual(metatile.etag, self.metatile.etag)
         self.assertEqual(metatile.mimetype, self.metatile.mimetype)
 
+        self.assertListEqual(self.pyramid.levels, storage.levels)
+        self.assertEqual(self.pyramid.stride, storage.stride)
+
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
+        self.assertFalse(storage.has(self.metatile.index))
+
         storage.close()
 
     def tearDown(self):

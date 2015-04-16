@@ -21,13 +21,9 @@ from .cluster import TileCluster
 from .exceptions import *
 
 
-
-
-
 #
 # Public IF
 #
-
 
 class ClusterStorage(object):  # pragma: no cover
     """Homologous persistence storage of `TileCluster`.
@@ -36,6 +32,16 @@ class ClusterStorage(object):  # pragma: no cover
     All MetaTiles put into the storage must have same `mimetype`, `stride` and
     `buffering`.
     """
+
+    @property
+    def levels(self):
+        """Cluster levels in the storage."""
+        raise NotImplementedError
+
+    @property
+    def stride(self):
+        """Stride of clusters in the storage"""
+        raise NotImplementedError
 
     def get(self, index):
         """Retrieve a `TileCluster` from the storage.
@@ -47,6 +53,16 @@ class ClusterStorage(object):  # pragma: no cover
         :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
         :returns: Retrieved TileCluster.
         :rtype: :class:`~stonemason.tilestorage.TileCluster` or ``None``
+        """
+        raise NotImplementedError
+
+    def has(self, index):
+        """ Check whether given index exists in the storage.
+
+        :param index: MetaTile index of the tile cluster.
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
+        :return: Whether the cluster exists.
+        :rtype: bool
         """
         raise NotImplementedError
 
@@ -81,6 +97,17 @@ class ClusterStorage(object):  # pragma: no cover
 class MetaTileStorage(object):  # pragma: no cover
     """Persistence storage of `MetaTile`."""
 
+
+    @property
+    def levels(self):
+        """Metatile levels in the storage."""
+        raise NotImplementedError
+
+    @property
+    def stride(self):
+        """Stride of metatiles in the storage"""
+        raise NotImplementedError
+
     def get(self, index):
         """Retrieve a `MetaTile` from the storage.
 
@@ -91,6 +118,16 @@ class MetaTileStorage(object):  # pragma: no cover
         :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
         :returns: Retrieved tile cluster.
         :rtype: :class:`~stonemason.tilestorage.MetaTile`
+        """
+        raise NotImplementedError
+
+    def has(self, index):
+        """ Check whether given index exists in the storage.
+
+        :param index: MetaTile index.
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
+        :return: Whether the metatile exists.
+        :rtype: bool
         """
         raise NotImplementedError
 
@@ -127,6 +164,10 @@ class MetaTileStorage(object):  # pragma: no cover
 
 class PersistenceStorageConcept(object):  # pragma: no cover
     """Represents an actual storage implement."""
+
+    def exists(self, key):
+        """Check whether given key exists in the storage"""
+        raise NotImplementedError
 
     def retrieve(self, key):
         """Retrieve ``(blob, metadata)`` of given pathname from storage."""
@@ -282,6 +323,14 @@ class StorageMixin(object):
         if self._use_gzip:  # append '.gz' to extension
             self._extension = self._extension + '.gz'
 
+    @property
+    def levels(self):
+        return self._levels
+
+    @property
+    def stride(self):
+        return self._stride
+
     def get(self, index):
         assert isinstance(index, MetaTileIndex)
         storage_key = self._key_mode(self._prefix, index, self._extension)
@@ -300,6 +349,10 @@ class StorageMixin(object):
             blob = gzip.GzipFile(fileobj=io.BytesIO(blob), mode='rb').read()
 
         return self._serializer.load(index, blob, metadata)
+
+    def has(self, index):
+        storage_key = self._key_mode(self._prefix, index, self._extension)
+        return self._storage.exists(storage_key)
 
     def put(self, metatile):
         if self._readonly:

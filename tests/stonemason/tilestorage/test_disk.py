@@ -38,9 +38,14 @@ class TestDiskClusterStorage(unittest.TestCase):
 
         cluster = storage.get(self.metatile.index)
         self.assertIsInstance(cluster, TileCluster)
+        self.assertTrue(storage.has(self.metatile.index))
 
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
+        self.assertFalse(storage.has(self.metatile.index))
+
+        self.assertListEqual(self.pyramid.levels, storage.levels)
+        self.assertEqual(self.pyramid.stride, storage.stride)
 
     def test_putfail(self):
         storage = DiskClusterStorage(
@@ -139,8 +144,13 @@ class TestDiskMetaTileStorage(unittest.TestCase):
         self.assertEqual(metatile.etag, self.metatile.etag)
         self.assertEqual(metatile.mimetype, self.metatile.mimetype)
 
+        self.assertTrue(storage.has(self.metatile.index))
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
+        self.assertFalse(storage.has(self.metatile.index))
+
+        self.assertListEqual(self.pyramid.levels, storage.levels)
+        self.assertEqual(self.pyramid.stride, storage.stride)
 
     def test_gzip(self):
         storage = DiskMetaTileStorage(

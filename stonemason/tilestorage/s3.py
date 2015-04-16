@@ -51,6 +51,10 @@ class S3Storage(PersistenceStorageConcept):
         assert policy in ['private', 'public-read']
         self._policy = policy
 
+    def exists(self, key):
+        s3key = Key(bucket=self._bucket, name=key)
+        return s3key.exists()
+
     def retrieve(self, key):
         s3key = Key(bucket=self._bucket, name=key)
         if not s3key.exists():

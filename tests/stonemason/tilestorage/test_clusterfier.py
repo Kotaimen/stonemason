@@ -41,11 +41,15 @@ class TestClusterfier(unittest.TestCase):
 
         cluster = cluster_storage.get(self.metatile.index)
         self.assertIsInstance(cluster, TileCluster)
-
+        self.assertTrue(storage.has(self.metatile.index))
         self.assertEqual(metatile.index, cluster.index)
 
         cluster_storage.retire(self.metatile.index)
         self.assertIsNone(cluster_storage.get(self.metatile.index))
+        self.assertFalse(storage.has(self.metatile.index))
+
+        self.assertListEqual(self.pyramid.levels, storage.levels)
+        self.assertEqual(self.pyramid.stride, storage.stride)
 
         cluster_storage.close()
 

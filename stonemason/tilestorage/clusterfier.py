@@ -14,6 +14,7 @@ from .cluster import TileCluster
 
 from stonemason.formatbundle import MapWriter
 
+
 class Clusterfier(ClusterStorage):
     """Convert a `MetaTileStorage` to a `ClusterStorage` on-the-fly.
 
@@ -31,6 +32,14 @@ class Clusterfier(ClusterStorage):
         self._storage = storage
         self._writer = writer
 
+    @property
+    def levels(self):
+        return self._storage.levels
+
+    @property
+    def stride(self):
+        return self._storage.stride
+
     def get(self, index):
         metatile = self._storage.get(index)
         if metatile is None:
@@ -40,6 +49,9 @@ class Clusterfier(ClusterStorage):
 
     def put(self, metatile):
         self._storage.put(metatile)
+
+    def has(self, index):
+        return self._storage.has(index)
 
     def retire(self, index):
         self._storage.retire(index)
