@@ -12,6 +12,7 @@ def jsonify_portrayal(portrayal):
     template = {
         'name': portrayal.name,
         'metadata': {
+            'title': portrayal.metadata.title,
             'version': portrayal.metadata.version,
             'abstract': portrayal.metadata.abstract,
             'attribution': portrayal.metadata.attribution,
