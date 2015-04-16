@@ -44,7 +44,9 @@
             minZoom: {{ portrayal.pyramid.levels|first  }},
             maxZoom: {{ portrayal.pyramid.levels|last  }},
             detectRetina: true,
-            errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png'
+            errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png',
+            noWrap: true,
+            continuousWorld: false
         });
 
         layers['{{ portrayal.name+schema_tag }}'] = layer;

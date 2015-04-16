@@ -1,19 +1,16 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'ray'
-__date__ = '3/31/15'
-
 import copy
 
 name = 'sample'
 
 metadata = dict(
-    title='This is a sample',
-    version='0.0.1',
-    abstract='A sample world.',
-    attribution='Data: Natural Earth, Tile: K&R',
+    title='Sample: World',
+    version='0.2.0',
+    abstract='''A simple map design, using same projection as Google Maps.''',
+    attribution='Map Design: K&RData: Natural Earth',
     center=(0, 0),
-    center_zoom=6
+    center_zoom=2
 )
 
 pyramid = dict(
@@ -25,16 +22,16 @@ pyramid = dict(
 
 maptype = 'image'
 
-tileformat = dict(format='PNG', extension='png')
+tileformat = dict(format='PNG')
 
 schema_1x = dict(
     tag='.png',
     pyramid=pyramid,
     maptype=maptype,
-    portrayal_tileformat=tileformat,
+    tileformat=tileformat,
     storage={
         'prototype': 'disk',
-        'root': "{{ theme_root }}/cache/sample"
+        'root': "{{ theme_root }}/cache/sample_world"
     },
     renderer={
         'prototype': 'image',
@@ -51,7 +48,7 @@ schema_1x = dict(
 
 schema_2x = copy.deepcopy(schema_1x)
 schema_2x['tag'] = '@2x.png'
-schema_2x['storage']['root'] = "{{ theme_root }}/cache/sample@2x"
+schema_2x['storage']['root'] = "{{ theme_root }}/cache/sample_world@2x"
 schema_2x['renderer']['layers']['root']['default_scale'] = 2
 
 THEME = dict(

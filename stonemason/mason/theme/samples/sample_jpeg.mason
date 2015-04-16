@@ -1,0 +1,38 @@
+# -*- encoding: utf-8 -*-
+
+{% include"sample_world.mason" %}
+
+metadata = dict(
+    title='Sample: JPEG',
+    version='0.2.0',
+    abstract='''Sample world using JPEG delivery format.''',
+    attribution='Map Design: K&RData: Natural Earth',
+    center=(0, 0),
+    center_zoom=2
+)
+
+maptype = 'image'
+
+tileformat = dict(format='JPEG', parameters={'quality': 60})
+
+schema_1x['tag'] = '.jpg'
+schema_1x['storage']['root'] = "{{ theme_root }}/cache/sample_jpeg"
+schema_1x['renderer']['layers']['root']['default_scale'] = 1
+
+schema_2x['tag'] = '@2x.jpg'
+schema_2x['storage']['root'] = "{{ theme_root }}/cache/sample_jpeg@2x"
+schema_2x['renderer']['layers']['root']['default_scale'] = 2
+
+THEME = dict(
+    name='sample_jpeg',
+    metadata=metadata,
+    pyramid=pyramid,
+    maptype=maptype,
+    tileformat=tileformat,
+    schemas=[
+        schema_1x,
+        schema_2x,
+    ]
+)
+
+
