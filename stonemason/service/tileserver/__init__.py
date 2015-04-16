@@ -143,7 +143,7 @@ class TileServerPreference(object):
 
             Set to `True` to turn on testing mode for flask.
 
-        - ``STONEMASON_THEMES``:
+        - ``STONEMASON_GALLERY``:
 
             An absolute path of theme directory.
 
@@ -221,11 +221,11 @@ class TileServerPreference(object):
     def theme_dir(self):
         """Return the path of theme directory
 
-        Return the theme directory setting by ``STONEMASON_THEMES``. Default
+        Return the theme directory setting by ``STONEMASON_GALLERY``. Default
         is current working directory.
         """
 
-        return self._app.config.get('STONEMASON_THEMES', '.')
+        return self._app.config.get('STONEMASON_GALLERY', '.')
 
     @property
     def cache_servers(self):

@@ -32,7 +32,7 @@ Initialize Theme Root
 render directives, storage configurations are assembled together.
 
 Themes root can be passed as ``--themes`` option, or defined in
-``STONEMASON_THEMES`` envvar.
+``STONEMASON_GALLERY`` envvar.
 
 To init a themes root, use ``init`` command, it will create the directory
 structure and configurations for you, with a simple sample theme::
@@ -40,7 +40,7 @@ structure and configurations for you, with a simple sample theme::
     $ mkdir ~/themes
     $ stonemason --themes=themes init
     Initialization complete, start a tile server using:
-        export STONEMASON_THEMES=/Users/kotaimen/proj/python/stonemason/themes
+        export STONEMASON_GALLERY=/Users/kotaimen/proj/python/stonemason/themes
         stonemason -dd tileserver
     Or check configuration using:
         stonemason --themes=/Users/kotaimen/proj/python/stonemason/themes check
@@ -99,7 +99,7 @@ Tile Server
 
 After created a sample themes root, you can start the tile server::
 
-    $ export STONEMASON_THEMES=`~/themes`
+    $ export STONEMASON_GALLERY=`~/themes`
     $ stonemason -dd tileserver --bind=127.0.0.1:8000
 
 The ``-dd`` option means a debugging flask server will be started, to start
@@ -244,7 +244,7 @@ This writes ``application.py``:
         'STONEMASON_DEBUG': False,
         'STONEMASON_MAX_AGE': 300,
         'STONEMASON_READ_ONLY': False,
-        'STONEMASON_THEMES': '/home/ubuntu/themes',
+        'STONEMASON_GALLERY': '/home/ubuntu/themes',
         'STONEMASON_VERBOSE': 0}
     application = TileServerApp(**config)
 

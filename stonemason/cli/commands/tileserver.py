@@ -125,7 +125,7 @@ def tile_server_command(ctx, bind, read_only, workers,
         max_age = 0
 
     app_config = {
-        'STONEMASON_THEMES': ctx.gallery,
+        'STONEMASON_GALLERY': ctx.gallery,
         'STONEMASON_READ_ONLY': read_only,
         'STONEMASON_DEBUG': bool(ctx.debug),
         'STONEMASON_VERBOSE': ctx.verbose,
