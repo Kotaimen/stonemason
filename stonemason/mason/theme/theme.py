@@ -11,6 +11,9 @@ class DictTheme(object):
     def get_attribute(self, key, default=None):
         return self._config.get(key, default)
 
+    def to_dict(self):
+        return self._config
+
     def __repr__(self):
         return repr(self._config)
 
@@ -66,4 +69,3 @@ class Theme(DictTheme):
     def schemas(self):
         for matrix in self.get_attribute('schemas', default=list()):
             yield SchemaTheme(**matrix)
-

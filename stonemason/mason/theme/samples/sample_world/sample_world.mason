@@ -38,7 +38,7 @@ schema_1x = dict(
         'layers': {
             'root': {
                 'type': 'image.mapnik',
-                'style_sheet': "{{ theme_root }}/sample_world/sample_world.xml",
+                'style_sheet': "{{ theme_root }}/sample_world.xml",
                 'default_scale': 1,
                 'buffer_size': 256
             }

@@ -6,6 +6,7 @@
     A high performance tile server WSGI application based on Flask.
 """
 
+import re
 import os
 
 import six
@@ -235,7 +236,11 @@ class TileServerPreference(object):
         Default is `None`.
 
         """
-        return self._app.config.get('STONEMASON_CACHE', None)
+        server_list = self._app.config.get('STONEMASON_CACHE', None)
+        if server_list is not None:
+            server_list = re.split(r'[; ]+', server_list)
+
+        return server_list
 
     @property
     def verbose(self):

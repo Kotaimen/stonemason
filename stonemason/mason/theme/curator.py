@@ -16,7 +16,7 @@ import jinja2
 
 from .theme import Theme
 from .gallery import Gallery
-from .exceptions import ThemeError, InvalidThemeConfig
+from .exceptions import InvalidThemeConfig, ThemeConfigNotFound
 
 
 def is_valid_theme_filename(filename):
@@ -42,44 +42,57 @@ class Curator(object):  # pragma: no cover
 
 
 class FileSystemCurator(Curator):
-    def __init__(self, theme_root, silent=True):
-        self._env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(theme_root))
+    MANIFEST_FILE = 'manifest.mason'
+
+    def __init__(self, theme_root):
         self._theme_root = theme_root
-        self._silent = silent
 
     def add_to(self, gallery):
         assert isinstance(gallery, Gallery)
 
-        for theme_name in os.listdir(self._theme_root):
-            if not is_valid_theme_filename(theme_name):
+        for filename in self.walk():
+            if not is_valid_theme_filename(filename):
                 continue
+
+            basename, filename = os.path.split(filename)
+
+            template_env = jinja2.Environment(
+                loader=jinja2.FileSystemLoader(basename))
 
             env_l = {}
             env_g = {}
 
-            template = self._env.get_template(theme_name)
-            template_variables = dict(theme_root=self._theme_root)
+            template = template_env.get_template(filename)
+            template_variables = dict(theme_root=basename)
+
             source = template.render(**template_variables).encode('utf-8')
             # print (source)
             exec (source, env_g, env_l)
 
             theme_config = env_l.get('THEME')
-            if not self.validate(theme_config):
-                continue
+            self.validate(theme_config)
 
-            map_theme = Theme(**theme_config)
+            theme = Theme(**theme_config)
 
-            gallery.put(map_theme.name, map_theme)
+            gallery.put(theme.name, theme)
+
+    def walk(self):
+        manifest = os.path.join(self._theme_root, self.MANIFEST_FILE)
+
+        if os.path.exists(manifest):
+            with open(manifest, 'r') as fp:
+                for path in fp.readlines():
+                    filename = os.path.join(self._theme_root, path.strip())
+                    if not os.path.exists(filename):
+                        raise ThemeConfigNotFound(filename)
+                    yield filename
+        else:
+            for name in os.listdir(self._theme_root):
+                filename = os.path.join(self._theme_root, name)
+                yield filename
 
     def validate(self, theme_config):
-        try:
-            if not isinstance(theme_config, dict):
-                raise InvalidThemeConfig('"THEME" should be a dict object')
-        except ThemeError as e:
-            if self._silent:
-                return False
-            raise e
-        return True
+        if not isinstance(theme_config, dict):
+            raise InvalidThemeConfig('"THEME" should be a dict object')
 
 

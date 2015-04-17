@@ -13,7 +13,7 @@ from .theme import Theme, SchemaTheme
 from .gallery import Gallery, MemGallery
 from .curator import Curator, FileSystemCurator
 
-from .exceptions import ThemeError
+from .exceptions import ThemeError, ThemeConfigNotFound, InvalidThemeConfig
 
 
 SAMPLE_THEME_DIRECTORY = os.path.join(os.path.dirname(__file__), 'samples')

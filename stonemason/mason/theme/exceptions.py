@@ -8,6 +8,10 @@ class ThemeError(Exception):
     pass
 
 
+class ThemeConfigNotFound(ThemeError):
+    pass
+
+
 class InvalidThemeConfig(ThemeError):
     pass
 

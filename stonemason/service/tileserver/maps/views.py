@@ -9,7 +9,6 @@ from flask.views import MethodView
 from flask import render_template
 
 from ..models import MasonModel
-from ..helper import jsonify_portrayal
 
 
 class PortrayalView(MethodView):
@@ -36,7 +35,7 @@ class PortrayalView(MethodView):
             """Retrieve an overview of all loaded maps."""
             collection = list()
             for portrayal in self._mason_model.iter_portrayals():
-                collection.append(jsonify_portrayal(portrayal))
+                collection.append(portrayal)
 
             return render_template('index.html', collection=collection)
         else:
@@ -45,7 +44,7 @@ class PortrayalView(MethodView):
                 abort(404)
 
             return render_template(
-                'map.html', portrayal=jsonify_portrayal(portrayal))
+                'map.html', portrayal=portrayal)
 
 
 class TilesView(MethodView):
