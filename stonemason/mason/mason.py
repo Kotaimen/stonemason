@@ -3,8 +3,11 @@
 __author__ = 'ray'
 __date__ = '4/10/15'
 
+import time
+import six
+
 from stonemason.pyramid import TileIndex, MetaTileIndex
-from stonemason.tilecache import TileCache, NullTileCache
+from stonemason.tilecache import TileCache, NullTileCache, TileCacheError
 
 from .portrayal import Portrayal
 from .builder import create_portrayal_from_theme
@@ -41,13 +44,14 @@ class Mason(object):
 
 
 class MasonTileVisitor(object):
-    def __init__(self, mason, cache=None):
+    def __init__(self, mason, cache=None, backoff=0.1):
         if cache is None:
             cache = NullTileCache()
         assert isinstance(mason, Mason)
         assert isinstance(cache, TileCache)
         self._mason = mason
         self._cache = cache
+        self._backoff = backoff
 
     def get_tile(self, name, tag, z, x, y):
         index = TileIndex(z, x, y)
@@ -59,6 +63,7 @@ class MasonTileVisitor(object):
             # cache hit
             return tile
 
+        # figure out theme and schema tile belongs to
         portrayal = self._mason.get_portrayal(name)
         if portrayal is None:
             return None
@@ -67,26 +72,47 @@ class MasonTileVisitor(object):
         if schema is None:
             return None
 
-        # create meta index
+        # create metatile index
         stride = portrayal.pyramid.stride
         meta_index = MetaTileIndex.from_tile_index(index, stride)
 
-        # get tile cluster
-        cluster = schema.get_tilecluster(
-            portrayal.bundle, portrayal.pyramid, meta_index)
-        if cluster is None:
-            return None
+        # opportunistic backoff
+        if self._backoff:
+            lock_index = meta_index.to_tile_index()
+            cas = self._cache.lock(key, lock_index)
+            if cas == 0:
+                # a rendering is already in progress, backoff
+                time.sleep(self._backoff)
+                # check cache again
+                tile = self._cache.get(key, index)
+                if tile is not None:
+                    return tile
+        try:
+            # get tile cluster
+            cluster = schema.get_tilecluster(portrayal.bundle,
+                                             portrayal.pyramid,
+                                             meta_index)
+            if cluster is None:
+                return None
 
-        # populate cache with tiles in the cluster
-        self._cache.put_multi(key, cluster.tiles)
-
+            # populate cache with tiles in the cluster
+            try:
+                self._cache.put_multi(key, cluster.tiles)
+            except TileCacheError:
+                pass
+        finally:
+            if self._backoff:
+                self._cache.unlock(key, lock_index, cas)
         # get tile from the cluster
         tile = cluster[index]
 
         return tile
 
     def _make_cache_key(self, name, tag):
-        return '%s-%s' % (name, tag)
+        key = '%s%s' % (name, tag)
+        if six.PY2 and isinstance(key, unicode):
+            key = key.encode('ascii')
+        return key
 
 
 class MasonMetaTileFarm(object):
@@ -108,6 +134,6 @@ class MasonMetaTileFarm(object):
 
         # render the metatile
         return schema.render_metatile(portrayal.bundle,
-                                          portrayal.pyramid,
-                                          meta_index)
+                                      portrayal.pyramid,
+                                      meta_index)
 
