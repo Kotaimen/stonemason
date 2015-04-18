@@ -20,7 +20,7 @@ import multiprocessing.queues
 import time
 import logging
 
-from stonemason.mason import Mason, Portrayal, MasonTileVisitor, \
+from stonemason.mason import Mason, Portrayal, Schema, \
     MasonMetaTileFarm
 from stonemason.mason.theme import MemGallery, FileSystemCurator, Theme
 from stonemason.pyramid import Pyramid, MetaTileIndex
@@ -45,12 +45,11 @@ logger = None
 #
 # Helpers
 #
-
-
 def create_mason(script):
     """Create a new Mason facade instance from render directive."""
     assert isinstance(script, RenderScript)
 
+    # load gallery
     theme_gallery = MemGallery()
     theme_loader = FileSystemCurator(script.gallery)
     theme_loader.add_to(theme_gallery)
@@ -60,6 +59,7 @@ def create_mason(script):
     if theme is None:
         raise RuntimeError('Theme "%s" not found' % script.theme_name)
 
+    # load theme
     assert isinstance(theme, Theme)
     mason.load_portrayal_from_theme(theme)
 
@@ -97,12 +97,20 @@ def walker(script, queue, stats):
 
     mason = create_mason(script)
 
+    # get schema
     portrayal = mason.get_portrayal(script.theme_name)
     assert isinstance(portrayal, Portrayal)
-    pyramid = portrayal.pyramid
+    schema = portrayal.get_schema(script.schema_tag)
+    assert isinstance(schema, Schema)
+    pyramid = schema.renderer.pyramid
     assert isinstance(pyramid, Pyramid)
+    # replace stride in renderer pyramid with storage stride
+    pyramid = pyramid._replace(stride=schema.storage.stride)
 
+    # create tms from new pyramid
     tms = TileMapSystem(pyramid)
+
+    # walk the pyramid
     walker = create_walker(script, tms)
 
     logger.info('Started spawning metatiles from #%d' % stats.progress)
