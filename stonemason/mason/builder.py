@@ -4,6 +4,7 @@ __author__ = 'ray'
 __date__ = '4/10/15'
 
 import re
+import uuid
 
 import six
 
@@ -21,45 +22,9 @@ from .exceptions import UnknownStorageType, UnknownRendererType, \
     InvalidSchemaTag
 
 
-def create_cluster_storage(bundle, pyramid, **config):
-    prototype = config.pop('prototype', 'null')
-    if prototype == 'null':
-        return NullClusterStorage()
-    elif prototype == 'disk':
-        return DiskClusterStorage(
-            levels=pyramid.levels,
-            stride=pyramid.stride,
-            format=bundle,
-            **config)
-    elif prototype == 's3':
-        return S3ClusterStorage(
-            levels=pyramid.levels,
-            stride=pyramid.stride,
-            format=bundle,
-            **config)
-    else:
-        raise UnknownStorageType(prototype)
-
-
-def create_metatile_renderer(bundle, pyramid, **config):
-    layers = config.get('layers')
-    if layers is None:
-        return NullMetaTileRenderer()
-
-    prototype = config.pop('prototype', 'null')
-    if prototype == 'null':
-        return NullMetaTileRenderer()
-    elif prototype == 'image':
-        renderer = RendererExprParser(pyramid).parse_from_dict(
-            layers, 'root').interpret()
-        return ImageMetaTileRenderer(pyramid, bundle, renderer)
-    else:
-        raise UnknownRendererType(prototype)
-
-
 class SchemaBuilder(object):
     def __init__(self):
-        self._tag = None
+        self._tag = ''
         self._map_type = MapType('image')
         self._tile_format = TileFormat('PNG')
         self._pyramid = Pyramid()
@@ -67,9 +32,6 @@ class SchemaBuilder(object):
         self._renderer = NullMetaTileRenderer()
 
     def build(self):
-        if self._tag is None:
-            self._tag = '%s' % self._tile_format.extension
-
         if re.match('^[0-9].*', self._tag):
             raise InvalidSchemaTag(
                 'Tag of TileMatrix should not start with a number')
@@ -98,17 +60,9 @@ class SchemaBuilder(object):
         if prototype == 'null':
             self._storage = NullClusterStorage()
         elif prototype == 'disk':
-            self._storage = DiskClusterStorage(
-                levels=self._pyramid.levels,
-                stride=self._pyramid.stride,
-                format=bundle,
-                **config)
+            self._storage = DiskClusterStorage(format=bundle, **config)
         elif prototype == 's3':
-            self._storage = S3ClusterStorage(
-                levels=self._pyramid.levels,
-                stride=self._pyramid.stride,
-                format=bundle,
-                **config)
+            self._storage = S3ClusterStorage(format=bundle, **config)
         else:
             raise UnknownStorageType(prototype)
 
@@ -190,16 +144,33 @@ def create_portrayal_from_theme(theme):
         assert isinstance(schema_theme, SchemaTheme)
         schema_builder = SchemaBuilder()
 
+        schema_tag = 'tag-%s' % uuid.uuid4().hex
         if schema_theme.tag is not None:
-            schema_builder.build_tag(schema_theme.tag)
+            schema_tag = schema_theme.tag
+        schema_builder.build_tag(schema_tag)
+
+        schema_pyramid = dict()
+        if theme.pyramid is not None:
+            schema_pyramid.update(theme.pyramid)
         if schema_theme.pyramid is not None:
-            schema_builder.build_pyramid(**schema_theme.pyramid)
+            schema_pyramid.update(schema_theme.pyramid)
+        schema_builder.build_pyramid(**schema_pyramid)
+
+        schema_maptype = theme.maptype
         if schema_theme.maptype is not None:
-            schema_builder.build_map_type(schema_theme.maptype)
+            schema_maptype = schema_theme.maptype
+        schema_builder.build_map_type(schema_maptype)
+
+        schema_tileformat = dict()
+        if theme.tileformat is not None:
+            schema_tileformat.update(theme.tileformat)
         if schema_theme.tileformat is not None:
-            schema_builder.build_tile_format(**schema_theme.tileformat)
+            schema_tileformat.update(schema_theme.tileformat)
+        schema_builder.build_tile_format(**schema_tileformat)
+
         if schema_theme.storage is not None:
             schema_builder.build_storage(**schema_theme.storage)
+
         if schema_theme.renderer is not None:
             schema_builder.build_renderer(**schema_theme.renderer)
 

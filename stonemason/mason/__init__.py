@@ -9,6 +9,5 @@ from .portrayal import Portrayal
 from .schema import Schema, HybridSchema
 from .metadata import Metadata
 from .builder import PortrayalBuilder, SchemaBuilder
-from .builder import create_cluster_storage, create_metatile_renderer, \
-    create_portrayal_from_theme
+from .builder import create_portrayal_from_theme
 

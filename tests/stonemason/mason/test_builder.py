@@ -13,99 +13,21 @@ import boto
 from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.mason.metadata import Metadata
-from stonemason.mason.builder import PortrayalBuilder, SchemaBuilder, \
-    create_cluster_storage, create_metatile_renderer
+from stonemason.mason.builder import PortrayalBuilder, SchemaBuilder
 from stonemason.tilestorage import ClusterStorage
 from stonemason.renderer.tilerenderer import MetaTileRenderer
 from tests import skipUnlessHasGDAL
 
 
-class TestCreateClusterStorage(unittest.TestCase):
-    def test_build_null_storage(self):
-        maptype = MapType('image')
-        tileformat = TileFormat('JPEG')
-        bundle = FormatBundle(maptype, tileformat)
-
-        pyramid = Pyramid()
-
-        storage = create_cluster_storage(bundle, pyramid)
-
-        self.assertIsInstance(storage, ClusterStorage)
-
-    def test_build_disk_storage(self):
-        root = tempfile.mkdtemp()
-
-        maptype = MapType('image')
-        tileformat = TileFormat('JPEG')
-        bundle = FormatBundle(maptype, tileformat)
-
-        pyramid = Pyramid()
-
-        storage_config = {
-            'prototype': 'disk',
-            'root': root
-        }
-
-        storage = create_cluster_storage(bundle, pyramid, **storage_config)
-
-        self.assertIsInstance(storage, ClusterStorage)
-
-        shutil.rmtree(root, ignore_errors=True)
-
-    def test_build_s3_storage(self):
-        with moto.mock_s3():
-            self.conn = boto.connect_s3()
-            self.conn.create_bucket('test_storage')
-
-            maptype = MapType('image')
-            tileformat = TileFormat('JPEG')
-            bundle = FormatBundle(maptype, tileformat)
-
-            pyramid = Pyramid()
-
-            storage_config = {
-                'prototype': 's3',
-                'bucket': 'test_storage',
-                'prefix': 'test_layer',
-            }
-
-            storage = create_cluster_storage(bundle, pyramid, **storage_config)
-
-            self.assertIsInstance(storage, ClusterStorage)
-
-
-class TestCreateMetaTileRenderer(unittest.TestCase):
-    @skipUnlessHasGDAL()
-    def test_build_image_renderer(self):
-        maptype = MapType('image')
-        tileformat = TileFormat('JPEG')
-        bundle = FormatBundle(maptype, tileformat)
-
-        pyramid = Pyramid()
-
-        renderer_config = {
-            'prototype': 'image',
-            'layers': {
-                'root': {
-                    'type': 'dummy'
-                }
-            }
-        }
-
-        renderer = create_metatile_renderer(bundle, pyramid, **renderer_config)
-
-        self.assertIsInstance(renderer, MetaTileRenderer)
-
-
-class TestTileMatrixBuilder(unittest.TestCase):
+class TestSchemaBuilder(unittest.TestCase):
     def setUp(self):
         self.builder = SchemaBuilder()
 
     def test_build_default(self):
-        tile_matrix = self.builder.build()
-        self.assertEqual('.png', tile_matrix.tag)
-        self.assertEqual(None, tile_matrix.get_tilecluster(None, None, None))
-        self.assertEqual(None, tile_matrix.get_metatile(None, None, None))
+        schema = self.builder.build()
+        self.assertEqual('', schema.tag)
+        self.assertEqual(None, schema.get_tilecluster(None, None, None))
+        self.assertEqual(None, schema.get_metatile(None, None, None))
 
     def test_build_pyramid(self):
         self.builder.build_pyramid(stride=2)
@@ -119,7 +41,17 @@ class TestTileMatrixBuilder(unittest.TestCase):
         self.builder.build_tile_format(format='JPEG')
         self.assertEqual(TileFormat('JPEG'), self.builder._tile_format)
 
-    def test_build_storage(self):
+    def test_build_null_storage(self):
+        storage_config = {
+            'prototype': 'null',
+        }
+
+        self.builder.build_storage(**storage_config)
+        schema = self.builder.build()
+
+        self.assertIsInstance(schema._storage, ClusterStorage)
+
+    def test_build_disk_storage(self):
         root = tempfile.mkdtemp()
         storage_config = {
             'prototype': 'disk',
@@ -127,11 +59,27 @@ class TestTileMatrixBuilder(unittest.TestCase):
         }
 
         self.builder.build_storage(**storage_config)
-        tile_matrix = self.builder.build()
+        schema = self.builder.build()
 
-        self.assertIsInstance(tile_matrix._storage, ClusterStorage)
+        self.assertIsInstance(schema._storage, ClusterStorage)
 
         shutil.rmtree(root, ignore_errors=True)
+
+    def test_build_s3_storage(self):
+        with moto.mock_s3():
+            self.conn = boto.connect_s3()
+            self.conn.create_bucket('test_storage')
+
+            storage_config = {
+                'prototype': 's3',
+                'bucket': 'test_storage',
+                'prefix': 'test_layer',
+            }
+
+            self.builder.build_storage(**storage_config)
+            schema = self.builder.build()
+
+            self.assertIsInstance(schema._storage, ClusterStorage)
 
     @skipUnlessHasGDAL()
     def test_build_renderer(self):
@@ -144,9 +92,9 @@ class TestTileMatrixBuilder(unittest.TestCase):
             }
         }
         self.builder.build_renderer(**renderer_config)
-        tile_matrix = self.builder.build()
+        schema = self.builder.build()
 
-        self.assertIsInstance(tile_matrix._renderer, MetaTileRenderer)
+        self.assertIsInstance(schema._renderer, MetaTileRenderer)
 
 
 class TestPortrayalBuilder(unittest.TestCase):
