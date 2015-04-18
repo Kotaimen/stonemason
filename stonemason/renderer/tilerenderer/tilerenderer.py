@@ -14,11 +14,37 @@ from stonemason.pyramid.geo import TileMapSystem
 
 
 class MetaTileRenderer(object):
+
+    @property
+    def pyramid(self):
+        raise NotImplementedError
+
+    @property
+    def tms(self):
+        raise NotImplementedError
+
+    @property
+    def bundle(self):
+        raise NotImplementedError
+
     def render_metatile(self, meta_index):
         raise NotImplementedError
 
 
 class NullMetaTileRenderer(MetaTileRenderer):
+
+    @property
+    def pyramid(self):
+        return Pyramid()
+
+    @property
+    def tms(self):
+        return TileMapSystem(Pyramid())
+
+    @property
+    def bundle(self):
+        return FormatBundle()
+
     def render_metatile(self, meta_index):
         return None
 
@@ -29,9 +55,22 @@ class ImageMetaTileRenderer(MetaTileRenderer):
         assert isinstance(bundle, FormatBundle)
         assert isinstance(image_renderer, ImageMapRenderer)
         MetaTileRenderer.__init__(self)
+        self._pyramid = pyramid
         self._tms = TileMapSystem(pyramid)
         self._bundle = bundle
         self._renderer = image_renderer
+
+    @property
+    def pyramid(self):
+        return self._pyramid
+
+    @property
+    def tms(self):
+        return self._tms
+
+    @property
+    def bundle(self):
+        return self._bundle
 
     def render_metatile(self, meta_index):
         assert isinstance(meta_index, MetaTileIndex)

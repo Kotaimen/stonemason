@@ -3,8 +3,10 @@
 __author__ = 'ray'
 __date__ = '4/9/15'
 
-from stonemason.tilestorage import ClusterStorage, TileCluster
-from stonemason.renderer.tilerenderer import MetaTileRenderer
+from stonemason.tilestorage import ClusterStorage, TileCluster, \
+    NullClusterStorage
+from stonemason.renderer.tilerenderer import MetaTileRenderer, \
+    NullMetaTileRenderer
 
 
 class Schema(object):
@@ -14,6 +16,14 @@ class Schema(object):
     @property
     def tag(self):
         return self._tag
+
+    @property
+    def storage(self):
+        raise NotImplementedError
+
+    @property
+    def renderer(self):
+        raise NotImplementedError
 
     def get_metatile(self, bundle, pyramid, meta_index):
         raise NotImplementedError
@@ -28,6 +38,17 @@ class Schema(object):
 class NullSchema(Schema):
     def __init__(self, tag='null'):
         Schema.__init__(self, tag)
+        self._storage = NullClusterStorage()
+        self._renderer = NullMetaTileRenderer()
+
+    @property
+    def storage(self):
+        return self._storage
+
+    @property
+    def renderer(self):
+        return self._renderer
+
 
     def get_metatile(self, bundle, pyramid, meta_index):
         return None
@@ -46,6 +67,14 @@ class HybridSchema(Schema):
         assert isinstance(renderer, MetaTileRenderer)
         self._storage = storage
         self._renderer = renderer
+
+    @property
+    def storage(self):
+        return self._storage
+
+    @property
+    def renderer(self):
+        return self._renderer
 
     def get_tilecluster(self, bundle, pyramid, meta_index):
         cluster = self._storage.get(meta_index)
