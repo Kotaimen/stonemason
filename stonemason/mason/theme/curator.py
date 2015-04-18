@@ -81,7 +81,10 @@ class FileSystemCurator(Curator):
 
         if os.path.exists(manifest):
             with open(manifest, 'r') as fp:
-                for path in fp.readlines():
+                for line in fp.readlines():
+                    path = line.strip()
+                    if not path or path.startswith('#'):
+                        continue
                     filename = os.path.join(self._theme_root, path.strip())
                     if not os.path.exists(filename):
                         raise ThemeConfigNotFound(filename)
