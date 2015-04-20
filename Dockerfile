@@ -60,11 +60,8 @@ ENV         LC_ALL en_US.UTF-8
 #
 # Patch gdal data files, see
 #   https://launchpad.net/ubuntu/trusty/+source/gdal/+copyright
-# Download gdal source packages from 
-#   http://download.osgeo.org/gdal/1.10.1/gdal-1.10.1.tar.gz
-ADD         gdal-1.10.1.tar.gz /tmp/
-RUN         ls /usr/share/gdal
-RUN         cp /tmp/gdal-1.10.1/data/*extra.wkt /usr/share/gdal/1.10/
+ADD         http://cdn.masonmaps.me/dist/gdal-1.10.1/data/esri_extra.wkt /usr/share/gdal/1.10/
+
 
 #
 # Install stonemason
