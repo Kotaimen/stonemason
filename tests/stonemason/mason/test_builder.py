@@ -26,8 +26,6 @@ class TestSchemaBuilder(unittest.TestCase):
     def test_build_default(self):
         schema = self.builder.build()
         self.assertEqual('', schema.tag)
-        self.assertEqual(None, schema.get_tilecluster(None, None, None))
-        self.assertEqual(None, schema.get_metatile(None, None, None))
 
     def test_build_pyramid(self):
         self.builder.build_pyramid(stride=2)

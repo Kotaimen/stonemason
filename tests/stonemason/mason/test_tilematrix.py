@@ -29,6 +29,14 @@ class DummyMetaTileRenderer(MetaTileRenderer):
 
 
 class DummyClusterStorage(ClusterStorage):
+    @property
+    def levels(self):
+        raise NotImplementedError
+
+    @property
+    def stride(self):
+        return 2
+
     def get(self, index):
         if index != MetaTileIndex(1, 0, 0, 2):
             return None

@@ -80,6 +80,14 @@ class DummyMetaTileStorage(MetaTileStorage):
     def __init__(self):
         self._storage = dict()
 
+    @property
+    def levels(self):
+        return [1]
+
+    @property
+    def stride(self):
+        return 1
+
     def put(self, metatile):
         self._storage[metatile.index] = metatile
 

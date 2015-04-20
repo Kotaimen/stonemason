@@ -38,7 +38,6 @@ class TestPyramidWalker(unittest.TestCase):
                               MetaTileIndex(3, 0, 6, 2),
                               MetaTileIndex(3, 2, 4, 2),
                               MetaTileIndex(3, 2, 6, 2),
-                              MetaTileIndex(2, 2, 2, 2),
                               MetaTileIndex(3, 4, 6, 2)])
 
 
