@@ -3,6 +3,8 @@
 __author__ = 'ray'
 __date__ = '4/9/15'
 
+
+from stonemason.pyramid import MetaTileIndex
 from stonemason.tilestorage import ClusterStorage, TileCluster, \
     NullClusterStorage
 from stonemason.renderer.tilerenderer import MetaTileRenderer, \
@@ -77,7 +79,11 @@ class HybridSchema(Schema):
         return self._renderer
 
     def get_tilecluster(self, bundle, pyramid, meta_index):
-        cluster = self._storage.get(meta_index)
+        storage_meta_index = MetaTileIndex(meta_index.z,
+                                           meta_index.x,
+                                           meta_index.y,
+                                           self._storage.stride)
+        cluster = self._storage.get(storage_meta_index)
         if cluster is not None:
             return cluster
 

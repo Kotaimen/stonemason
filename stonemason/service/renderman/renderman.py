@@ -116,6 +116,7 @@ def walker(script, queue, stats):
     logger.info('Started spawning metatiles from #%d' % stats.progress)
 
     # put indexes into the queue
+    n = 0
     for n, index in enumerate(walker, start=1):
         # if n < stats.progress:
         # continue

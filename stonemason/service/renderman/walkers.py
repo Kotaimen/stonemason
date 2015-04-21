@@ -3,7 +3,7 @@
 """
     stonemason.services.renderman.walkers
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Walk the render areas of a map and
+    Walk the render areas of a map and generate a metatile list.
 
 
 """
@@ -23,7 +23,7 @@ from stonemason.pyramid.geo import TileMapSystem
 from .script import RenderScript
 
 
-class PyramidWalker(object): # pragma: no cover
+class PyramidWalker(object):  # pragma: no cover
     """Walk through the pyramid and generate
     :class:`~stonemason.pyramid.MetaTileIndex` to render."""
 
@@ -59,12 +59,17 @@ class TileListWalker(object):
             for row in reader:
                 tz, tx, ty = tuple(map(int, row))
                 for z in self.levels:
-                    if (self.stride >> z) > 0:
-                        # start rendering from corresponding metatile level
+                    if z < tz:
                         continue
+                    if (z - tz) < len(bin(self.stride)) - 3:
+                        continue
+
+                        # if tz > z and (self.stride >> (tz - z + 1)) > 0:
+                        # start rendering from corresponding metatile level
+                        # continue
                     dim = 2 ** (z - tz)
-                    for x in xrange(tx * dim, (tx + 1) * dim, self.stride):
-                        for y in xrange(ty * dim, (ty + 1) * dim, self.stride):
+                    for x in range(tx * dim, (tx + 1) * dim, self.stride):
+                        for y in range(ty * dim, (ty + 1) * dim, self.stride):
                             yield MetaTileIndex(z, x, y, self.stride)
 
 
@@ -101,7 +106,7 @@ def create_walker(script, tms):
         script = script._replace(levels=tms.pyramid.levels)
 
     if script.csv_file:
-        return TileListWalker(tms.pyramid.levels, tms.pyramid.stride,
+        return TileListWalker(script.levels, tms.pyramid.stride,
                               script.csv_file)
     elif script.envelope:
         raise NotImplementedError
