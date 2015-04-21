@@ -7,9 +7,9 @@ ENV         STAGE_LOCATION /opt/stonemason/
 #
 # HACK: Speed local build by using local apt sources
 #
-RUN         mv /etc/apt/sources.list /etc/apt/sources.list.back && \
-            sed s/archive.ubuntu.com/mirrors.aliyun.com/ /etc/apt/sources.list.back > /etc/apt/sources.list
-RUN         cat /etc/apt/sources.list
+# RUN         mv /etc/apt/sources.list /etc/apt/sources.list.back && \
+#             sed s/archive.ubuntu.com/mirrors.aliyun.com/ /etc/apt/sources.list.back > /etc/apt/sources.list
+# RUN         cat /etc/apt/sources.list
 
 WORKDIR     ${STAGE_LOCATION}
 
