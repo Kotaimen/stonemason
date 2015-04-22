@@ -6,7 +6,7 @@ __date__ = '1/5/15'
 from .imagecomposer import ImageComposer, ComposerError
 
 try:
-    from .imagemagick import ImageMagickComposer, ImageMagickError
+    from stonemason.renderer_.cartographer.imagery.imagemagick import ImageMagickComposer, ImageMagickError
     #: A boolean indicates whether ImageMagick image processing utility
     #: is available.
     HAS_IMAGEMAGICK = True

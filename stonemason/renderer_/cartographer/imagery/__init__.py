@@ -10,10 +10,18 @@ try:
 
     IMAGERY_LAYERS[Mapnik_.PROTOTYPE] = Mapnik_
     HAS_MAPNIK = True
-
 except ImportError:
     Mapnik_ = None
     HAS_MAPNIK = False
+
+try:
+    from .composer import Composer
+
+    IMAGERY_LAYERS[Composer.PROTOTYPE] = Composer
+    HAS_IMAGEMAGICK = True
+except ImportError:
+    Composer = None
+    HAS_IMAGEMAGICK = False
 
 from .imagery import Black, Invert, AlphaBlend
 

@@ -13,15 +13,13 @@ from PIL import Image
 
 from stonemason.util.tempfn import generate_temp_filename
 
-from .imagecomposer import ImageComposer, ComposerError
-
 try:
     output = subprocess.check_output(['convert', '-version'])
 except subprocess.CalledProcessError:
     raise ImportError("Cannot find imagemagick convert command.")
 
 
-class ImageMagickError(ComposerError):
+class ImageMagickError(Exception):
     def __init__(self, ret, cmd, output=None):
         self.ret = ret
         self.cmd = cmd
@@ -31,7 +29,7 @@ class ImageMagickError(ComposerError):
         return '%d\n$ %s\n%s' % (self.ret, self.cmd, self.output)
 
 
-class ImageMagickComposer(ImageComposer):
+class ImageMagickComposer(object):
     """ Compose, convert, transform images using `imagemagick`.
 
     Composer is implemented by export given `Image` to disk as file,
@@ -82,7 +80,7 @@ class ImageMagickComposer(ImageComposer):
                  export_format='png',
                  import_format='png',
                  tempdir=None,
-                 ):
+    ):
         self._export_format = export_format
         self._import_format = import_format
         self._tempdir = tempdir
@@ -167,7 +165,7 @@ class ImageMagickComposer(ImageComposer):
     def subs_command(self, command):
         for i in range(len(command)):
             arg = command[i]
-            match = re.match(r'\{\{(\w+)\}\}', arg)
+            match = re.match(r'<<(\w+)>>', arg)
             if match:
                 tag = match.group(1)
                 yield (i, tag)
