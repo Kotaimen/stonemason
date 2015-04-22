@@ -53,8 +53,8 @@
 
     {% endfor %}
 
-    var center = L.latLng({{ portrayal.metadata.center[1] }}, {{ portrayal.metadata.center[0] }});
-    var zoom = {{ portrayal.metadata.center_zoom }};
+    var center = L.latLng({{ portrayal.metadata.origin[1] }}, {{ portrayal.metadata.origin[0] }});
+    var zoom = {{ portrayal.metadata.origin_zoom }};
     var map = L.map('map',
             {
                 layers: [layer]

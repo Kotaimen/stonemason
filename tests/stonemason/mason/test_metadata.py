@@ -15,16 +15,16 @@ class TestMetadata(unittest.TestCase):
             version='0.0.1',
             abstract='This is a test.',
             attribution='K&R',
-            center=(0, 0),
-            center_zoom=6
+            origin=(0, 0),
+            origin_zoom=6
         )
 
         self.assertEqual('test', m.title)
         self.assertEqual('0.0.1', m.version)
         self.assertEqual('This is a test.', m.abstract)
         self.assertEqual('K&R', m.attribution)
-        self.assertEqual((0, 0), m.center)
-        self.assertEqual(6, m.center_zoom)
+        self.assertEqual((0, 0), m.origin)
+        self.assertEqual(6, m.origin_zoom)
 
     def test_default_metadata(self):
         m = Metadata()
@@ -33,5 +33,5 @@ class TestMetadata(unittest.TestCase):
         self.assertEqual('', m.version)
         self.assertEqual('', m.abstract)
         self.assertEqual('', m.attribution)
-        self.assertEqual((0, 0), m.center)
-        self.assertEqual(4, m.center_zoom)
+        self.assertEqual((0, 0), m.origin)
+        self.assertEqual(4, m.origin_zoom)

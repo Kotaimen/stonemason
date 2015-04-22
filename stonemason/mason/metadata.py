@@ -7,17 +7,17 @@ from collections import namedtuple
 
 
 _Metadata = namedtuple(
-    'Metadata', 'title version abstract attribution center center_zoom')
+    'Metadata', 'title version abstract attribution origin origin_zoom')
 
 
 class Metadata(_Metadata):
     def __new__(cls, title='', version='', abstract='', attribution='',
-                center=None, center_zoom=4):
-        if center is None:
-            center = (0, 0)
+                origin=None, origin_zoom=4):
+        if origin is None:
+            origin = (0, 0)
 
         return _Metadata.__new__(cls, title=title, version=version,
                                  abstract=abstract, attribution=attribution,
-                                 center=center,
-                                 center_zoom=center_zoom)
+                                 origin=origin,
+                                 origin_zoom=origin_zoom)
 
