@@ -1,23 +1,23 @@
 Composer
 ********
 
-.. module::stonemason.renderer.composer
+.. module::stonemason.renderer.cartographer.imagery.composer
 
 Map composing.
 
 Image
 =====
 
-.. autoclass:: stonemason.renderer.composer.ImageComposer
+.. autoclass:: stonemason.renderer.cartographer.imagery.composer.Composer
     :members:
 
 ImageMagick
 -----------
 
-.. autodata:: stonemason.renderer.composer.HAS_IMAGEMAGICK
+.. autodata:: stonemason.renderer.cartographer.imagery.HAS_IMAGEMAGICK
     :annotation:
 
-.. autoclass:: stonemason.renderer.composer.ImageMagickComposer
+.. autoclass:: stonemason.renderer.cartographer.imagery.imagemagick.ImageMagickComposer
     :members:
 
 Sample
