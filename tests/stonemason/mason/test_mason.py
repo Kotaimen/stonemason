@@ -15,7 +15,7 @@ from stonemason.mason.schema import HybridSchema
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.tilestorage import MetaTileStorage
-from .test_tilematrix import DummyClusterStorage, DummyMetaTileRenderer
+from .test_schema import DummyClusterStorage, DummyMetaTileRenderer
 
 
 class NullPortrayal(Portrayal):

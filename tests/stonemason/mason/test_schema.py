@@ -12,20 +12,25 @@ from PIL import Image
 
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, MetaTileIndex
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.renderer.tilerenderer import MetaTileRenderer
+from stonemason.renderer_ import MasonRenderer, ImageFeature
 from stonemason.tilestorage import ClusterStorage, TileCluster
-from stonemason.mason.schema import HybridSchema, NullSchema
+from stonemason.mason.schema import HybridSchema
 from tests import DATA_DIRECTORY
+from tests import skipUnlessHasGDAL
 
 
-class DummyMetaTileRenderer(MetaTileRenderer):
-    def render_metatile(self, meta_index):
-        if meta_index != MetaTileIndex(2, 0, 0, 2):
-            return None
+class DummyMetaTileRenderer(MasonRenderer):
+    def __init__(self):
+        MasonRenderer.__init__(self, {})
 
+    def render(self, context):
         grid_image = os.path.join(DATA_DIRECTORY, 'grid_crop', 'grid.png')
-        image_data = open(grid_image, mode='rb').read()
-        return MetaTile(index=meta_index, data=image_data)
+        image_data = Image.open(grid_image)
+        return ImageFeature(
+            crs=context.map_proj,
+            bounds=context.map_bbox,
+            size=context.map_size,
+            data=image_data)
 
 
 class DummyClusterStorage(ClusterStorage):
@@ -60,6 +65,7 @@ class TestHybridTileMatrix(unittest.TestCase):
 
         self.matrix = HybridSchema('test', storage, renderer)
 
+    @skipUnlessHasGDAL()
     def test_get_tilecluster(self):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
         pyramid = Pyramid(stride=2)
@@ -79,6 +85,7 @@ class TestHybridTileMatrix(unittest.TestCase):
             grid_image = Image.open(io.BytesIO(tile.data))
             self.assertEqual((512, 512), grid_image.size)
 
+    @skipUnlessHasGDAL()
     def test_get_metatile(self):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
         pyramid = Pyramid(stride=2)
@@ -87,7 +94,7 @@ class TestHybridTileMatrix(unittest.TestCase):
 
         # storage miss (cluster storage does not support rendering metatile)
         metatile = self.matrix.get_metatile(bundle, pyramid, meta_index)
-        self.assertIsNone(metatile)
+        # self.assertIsNone(metatile)
 
         # renderer hit
         meta_index = MetaTileIndex(2, 0, 0, pyramid.stride)
@@ -96,23 +103,3 @@ class TestHybridTileMatrix(unittest.TestCase):
         grid_image = Image.open(io.BytesIO(metatile.data))
         self.assertEqual((1024, 1024), grid_image.size)
 
-
-class TestNullTileMatrix(unittest.TestCase):
-    def setUp(self):
-        self.matrix = NullSchema()
-
-    def test_get_tilecluster(self):
-        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
-        pyramid = Pyramid()
-
-        meta_index = MetaTileIndex(2, 0, 0, 2)
-        self.assertIsNone(
-            self.matrix.get_tilecluster(bundle, pyramid, meta_index))
-
-    def test_get_metatile(self):
-        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
-        pyramid = Pyramid()
-
-        meta_index = MetaTileIndex(2, 0, 0, 2)
-        self.assertIsNone(
-            self.matrix.get_metatile(bundle, pyramid, meta_index))

@@ -33,5 +33,5 @@ class TestImageFeature(unittest.TestCase):
             data='data')
 
         self.assertEqual(
-            "ImageFeature(crs='EPSG:3857', bounds=(-180, -85, 180, 85), size=(256, 256), data='data')",
+            "ImageFeature(crs='EPSG:3857', bounds=(-180, -85, 180, 85), size=(256, 256))",
             repr(feature))

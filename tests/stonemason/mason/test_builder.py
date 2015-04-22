@@ -11,12 +11,11 @@ import moto
 import boto
 
 from stonemason.pyramid import Pyramid
-from stonemason.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.formatbundle import MapType, TileFormat
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.builder import PortrayalBuilder, SchemaBuilder
 from stonemason.tilestorage import ClusterStorage
-from stonemason.renderer.tilerenderer import MetaTileRenderer
-from tests import skipUnlessHasGDAL
+from stonemason.renderer_ import MasonRenderer
 
 
 class TestSchemaBuilder(unittest.TestCase):
@@ -79,20 +78,19 @@ class TestSchemaBuilder(unittest.TestCase):
 
             self.assertIsInstance(schema._storage, ClusterStorage)
 
-    @skipUnlessHasGDAL()
     def test_build_renderer(self):
         renderer_config = {
             'prototype': 'image',
             'layers': {
                 'root': {
-                    'type': 'dummy'
+                    'prototype': 'pil.black'
                 }
             }
         }
         self.builder.build_renderer(**renderer_config)
         schema = self.builder.build()
 
-        self.assertIsInstance(schema._renderer, MetaTileRenderer)
+        self.assertIsInstance(schema._renderer, MasonRenderer)
 
 
 class TestPortrayalBuilder(unittest.TestCase):

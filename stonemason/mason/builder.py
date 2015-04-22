@@ -12,8 +12,7 @@ from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
-from stonemason.renderer.tilerenderer import NullMetaTileRenderer, \
-    ImageMetaTileRenderer, RendererExprParser
+from stonemason.renderer_ import MasonRenderer
 from .theme import Theme, SchemaTheme
 from .portrayal import Portrayal
 from .metadata import Metadata
@@ -29,7 +28,7 @@ class SchemaBuilder(object):
         self._tile_format = TileFormat('PNG')
         self._pyramid = Pyramid()
         self._storage = NullClusterStorage()
-        self._renderer = NullMetaTileRenderer()
+        self._renderer = MasonRenderer({})
 
     def build(self):
         if re.match('^[0-9].*', self._tag):
@@ -67,22 +66,11 @@ class SchemaBuilder(object):
             raise UnknownStorageType(prototype)
 
     def build_renderer(self, **config):
-        bundle = FormatBundle(self._map_type, self._tile_format)
+        expression = config.get('layers')
+        if expression is None:
+            expression = dict()
 
-        layers = config.get('layers')
-        if layers is None:
-            self._renderer = NullMetaTileRenderer()
-
-        prototype = config.pop('prototype', 'null')
-        if prototype == 'null':
-            self._renderer = NullMetaTileRenderer()
-        elif prototype == 'image':
-            renderer = RendererExprParser(self._pyramid).parse_from_dict(
-                layers, 'root').interpret()
-            self._renderer = ImageMetaTileRenderer(self._pyramid, bundle,
-                                                   renderer)
-        else:
-            raise UnknownRendererType(prototype)
+        self._renderer = MasonRenderer(expression)
 
 
 class PortrayalBuilder(object):

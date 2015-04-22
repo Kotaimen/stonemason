@@ -35,7 +35,17 @@ class Invert(TransformLayer):
         assert isinstance(context, RenderContext)
         source = self._layer.render(context)
 
-        inv = ImageOps.invert(source.data)
+        if source.data.mode == 'RGBA':
+            r, g, b, a = source.data.split()
+
+            def invert(image):
+                return image.point(lambda p: 255 - p)
+
+            r, g, b = map(invert, (r, g, b))
+
+            inv = Image.merge(source.data.mode, (r, g, b, a))
+        else:
+            inv = ImageChops.invert(source.data)
 
         feature = ImageFeature(
             crs=context.map_proj,

@@ -3,7 +3,7 @@
 __author__ = 'ray'
 __date__ = '4/20/15'
 
-from .cartographer import LayerFactory
+from .cartographer import LayerFactory, EmptyLayer
 from .tokenizer import LayerToken, TransformToken, CompositeToken, DictTokenizer
 
 
@@ -14,7 +14,7 @@ class RenderGrammar(object):
     renderer.
     """
 
-    def __init__(self, tokenizer, start='root'):
+    def __init__(self, tokenizer, start='root', factory=None):
         assert isinstance(tokenizer, DictTokenizer)
         self._tokenizer = tokenizer
         self._start = start
@@ -63,7 +63,11 @@ class RenderGrammar(object):
             else:
                 raise ValueError
 
-        layer = stack.pop()
-        return layer
+        try:
+            layer = stack.pop()
+        except IndexError:
+            return EmptyLayer('empty')
+        else:
+            return layer
 
 

@@ -9,7 +9,26 @@ from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.portrayal import Portrayal
-from stonemason.mason.schema import NullSchema
+from stonemason.mason.schema import Schema
+
+
+class MockSchema(Schema):
+    @property
+    def storage(self):
+        return None
+
+    @property
+    def renderer(self):
+        return None
+
+    def get_metatile(self, bundle, pyramid, meta_index):
+        return None
+
+    def get_tilecluster(self, bundle, pyramid, meta_index):
+        return None
+
+    def render_metatile(self, bundle, pyramid, meta_index):
+        return None
 
 
 class TestPortrayal(unittest.TestCase):
@@ -35,7 +54,7 @@ class TestPortrayal(unittest.TestCase):
     def test_put_get_has_tilematrix(self):
         tag = '2x.png'
 
-        expected = NullSchema(tag)
+        expected = MockSchema(tag)
 
         self.assertFalse(self.portrayal.has_schema(tag))
 

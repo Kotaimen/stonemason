@@ -4,8 +4,14 @@ __author__ = 'ray'
 __date__ = '4/20/15'
 
 from ..exceptions import UnknownPrototype
+from ..layerexpr import TerminalLayer
 
 from .imagery import IMAGERY_LAYERS
+
+
+class EmptyLayer(TerminalLayer):
+    def render(self, context):
+        return None
 
 
 class LayerFactory(object):

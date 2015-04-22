@@ -3,7 +3,6 @@
 __author__ = 'ray'
 __date__ = '4/21/15'
 
-
 from .exceptions import LexicalError, InvalidLayerConfig, LayerConfigNotFound
 
 
@@ -84,7 +83,7 @@ class DictTokenizer(object):
     def next_token(self, start='root'):
         token = self._expression.get(start)
         if token is None:
-            raise LayerConfigNotFound(start)
+            return
 
         if not isinstance(token, dict):
             raise InvalidLayerConfig(start)

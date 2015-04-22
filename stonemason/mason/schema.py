@@ -3,12 +3,10 @@
 __author__ = 'ray'
 __date__ = '4/9/15'
 
-
-from stonemason.pyramid import MetaTileIndex
-from stonemason.tilestorage import ClusterStorage, TileCluster, \
-    NullClusterStorage
-from stonemason.renderer.tilerenderer import MetaTileRenderer, \
-    NullMetaTileRenderer
+from stonemason.pyramid import MetaTileIndex, MetaTile
+from stonemason.pyramid.geo import TileMapSystem
+from stonemason.renderer_ import MasonRenderer, RenderContext
+from stonemason.tilestorage import ClusterStorage, TileCluster
 
 
 class Schema(object):
@@ -37,36 +35,11 @@ class Schema(object):
         raise NotImplementedError
 
 
-class NullSchema(Schema):
-    def __init__(self, tag='null'):
-        Schema.__init__(self, tag)
-        self._storage = NullClusterStorage()
-        self._renderer = NullMetaTileRenderer()
-
-    @property
-    def storage(self):
-        return self._storage
-
-    @property
-    def renderer(self):
-        return self._renderer
-
-
-    def get_metatile(self, bundle, pyramid, meta_index):
-        return None
-
-    def get_tilecluster(self, bundle, pyramid, meta_index):
-        return None
-
-    def render_metatile(self, bundle, pyramid, meta_index):
-        return False
-
-
 class HybridSchema(Schema):
     def __init__(self, tag, storage, renderer):
         Schema.__init__(self, tag)
         assert isinstance(storage, ClusterStorage)
-        assert isinstance(renderer, MetaTileRenderer)
+        assert isinstance(renderer, MasonRenderer)
         self._storage = storage
         self._renderer = renderer
 
@@ -95,13 +68,35 @@ class HybridSchema(Schema):
         return cluster
 
     def get_metatile(self, bundle, pyramid, meta_index):
-        metatile = self._renderer.render_metatile(meta_index)
+
+        tms = TileMapSystem(pyramid)
+
+        context = RenderContext(
+            map_proj=tms.pyramid.projcs,
+            map_bbox=tms.calc_tile_envelope(meta_index),
+            map_size=(meta_index.stride * 256, meta_index.stride * 256),
+        )
+
+        feature = self._renderer.render(context)
+        if feature is None:
+            return None
+
+        data = feature.tobytes(
+            fmt=bundle.tile_format.format,
+            parameters=bundle.tile_format.parameters)
+
+        metatile = MetaTile(
+            index=meta_index,
+            mimetype=bundle.tile_format.mimetype,
+            data=data,
+        )
+
         return metatile
 
     def render_metatile(self, bundle, pyramid, meta_index):
         if self._storage.get(meta_index) is not None:
             return True
-        result = self._renderer.render_metatile(meta_index)
+        result = self.get_metatile(bundle, pyramid, meta_index)
         if result:
             self._storage.put(result)
             return True

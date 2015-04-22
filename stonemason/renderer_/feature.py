@@ -3,8 +3,9 @@
 __author__ = 'ray'
 __date__ = '4/19/15'
 
-import re
+import io
 from collections import namedtuple
+
 
 _Feature = namedtuple('Feature', 'crs bounds size data')
 
@@ -19,9 +20,25 @@ class ImageFeature(Feature):
             cls, crs=crs, bounds=bounds, size=size, data=data)
 
     def __repr__(self):
-        result = re.sub('^Feature', self.__class__.__name__,
-                        Feature.__repr__(self))
+        result = '%s(crs=%r, bounds=%r, size=%r)' % (
+            self.__class__.__name__,
+            self.crs,
+            self.bounds,
+            self.size,
+        )
         return result
+
+    def tobytes(self, fmt='PNG', parameters=None):
+        buffer = io.BytesIO()
+
+        if parameters is None:
+            parameters = dict()
+
+        self.data.save(buffer, format=fmt, parameters=parameters)
+
+        raw_data = buffer.getvalue()
+
+        return raw_data
 
 
 class VectorFeature(Feature):

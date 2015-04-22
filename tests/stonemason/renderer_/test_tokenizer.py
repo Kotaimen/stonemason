@@ -74,9 +74,7 @@ class TestTokenizer(unittest.TestCase):
         expr = {}
 
         tokenizer = DictTokenizer(expr)
-
-        with self.assertRaises(LayerConfigNotFound):
-            list(tokenizer.next_token())
+        self.assertListEqual(list(), list(tokenizer.next_token()))
 
     def test_expr_without_prototype(self):
         expr = {
