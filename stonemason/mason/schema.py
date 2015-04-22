@@ -5,7 +5,7 @@ __date__ = '4/9/15'
 
 from stonemason.pyramid import MetaTileIndex, MetaTile
 from stonemason.pyramid.geo import TileMapSystem
-from stonemason.renderer_ import MasonRenderer, RenderContext
+from stonemason.renderer import MasonRenderer, RenderContext
 from stonemason.tilestorage import ClusterStorage, TileCluster
 
 

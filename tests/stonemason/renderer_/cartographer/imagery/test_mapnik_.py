@@ -7,8 +7,8 @@ import os
 
 from PIL import Image
 
-from stonemason.renderer_.cartographer.imagery import Mapnik_
-from stonemason.renderer_.context import RenderContext
+from stonemason.renderer.cartographer.imagery import Mapnik_
+from stonemason.renderer.context import RenderContext
 from stonemason.pyramid import Pyramid, MetaTileIndex
 from stonemason.pyramid.geo import TileMapSystem
 

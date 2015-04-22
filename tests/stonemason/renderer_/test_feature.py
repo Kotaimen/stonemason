@@ -5,7 +5,7 @@ __date__ = '4/21/15'
 
 import unittest
 
-from stonemason.renderer_ import ImageFeature, RasterFeature, VectorFeature
+from stonemason.renderer import ImageFeature, RasterFeature, VectorFeature
 
 
 class TestImageFeature(unittest.TestCase):

@@ -12,7 +12,7 @@ from PIL import Image
 
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, MetaTileIndex
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.renderer_ import MasonRenderer, ImageFeature
+from stonemason.renderer import MasonRenderer, ImageFeature
 from stonemason.tilestorage import ClusterStorage, TileCluster
 from stonemason.mason.schema import HybridSchema
 from tests import DATA_DIRECTORY

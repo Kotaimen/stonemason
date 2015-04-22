@@ -9,11 +9,11 @@ import sys
 
 from PIL import Image
 from tests import skipUnlessHasMapnik, SAMPLE_THEME_DIRECTORY, TEST_DIRECTORY
+from tests import carto
 
-from stonemason.renderer.cartographer import HAS_MAPNIK
-
-if HAS_MAPNIK:
+if carto.HAS_MAPNIK:
     import mapnik
+
 
 @skipUnlessHasMapnik()
 class TestMapnikSetup(unittest.TestCase):

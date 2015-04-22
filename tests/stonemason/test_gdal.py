@@ -6,10 +6,10 @@ __date__ = '3/11/15'
 import unittest
 from distutils.version import LooseVersion
 
-from stonemason.pyramid.geo import HAS_GDAL
+from tests import geo
 from tests import skipUnlessHasGDAL
 
-if HAS_GDAL:
+if geo.HAS_GDAL:
     from osgeo import osr
     from osgeo import ogr
     from osgeo import gdal

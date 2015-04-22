@@ -5,7 +5,7 @@ __date__ = '4/20/15'
 
 import unittest
 
-from stonemason.renderer_.layerexpr import *
+from stonemason.renderer.layerexpr import *
 
 
 class TestTerminalLayer(unittest.TestCase):

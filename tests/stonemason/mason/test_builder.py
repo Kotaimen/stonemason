@@ -15,7 +15,7 @@ from stonemason.formatbundle import MapType, TileFormat
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.builder import PortrayalBuilder, SchemaBuilder
 from stonemason.tilestorage import ClusterStorage
-from stonemason.renderer_ import MasonRenderer
+from stonemason.renderer import MasonRenderer
 
 
 class TestSchemaBuilder(unittest.TestCase):

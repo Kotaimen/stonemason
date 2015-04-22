@@ -5,9 +5,9 @@ __date__ = '4/20/15'
 
 from PIL import Image
 
-from stonemason.renderer_.context import RenderContext
-from stonemason.renderer_.grammar import RenderGrammar
-from stonemason.renderer_.tokenizer import DictTokenizer
+from stonemason.renderer.context import RenderContext
+from stonemason.renderer.grammar import RenderGrammar
+from stonemason.renderer.tokenizer import DictTokenizer
 
 from tests import ImageTestCase
 

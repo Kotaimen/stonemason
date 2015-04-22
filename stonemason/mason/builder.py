@@ -12,7 +12,7 @@ from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
-from stonemason.renderer_ import MasonRenderer
+from stonemason.renderer import MasonRenderer
 from .theme import Theme, SchemaTheme
 from .portrayal import Portrayal
 from .metadata import Metadata

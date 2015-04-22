@@ -5,7 +5,7 @@ __date__ = '4/21/15'
 
 import unittest
 
-from stonemason.renderer_.tokenizer import *
+from stonemason.renderer.tokenizer import *
 
 
 class TestLayerToken(unittest.TestCase):

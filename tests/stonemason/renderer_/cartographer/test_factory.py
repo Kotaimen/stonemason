@@ -6,8 +6,8 @@ __date__ = '4/21/15'
 import os
 import unittest
 
-from stonemason.renderer_.cartographer import LayerFactory
-from stonemason.renderer_.cartographer.imagery import \
+from stonemason.renderer.cartographer import LayerFactory
+from stonemason.renderer.cartographer.imagery import \
     Black, Mapnik_, Invert, AlphaBlend, HAS_MAPNIK
 
 from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY

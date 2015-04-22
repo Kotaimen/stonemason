@@ -5,8 +5,8 @@ __date__ = '4/21/15'
 
 from PIL import Image
 
-from stonemason.renderer_.cartographer.imagery import Black, Invert, AlphaBlend
-from stonemason.renderer_.context import RenderContext
+from stonemason.renderer.cartographer.imagery import Black, Invert, AlphaBlend
+from stonemason.renderer.context import RenderContext
 
 from tests import ImageTestCase
 

@@ -5,7 +5,7 @@ __date__ = '4/21/15'
 
 from PIL import Image
 
-from stonemason.renderer_ import MasonRenderer, RenderContext
+from stonemason.renderer import MasonRenderer, RenderContext
 from tests import ImageTestCase
 
 
