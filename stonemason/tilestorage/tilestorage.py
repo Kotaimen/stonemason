@@ -397,6 +397,14 @@ class StorageMixin(object):
 class NullClusterStorage(ClusterStorage):  # pragma: no cover
     """A storage stores nothing."""
 
+    @property
+    def levels(self):
+        return []
+
+    @property
+    def stride(self):
+        return 1
+
     def get(self, index):
         return None
 
@@ -409,6 +417,14 @@ class NullClusterStorage(ClusterStorage):  # pragma: no cover
 
 class NullMetaTileStorage(MetaTileStorage):  # pragma: no cover
     """A storage stores nothing."""
+
+    @property
+    def levels(self):
+        return []
+
+    @property
+    def stride(self):
+        return 1
 
     def get(self, index):
         return None
