@@ -6,13 +6,13 @@ metadata = dict(
     title='Sample: Atlantic',
     version='0.2.0',
     abstract='''Showing Atlantic ocean, using Lambert azimuthal equal area projection.''',
-    attribution='Map Design: K&RData: Natural Earth',
+    attribution='Map Design: K&R, Data: Natural Earth',
     origin=(0, 0),
     origin_zoom=2
 )
 
 pyramid = dict(
-    stride=2,
+    stride=1,
     geogcs="WGS84",
     projcs="EPSG:3574",
     projbounds=(-3500000, -3500000, 3500000, 3500000),

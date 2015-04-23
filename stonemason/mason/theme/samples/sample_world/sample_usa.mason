@@ -7,13 +7,13 @@ metadata = dict(
     title='Sample: USA',
     version='0.2.0',
     abstract='''Showing United States mainland with Hawaii together, using equidistant conic projection.''',
-    attribution='Map Design: K&RData: Natural Earth',
+    attribution='Map Design: K&R, Data: Natural Earth',
     origin=(0, 0),
     origin_zoom=2
 )
 
 pyramid = dict(
-    stride=2,
+    stride=1,
     geogcs="WGS84",
     projcs="EPSG:102005",
     projbounds=(-6500000, -3500000, 3500000, 5000000),

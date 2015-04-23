@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Map[]>
+<Map srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over" buffer-size="256" maximum-extent="-20037508.34,-20037508.34,20037508.34,20037508.34">
+
+<Parameters>
+  <Parameter name="bounds">-180,-85.0511,180,85.0511</Parameter>
+  <Parameter name="center">0,0,2</Parameter>
+  <Parameter name="format">png8</Parameter>
+  <Parameter name="minzoom">0</Parameter>
+  <Parameter name="maxzoom">22</Parameter>
+  <Parameter name="scale">2</Parameter>
+  <Parameter name="metatile">1</Parameter>
+  <Parameter name="id"><![CDATA[World]]></Parameter>
+  <Parameter name="_updated">1429720530000</Parameter>
+  <Parameter name="tilejson"><![CDATA[2.0.0]]></Parameter>
+  <Parameter name="scheme"><![CDATA[xyz]]></Parameter>
+</Parameters>
+
+
+<Layer name="countries"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_countries_lakes.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[countries]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="encoding"><![CDATA[iso-8859-1]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Style name="admin0_boundary" filter-mode="first">
+  <Rule>
+    <MaxScaleDenominator>200000000</MaxScaleDenominator>
+    <Filter>([featurecla] != 'International boundary (verify)')</Filter>
+    <LineSymbolizer stroke-dasharray="2, 1" stroke-width="1" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" clip="false" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>200000000</MaxScaleDenominator>
+    <LineSymbolizer stroke-width="1" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" clip="false" />
+  </Rule>
+</Style>
+<Layer name="admin0_boundary"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    <StyleName>admin0_boundary</StyleName>
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_boundary_lines_land.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[ne50madmin0boundaryl]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Style name="admin0_boundary_disputed" filter-mode="first">
+  <Rule>
+    <MaxScaleDenominator>200000000</MaxScaleDenominator>
+    <Filter>([featurecla] != 'International boundary (verify)')</Filter>
+    <LineSymbolizer stroke-dasharray="2, 1" stroke-width="1" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" clip="false" />
+  </Rule>
+  <Rule>
+    <MaxScaleDenominator>200000000</MaxScaleDenominator>
+    <LineSymbolizer stroke-width="1" stroke="#a9a9a9" stroke-linecap="round" stroke-linejoin="round" clip="false" />
+  </Rule>
+</Style>
+<Layer name="admin0_boundary_disputed"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    <StyleName>admin0_boundary_disputed</StyleName>
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_boundary_lines_disputed_areas.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[ne50madmin0boundaryl2]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Style name="graticules_10" filter-mode="first" opacity="0.7">
+  <Rule>
+    <MaxScaleDenominator>500000000</MaxScaleDenominator>
+    <LineSymbolizer stroke-width="0.5" stroke-dasharray="3, 1" clip="false" stroke="#0000ff" />
+  </Rule>
+</Style>
+<Layer name="graticules_10"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    <StyleName>graticules_10</StyleName>
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_graticules_10.shp]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Style name="geographic_lines-line" filter-mode="first" opacity="0.75">
+  <Rule>
+    <MaxScaleDenominator>500000000</MaxScaleDenominator>
+    <Filter>([name] != 'International Date Line')</Filter>
+    <LineSymbolizer stroke-width="2" stroke-linecap="round" stroke-dasharray="2, 4" stroke="#0000ff" clip="false" />
+  </Rule>
+</Style>
+<Layer name="geographic_lines"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    <StyleName>geographic_lines-line</StyleName>
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_geographic_lines.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[geographic_lines]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="country_labels"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_countries_lakes.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[countries2]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="encoding"><![CDATA[iso-8859-1]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="places"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_populated_places_simple.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[places]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="encoding"><![CDATA[iso-8859-1]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+</Map>

@@ -5,15 +5,22 @@
 metadata = dict(
     title='Sample: JPEG',
     version='0.2.0',
-    abstract='''Sample world using JPEG delivery format.''',
-    attribution='Map Design: K&RData: Natural Earth',
+    abstract='''Sample world using JPEG delivery format and Cassini projection.''',
+    attribution='Map Design: K&R, Data: Natural Earth',
     origin=(0, 0),
     origin_zoom=2
 )
 
+pyramid = dict(
+    stride=1,
+    geogcs="WGS84",
+    projcs="EPSG:54028",
+    projbounds=(-10000000, -10000000, 10000000, 10000000),
+    levels=range(2, 9)
+)
 maptype = 'image'
 
-tileformat = dict(format='JPEG', parameters={'quality': 60})
+tileformat = dict(format='JPEG', parameters={'quality': 80})
 
 schema_1x['tag'] = '.jpg'
 schema_1x['storage']['root'] = "{{ theme_root }}/cache/sample_jpeg"

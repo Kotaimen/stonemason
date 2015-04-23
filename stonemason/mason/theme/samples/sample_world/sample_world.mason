@@ -8,7 +8,7 @@ metadata = dict(
     title='Sample: World',
     version='0.2.0',
     abstract='''A simple map design, using same projection as Google Maps.''',
-    attribution='Map Design: K&RData: Natural Earth',
+    attribution='Map Design: K&R, Data: Natural Earth',
     origin=(0, 0),
     origin_zoom=2
 )

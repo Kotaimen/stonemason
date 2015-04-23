@@ -145,10 +145,7 @@ package_data = {
         [
             'samples/manifest.mason',
             'samples/sample_world/*.mason',
-            'samples/sample_world/ne_50m_admin_0_countries_lakes.*',
-            'samples/sample_world/ne_50m_populated_places_simple.*',
-            'samples/sample_world/ne_50m_geographic_lines.*',
-            'samples/sample_world/ne_50m_graticules_10.*',
+            'samples/sample_world/ne_50m_*_.*',
             'samples/sample_world/sample_world.xml',
             'samples/sample_world/readme.md',
         ],
