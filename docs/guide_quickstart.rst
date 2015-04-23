@@ -176,11 +176,11 @@ editor, locate ``pyramid`` section:
         "version": "1.0.0",
         "description": "A sample world.",
         "attribution": "Data: Natural Earth, Tile: K&R",
-        "center": [
+        "origin": [
           0,
           0
         ],
-        "center_zoom": 0
+        "origin_zoom": 0
       },
       "pyramid": {
         "stride": 2,

@@ -8,8 +8,8 @@ metadata = dict(
     version='0.2.0',
     abstract='''Showing United States mainland with Hawaii together, using equidistant conic projection.''',
     attribution='Map Design: K&RData: Natural Earth',
-    center=(0, 0),
-    center_zoom=2
+    origin=(0, 0),
+    origin_zoom=2
 )
 
 pyramid = dict(

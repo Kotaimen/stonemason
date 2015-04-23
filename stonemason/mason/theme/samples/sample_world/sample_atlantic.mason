@@ -7,8 +7,8 @@ metadata = dict(
     version='0.2.0',
     abstract='''Showing Atlantic ocean, using Lambert azimuthal equal area projection.''',
     attribution='Map Design: K&RData: Natural Earth',
-    center=(0, 0),
-    center_zoom=2
+    origin=(0, 0),
+    origin_zoom=2
 )
 
 pyramid = dict(
