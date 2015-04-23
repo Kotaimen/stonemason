@@ -13,6 +13,7 @@ __date__ = '3/2/15'
 
 import multiprocessing
 import pprint
+import os
 
 import click
 import gunicorn.app.base
@@ -148,8 +149,22 @@ def tile_server_command(ctx, bind, read_only, workers,
         # run in flask debug mude
         if ctx.verbose:
             click.secho('Starting Flask debug tile server.', fg='green')
+
+        extra_files = list()
+        for root, dirs, files in os.walk(ctx.gallery):
+            if 'cache' in dirs:
+                dirs.remove('cache')  # don't visit CVS directories
+            for filename in files:
+                if filename.endswith('.mason'):
+                    extra_files.append(os.path.join(root, filename))
+        if ctx.verbose:
+                click.secho('Watching %d extra files.' % len(extra_files), fg='green')
+
         if not dry_run:
-            app.run(host=host, port=port, debug=ctx.debug)
+            app.run(host=host, port=port,
+                    debug=ctx.debug,
+                    extra_files=extra_files)
+
     else:
         # start a gunicorn server
 
