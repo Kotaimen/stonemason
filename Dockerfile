@@ -11,19 +11,19 @@ ENV         LANGUAGE en_US:en
 ENV         LC_ALL en_US.UTF-8
 
 #
-# Install stonemason
+# Install stonemason and run tests
 #
-
 WORKDIR     /tmp/stonemason
-ADD         . ./
-RUN         pip install -rrequirements-dev.txt && \
-            pip install .
-#
-# Check installation
-#
-RUN         python setup.py build_ext -if
-RUN         tox -e py27geo
-RUN         stonemason init
-RUN         stonemason check
 
-RUN         rm -rf /tmp/stonemason
+ADD         . ./
+
+RUN         pip install -rrequirements-dev.txt && \
+            pip install . && \
+            python setup.py build_ext -if && \
+            tox -e py27geo && \
+            stonemason init && \
+            stonemason check && \
+            rm -rf $WORKDIR
+
+ENTRYPOINT  stonemason
+CMD         --help
