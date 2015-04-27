@@ -23,7 +23,8 @@ RUN         pip install -rrequirements-dev.txt && \
             tox -e py27geo && \
             stonemason init && \
             stonemason check && \
-            rm -rf $WORKDIR
+            rm -rf /tmp/stonemason
 
-ENTRYPOINT  stonemason
-CMD         --help
+ENTRYPOINT  ["stonemason"]
+CMD         ["--help"]
+
