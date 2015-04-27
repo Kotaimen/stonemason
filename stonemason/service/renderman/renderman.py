@@ -100,7 +100,7 @@ def walker(script, queue, stats):
     # get schema
     portrayal = mason.get_portrayal(script.theme_name)
     assert isinstance(portrayal, Mapbook)
-    schema = portrayal.get_schema(script.schema_tag)
+    schema = portrayal.get_map_sheet(script.schema_tag)
     assert isinstance(schema, MapSheet)
     pyramid = schema.renderer.pyramid
     assert isinstance(pyramid, Pyramid)

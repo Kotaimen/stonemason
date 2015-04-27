@@ -60,7 +60,7 @@ class TestMasonTileAccessor(unittest.TestCase):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
         portrayal = Mapbook(self.name, Metadata(), bundle, Pyramid(stride=2))
-        portrayal.put_schema(tilematrix.tag, tilematrix)
+        portrayal.put_map_sheet(tilematrix.tag, tilematrix)
 
         mason.put_portrayal(portrayal.name, portrayal)
 
@@ -109,7 +109,7 @@ class TestMasonMetatileRenderer(unittest.TestCase):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
         portrayal = Mapbook(self.name, Metadata(), bundle, Pyramid(stride=2))
-        portrayal.put_schema(tilematrix.tag, tilematrix)
+        portrayal.put_map_sheet(tilematrix.tag, tilematrix)
 
         mason.put_portrayal(portrayal.name, portrayal)
 

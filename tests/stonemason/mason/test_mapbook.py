@@ -56,11 +56,11 @@ class TestPortrayal(unittest.TestCase):
 
         expected = MockMapSheet(tag)
 
-        self.assertFalse(self.portrayal.has_schema(tag))
+        self.assertFalse(self.portrayal.has_map_sheet(tag))
 
-        self.portrayal.put_schema(expected.tag, expected)
-        self.assertTrue(self.portrayal.has_schema(tag))
+        self.portrayal.put_map_sheet(expected.tag, expected)
+        self.assertTrue(self.portrayal.has_map_sheet(tag))
 
-        actually = self.portrayal.get_schema(tag)
+        actually = self.portrayal.get_map_sheet(tag)
         self.assertEqual(expected.tag, actually.tag)
 

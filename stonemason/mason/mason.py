@@ -68,7 +68,7 @@ class MasonTileVisitor(object):
         if portrayal is None:
             return None
 
-        schema = portrayal.get_schema(tag)
+        schema = portrayal.get_map_sheet(tag)
         if schema is None:
             return None
 
@@ -125,7 +125,7 @@ class MasonMetaTileFarm(object):
         if portrayal is None:
             return None
 
-        schema = portrayal.get_schema(tag)
+        schema = portrayal.get_map_sheet(tag)
         if schema is None:
             return None
 

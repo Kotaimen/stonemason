@@ -42,16 +42,16 @@ class Mapbook(object):
     def pyramid(self):
         return self._pyramid
 
-    def put_schema(self, tag, schema):
+    def put_map_sheet(self, tag, schema):
         assert isinstance(schema, MapSheet)
         self._schemas[tag] = schema
 
-    def get_schema(self, tag):
+    def get_map_sheet(self, tag):
         return self._schemas.get(tag)
 
-    def has_schema(self, tag):
+    def has_map_sheet(self, tag):
         return tag in self._schemas
 
-    def iter_schema(self):
+    def iter_map_sheets(self):
         return iter(self._schemas)
 

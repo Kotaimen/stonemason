@@ -37,7 +37,7 @@
 
     var layers = {};
 
-    {% for schema_tag in portrayal.iter_schema() %}
+    {% for schema_tag in portrayal.iter_map_sheets() %}
 
         var layer = L.tileLayer('/tiles/{{ portrayal.name }}/{z}/{x}/{y}{{ schema_tag }}', {
             attribution: "{{ portrayal.metadata.attribution }}",
