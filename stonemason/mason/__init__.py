@@ -5,8 +5,8 @@ __date__ = '4/9/15'
 
 from .exceptions import MasonError
 from .mason import Mason, MasonMetaTileFarm, MasonTileVisitor
-from .portrayal import Portrayal
-from .schema import Schema, HybridSchema
+from .mapbook import Mapbook
+from .mapsheet import MapSheet, HybridMapSheet
 from .metadata import Metadata
 from .builder import PortrayalBuilder, SchemaBuilder
 from .builder import create_portrayal_from_theme

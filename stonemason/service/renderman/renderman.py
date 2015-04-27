@@ -20,7 +20,7 @@ import multiprocessing.queues
 import time
 import logging
 
-from stonemason.mason import Mason, Portrayal, Schema, \
+from stonemason.mason import Mason, Mapbook, MapSheet, \
     MasonMetaTileFarm
 from stonemason.mason.theme import MemGallery, FileSystemCurator, Theme
 from stonemason.pyramid import Pyramid, MetaTileIndex
@@ -99,9 +99,9 @@ def walker(script, queue, stats):
 
     # get schema
     portrayal = mason.get_portrayal(script.theme_name)
-    assert isinstance(portrayal, Portrayal)
+    assert isinstance(portrayal, Mapbook)
     schema = portrayal.get_schema(script.schema_tag)
-    assert isinstance(schema, Schema)
+    assert isinstance(schema, MapSheet)
     pyramid = schema.renderer.pyramid
     assert isinstance(pyramid, Pyramid)
     # replace stride in renderer pyramid with storage stride

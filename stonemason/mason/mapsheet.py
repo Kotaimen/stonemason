@@ -9,7 +9,7 @@ from stonemason.renderer import MasonRenderer, RenderContext
 from stonemason.tilestorage import ClusterStorage, TileCluster
 
 
-class Schema(object):
+class MapSheet(object):
     def __init__(self, tag):
         self._tag = tag
 
@@ -35,9 +35,9 @@ class Schema(object):
         raise NotImplementedError
 
 
-class HybridSchema(Schema):
+class HybridMapSheet(MapSheet):
     def __init__(self, tag, storage, renderer):
-        Schema.__init__(self, tag)
+        MapSheet.__init__(self, tag)
         assert isinstance(storage, ClusterStorage)
         assert isinstance(renderer, MasonRenderer)
         self._storage = storage

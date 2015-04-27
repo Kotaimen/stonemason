@@ -10,18 +10,18 @@ import six
 from stonemason.mason.mason import Mason
 from stonemason.mason.mason import MasonTileVisitor, MasonMetaTileFarm
 from stonemason.mason.metadata import Metadata
-from stonemason.mason.portrayal import Portrayal
-from stonemason.mason.schema import HybridSchema
+from stonemason.mason.mapbook import Mapbook
+from stonemason.mason.mapsheet import HybridMapSheet
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.tilestorage import MetaTileStorage
-from .test_schema import DummyClusterStorage, DummyMetaTileRenderer
+from .test_mapsheet import DummyClusterStorage, DummyMetaTileRenderer
 
 
-class NullPortrayal(Portrayal):
+class NullPortrayal(Mapbook):
     def __init__(self):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
-        Portrayal.__init__(
+        Mapbook.__init__(
             self,
             name='test',
             metadata=Metadata(),
@@ -54,12 +54,12 @@ class TestMasonTileAccessor(unittest.TestCase):
         self.name = 'test-name'
         self.tag = 'test-tag'
 
-        tilematrix = HybridSchema(
+        tilematrix = HybridMapSheet(
             self.tag, DummyClusterStorage(), DummyMetaTileRenderer())
 
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
-        portrayal = Portrayal(self.name, Metadata(), bundle, Pyramid(stride=2))
+        portrayal = Mapbook(self.name, Metadata(), bundle, Pyramid(stride=2))
         portrayal.put_schema(tilematrix.tag, tilematrix)
 
         mason.put_portrayal(portrayal.name, portrayal)
@@ -103,12 +103,12 @@ class TestMasonMetatileRenderer(unittest.TestCase):
         self.tag = 'test-tag'
 
         self.storage = DummyClusterStorage()
-        tilematrix = HybridSchema(
+        tilematrix = HybridMapSheet(
             self.tag, self.storage, DummyMetaTileRenderer())
 
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
-        portrayal = Portrayal(self.name, Metadata(), bundle, Pyramid(stride=2))
+        portrayal = Mapbook(self.name, Metadata(), bundle, Pyramid(stride=2))
         portrayal.put_schema(tilematrix.tag, tilematrix)
 
         mason.put_portrayal(portrayal.name, portrayal)

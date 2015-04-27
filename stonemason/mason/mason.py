@@ -9,7 +9,7 @@ import six
 from stonemason.pyramid import TileIndex, MetaTileIndex
 from stonemason.tilecache import TileCache, NullTileCache, TileCacheError
 
-from .portrayal import Portrayal
+from .mapbook import Mapbook
 from .builder import create_portrayal_from_theme
 from .theme import Theme
 from .exceptions import DuplicatedPortrayal
@@ -33,7 +33,7 @@ class Mason(object):
         return self._gallery.get(name)
 
     def put_portrayal(self, name, portrayal):
-        assert isinstance(portrayal, Portrayal)
+        assert isinstance(portrayal, Mapbook)
         self._gallery[name] = portrayal
 
     def has_portrayal(self, name):

@@ -7,10 +7,10 @@ from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import FormatBundle
 
 from .metadata import Metadata
-from .schema import Schema
+from .mapsheet import MapSheet
 
 
-class Portrayal(object):
+class Mapbook(object):
     def __init__(self, name, metadata, bundle, pyramid, schemas=None):
         assert isinstance(metadata, Metadata)
         assert isinstance(bundle, FormatBundle)
@@ -43,7 +43,7 @@ class Portrayal(object):
         return self._pyramid
 
     def put_schema(self, tag, schema):
-        assert isinstance(schema, Schema)
+        assert isinstance(schema, MapSheet)
         self._schemas[tag] = schema
 
     def get_schema(self, tag):

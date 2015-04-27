@@ -14,9 +14,9 @@ from stonemason.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
 from stonemason.renderer import MasonRenderer
 from .theme import Theme, SchemaTheme
-from .portrayal import Portrayal
+from .mapbook import Mapbook
 from .metadata import Metadata
-from .schema import Schema, HybridSchema
+from .mapsheet import MapSheet, HybridMapSheet
 from .exceptions import UnknownStorageType, UnknownRendererType, \
     InvalidSchemaTag
 
@@ -35,7 +35,7 @@ class SchemaBuilder(object):
             raise InvalidSchemaTag(
                 'Tag of TileMatrix should not start with a number')
 
-        matrix = HybridSchema(self._tag, self._storage, self._renderer)
+        matrix = HybridMapSheet(self._tag, self._storage, self._renderer)
         return matrix
 
     def build_tag(self, tag):
@@ -84,7 +84,7 @@ class PortrayalBuilder(object):
         self._schemas = dict()
 
     def build(self):
-        return Portrayal(
+        return Mapbook(
             name=self._name,
             metadata=self._metadata,
             bundle=FormatBundle(self._map_type, self._tile_format),
@@ -110,7 +110,7 @@ class PortrayalBuilder(object):
         self._tile_format = TileFormat(**config)
 
     def add_schema(self, schema):
-        assert isinstance(schema, Schema)
+        assert isinstance(schema, MapSheet)
         self._schemas[schema.tag] = schema
 
 

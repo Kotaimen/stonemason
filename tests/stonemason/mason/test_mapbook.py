@@ -8,11 +8,11 @@ import unittest
 from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.mason.metadata import Metadata
-from stonemason.mason.portrayal import Portrayal
-from stonemason.mason.schema import Schema
+from stonemason.mason.mapbook import Mapbook
+from stonemason.mason.mapsheet import MapSheet
 
 
-class MockSchema(Schema):
+class MockMapSheet(MapSheet):
     @property
     def storage(self):
         return None
@@ -35,7 +35,7 @@ class TestPortrayal(unittest.TestCase):
     def setUp(self):
         self.bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
-        self.portrayal = Portrayal(
+        self.portrayal = Mapbook(
             name='test', metadata=Metadata(), bundle=self.bundle,
             pyramid=Pyramid())
 
@@ -54,7 +54,7 @@ class TestPortrayal(unittest.TestCase):
     def test_put_get_has_tilematrix(self):
         tag = '2x.png'
 
-        expected = MockSchema(tag)
+        expected = MockMapSheet(tag)
 
         self.assertFalse(self.portrayal.has_schema(tag))
 
