@@ -13,18 +13,18 @@ import boto
 from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import MapType, TileFormat
 from stonemason.mason.metadata import Metadata
-from stonemason.mason.builder import PortrayalBuilder, SchemaBuilder
+from stonemason.mason.builder import MapBookBuilder, MapSheetBuilder
 from stonemason.tilestorage import ClusterStorage
 from stonemason.renderer import MasonRenderer
 
 
-class TestSchemaBuilder(unittest.TestCase):
+class TestMapSheetBuilder(unittest.TestCase):
     def setUp(self):
-        self.builder = SchemaBuilder()
+        self.builder = MapSheetBuilder()
 
     def test_build_default(self):
-        schema = self.builder.build()
-        self.assertEqual('', schema.tag)
+        sheet = self.builder.build()
+        self.assertEqual('', sheet.tag)
 
     def test_build_pyramid(self):
         self.builder.build_pyramid(stride=2)
@@ -44,9 +44,9 @@ class TestSchemaBuilder(unittest.TestCase):
         }
 
         self.builder.build_storage(**storage_config)
-        schema = self.builder.build()
+        sheet = self.builder.build()
 
-        self.assertIsInstance(schema._storage, ClusterStorage)
+        self.assertIsInstance(sheet._storage, ClusterStorage)
 
     def test_build_disk_storage(self):
         root = tempfile.mkdtemp()
@@ -56,9 +56,9 @@ class TestSchemaBuilder(unittest.TestCase):
         }
 
         self.builder.build_storage(**storage_config)
-        schema = self.builder.build()
+        sheet = self.builder.build()
 
-        self.assertIsInstance(schema._storage, ClusterStorage)
+        self.assertIsInstance(sheet._storage, ClusterStorage)
 
         shutil.rmtree(root, ignore_errors=True)
 
@@ -74,9 +74,9 @@ class TestSchemaBuilder(unittest.TestCase):
             }
 
             self.builder.build_storage(**storage_config)
-            schema = self.builder.build()
+            sheet = self.builder.build()
 
-            self.assertIsInstance(schema._storage, ClusterStorage)
+            self.assertIsInstance(sheet._storage, ClusterStorage)
 
     def test_build_renderer(self):
         renderer_config = {
@@ -88,45 +88,27 @@ class TestSchemaBuilder(unittest.TestCase):
             }
         }
         self.builder.build_renderer(**renderer_config)
-        schema = self.builder.build()
+        sheet = self.builder.build()
 
-        self.assertIsInstance(schema._renderer, MasonRenderer)
+        self.assertIsInstance(sheet._renderer, MasonRenderer)
 
 
-class TestPortrayalBuilder(unittest.TestCase):
+class TestMapBookBuilder(unittest.TestCase):
     def setUp(self):
-        self.builder = PortrayalBuilder()
+        self.builder = MapBookBuilder()
 
     def test_build_default(self):
-        portrayal = self.builder.build()
-        self.assertEqual('', portrayal.name)
-        self.assertEqual(Metadata(), portrayal.metadata)
-        self.assertEqual(MapType('image'), portrayal.bundle.map_type)
-        self.assertEqual(TileFormat('PNG'), portrayal.bundle.tile_format)
-        self.assertEqual(Pyramid(), portrayal.pyramid)
+        map_book = self.builder.build()
+        self.assertEqual('', map_book.name)
+        self.assertEqual(Metadata(), map_book.metadata)
 
     def test_build_name(self):
         self.builder.build_name('test')
-        portrayal = self.builder.build()
-        self.assertEqual('test', portrayal.name)
+        map_book = self.builder.build()
+        self.assertEqual('test', map_book.name)
 
     def test_build_metadata(self):
         self.builder.build_metadata(title='test')
-        portrayal = self.builder.build()
-        self.assertEqual('test', portrayal.metadata.title)
-
-    def test_build_pyramid(self):
-        self.builder.build_pyramid(stride=2)
-        portrayal = self.builder.build()
-        self.assertEqual(2, portrayal.pyramid.stride)
-
-    def test_build_map_type(self):
-        self.builder.build_map_type('image')
-        portrayal = self.builder.build()
-        self.assertEqual(MapType('image'), portrayal.bundle.map_type)
-
-    def test_build_tile_format(self):
-        self.builder.build_tile_format(format='JPEG')
-        portrayal = self.builder.build()
-        self.assertEqual(TileFormat('JPEG'), portrayal.bundle.tile_format)
+        map_book = self.builder.build()
+        self.assertEqual('test', map_book.metadata.title)
 

@@ -10,34 +10,36 @@ from stonemason.tilestorage import ClusterStorage, TileCluster
 
 
 class MapSheet(object):
-    def __init__(self, tag):
+    def __init__(self, tag, bundle, pyramid):
         self._tag = tag
+        self._bundle = bundle
+        self._pyramid = pyramid
 
     @property
     def tag(self):
         return self._tag
 
     @property
-    def storage(self):
-        raise NotImplementedError
+    def bundle(self):
+        return self._bundle
 
     @property
-    def renderer(self):
+    def pyramid(self):
+        return self._pyramid
+
+    def get_metatile(self, meta_index):
         raise NotImplementedError
 
-    def get_metatile(self, bundle, pyramid, meta_index):
+    def get_tilecluster(self, meta_index):
         raise NotImplementedError
 
-    def get_tilecluster(self, bundle, pyramid, meta_index):
-        raise NotImplementedError
-
-    def render_metatile(self, bundle, pyramid, meta_index):
+    def render_metatile(self, meta_index):
         raise NotImplementedError
 
 
 class HybridMapSheet(MapSheet):
-    def __init__(self, tag, storage, renderer):
-        MapSheet.__init__(self, tag)
+    def __init__(self, tag, bundle, pyramid, storage, renderer):
+        MapSheet.__init__(self, tag, bundle, pyramid)
         assert isinstance(storage, ClusterStorage)
         assert isinstance(renderer, MasonRenderer)
         self._storage = storage
@@ -51,7 +53,7 @@ class HybridMapSheet(MapSheet):
     def renderer(self):
         return self._renderer
 
-    def get_tilecluster(self, bundle, pyramid, meta_index):
+    def get_tilecluster(self, meta_index):
         storage_meta_index = MetaTileIndex(meta_index.z,
                                            meta_index.x,
                                            meta_index.y,
@@ -60,16 +62,16 @@ class HybridMapSheet(MapSheet):
         if cluster is not None:
             return cluster
 
-        metatile = self.get_metatile(bundle, pyramid, meta_index)
+        metatile = self.get_metatile(meta_index)
         if metatile is None:
             return None
 
-        cluster = TileCluster.from_metatile(metatile, bundle.writer)
+        cluster = TileCluster.from_metatile(metatile, self._bundle.writer)
         return cluster
 
-    def get_metatile(self, bundle, pyramid, meta_index):
+    def get_metatile(self, meta_index):
 
-        tms = TileMapSystem(pyramid)
+        tms = TileMapSystem(self._pyramid)
 
         context = RenderContext(
             map_proj=tms.pyramid.projcs,
@@ -82,21 +84,21 @@ class HybridMapSheet(MapSheet):
             return None
 
         data = feature.tobytes(
-            fmt=bundle.tile_format.format,
-            parameters=bundle.tile_format.parameters)
+            fmt=self._bundle.tile_format.format,
+            parameters=self._bundle.tile_format.parameters)
 
         metatile = MetaTile(
             index=meta_index,
-            mimetype=bundle.tile_format.mimetype,
+            mimetype=self._bundle.tile_format.mimetype,
             data=data,
         )
 
         return metatile
 
-    def render_metatile(self, bundle, pyramid, meta_index):
+    def render_metatile(self, meta_index):
         if self._storage.get(meta_index) is not None:
             return True
-        result = self.get_metatile(bundle, pyramid, meta_index)
+        result = self.get_metatile(meta_index)
         if result:
             self._storage.put(result)
             return True

@@ -153,7 +153,7 @@
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                 <div id="grid" data-columns>
 
-                    {% for portrayal in collection %}
+                    {% for map_book in collection %}
 
                         <div class="item">
 
@@ -161,8 +161,8 @@
 
                                 <div class="panel-heading">
                                     <h3 class="text-capitalize">
-                                        {{ portrayal.metadata.title }}
-                                        <a href="maps/{{ portrayal.name }}"
+                                        {{ map_book.metadata.title }}
+                                        <a href="maps/{{ map_book.name }}"
                                            class="btn btn-default btn-sml pull-right"
                                            role="button">
                                         <span class="glyphicon glyphicon-map-marker"
@@ -171,49 +171,36 @@
                                         </a>
                                     </h3>
 
-                                    <code>{{ portrayal.metadata.version }}</code>
+                                    <code>{{ map_book.metadata.version }}</code>
 
                                 </div>
 
                                 <div class="panel-body">
                                     <p>
-                                        {{ portrayal.metadata.abstract|e }}
+                                        {{ map_book.metadata.abstract|e }}
                                     </p>
                                 </div>
 
                                 <table class="table table-default">
-                                    <tr>
-                                        <td>Schemas</td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                {% for schema_tag in portrayal.iter_map_sheets() %}
-                                                    <li>
-                                                        <code>{{ portrayal.name}}</code>
-                                                        <code>{{ schema_tag }}</code>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        </td>
-                                    </tr>
 
+                                    {% for sheet_tag in map_book.iter_map_sheets() %}
                                     <tr>
-                                        <td>Projection</td>
                                         <td>
-                                            {{ portrayal.pyramid.projcs|e }}
+                                            <code>{{ map_book.name}}</code>
+                                            <code>{{ sheet_tag }}</code>
+                                        </td>
+                                        <td>
+                                            {{ map_book.get_map_sheet(sheet_tag).pyramid.projcs|e }}
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>Zoom Levels</td>
-                                        <td>{{ portrayal.pyramid.levels }}
-                                        </td>
-                                    </tr>
+                                    {% endfor %}
 
                                 </table>
 
 
                                 <div class="panel-footer">
                                     <p class="text-right">
-                                        {{ portrayal.metadata.attribution|e }}
+                                        {{ map_book.metadata.attribution|e }}
                                     </p>
                                 </div>
 

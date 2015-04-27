@@ -9,38 +9,38 @@ import six
 from stonemason.pyramid import TileIndex, MetaTileIndex
 from stonemason.tilecache import TileCache, NullTileCache, TileCacheError
 
-from .mapbook import Mapbook
-from .builder import create_portrayal_from_theme
+from .mapbook import MapBook
+from .builder import create_map_book_from_theme
 from .theme import Theme
-from .exceptions import DuplicatedPortrayal
+from .exceptions import DuplicatedMapBook
 
 
 class Mason(object):
     def __init__(self, logger=None):
-        self._gallery = dict()
+        self._library = dict()
         self._logger = logger
 
-    def load_portrayal_from_theme(self, theme):
+    def load_map_book_from_theme(self, theme):
         assert isinstance(theme, Theme)
 
-        portrayal = create_portrayal_from_theme(theme)
-        if self.has_portrayal(portrayal.name):
-            raise DuplicatedPortrayal(portrayal.name)
+        book = create_map_book_from_theme(theme)
+        if self.has_map_book(book.name):
+            raise DuplicatedMapBook(book.name)
 
-        self._gallery[portrayal.name] = portrayal
+        self._library[book.name] = book
 
-    def get_portrayal(self, name):
-        return self._gallery.get(name)
+    def get_map_book(self, name):
+        return self._library.get(name)
 
-    def put_portrayal(self, name, portrayal):
-        assert isinstance(portrayal, Mapbook)
-        self._gallery[name] = portrayal
+    def put_map_book(self, name, map_book):
+        assert isinstance(map_book, MapBook)
+        self._library[name] = map_book
 
-    def has_portrayal(self, name):
-        return name in self._gallery
+    def has_map_book(self, name):
+        return name in self._library
 
     def __iter__(self):
-        return iter(self._gallery)
+        return iter(self._library)
 
 
 class MasonTileVisitor(object):
@@ -64,16 +64,16 @@ class MasonTileVisitor(object):
             return tile
 
         # figure out theme and schema tile belongs to
-        portrayal = self._mason.get_portrayal(name)
-        if portrayal is None:
+        book = self._mason.get_map_book(name)
+        if book is None:
             return None
 
-        schema = portrayal.get_map_sheet(tag)
-        if schema is None:
+        sheet = book.get_map_sheet(tag)
+        if sheet is None:
             return None
 
         # create metatile index
-        stride = portrayal.pyramid.stride
+        stride = sheet.pyramid.stride
         meta_index = MetaTileIndex.from_tile_index(index, stride)
 
         # opportunistic backoff
@@ -89,9 +89,7 @@ class MasonTileVisitor(object):
                     return tile
         try:
             # get tile cluster
-            cluster = schema.get_tilecluster(portrayal.bundle,
-                                             portrayal.pyramid,
-                                             meta_index)
+            cluster = sheet.get_tilecluster(meta_index)
             if cluster is None:
                 return None
 
@@ -121,19 +119,17 @@ class MasonMetaTileFarm(object):
         self._mason = mason
 
     def render_metatile(self, name, tag, z, x, y, stride):
-        portrayal = self._mason.get_portrayal(name)
-        if portrayal is None:
+        book = self._mason.get_map_book(name)
+        if book is None:
             return None
 
-        schema = portrayal.get_map_sheet(tag)
-        if schema is None:
+        sheet = book.get_map_sheet(tag)
+        if sheet is None:
             return None
 
         # create meta index
         meta_index = MetaTileIndex(z, x, y, stride)
 
         # render the metatile
-        return schema.render_metatile(portrayal.bundle,
-                                      portrayal.pyramid,
-                                      meta_index)
+        return sheet.render_metatile(meta_index)
 

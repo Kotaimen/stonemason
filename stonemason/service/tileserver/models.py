@@ -40,7 +40,7 @@ class MasonModel(object):
     def do_init(self):
         mason = Mason()
         for theme in self._themes:
-            mason.load_portrayal_from_theme(theme)
+            mason.load_map_book_from_theme(theme)
         return mason
 
     @property
@@ -66,10 +66,10 @@ class MasonModel(object):
         tile = self.mason_tile_visitor.get_tile(name, tag, z, x, y)
         return tile
 
-    def get_portrayal(self, name):
-        return self.mason.get_portrayal(name)
+    def get_map_book(self, name):
+        return self.mason.get_map_book(name)
 
-    def iter_portrayals(self):
-        return (self.mason.get_portrayal(n) for n in self.mason)
+    def iter_map_books(self):
+        return (self.mason.get_map_book(n) for n in self.mason)
 
 

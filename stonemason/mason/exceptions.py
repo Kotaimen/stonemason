@@ -16,9 +16,9 @@ class UnknownRendererType(MasonError):
     pass
 
 
-class DuplicatedPortrayal(MasonError):
+class DuplicatedMapBook(MasonError):
     pass
 
 
-class InvalidSchemaTag(MasonError):
+class InvalidMapSheetTag(MasonError):
     pass

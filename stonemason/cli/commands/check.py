@@ -39,18 +39,16 @@ def check_command(ctx):
     mason = Mason()
     for theme_name in gallery:
         theme = gallery.get(theme_name)
-        mason.load_portrayal_from_theme(theme)
+        mason.load_map_book_from_theme(theme)
 
-        protrayal = mason.get_portrayal(theme_name)
+        book = mason.get_map_book(theme_name)
 
-        click.echo('Theme: %s' % protrayal.name)
+        click.echo('Theme: %s' % book.name)
         if ctx.verbose:
-            click.secho('\t%s' % repr(protrayal.bundle), fg='green')
-            click.secho('\t%s' % repr(protrayal.metadata), fg='green')
-            click.secho('\t%s' % repr(protrayal.pyramid), fg='green')
+            click.secho('\t%s' % repr(book.metadata), fg='green')
 
-        for n, m in enumerate(theme.schemas):
-            click.echo('\tSchema: %s %s' % (protrayal.name, m.tag))
+        for n, m in enumerate(theme.map_sheets):
+            click.echo('\tSchema: %s %s' % (book.name, m.tag))
             if ctx.verbose:
                 click.secho('\t\tmaptype=%s' % repr(m.maptype), fg='green')
                 click.secho('\t\ttileformat=%s' % repr(m.tileformat), fg='green')

@@ -13,15 +13,14 @@ from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
 from stonemason.renderer import MasonRenderer
-from .theme import Theme, SchemaTheme
-from .mapbook import Mapbook
+from .theme import Theme, MapSheetTheme
+from .mapbook import MapBook
 from .metadata import Metadata
 from .mapsheet import MapSheet, HybridMapSheet
-from .exceptions import UnknownStorageType, UnknownRendererType, \
-    InvalidSchemaTag
+from .exceptions import UnknownStorageType, InvalidMapSheetTag
 
 
-class SchemaBuilder(object):
+class MapSheetBuilder(object):
     def __init__(self):
         self._tag = ''
         self._map_type = MapType('image')
@@ -32,11 +31,15 @@ class SchemaBuilder(object):
 
     def build(self):
         if re.match('^[0-9].*', self._tag):
-            raise InvalidSchemaTag(
+            raise InvalidMapSheetTag(
                 'Tag of TileMatrix should not start with a number')
 
-        matrix = HybridMapSheet(self._tag, self._storage, self._renderer)
-        return matrix
+        bundle = FormatBundle(self._map_type, self._tile_format)
+
+        map_sheet = HybridMapSheet(
+            self._tag, bundle, self._pyramid, self._storage, self._renderer)
+
+        return map_sheet
 
     def build_tag(self, tag):
         assert isinstance(tag, six.string_types)
@@ -73,23 +76,18 @@ class SchemaBuilder(object):
         self._renderer = MasonRenderer(expression)
 
 
-class PortrayalBuilder(object):
+class MapBookBuilder(object):
     def __init__(self):
         self._name = ''
         self._metadata = Metadata()
-        self._map_type = MapType('image')
-        self._tile_format = TileFormat('PNG')
-        self._pyramid = Pyramid()
 
-        self._schemas = dict()
+        self._map_sheets = dict()
 
     def build(self):
-        return Mapbook(
+        return MapBook(
             name=self._name,
             metadata=self._metadata,
-            bundle=FormatBundle(self._map_type, self._tile_format),
-            pyramid=self._pyramid,
-            schemas=self._schemas
+            map_sheets=self._map_sheets
         )
 
     def build_name(self, name):
@@ -99,71 +97,45 @@ class PortrayalBuilder(object):
     def build_metadata(self, **config):
         self._metadata = Metadata(**config)
 
-    def build_pyramid(self, **config):
-        self._pyramid = Pyramid(**config)
-
-    def build_map_type(self, t):
-        assert isinstance(t, six.string_types)
-        self._map_type = MapType(t)
-
-    def build_tile_format(self, **config):
-        self._tile_format = TileFormat(**config)
-
-    def add_schema(self, schema):
-        assert isinstance(schema, MapSheet)
-        self._schemas[schema.tag] = schema
+    def add_map_sheet(self, map_sheet):
+        assert isinstance(map_sheet, MapSheet)
+        self._map_sheets[map_sheet.tag] = map_sheet
 
 
-def create_portrayal_from_theme(theme):
+def create_map_book_from_theme(theme):
     assert isinstance(theme, Theme)
-    builder = PortrayalBuilder()
+    builder = MapBookBuilder()
     if theme.name is not None:
         builder.build_name(theme.name)
     if theme.metadata is not None:
         builder.build_metadata(**theme.metadata)
-    if theme.pyramid is not None:
-        builder.build_pyramid(**theme.pyramid)
-    if theme.maptype is not None:
-        builder.build_map_type(theme.maptype)
-    if theme.tileformat is not None:
-        builder.build_tile_format(**theme.tileformat)
 
-    for schema_theme in theme.schemas:
-        assert isinstance(schema_theme, SchemaTheme)
-        schema_builder = SchemaBuilder()
+    for sheet_theme in theme.map_sheets:
+        assert isinstance(sheet_theme, MapSheetTheme)
+        map_sheet_builder = MapSheetBuilder()
 
-        schema_tag = 'tag-%s' % uuid.uuid4().hex
-        if schema_theme.tag is not None:
-            schema_tag = schema_theme.tag
-        schema_builder.build_tag(schema_tag)
+        sheet_tag = 'tag-%s' % uuid.uuid4().hex
+        if sheet_theme.tag is not None:
+            sheet_tag = sheet_theme.tag
+        map_sheet_builder.build_tag(sheet_tag)
 
-        schema_pyramid = dict()
-        if theme.pyramid is not None:
-            schema_pyramid.update(theme.pyramid)
-        if schema_theme.pyramid is not None:
-            schema_pyramid.update(schema_theme.pyramid)
-        schema_builder.build_pyramid(**schema_pyramid)
+        if sheet_theme.pyramid is not None:
+            map_sheet_builder.build_pyramid(**sheet_theme.pyramid)
 
-        schema_maptype = theme.maptype
-        if schema_theme.maptype is not None:
-            schema_maptype = schema_theme.maptype
-        schema_builder.build_map_type(schema_maptype)
+        if sheet_theme.maptype is not None:
+            map_sheet_builder.build_map_type(sheet_theme.maptype)
 
-        schema_tileformat = dict()
-        if theme.tileformat is not None:
-            schema_tileformat.update(theme.tileformat)
-        if schema_theme.tileformat is not None:
-            schema_tileformat.update(schema_theme.tileformat)
-        schema_builder.build_tile_format(**schema_tileformat)
+        if sheet_theme.tileformat is not None:
+            map_sheet_builder.build_tile_format(**sheet_theme.tileformat)
 
-        if schema_theme.storage is not None:
-            schema_builder.build_storage(**schema_theme.storage)
+        if sheet_theme.storage is not None:
+            map_sheet_builder.build_storage(**sheet_theme.storage)
 
-        if schema_theme.renderer is not None:
-            schema_builder.build_renderer(**schema_theme.renderer)
+        if sheet_theme.renderer is not None:
+            map_sheet_builder.build_renderer(**sheet_theme.renderer)
 
-        matrix = schema_builder.build()
+        map_sheet = map_sheet_builder.build()
 
-        builder.add_schema(matrix)
+        builder.add_map_sheet(map_sheet)
 
     return builder.build()

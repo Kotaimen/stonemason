@@ -9,7 +9,7 @@
 
 import os
 
-from .theme import Theme, SchemaTheme
+from .theme import Theme, MapSheetTheme
 from .gallery import Gallery, MemGallery
 from .curator import Curator, FileSystemCurator
 

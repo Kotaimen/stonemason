@@ -20,7 +20,7 @@ import multiprocessing.queues
 import time
 import logging
 
-from stonemason.mason import Mason, Mapbook, MapSheet, \
+from stonemason.mason import Mason, MapBook, MapSheet, \
     MasonMetaTileFarm
 from stonemason.mason.theme import MemGallery, FileSystemCurator, Theme
 from stonemason.pyramid import Pyramid, MetaTileIndex
@@ -61,7 +61,7 @@ def create_mason(script):
 
     # load theme
     assert isinstance(theme, Theme)
-    mason.load_portrayal_from_theme(theme)
+    mason.load_map_book_from_theme(theme)
 
     return mason
 
@@ -97,15 +97,15 @@ def walker(script, queue, stats):
 
     mason = create_mason(script)
 
-    # get schema
-    portrayal = mason.get_portrayal(script.theme_name)
-    assert isinstance(portrayal, Mapbook)
-    schema = portrayal.get_map_sheet(script.schema_tag)
-    assert isinstance(schema, MapSheet)
-    pyramid = schema.renderer.pyramid
+    # get map sheet
+    map_book = mason.get_map_book(script.theme_name)
+    assert isinstance(map_book, MapBook)
+    map_sheet = map_book.get_map_sheet(script.schema_tag)
+    assert isinstance(map_sheet, MapSheet)
+    pyramid = map_sheet.pyramid
     assert isinstance(pyramid, Pyramid)
     # replace stride in renderer pyramid with storage stride
-    pyramid = pyramid._replace(stride=schema.storage.stride)
+    pyramid = pyramid._replace(stride=map_sheet._storage.stride)
 
     # create tms from new pyramid
     tms = TileMapSystem(pyramid)

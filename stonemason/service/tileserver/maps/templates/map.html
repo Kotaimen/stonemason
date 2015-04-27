@@ -6,7 +6,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 
-    <title>Stonemason - {{ portrayal.name }}</title>
+    <title>Stonemason - {{ map_book.name }}</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet"
@@ -37,24 +37,24 @@
 
     var layers = {};
 
-    {% for schema_tag in portrayal.iter_map_sheets() %}
+    {% for sheet_tag in map_book.iter_map_sheets() %}
 
-        var layer = L.tileLayer('/tiles/{{ portrayal.name }}/{z}/{x}/{y}{{ schema_tag }}', {
-            attribution: "{{ portrayal.metadata.attribution }}",
-            minZoom: {{ portrayal.pyramid.levels|first  }},
-            maxZoom: {{ portrayal.pyramid.levels|last  }},
+        var layer = L.tileLayer('/tiles/{{ map_book.name }}/{z}/{x}/{y}{{ sheet_tag }}', {
+            attribution: "{{ map_book.metadata.attribution }}",
+            minZoom: {{ map_book.get_map_sheet(sheet_tag).pyramid.levels|first  }},
+            maxZoom: {{ map_book.get_map_sheet(sheet_tag).pyramid.levels|last  }},
             detectRetina: true,
             errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png',
             noWrap: true,
             continuousWorld: false
         });
 
-        layers['{{ portrayal.name+schema_tag }}'] = layer;
+        layers['{{ map_book.name+sheet_tag }}'] = layer;
 
     {% endfor %}
 
-    var center = L.latLng({{ portrayal.metadata.origin[1] }}, {{ portrayal.metadata.origin[0] }});
-    var zoom = {{ portrayal.metadata.origin_zoom }};
+    var center = L.latLng({{ map_book.metadata.origin[1] }}, {{ map_book.metadata.origin[0] }});
+    var zoom = {{ map_book.metadata.origin_zoom }};
     var map = L.map('map',
             {
                 layers: [layer]

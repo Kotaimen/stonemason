@@ -3,28 +3,27 @@
 __author__ = 'ray'
 __date__ = '4/9/15'
 
-from stonemason.pyramid import Pyramid
-from stonemason.formatbundle import FormatBundle
+import six
 
 from .metadata import Metadata
 from .mapsheet import MapSheet
 
 
-class Mapbook(object):
-    def __init__(self, name, metadata, bundle, pyramid, schemas=None):
-        assert isinstance(metadata, Metadata)
-        assert isinstance(bundle, FormatBundle)
-        assert isinstance(pyramid, Pyramid)
-
+class MapBook(object):
+    def __init__(self, name, metadata=None, map_sheets=None):
         self._name = name
+
+        if metadata is None:
+            metadata = Metadata()
+
+        assert isinstance(metadata, Metadata)
         self._metadata = metadata
-        self._bundle = bundle
-        self._pyramid = pyramid
 
-        if schemas is None:
-            schemas = dict()
+        if map_sheets is None:
+            map_sheets = dict()
 
-        self._schemas = schemas
+        assert isinstance(map_sheets, dict)
+        self._map_sheets = map_sheets
 
     @property
     def name(self):
@@ -34,24 +33,15 @@ class Mapbook(object):
     def metadata(self):
         return self._metadata
 
-    @property
-    def bundle(self):
-        return self._bundle
-
-    @property
-    def pyramid(self):
-        return self._pyramid
-
-    def put_map_sheet(self, tag, schema):
-        assert isinstance(schema, MapSheet)
-        self._schemas[tag] = schema
+    def put_map_sheet(self, tag, sheet):
+        assert isinstance(sheet, MapSheet)
+        self._map_sheets[tag] = sheet
 
     def get_map_sheet(self, tag):
-        return self._schemas.get(tag)
+        return self._map_sheets.get(tag)
 
     def has_map_sheet(self, tag):
-        return tag in self._schemas
+        return tag in self._map_sheets
 
     def iter_map_sheets(self):
-        return iter(self._schemas)
-
+        return iter(self._map_sheets)

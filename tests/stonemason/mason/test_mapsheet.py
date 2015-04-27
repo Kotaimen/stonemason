@@ -19,7 +19,7 @@ from tests import DATA_DIRECTORY
 from tests import skipUnlessHasGDAL
 
 
-class DummyMetaTileRenderer(MasonRenderer):
+class MockMetaTileRenderer(MasonRenderer):
     def __init__(self):
         MasonRenderer.__init__(self, {})
 
@@ -33,7 +33,7 @@ class DummyMetaTileRenderer(MasonRenderer):
             data=image_data)
 
 
-class DummyClusterStorage(ClusterStorage):
+class MockClusterStorage(ClusterStorage):
     @property
     def levels(self):
         raise NotImplementedError
@@ -58,12 +58,15 @@ class DummyClusterStorage(ClusterStorage):
         pass
 
 
-class TestHybridTileMatrix(unittest.TestCase):
+class TestHybridMapSheet(unittest.TestCase):
     def setUp(self):
-        storage = DummyClusterStorage()
-        renderer = DummyMetaTileRenderer()
+        storage = MockClusterStorage()
+        renderer = MockMetaTileRenderer()
 
-        self.matrix = HybridMapSheet('test', storage, renderer)
+        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
+        pyramid = Pyramid()
+
+        self.matrix = HybridMapSheet('test', bundle, pyramid, storage, renderer)
 
     @skipUnlessHasGDAL()
     def test_get_tilecluster(self):
@@ -73,14 +76,14 @@ class TestHybridTileMatrix(unittest.TestCase):
         meta_index = MetaTileIndex(1, 0, 0, pyramid.stride)
 
         # storage hit
-        cluster = self.matrix.get_tilecluster(bundle, pyramid, meta_index)
+        cluster = self.matrix.get_tilecluster(meta_index)
         for tile in cluster.tiles:
             self.assertEqual(six.b('A tile'), tile.data)
 
         meta_index = MetaTileIndex(2, 0, 0, pyramid.stride)
 
         # renderer hit
-        cluster = self.matrix.get_tilecluster(bundle, pyramid, meta_index)
+        cluster = self.matrix.get_tilecluster(meta_index)
         for tile in cluster.tiles:
             grid_image = Image.open(io.BytesIO(tile.data))
             self.assertEqual((512, 512), grid_image.size)
@@ -93,13 +96,13 @@ class TestHybridTileMatrix(unittest.TestCase):
         meta_index = MetaTileIndex(1, 0, 0, pyramid.stride)
 
         # storage miss (cluster storage does not support rendering metatile)
-        metatile = self.matrix.get_metatile(bundle, pyramid, meta_index)
+        metatile = self.matrix.get_metatile(meta_index)
         # self.assertIsNone(metatile)
 
         # renderer hit
         meta_index = MetaTileIndex(2, 0, 0, pyramid.stride)
 
-        metatile = self.matrix.get_metatile(bundle, pyramid, meta_index)
+        metatile = self.matrix.get_metatile(meta_index)
         grid_image = Image.open(io.BytesIO(metatile.data))
         self.assertEqual((1024, 1024), grid_image.size)
 

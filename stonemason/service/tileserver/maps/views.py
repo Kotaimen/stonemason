@@ -11,7 +11,7 @@ from flask import render_template
 from ..models import MasonModel
 
 
-class PortrayalView(MethodView):
+class MapBookView(MethodView):
     """Map View
 
     A map site with named tag.
@@ -34,17 +34,17 @@ class PortrayalView(MethodView):
         if theme is None:
             """Retrieve an overview of all loaded maps."""
             collection = list()
-            for portrayal in self._mason_model.iter_portrayals():
-                collection.append(portrayal)
+            for book in self._mason_model.iter_map_books():
+                collection.append(book)
 
             return render_template('index.html', collection=collection)
         else:
-            portrayal = self._mason_model.get_portrayal(theme)
-            if portrayal is None:
+            book = self._mason_model.get_map_book(theme)
+            if book is None:
                 abort(404)
 
             return render_template(
-                'map.html', portrayal=portrayal)
+                'map.html', map_book=book)
 
 
 class TilesView(MethodView):

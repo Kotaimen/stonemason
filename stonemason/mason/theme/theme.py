@@ -18,7 +18,7 @@ class DictTheme(object):
         return repr(self._config)
 
 
-class SchemaTheme(DictTheme):
+class MapSheetTheme(DictTheme):
     @property
     def tag(self):
         return self.get_attribute('tag')
@@ -54,18 +54,6 @@ class Theme(DictTheme):
         return self.get_attribute('metadata')
 
     @property
-    def maptype(self):
-        return self.get_attribute('maptype')
-
-    @property
-    def tileformat(self):
-        return self.get_attribute('tileformat')
-
-    @property
-    def pyramid(self):
-        return self.get_attribute('pyramid')
-
-    @property
-    def schemas(self):
+    def map_sheets(self):
         for matrix in self.get_attribute('schemas', default=list()):
-            yield SchemaTheme(**matrix)
+            yield MapSheetTheme(**matrix)

@@ -8,59 +8,46 @@ import unittest
 from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.mason.metadata import Metadata
-from stonemason.mason.mapbook import Mapbook
+from stonemason.mason.mapbook import MapBook
 from stonemason.mason.mapsheet import MapSheet
 
 
 class MockMapSheet(MapSheet):
-    @property
-    def storage(self):
+    def __init__(self, tag):
+        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
+        pyramid = Pyramid()
+        MapSheet.__init__(self, tag, bundle, pyramid)
+
+    def get_metatile(self, meta_index):
         return None
 
-    @property
-    def renderer(self):
+    def get_tilecluster(self, meta_index):
         return None
 
-    def get_metatile(self, bundle, pyramid, meta_index):
-        return None
-
-    def get_tilecluster(self, bundle, pyramid, meta_index):
-        return None
-
-    def render_metatile(self, bundle, pyramid, meta_index):
+    def render_metatile(self, meta_index):
         return None
 
 
-class TestPortrayal(unittest.TestCase):
+class TestMapBook(unittest.TestCase):
     def setUp(self):
-        self.bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
-
-        self.portrayal = Mapbook(
-            name='test', metadata=Metadata(), bundle=self.bundle,
-            pyramid=Pyramid())
+        self.map_book = MapBook(name='test', metadata=Metadata())
 
     def test_name(self):
-        self.assertEqual('test', self.portrayal.name)
+        self.assertEqual('test', self.map_book.name)
 
     def test_metadata(self):
-        self.assertEqual(Metadata(), self.portrayal.metadata)
+        self.assertEqual(Metadata(), self.map_book.metadata)
 
-    def test_bundle(self):
-        self.assertEqual(self.bundle, self.portrayal.bundle)
-
-    def test_pyramid(self):
-        self.assertEqual(Pyramid(), self.portrayal.pyramid)
-
-    def test_put_get_has_tilematrix(self):
+    def test_put_get_has_map_sheet(self):
         tag = '2x.png'
 
         expected = MockMapSheet(tag)
 
-        self.assertFalse(self.portrayal.has_map_sheet(tag))
+        self.assertFalse(self.map_book.has_map_sheet(tag))
 
-        self.portrayal.put_map_sheet(expected.tag, expected)
-        self.assertTrue(self.portrayal.has_map_sheet(tag))
+        self.map_book.put_map_sheet(expected.tag, expected)
+        self.assertTrue(self.map_book.has_map_sheet(tag))
 
-        actually = self.portrayal.get_map_sheet(tag)
+        actually = self.map_book.get_map_sheet(tag)
         self.assertEqual(expected.tag, actually.tag)
 

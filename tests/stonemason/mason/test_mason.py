@@ -10,40 +10,34 @@ import six
 from stonemason.mason.mason import Mason
 from stonemason.mason.mason import MasonTileVisitor, MasonMetaTileFarm
 from stonemason.mason.metadata import Metadata
-from stonemason.mason.mapbook import Mapbook
+from stonemason.mason.mapbook import MapBook
 from stonemason.mason.mapsheet import HybridMapSheet
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.tilestorage import MetaTileStorage
-from .test_mapsheet import DummyClusterStorage, DummyMetaTileRenderer
+from .test_mapsheet import MockClusterStorage, MockMetaTileRenderer
 
 
-class NullPortrayal(Mapbook):
+class NullMapBook(MapBook):
     def __init__(self):
-        bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
-        Mapbook.__init__(
-            self,
-            name='test',
-            metadata=Metadata(),
-            bundle=bundle,
-            pyramid=Pyramid())
+        MapBook.__init__(self, name='test', metadata=Metadata())
 
 
 class TestMason(unittest.TestCase):
     def setUp(self):
         self.mason = Mason()
 
-    def test_put_get_has_portrayal(self):
+    def test_put_get_has_map_book(self):
         name = 'test'
 
-        expected = NullPortrayal()
+        expected = NullMapBook()
 
-        self.assertFalse(self.mason.has_portrayal(name))
+        self.assertFalse(self.mason.has_map_book(name))
 
-        self.mason.put_portrayal(name, expected)
-        self.assertTrue(self.mason.has_portrayal(name))
+        self.mason.put_map_book(name, expected)
+        self.assertTrue(self.mason.has_map_book(name))
 
-        actually = self.mason.get_portrayal(name)
+        actually = self.mason.get_map_book(name)
         self.assertEqual(expected.name, actually.name)
 
 
@@ -54,15 +48,19 @@ class TestMasonTileAccessor(unittest.TestCase):
         self.name = 'test-name'
         self.tag = 'test-tag'
 
-        tilematrix = HybridMapSheet(
-            self.tag, DummyClusterStorage(), DummyMetaTileRenderer())
-
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
-        portrayal = Mapbook(self.name, Metadata(), bundle, Pyramid(stride=2))
-        portrayal.put_map_sheet(tilematrix.tag, tilematrix)
+        sheet = HybridMapSheet(
+            self.tag,
+            bundle,
+            Pyramid(stride=2),
+            MockClusterStorage(),
+            MockMetaTileRenderer())
 
-        mason.put_portrayal(portrayal.name, portrayal)
+        book = MapBook(self.name, Metadata())
+        book.put_map_sheet(sheet.tag, sheet)
+
+        mason.put_map_book(book.name, book)
 
         self.accessor = MasonTileVisitor(mason)
 
@@ -76,7 +74,7 @@ class TestMasonTileAccessor(unittest.TestCase):
         self.assertEqual(expected.data, tile.data)
 
 
-class DummyMetaTileStorage(MetaTileStorage):
+class MockMetaTileStorage(MetaTileStorage):
     def __init__(self):
         self._storage = dict()
 
@@ -102,16 +100,17 @@ class TestMasonMetatileRenderer(unittest.TestCase):
         self.name = 'test-name'
         self.tag = 'test-tag'
 
-        self.storage = DummyClusterStorage()
-        tilematrix = HybridMapSheet(
-            self.tag, self.storage, DummyMetaTileRenderer())
-
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
-        portrayal = Mapbook(self.name, Metadata(), bundle, Pyramid(stride=2))
-        portrayal.put_map_sheet(tilematrix.tag, tilematrix)
+        self.storage = MockClusterStorage()
+        sheet = HybridMapSheet(
+            self.tag, bundle, Pyramid(stride=2),
+            self.storage, MockMetaTileRenderer())
 
-        mason.put_portrayal(portrayal.name, portrayal)
+        book = MapBook(self.name, Metadata())
+        book.put_map_sheet(sheet.tag, sheet)
+
+        mason.put_map_book(book.name, book)
 
         self.renderer = MasonMetaTileFarm(mason)
 

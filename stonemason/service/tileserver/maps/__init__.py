@@ -5,13 +5,13 @@ __date__ = '2/27/15'
 
 from flask import Blueprint
 
-from .views import PortrayalView, TilesView
+from .views import MapBookView, TilesView
 
 
 def create_blueprint(**kwargs):
     blueprint = Blueprint('maps', __name__, template_folder='templates')
 
-    map_view = PortrayalView.as_view('maps', **kwargs)
+    map_view = MapBookView.as_view('maps', **kwargs)
 
     blueprint.add_url_rule(
         endpoint='maps',
