@@ -28,10 +28,10 @@ class MasonMapLibrary(object):
 
         self[book.name] = book
 
-    def keys(self):
+    def names(self):
         return self._library.keys()
 
-    def values(self):
+    def books(self):
         return self._library.values()
 
     def items(self):

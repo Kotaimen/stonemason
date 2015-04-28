@@ -34,7 +34,7 @@ class MapBookView(MethodView):
         if theme is None:
             """Retrieve an overview of all loaded maps."""
             collection = list()
-            for book in self._mason_model.mason.values():
+            for book in self._mason_model.mason.books():
                 collection.append(book)
 
             return render_template('index.html', collection=collection)
