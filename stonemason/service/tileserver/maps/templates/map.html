@@ -53,11 +53,13 @@
 
     {% endfor %}
 
+    var default_layer = layers ['{{ map_book.name + map_book.sheets()[0].tag }}'];
+
     var center = L.latLng({{ map_book.metadata.origin[1] }}, {{ map_book.metadata.origin[0] }});
     var zoom = {{ map_book.metadata.origin_zoom }};
     var map = L.map('map',
             {
-                layers: [layer]
+                layers: [default_layer]
             });
 
     map.setView(center, zoom);
