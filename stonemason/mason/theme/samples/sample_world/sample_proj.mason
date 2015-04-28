@@ -51,7 +51,9 @@ PROJECTIONS = [
 for scale in [2, ]:
     for proj, epsg, bounds in PROJECTIONS:
         scale_tag = '' if (scale == 1) else ('@%dx' % scale)
-        tag = ' EPSG:%d (%s)%s.png' % (epsg, proj, scale_tag)
+        tag = '_EPSG:%d(%s)%s.png' % (epsg,
+                                      proj.replace(' ', '_'),
+                                      scale_tag)
         tileformat = tileformat
 
         schema = dict(
