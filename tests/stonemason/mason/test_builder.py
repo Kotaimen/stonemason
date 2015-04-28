@@ -83,7 +83,7 @@ class TestMapSheetBuilder(unittest.TestCase):
             'prototype': 'image',
             'layers': {
                 'root': {
-                    'prototype': 'pil.black'
+                    'prototype': 'pil.color'
                 }
             }
         }

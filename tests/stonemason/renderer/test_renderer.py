@@ -13,7 +13,7 @@ class TestMasonRenderer(ImageTestCase):
     def setUp(self):
         expr = {
             'root': {
-                'prototype': 'pil.blend.alpha',
+                'prototype': 'pil.blend',
                 'sources': ['l1', 'l2'],
 
             },
@@ -22,10 +22,10 @@ class TestMasonRenderer(ImageTestCase):
                 'source': 'l3'
             },
             'l2': {
-                'prototype': 'pil.black',
+                'prototype': 'pil.color',
             },
             'l3': {
-                'prototype': 'pil.black',
+                'prototype': 'pil.color',
             }
         }
 

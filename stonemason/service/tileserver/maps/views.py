@@ -91,6 +91,9 @@ class TilesView(MethodView):
         :type ext: str
 
         """
+        if tag.find(' ') >= 0:
+            # tag should not contain blank space.
+            abort(404)
 
         tile = self._model.mason.get_tile(theme, tag, z, x, y)
         if tile is None:

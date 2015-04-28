@@ -23,13 +23,13 @@ except ImportError:
     Composer = None
     HAS_IMAGEMAGICK = False
 
-from .pilcarto import Color, Invert, Blend
+from .pilcarto import PILColor, PILInvert, PILBlend
 
-IMAGERY_LAYERS[Color.PROTOTYPE] = Color
+IMAGERY_LAYERS[PILColor.PROTOTYPE] = PILColor
 
-IMAGERY_LAYERS[Invert.PROTOTYPE] = Invert
+IMAGERY_LAYERS[PILInvert.PROTOTYPE] = PILInvert
 
-IMAGERY_LAYERS[Blend.PROTOTYPE] = Blend
+IMAGERY_LAYERS[PILBlend.PROTOTYPE] = PILBlend
 
 
 

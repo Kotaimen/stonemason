@@ -3,17 +3,21 @@
 __author__ = 'ray'
 __date__ = '4/21/15'
 
+import os
 from PIL import Image
 
-from stonemason.renderer.cartographer.imagery import Color, Invert, Blend
+from stonemason.renderer.cartographer.imagery.pilcarto import *
 from stonemason.renderer.context import RenderContext
 
 from tests import ImageTestCase
+from tests import DATA_DIRECTORY
+
+BLENDING_DIRECTORY = os.path.join(DATA_DIRECTORY, 'blending')
 
 
 class TestColor(ImageTestCase):
     def setUp(self):
-        self.layer = Color('test', color='Black')
+        self.layer = PILColor('test', color='Black')
 
     def test_render(self):
         context = RenderContext(
@@ -31,7 +35,7 @@ class TestColor(ImageTestCase):
 
 class TestInvert(ImageTestCase):
     def setUp(self):
-        self.layer = Invert('invert', layer=Color('source', color='Black'))
+        self.layer = PILInvert('invert', layer=PILColor('source', color='Black'))
 
     def test_render(self):
         context = RenderContext(
@@ -49,10 +53,10 @@ class TestInvert(ImageTestCase):
 
 class TestBlend(ImageTestCase):
     def setUp(self):
-        source1 = Invert('source1', layer=Color('source', color='Black'))
-        source2 = Color('source2', color='Black')
+        source1 = PILInvert('source1', layer=PILColor('source', color='Black'))
+        source2 = PILColor('source2', color='Black')
 
-        self.layer = Blend('blend', layers=[source1, source2], alpha=0.5)
+        self.layer = PILBlend('blend', layers=[source1, source2], alpha=0.5)
 
 
     def test_render(self):
@@ -67,3 +71,39 @@ class TestBlend(ImageTestCase):
         expected = Image.new('RGB', (256, 256), (127, 127, 127))
 
         self.assertImageEqual(expected, feature.data)
+#
+#
+# class TestPILCompose(ImageTestCase):
+#     def test_overlay(self):
+#         dst_filename = os.path.join(
+#             BLENDING_DIRECTORY, 'gradient_grey.png')
+#         src_filename = os.path.join(
+#             BLENDING_DIRECTORY, 'gradient_yell-blue.png')
+#
+#         expected_filename = os.path.join(
+#             BLENDING_DIRECTORY, 'compose_overlay_gradients.png'
+#         )
+#
+#         dst = Image.open(dst_filename)
+#         dst = dst.convert('RGBA')
+#
+#         src = Image.open(src_filename)
+#         src = src.convert('RGBA')
+#
+#         result = pil_overlay(dst, src)
+#
+#         expected = Image.open(expected_filename)
+#         expected = expected.convert('RGBA')
+#
+#         print 'expect:', expected.getpixel((253, 253))
+#
+#         for b in expected.split():
+#             print b.histogram()
+#
+#         for b in result.split():
+#             print b.histogram()
+#         # print result.histogram()
+#
+#         self.assertEqual(expected.mode, result.mode)
+#         self.assertEqual(expected.format, result.format)
+#         self.assertImageEqual(expected, result)

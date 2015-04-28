@@ -8,7 +8,7 @@ import unittest
 
 from stonemason.renderer.cartographer import LayerFactory
 from stonemason.renderer.cartographer.imagery import \
-    Color, Mapnik_, Invert, Blend, HAS_MAPNIK
+    PILColor, Mapnik_, PILInvert, PILBlend, HAS_MAPNIK
 
 from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 
@@ -21,8 +21,9 @@ class TestLayerFactory(unittest.TestCase):
         self.factory = LayerFactory()
 
     def test_create_terminal_layer(self):
-        layer = self.factory.create_terminal_layer('test', 'pil.black')
-        self.assertIsInstance(layer, Color)
+        layer = self.factory.create_terminal_layer(
+            'test', 'pil.color', color='black')
+        self.assertIsInstance(layer, PILColor)
 
         if HAS_MAPNIK:
             layer = self.factory.create_terminal_layer(
@@ -30,16 +31,19 @@ class TestLayerFactory(unittest.TestCase):
             self.assertIsInstance(layer, Mapnik_)
 
     def test_create_transform_layer(self):
-        source = self.factory.create_terminal_layer('test', 'pil.black')
+        source = self.factory.create_terminal_layer(
+            'test', 'pil.color', color='black')
 
         layer = self.factory.create_transform_layer(
             'test', 'pil.invert', source=source)
-        self.assertIsInstance(layer, Invert)
+        self.assertIsInstance(layer, PILInvert)
 
     def test_create_composite_layer(self):
-        source1 = self.factory.create_terminal_layer('test', 'pil.black')
-        source2 = self.factory.create_terminal_layer('test', 'pil.black')
+        source1 = self.factory.create_terminal_layer(
+            'test', 'pil.color', color='black')
+        source2 = self.factory.create_terminal_layer(
+            'test', 'pil.color', color='black')
 
         layer = self.factory.create_composite_layer(
-            'test', 'pil.blend.alpha', sources=[source1, source2])
-        self.assertIsInstance(layer, Blend)
+            'test', 'pil.blend', sources=[source1, source2])
+        self.assertIsInstance(layer, PILBlend)
