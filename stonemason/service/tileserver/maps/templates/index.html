@@ -104,6 +104,16 @@
             padding-left: 20px;
         }
 
+        .table {
+            table-layout: fixed;
+        }
+
+        .table td {
+            white-space: nowrap;
+            overflow: auto;
+
+        }
+
     </style>
 
 </head>
@@ -171,7 +181,8 @@
                                         </a>
                                     </h3>
 
-                                    <code>{{ map_book.metadata.version }}</code>
+                                    <code>{{ map_book.name }} </code>
+                                    <code class="pull-right">{{ map_book.metadata.version }}</code>
 
                                 </div>
 
@@ -181,23 +192,26 @@
                                     </p>
                                 </div>
 
-                                <table class="table table-default">
+                                <div class="table-responsive">
 
-                                    {% for sheet in map_book.sheets() %}
+                                    <table class="table table-condensed">
                                         <tr>
-                                            <td>
-                                                <code>{{ map_book.name }}</code>
-                                                <code>{{ sheet.tag }}</code>
-                                            </td>
-                                            <td>
-                                                {{ sheet.pyramid.projcs|e }}
-                                            </td>
+                                            <th width="60%">Scheme</th>
+                                            <th width="40%">Projection</th>
                                         </tr>
-                                    {% endfor %}
+                                        {% for sheet in map_book.sheets() %}
+                                            <tr>
+                                                <td>
+                                                    {{ sheet.tag }}
+                                                </td>
+                                                <td>
+                                                    {{ sheet.pyramid.projcs|e }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
 
-                                </table>
-
-
+                                    </table>
+                                </div>
                                 <div class="panel-footer">
                                     <p class="text-right">
                                         {{ map_book.metadata.attribution|e }}
