@@ -10,15 +10,16 @@ from ...feature import ImageFeature
 from ...context import RenderContext
 
 
-class Black(ImageryLayer):
+class Color(ImageryLayer):
     PROTOTYPE = 'pil.black'
 
-    def __init__(self, name):
+    def __init__(self, name, color='black'):
         ImageryLayer.__init__(self, name)
+        self._color = color
 
     def render(self, context):
         assert isinstance(context, RenderContext)
-        im = Image.new("RGB", context.map_size, "black")
+        im = Image.new("RGB", context.map_size, color=self._color)
 
         feature = ImageFeature(
             crs=context.map_proj,
@@ -55,7 +56,7 @@ class Invert(TransformLayer):
         return feature
 
 
-class AlphaBlend(CompositeLayer):
+class Blend(CompositeLayer):
     PROTOTYPE = 'pil.blend.alpha'
 
     def __init__(self, name, layers, alpha=0.5):

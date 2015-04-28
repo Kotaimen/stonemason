@@ -23,13 +23,13 @@ except ImportError:
     Composer = None
     HAS_IMAGEMAGICK = False
 
-from .imagery import Black, Invert, AlphaBlend
+from .pilcarto import Color, Invert, Blend
 
-IMAGERY_LAYERS[Black.PROTOTYPE] = Black
+IMAGERY_LAYERS[Color.PROTOTYPE] = Color
 
 IMAGERY_LAYERS[Invert.PROTOTYPE] = Invert
 
-IMAGERY_LAYERS[AlphaBlend.PROTOTYPE] = AlphaBlend
+IMAGERY_LAYERS[Blend.PROTOTYPE] = Blend
 
 
 

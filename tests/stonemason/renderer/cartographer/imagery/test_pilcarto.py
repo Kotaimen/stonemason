@@ -5,15 +5,15 @@ __date__ = '4/21/15'
 
 from PIL import Image
 
-from stonemason.renderer.cartographer.imagery import Black, Invert, AlphaBlend
+from stonemason.renderer.cartographer.imagery import Color, Invert, Blend
 from stonemason.renderer.context import RenderContext
 
 from tests import ImageTestCase
 
 
-class TestBlack(ImageTestCase):
+class TestColor(ImageTestCase):
     def setUp(self):
-        self.layer = Black('test')
+        self.layer = Color('test', color='Black')
 
     def test_render(self):
         context = RenderContext(
@@ -31,7 +31,7 @@ class TestBlack(ImageTestCase):
 
 class TestInvert(ImageTestCase):
     def setUp(self):
-        self.layer = Invert('invert', layer=Black('source'))
+        self.layer = Invert('invert', layer=Color('source', color='Black'))
 
     def test_render(self):
         context = RenderContext(
@@ -47,12 +47,12 @@ class TestInvert(ImageTestCase):
         self.assertImageEqual(expected, feature.data)
 
 
-class TestAlphaBlend(ImageTestCase):
+class TestBlend(ImageTestCase):
     def setUp(self):
-        source1 = Invert('source1', layer=Black('source'))
-        source2 = Black('source2')
+        source1 = Invert('source1', layer=Color('source', color='Black'))
+        source2 = Color('source2', color='Black')
 
-        self.layer = AlphaBlend('blend', layers=[source1, source2], alpha=0.5)
+        self.layer = Blend('blend', layers=[source1, source2], alpha=0.5)
 
 
     def test_render(self):

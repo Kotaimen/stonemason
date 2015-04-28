@@ -8,7 +8,7 @@ import unittest
 
 from stonemason.renderer.cartographer import LayerFactory
 from stonemason.renderer.cartographer.imagery import \
-    Black, Mapnik_, Invert, AlphaBlend, HAS_MAPNIK
+    Color, Mapnik_, Invert, Blend, HAS_MAPNIK
 
 from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 
@@ -22,7 +22,7 @@ class TestLayerFactory(unittest.TestCase):
 
     def test_create_terminal_layer(self):
         layer = self.factory.create_terminal_layer('test', 'pil.black')
-        self.assertIsInstance(layer, Black)
+        self.assertIsInstance(layer, Color)
 
         if HAS_MAPNIK:
             layer = self.factory.create_terminal_layer(
@@ -42,4 +42,4 @@ class TestLayerFactory(unittest.TestCase):
 
         layer = self.factory.create_composite_layer(
             'test', 'pil.blend.alpha', sources=[source1, source2])
-        self.assertIsInstance(layer, AlphaBlend)
+        self.assertIsInstance(layer, Blend)
