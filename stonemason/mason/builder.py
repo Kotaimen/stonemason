@@ -5,6 +5,7 @@ __date__ = '4/10/15'
 
 import re
 import uuid
+from collections import OrderedDict
 
 import six
 
@@ -81,7 +82,7 @@ class MapBookBuilder(object):
         self._name = ''
         self._metadata = Metadata()
 
-        self._map_sheets = dict()
+        self._map_sheets = OrderedDict()
 
     def build(self):
         return MapBook(
