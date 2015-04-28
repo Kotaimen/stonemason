@@ -183,14 +183,14 @@
 
                                 <table class="table table-default">
 
-                                    {% for sheet_tag in map_book.iter_map_sheets() %}
+                                    {% for sheet in map_book.values() %}
                                     <tr>
                                         <td>
                                             <code>{{ map_book.name}}</code>
-                                            <code>{{ sheet_tag }}</code>
+                                            <code>{{ sheet.tag }}</code>
                                         </td>
                                         <td>
-                                            {{ map_book.get_map_sheet(sheet_tag).pyramid.projcs|e }}
+                                            {{ sheet.pyramid.projcs|e }}
                                         </td>
                                     </tr>
                                     {% endfor %}

@@ -37,19 +37,19 @@
 
     var layers = {};
 
-    {% for sheet_tag in map_book.iter_map_sheets() %}
+    {% for sheet in map_book.values() %}
 
-        var layer = L.tileLayer('/tiles/{{ map_book.name }}/{z}/{x}/{y}{{ sheet_tag }}', {
+        var layer = L.tileLayer('/tiles/{{ map_book.name }}/{z}/{x}/{y}{{ sheet.tag }}', {
             attribution: "{{ map_book.metadata.attribution }}",
-            minZoom: {{ map_book.get_map_sheet(sheet_tag).pyramid.levels|first  }},
-            maxZoom: {{ map_book.get_map_sheet(sheet_tag).pyramid.levels|last  }},
+            minZoom: {{ sheet.pyramid.levels|first  }},
+            maxZoom: {{ sheet.pyramid.levels|last  }},
             detectRetina: true,
             errorTileUrl: 'http://cdn.masonmaps.me/assets/404.png',
             noWrap: true,
             continuousWorld: false
         });
 
-        layers['{{ map_book.name+sheet_tag }}'] = layer;
+        layers['{{ map_book.name+sheet.tag }}'] = layer;
 
     {% endfor %}
 

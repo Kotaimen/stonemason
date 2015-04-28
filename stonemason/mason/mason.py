@@ -68,7 +68,7 @@ class MasonTileVisitor(object):
         if book is None:
             return None
 
-        sheet = book.get_map_sheet(tag)
+        sheet = book[tag]
         if sheet is None:
             return None
 
@@ -123,7 +123,7 @@ class MasonMetaTileFarm(object):
         if book is None:
             return None
 
-        sheet = book.get_map_sheet(tag)
+        sheet = book[tag]
         if sheet is None:
             return None
 

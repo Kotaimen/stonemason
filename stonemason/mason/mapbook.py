@@ -3,7 +3,6 @@
 __author__ = 'ray'
 __date__ = '4/9/15'
 
-import six
 
 from .metadata import Metadata
 from .mapsheet import MapSheet
@@ -33,15 +32,21 @@ class MapBook(object):
     def metadata(self):
         return self._metadata
 
-    def put_map_sheet(self, tag, sheet):
+    def keys(self):
+        return self._map_sheets.keys()
+
+    def values(self):
+        return self._map_sheets.values()
+
+    def items(self):
+        return self._map_sheets.items()
+
+    def __setitem__(self, tag, sheet):
         assert isinstance(sheet, MapSheet)
         self._map_sheets[tag] = sheet
 
-    def get_map_sheet(self, tag):
-        return self._map_sheets.get(tag)
+    def __getitem__(self, tag):
+        return self._map_sheets[tag]
 
-    def has_map_sheet(self, tag):
+    def __contains__(self, tag):
         return tag in self._map_sheets
-
-    def iter_map_sheets(self):
-        return iter(self._map_sheets)

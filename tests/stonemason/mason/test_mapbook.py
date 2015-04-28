@@ -43,11 +43,11 @@ class TestMapBook(unittest.TestCase):
 
         expected = MockMapSheet(tag)
 
-        self.assertFalse(self.map_book.has_map_sheet(tag))
+        self.assertFalse(tag in self.map_book)
 
-        self.map_book.put_map_sheet(expected.tag, expected)
-        self.assertTrue(self.map_book.has_map_sheet(tag))
+        self.map_book[expected.tag] = expected
+        self.assertTrue(tag in self.map_book)
 
-        actually = self.map_book.get_map_sheet(tag)
+        actually = self.map_book[tag]
         self.assertEqual(expected.tag, actually.tag)
 

@@ -45,14 +45,6 @@ class HybridMapSheet(MapSheet):
         self._storage = storage
         self._renderer = renderer
 
-    @property
-    def storage(self):
-        return self._storage
-
-    @property
-    def renderer(self):
-        return self._renderer
-
     def get_tilecluster(self, meta_index):
         storage_meta_index = MetaTileIndex(meta_index.z,
                                            meta_index.x,

@@ -58,7 +58,7 @@ class TestMasonTileAccessor(unittest.TestCase):
             MockMetaTileRenderer())
 
         book = MapBook(self.name, Metadata())
-        book.put_map_sheet(sheet.tag, sheet)
+        book[sheet.tag] = sheet
 
         mason.put_map_book(book.name, book)
 
@@ -108,7 +108,7 @@ class TestMasonMetatileRenderer(unittest.TestCase):
             self.storage, MockMetaTileRenderer())
 
         book = MapBook(self.name, Metadata())
-        book.put_map_sheet(sheet.tag, sheet)
+        book[sheet.tag]= sheet
 
         mason.put_map_book(book.name, book)
 
