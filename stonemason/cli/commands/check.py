@@ -41,7 +41,7 @@ def check_command(ctx):
         theme = gallery.get(theme_name)
         mason.load_map_book_from_theme(theme)
 
-        book = mason.get_map_book(theme_name)
+        book = mason[theme_name]
 
         click.echo('Theme: %s' % book.name)
         if ctx.verbose:

@@ -20,8 +20,7 @@ import multiprocessing.queues
 import time
 import logging
 
-from stonemason.mason import Mason, MapBook, MapSheet, \
-    MasonMetaTileFarm
+from stonemason.mason import Mason, MapBook, MapSheet
 from stonemason.mason.theme import MemGallery, FileSystemCurator, Theme
 from stonemason.pyramid import Pyramid, MetaTileIndex
 from stonemason.pyramid.geo import TileMapSystem
@@ -98,9 +97,9 @@ def walker(script, queue, stats):
     mason = create_mason(script)
 
     # get map sheet
-    map_book = mason.get_map_book(script.theme_name)
+    map_book = mason[script.theme_name]
     assert isinstance(map_book, MapBook)
-    map_sheet = map_book.get_map_sheet(script.schema_tag)
+    map_sheet = map_book[script.schema_tag]
     assert isinstance(map_sheet, MapSheet)
     pyramid = map_sheet.pyramid
     assert isinstance(pyramid, Pyramid)
@@ -133,7 +132,6 @@ def renderer(script, queue, stats):
     setup_logger(script.log_file)
 
     mason = create_mason(script)
-    visitor = MasonMetaTileFarm(mason)
 
     while True:
         index = queue.get()
@@ -149,12 +147,12 @@ def renderer(script, queue, stats):
         with Timer('  %s rendered in %%(time)s' % repr(index),
                    writer=logger.info, newline=False) as timer:
             try:
-                result = visitor.render_metatile(script.theme_name,
-                                                 script.schema_tag,
-                                                 index.z,
-                                                 index.x,
-                                                 index.y,
-                                                 index.stride)
+                result = mason.render_metatile(script.theme_name,
+                                               script.schema_tag,
+                                               index.z,
+                                               index.x,
+                                               index.y,
+                                               index.stride)
             except Exception as e:
                 stats.failed += 1
                 logger.exception('Error while rendering %s' % repr(index))

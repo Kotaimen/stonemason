@@ -15,61 +15,65 @@ from .theme import Theme
 from .exceptions import DuplicatedMapBook
 
 
-class Mason(object):
-    def __init__(self, logger=None):
+class MasonMapLibrary(object):
+    def __init__(self):
         self._library = dict()
-        self._logger = logger
 
     def load_map_book_from_theme(self, theme):
         assert isinstance(theme, Theme)
 
         book = create_map_book_from_theme(theme)
-        if self.has_map_book(book.name):
+        if book.name in self:
             raise DuplicatedMapBook(book.name)
 
-        self._library[book.name] = book
+        self[book.name] = book
 
-    def get_map_book(self, name):
-        return self._library.get(name)
+    def keys(self):
+        return self._library.keys()
 
-    def put_map_book(self, name, map_book):
+    def values(self):
+        return self._library.values()
+
+    def items(self):
+        return self._library.items()
+
+    def __getitem__(self, name):
+        return self._library[name]
+
+    def __setitem__(self, name, map_book):
         assert isinstance(map_book, MapBook)
         self._library[name] = map_book
 
-    def has_map_book(self, name):
+    def __contains__(self, name):
         return name in self._library
 
-    def __iter__(self):
-        return iter(self._library)
 
 
-class MasonTileVisitor(object):
-    def __init__(self, mason, cache=None, backoff=0.1):
+class Mason(MasonMapLibrary):
+    def __init__(self, cache=None, backoff=0.1, logger=None):
+        MasonMapLibrary.__init__(self)
         if cache is None:
             cache = NullTileCache()
-        assert isinstance(mason, Mason)
         assert isinstance(cache, TileCache)
-        self._mason = mason
         self._cache = cache
         self._backoff = backoff
+        self._logger = logger
 
     def get_tile(self, name, tag, z, x, y):
         index = TileIndex(z, x, y)
 
         # get tile from cache
         key = self._make_cache_key(name, tag)
+
         tile = self._cache.get(key, index)
         if tile is not None:
             # cache hit
             return tile
 
-        # figure out theme and schema tile belongs to
-        book = self._mason.get_map_book(name)
-        if book is None:
-            return None
-
-        sheet = book[tag]
-        if sheet is None:
+        # figure out the sheet
+        try:
+            sheet = self[name][tag]
+        except KeyError:
             return None
 
         # create metatile index
@@ -106,25 +110,10 @@ class MasonTileVisitor(object):
 
         return tile
 
-    def _make_cache_key(self, name, tag):
-        key = '%s%s' % (name, tag)
-        if six.PY2 and isinstance(key, unicode):
-            key = key.encode('ascii')
-        return key
-
-
-class MasonMetaTileFarm(object):
-    def __init__(self, mason):
-        assert isinstance(mason, Mason)
-        self._mason = mason
-
     def render_metatile(self, name, tag, z, x, y, stride):
-        book = self._mason.get_map_book(name)
-        if book is None:
-            return None
-
-        sheet = book[tag]
-        if sheet is None:
+        try:
+            sheet = self[name][tag]
+        except KeyError:
             return None
 
         # create meta index
@@ -132,4 +121,11 @@ class MasonMetaTileFarm(object):
 
         # render the metatile
         return sheet.render_metatile(meta_index)
+
+
+    def _make_cache_key(self, name, tag):
+        key = '%s%s' % (name, tag)
+        if six.PY2 and isinstance(key, unicode):
+            key = key.encode('ascii')
+        return key
 

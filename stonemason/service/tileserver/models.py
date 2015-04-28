@@ -4,7 +4,7 @@ __author__ = 'ray'
 __date__ = '2/27/15'
 
 from stonemason.mason.theme import MemGallery, FileSystemCurator
-from stonemason.mason import Mason, MasonTileVisitor
+from stonemason.mason import Mason
 from stonemason.tilecache import MemTileCache, NullTileCache
 
 
@@ -38,7 +38,7 @@ class MasonModel(object):
             self._cache = NullTileCache()
 
     def do_init(self):
-        mason = Mason()
+        mason = Mason(cache=self._cache)
         for theme in self._themes:
             mason.load_map_book_from_theme(theme)
         return mason
@@ -50,26 +50,11 @@ class MasonModel(object):
         return self._mason
 
     @property
-    def mason_tile_visitor(self):
-        if self._tile_visitor is None:
-            self._tile_visitor = MasonTileVisitor(self.mason, self._cache)
-        return self._tile_visitor
-
-    @property
     def cache_control(self):
         if self._max_age == 0:
             return 'max-age=0, nocache'
         else:
             return 'public, max-age=%d' % self._max_age
 
-    def get_tile(self, name, tag, z, x, y):
-        tile = self.mason_tile_visitor.get_tile(name, tag, z, x, y)
-        return tile
-
-    def get_map_book(self, name):
-        return self.mason.get_map_book(name)
-
-    def iter_map_books(self):
-        return (self.mason.get_map_book(n) for n in self.mason)
 
 

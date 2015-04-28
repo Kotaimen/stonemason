@@ -34,12 +34,12 @@ class MapBookView(MethodView):
         if theme is None:
             """Retrieve an overview of all loaded maps."""
             collection = list()
-            for book in self._mason_model.iter_map_books():
+            for book in self._mason_model.mason.values():
                 collection.append(book)
 
             return render_template('index.html', collection=collection)
         else:
-            book = self._mason_model.get_map_book(theme)
+            book = self._mason_model.mason[theme]
             if book is None:
                 abort(404)
 
@@ -92,7 +92,7 @@ class TilesView(MethodView):
 
         """
 
-        tile = self._model.get_tile(theme, tag, z, x, y)
+        tile = self._model.mason.get_tile(theme, tag, z, x, y)
         if tile is None:
             abort(404)
 

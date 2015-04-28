@@ -7,11 +7,7 @@ import unittest
 
 import six
 
-from stonemason.mason.mason import Mason
-from stonemason.mason.mason import MasonTileVisitor, MasonMetaTileFarm
-from stonemason.mason.metadata import Metadata
-from stonemason.mason.mapbook import MapBook
-from stonemason.mason.mapsheet import HybridMapSheet
+from stonemason.mason import Mason, MapBook, Metadata, HybridMapSheet
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.tilestorage import MetaTileStorage
@@ -32,18 +28,18 @@ class TestMason(unittest.TestCase):
 
         expected = NullMapBook()
 
-        self.assertFalse(self.mason.has_map_book(name))
+        self.assertFalse(name in self.mason)
 
-        self.mason.put_map_book(name, expected)
-        self.assertTrue(self.mason.has_map_book(name))
+        self.mason[name] = expected
+        self.assertTrue(name in self.mason)
 
-        actually = self.mason.get_map_book(name)
+        actually = self.mason[name]
         self.assertEqual(expected.name, actually.name)
 
 
 class TestMasonTileAccessor(unittest.TestCase):
     def setUp(self):
-        mason = Mason()
+        self.mason = Mason()
 
         self.name = 'test-name'
         self.tag = 'test-tag'
@@ -60,12 +56,11 @@ class TestMasonTileAccessor(unittest.TestCase):
         book = MapBook(self.name, Metadata())
         book[sheet.tag] = sheet
 
-        mason.put_map_book(book.name, book)
+        self.mason[book.name] = book
 
-        self.accessor = MasonTileVisitor(mason)
 
     def test_get_tile(self):
-        tile = self.accessor.get_tile(self.name, self.tag, 1, 0, 0)
+        tile = self.mason.get_tile(self.name, self.tag, 1, 0, 0)
 
         index = TileIndex(1, 0, 0)
 
@@ -95,7 +90,7 @@ class MockMetaTileStorage(MetaTileStorage):
 
 class TestMasonMetatileRenderer(unittest.TestCase):
     def setUp(self):
-        mason = Mason()
+        self.mason = Mason()
 
         self.name = 'test-name'
         self.tag = 'test-tag'
@@ -110,12 +105,10 @@ class TestMasonMetatileRenderer(unittest.TestCase):
         book = MapBook(self.name, Metadata())
         book[sheet.tag]= sheet
 
-        mason.put_map_book(book.name, book)
-
-        self.renderer = MasonMetaTileFarm(mason)
+        self.mason[book.name] = book
 
     def test_render_metatile(self):
-        self.renderer.render_metatile(self.name, self.tag, 1, 0, 0, 2)
+        self.mason.render_metatile(self.name, self.tag, 1, 0, 0, 2)
 
         meta_index = MetaTileIndex(1, 0, 0, stride=2)
         cluster = self.storage.get(meta_index)
