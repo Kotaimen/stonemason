@@ -7,18 +7,16 @@ name = 'sample_magick'
 metadata = dict(
     title='Sample: ImageMagick',
     version='0.2.0',
-    abstract='''Sample South America map using Imagemagick composer, implements variable depth haloing.''',
+    abstract='''Sample map using Imagemagick composer, implements variable depth haloing.''',
     attribution='Map Design: K&R, Data: Natural Earth',
     origin=(0, 0),
-    origin_zoom=0
+    origin_zoom=2
 )
 
 pyramid = dict(
     stride=1,
     geogcs="WGS84",
-    projcs="EPSG:102032",
-    projbounds=(-3500000, -3000000, 3500000, 5500000),
-
+    projcs="EPSG:3857",
     levels=range(0, 9)
 )
 
@@ -38,9 +36,11 @@ schema_1x = dict(
                 'prototype': 'imagemagick',
                 'sources': ['base', 'lines', 'halo', 'label'],
                 'command': '''
-                <<lines>>
-                <<halo>> -compose Atop -composite
-                <<base>> -compose DstOver -composite
+                <<base>>
+                (
+                  <<lines>>
+                  <<halo>> -compose Atop -composite
+                ) -compose Multiply -composite
                 <<label>> -compose HardLight -composite
                 '''
             },
@@ -82,9 +82,6 @@ for layer in ['base', 'lines', 'halo', 'label']:
 THEME = dict(
     name=name,
     metadata=metadata,
-    pyramid=pyramid,
-    maptype=maptype,
-    tileformat=tileformat,
     schemas=[
         schema_1x,
         schema_2x,

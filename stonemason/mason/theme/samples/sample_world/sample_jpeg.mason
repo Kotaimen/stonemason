@@ -1,45 +1,68 @@
 # -*- encoding: utf-8 -*-
 
-{% include"sample_world.mason" %}
-
-metadata = dict(
-    title='Sample: JPEG',
-    version='0.2.0',
-    abstract='''Sample world using JPEG delivery format and Cassini projection.''',
-    attribution='Map Design: K&R, Data: Natural Earth',
-    origin=(0, 0),
-    origin_zoom=2
-)
-
-pyramid = dict(
-    stride=1,
-    geogcs="WGS84",
-    projcs="EPSG:54028",
-    projbounds=(-10000000, -10000000, 10000000, 10000000),
-    levels=range(2, 9)
-)
-maptype = 'image'
-
-tileformat = dict(format='JPEG', parameters={'quality': 80})
-
-schema_1x['tag'] = '.jpg'
-schema_1x['storage']['root'] = "{{ theme_root }}/cache/sample_jpeg"
-schema_1x['renderer']['layers']['root']['default_scale'] = 1
-
-schema_2x['tag'] = '@2x.jpg'
-schema_2x['storage']['root'] = "{{ theme_root }}/cache/sample_jpeg@2x"
-schema_2x['renderer']['layers']['root']['default_scale'] = 2
-
+# Theme definition
 THEME = dict(
+    # name tag of the theme, must be a valid identifier
     name='sample_jpeg',
-    metadata=metadata,
-    pyramid=pyramid,
-    maptype=maptype,
-    tileformat=tileformat,
+    metadata=dict(
+        # display name
+        title='Sample: JPEG',
+        # version string
+        version='0.2.0',
+        # simple description
+        abstract='Sample theme with different JPEG quality.',
+        # data attribution
+        attribution='Map Design: K&R, Data: Natural Earth',
+        # initial origin in (lon, lat)
+        origin=(0, 0),
+        # initlal zoom level
+        origin_zoom=2
+    ),
+    # list of schemas in the theme
     schemas=[
-        schema_1x,
-        schema_2x,
     ]
 )
 
+# Map type, must be "image" for mapnik cartographer
+maptype = 'image'
+
+# Allowed format qualities
+QUALITIES = {'poor': 40, 'medium': 60, 'good': 90}
+
+for quality in QUALITIES:
+    tileformat = dict(format='JPEG',
+                      parameters={'quality': QUALITIES[quality]})
+
+    schema = dict(
+        # tag of the schema, will be append to theme name
+        tag='.jpg;quality=%s' % quality,
+        # pyramid
+        pyramid=dict(
+            # size of the metatile when rendering in tile server
+            stride=1,
+            # geographic coordinate system
+            geogcs='WGS84',
+            # projection coordinate system
+            projcs='EPSG:3857',
+            # zoom levels
+            levels=range(0, 9)
+        ),
+        # maptype
+        maptype=maptype,
+        # tile format
+        tileformat=tileformat,
+        # tile renderer
+        renderer=dict(
+            prototype=maptype,
+            layers=dict(
+                root={
+                    'prototype': 'mapnik',
+                    'style_sheet': "{{ theme_root }}/sample_world.xml",
+                    'default_scale': 1,
+                    'buffer_size': 256
+                }
+            )
+        )
+    )
+    THEME['schemas'].append(schema)
 
