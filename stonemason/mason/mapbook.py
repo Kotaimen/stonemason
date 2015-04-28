@@ -4,6 +4,8 @@ __author__ = 'ray'
 __date__ = '4/9/15'
 
 
+from collections import OrderedDict
+
 from .metadata import Metadata
 from .mapsheet import MapSheet
 
@@ -18,11 +20,10 @@ class MapBook(object):
         assert isinstance(metadata, Metadata)
         self._metadata = metadata
 
-        if map_sheets is None:
-            map_sheets = dict()
-
-        assert isinstance(map_sheets, dict)
-        self._map_sheets = map_sheets
+        self._map_sheets = OrderedDict()
+        if map_sheets is not None:
+            assert isinstance(map_sheets, dict)
+            self._map_sheets.update(map_sheets)
 
     @property
     def name(self):

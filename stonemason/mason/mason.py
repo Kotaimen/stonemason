@@ -6,6 +6,8 @@ __date__ = '4/10/15'
 import time
 import six
 
+from collections import OrderedDict
+
 from stonemason.pyramid import TileIndex, MetaTileIndex
 from stonemason.tilecache import TileCache, NullTileCache, TileCacheError
 
@@ -17,7 +19,7 @@ from .exceptions import DuplicatedMapBook
 
 class MasonMapLibrary(object):
     def __init__(self):
-        self._library = dict()
+        self._library = OrderedDict()
 
     def load_map_book_from_theme(self, theme):
         assert isinstance(theme, Theme)
