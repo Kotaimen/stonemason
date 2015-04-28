@@ -37,7 +37,7 @@
 
     var layers = {};
 
-    {% for sheet in map_book.values() %}
+    {% for sheet in map_book.sheets() %}
 
         var layer = L.tileLayer('/tiles/{{ map_book.name }}/{z}/{x}/{y}{{ sheet.tag }}', {
             attribution: "{{ map_book.metadata.attribution }}",

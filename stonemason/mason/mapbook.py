@@ -32,10 +32,10 @@ class MapBook(object):
     def metadata(self):
         return self._metadata
 
-    def keys(self):
+    def tags(self):
         return self._map_sheets.keys()
 
-    def values(self):
+    def sheets(self):
         return self._map_sheets.values()
 
     def items(self):
