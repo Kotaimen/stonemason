@@ -7,7 +7,7 @@ import os
 
 from PIL import Image
 
-from stonemason.renderer.cartographer.imagery import Mapnik_
+from stonemason.renderer.cartographer.imagery import Mapnik_, MapnikComposer
 from stonemason.renderer.context import RenderContext
 from stonemason.pyramid import Pyramid, MetaTileIndex
 from stonemason.pyramid.geo import TileMapSystem
@@ -91,3 +91,62 @@ class TestMapnikLayer(ImageTestCase):
         image1.save(output1, 'png')
         image1.save(output2, 'png')
 
+
+@skipUnlessHasMapnik()
+class TestMapnikComposer(ImageTestCase):
+    def setUp(self):
+        theme_root = os.path.join(SAMPLE_THEME_DIRECTORY, 'sample_world')
+        self.style_sheet = os.path.join(theme_root, 'sample_world.xml')
+
+    def test_compose_with_two(self):
+        layer = MapnikComposer(
+            'mapnik.composer',
+            style_sheets=[self.style_sheet, self.style_sheet],
+            commands=[('multiply', {})]
+        )
+
+        context = RenderContext(
+            map_proj='+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs',
+            map_bbox=(-10037508.34, -10037508.34, 10037508.34, 10037508.34),
+            map_size=(512, 512),
+
+        )
+
+        image = layer.render(context).data
+
+        # image.show()
+
+        test_data_root = os.path.join(DATA_DIRECTORY, 'cartographer')
+        test_file = os.path.join(test_data_root, 'mapnik_compose_two.png')
+        # image.save(test_file, 'png')
+
+        expected = Image.open(test_file)
+        self.assertImageEqual(expected, image)
+
+
+    def test_compose_with_three(self):
+        layer = MapnikComposer(
+            'mapnik.composer',
+            style_sheets=[
+                self.style_sheet,
+                self.style_sheet,
+                self.style_sheet,
+            ],
+            commands=[('multiply', {}), ('multiply', {}), ])
+
+        context = RenderContext(
+            map_proj='+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs',
+            map_bbox=(-10037508.34, -10037508.34, 10037508.34, 10037508.34),
+            map_size=(512, 512),
+        )
+
+        image = layer.render(context).data
+
+        # image.show()
+
+        test_data_root = os.path.join(DATA_DIRECTORY, 'cartographer')
+        test_file = os.path.join(test_data_root, 'mapnik_compose_three.png')
+        # image.save(test_file, 'png')
+
+        expected = Image.open(test_file)
+        self.assertImageEqual(expected, image)

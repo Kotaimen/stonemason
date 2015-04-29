@@ -1,0 +1,68 @@
+# -*- encoding: utf-8 -*-
+
+import copy
+
+name = 'sample_mapnikcomposer'
+
+metadata = dict(
+    title='Sample: Mapnik Composer',
+    version='0.2.0',
+    abstract='''Sample map using Mapnik composer, implements variable depth haloing.''',
+    attribution='Map Design: K&R, Data: Natural Earth',
+    origin=(0, 0),
+    origin_zoom=2
+)
+
+pyramid = dict(
+    stride=1,
+    geogcs="WGS84",
+    projcs="EPSG:3857",
+    levels=range(0, 9)
+)
+
+maptype = 'image'
+
+tileformat = dict(format='PNG')
+
+schema_1x = dict(
+    tag='.png',
+    pyramid=pyramid,
+    maptype=maptype,
+    tileformat=tileformat,
+    renderer={
+        'prototype': 'image',
+        'layers': {
+            'root' : {
+                'prototype': 'mapnik.composer',
+                'style_sheets': ["{{ theme_root }}/world_lines.xml",
+                                 "{{ theme_root }}/world_halo.xml",
+                                 "{{ theme_root }}/world_base.xml",
+                                 "{{ theme_root }}/world_label.xml"
+                ],
+                'commands': [
+                    ('src_atop', {}),
+                    ('dst_over', {}),
+                    ('src_over', {}),
+                ],
+                'default_scale': 1,
+                'buffer_size': 256,
+            },
+        }
+    }
+)
+
+schema_2x = copy.deepcopy(schema_1x)
+schema_2x['tag'] = '@2x.png'
+schema_2x['renderer']['layers']['root']['default_scale'] = 2
+schema_2x['renderer']['layers']['root']['buffer_size'] = 512
+
+THEME = dict(
+    name=name,
+    metadata=metadata,
+    schemas=[
+        schema_1x,
+        schema_2x,
+    ]
+)
+
+
