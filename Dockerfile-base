@@ -22,7 +22,8 @@ RUN         apt-get -q update && \
                 libproj-dev libgeos-dev \
                 python-scipy python-numpy libgdal-dev gdal-bin python-gdal \
                 libboost-all-dev libicu-dev \
-                libfreetype6-dev libsqlite3-dev libpq-dev
+                libfreetype6-dev libsqlite3-dev libpq-dev libxml2-dev \
+                libmemcached-dev
 
 #
 # Patch gdal data files, see
@@ -32,12 +33,23 @@ RUN         curl -SL http://cdn.masonmaps.me/dist/ubuntu-14.04/gdal-1.10.1/data/
 #
 # Install mapnik
 #
-WORKDIR     /tmp/
-RUN         curl -SL https://github.com/mapnik/mapnik/archive/2.3.x.zip > 2.3.x.zip && \
-            unzip 2.3.x.zip && \
-            cd /tmp/mapnik-2.3.x && \
-            ./scons/scons.py install --jobs=2 && \
-            rm -rf /tmp/mapnik-2.3.x
+#WORKDIR     /tmp/
+#RUN         curl -SL https://github.com/mapnik/mapnik/archive/2.3.x.zip > 2.3.x.zip && \
+#            unzip 2.3.x.zip && \
+#            cd /tmp/mapnik-2.3.x && \
+#            ./scons/scons.py install --jobs=2 && \
+#            rm -rf /tmp/mapnik-2.3.x
+
+
+RUN         apt-get install -y software-properties-common && \
+            add-apt-repository ppa:mapnik/nightly-2.3 && \
+            apt-get update && \
+            apt-get install -y libmapnik libmapnik-dev mapnik-utils python-mapnik \
+                mapnik-input-plugin-gdal mapnik-input-plugin-ogr\
+                mapnik-input-plugin-postgis \
+                mapnik-input-plugin-sqlite \
+                mapnik-input-plugin-osm
+
 
 #
 # Speedup pip by install "must have" python packages first
@@ -45,7 +57,7 @@ RUN         curl -SL https://github.com/mapnik/mapnik/archive/2.3.x.zip > 2.3.x.
 RUN         pip install awscli six futures \
                 pillow flask boto gunicorn Click Shapely python-memcached \
                 nose coverage tox Cython Pygments alabaster \
-                Sphinx sphinxcontrib-httpdomain moto
+                Sphinx sphinxcontrib-httpdomain moto pylibmc
 
 #
 # Check installed software
