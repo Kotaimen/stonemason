@@ -124,13 +124,13 @@ class MapnikComposer(ImageryLayer):
             img = self.render_mapnik_image(map, context)
             img.premultiply()
 
-            cmd_name, parameters = cmd
+            mode, opacity = cmd
             try:
-                op = mapnik.CompositeOp.names[cmd_name]
+                op = mapnik.CompositeOp.names[mode]
             except KeyError:
-                raise InvalidComposeMode(cmd_name)
+                raise InvalidComposeMode(mode)
 
-            base.composite(img, op, **parameters)
+            base.composite(img, op, opacity)
 
         base.demultiply()
 

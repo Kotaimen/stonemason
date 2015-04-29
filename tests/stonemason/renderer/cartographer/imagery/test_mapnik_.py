@@ -102,7 +102,7 @@ class TestMapnikComposer(ImageTestCase):
         layer = MapnikComposer(
             'mapnik.composer',
             style_sheets=[self.style_sheet, self.style_sheet],
-            commands=[('multiply', {})]
+            commands=[('multiply', 1)]
         )
 
         context = RenderContext(
@@ -132,7 +132,7 @@ class TestMapnikComposer(ImageTestCase):
                 self.style_sheet,
                 self.style_sheet,
             ],
-            commands=[('multiply', {}), ('multiply', {}), ])
+            commands=[('multiply', 1), ('multiply', 1), ])
 
         context = RenderContext(
             map_proj='+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs',
