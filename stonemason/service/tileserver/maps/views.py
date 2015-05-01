@@ -43,8 +43,7 @@ class MapBookView(MethodView):
             if book is None:
                 abort(404)
 
-            return render_template(
-                'map.html', map_book=book)
+            return render_template('map.html', map_book=book)
 
 
 class TilesView(MethodView):
@@ -62,7 +61,7 @@ class TilesView(MethodView):
     def __init__(self, mason_model):
         assert isinstance(mason_model, MasonModel)
         self._model = mason_model
-
+    
     def get(self, theme, z, x, y, tag):
         """Return a tile data and raise :http:statuscode:`404` if not found.
 

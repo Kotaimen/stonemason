@@ -10,6 +10,8 @@
 __author__ = 'ray'
 __date__ = '2/20/15'
 
+import collections
+
 from .theme import Theme
 
 
@@ -89,7 +91,7 @@ class MemGallery(Gallery):
     """
 
     def __init__(self):
-        self._themes = dict()
+        self._themes = collections.OrderedDict()
 
     def put(self, name, theme):
         """Put a theme into the manager"""
