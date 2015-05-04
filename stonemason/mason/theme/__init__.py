@@ -3,13 +3,13 @@
     stonemason.mason.theme
     ~~~~~~~~~~~~~~~~~~~~~~
 
-    Implements `Theme` and `ThemeManager` for stonemason
+    Implements configuration system for stonemason.
 
 """
 
 import os
 
-from .theme import Theme, MapSheetTheme
+from .theme import Theme, SchemaTheme
 from .gallery import Gallery, MemGallery
 from .curator import Curator, FileSystemCurator
 

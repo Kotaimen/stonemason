@@ -14,7 +14,7 @@ from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
 from stonemason.renderer import MasonRenderer
-from .theme import Theme, MapSheetTheme
+from .theme import Theme, SchemaTheme
 from .mapbook import MapBook
 from .metadata import Metadata
 from .mapsheet import MapSheet, HybridMapSheet
@@ -111,8 +111,8 @@ def create_map_book_from_theme(theme):
     if theme.metadata is not None:
         builder.build_metadata(**theme.metadata)
 
-    for sheet_theme in theme.map_sheets:
-        assert isinstance(sheet_theme, MapSheetTheme)
+    for sheet_theme in theme.schemas:
+        assert isinstance(sheet_theme, SchemaTheme)
         map_sheet_builder = MapSheetBuilder()
 
         sheet_tag = 'tag-%s' % uuid.uuid4().hex

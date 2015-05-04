@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 """
-    stonemason.mason.theme.loader
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.mason.theme.curator
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Implements theme loader for theme manager.
+    Implements loaders for gallery.
 
 """
 
@@ -28,13 +28,14 @@ def is_valid_theme_filename(filename):
 class Curator(object):  # pragma: no cover
     """Base Theme Loader
 
-    A `ThemeLoader` could parse and load themes into a theme manager.
+    A `Curator` parses and loads themes into a theme
+    :class:`~stonemason.mason.theme.Gallery`.
     """
 
     def add_to(self, gallery):
         """Subclass should implement this method
 
-        :param gallery: A :class:`~stonemason.mason.theme.Gallery` object.
+        :param gallery: An instance of :class:`~stonemason.mason.theme.Gallery`.
         :type gallery: :class:`~stonemason.mason.theme.Gallery`
 
         """
@@ -42,6 +43,28 @@ class Curator(object):  # pragma: no cover
 
 
 class FileSystemCurator(Curator):
+    """File System Curator
+
+    A `FileSystemCurator` parses and loads themes from local file system.
+
+    A manifest file `manifest.mason` will be looked up first to get a list of
+    locations of available themes to load. If the manifest file does not exists,
+    the theme files in the current directory will be loaded. A valid theme file
+    name should ends with the extension ``mason``. Each line in the manifest
+    represents one location of the theme file.
+
+    Example:
+
+        ./samples/sample_world/sample_world.mason
+        ./samples/sample_world/sample_proj.mason
+        ./samples/sample_world/sample_proj.mason
+
+    You could comment out a theme with a `#` at the start of the line:
+
+        #./samples/sample_world/sample_proj.mason
+
+
+    """
     MANIFEST_FILE = 'manifest.mason'
 
     def __init__(self, theme_root):
@@ -77,6 +100,7 @@ class FileSystemCurator(Curator):
             gallery.put(theme.name, theme)
 
     def walk(self):
+        """Find the manifest file and iterate filename of the themes."""
         manifest = os.path.join(self._theme_root, self.MANIFEST_FILE)
 
         if os.path.exists(manifest):
@@ -95,6 +119,7 @@ class FileSystemCurator(Curator):
                 yield filename
 
     def validate(self, theme_config):
+        """Valid the format of a theme config"""
         if not isinstance(theme_config, dict):
             raise InvalidThemeConfig('"THEME" should be a dict object')
 

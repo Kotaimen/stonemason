@@ -47,7 +47,7 @@ def check_command(ctx):
         if ctx.verbose:
             click.secho('\t%s' % repr(book.metadata), fg='green')
 
-        for n, m in enumerate(theme.map_sheets):
+        for n, m in enumerate(theme.schemas):
             click.echo('\tSchema: %s %s' % (book.name, m.tag))
             if ctx.verbose:
                 click.secho('\t\tmaptype=%s' % repr(m.maptype), fg='green')

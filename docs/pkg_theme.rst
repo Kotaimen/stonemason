@@ -3,9 +3,17 @@ Theme System
 
 .. module:: stonemason.mason.theme
 
-A `Theme` is the main configuration for stonemason. It defines a large amount
-of configs for a :class:`~stonemason.provider.tileprovider.TileProvider` to
-serve tiles from different kinds of storage.
+The `Theme` module is the configuration module for stonemason. By setting up
+configurations in a theme file, you tell stonemason how and where to load all
+the map books and also critical information to assemble various components of
+these map books.
+
+
+Theme
+=====
+
+.. autoclass:: stonemason.mason.theme.Theme
+    :members:
 
 
 Loaders
@@ -13,7 +21,7 @@ Loaders
 
 
 
-Managers
-========
+Gallery
+=======
 
 

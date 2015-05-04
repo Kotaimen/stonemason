@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 """
-    stonemason.mason.theme.manager
+    stonemason.mason.theme.gallery
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Implements theme manager.
+    Defines the interface of theme container and its different implementations.
 
 """
 
@@ -16,22 +16,20 @@ from .theme import Theme
 
 
 class Gallery(object):  # pragma: no cover
-    """Theme Manager Interface
+    """Theme Gallery Interface
 
-    In stonemason, `ThemeManager` serves as a container and manager for storing
+    In stonemason, a `Gallery` serves as a container and manager for storing,
     querying and indexing themes.
 
-    It could be implemented with a local memory dict, a disk storage, or even
-    a remote service.
-
-    Subclasses should take care of the detail implementation.
+    Detailed implementation should be taken care of by subclasses of the
+    `Gallery`. Backend storage could be memory, disk or remote service.
 
     """
 
     def put(self, name, theme):
-        """Put a theme into the manager and returns nothing.
+        """Put a theme into the gallery.
 
-        :param name: A string literal represents uniquely identify the theme.
+        :param name: A string literal uniquely identifies the theme.
         :type name: str
 
         :param theme: A `Theme` instance.
@@ -41,9 +39,9 @@ class Gallery(object):  # pragma: no cover
         raise NotImplementedError
 
     def get(self, name):
-        """Get the specified theme from the manager.
+        """Get a theme from the gallery with the given name.
 
-        :param name: A string literal represents uniquely identify the theme.
+        :param name: A string literal uniquely identifies the theme.
         :type name: str
 
         :return: A `Theme` instance or None.
@@ -52,30 +50,30 @@ class Gallery(object):  # pragma: no cover
         raise NotImplementedError
 
     def has(self, name):
-        """Check if the specified theme exists.
+        """Check if the theme with the given name is in the gallery.
 
-        :param name: A string literal represents uniquely identify the theme.
+        :param name: A string literal uniquely identifies the theme.
         :type name: str
 
-        :return: True if the `Theme` with `name` exists.
+        :return: True if exists.
         :rtype: bool
 
         """
         raise NotImplementedError
 
     def delete(self, name):
-        """Remove the specified theme from the manager and returns nothing.
+        """Remove the specified theme from the gallery.
 
-        :param name: A string literal represents uniquely identify the theme.
+        :param name: A string literal uniquely identifies the theme.
         :type name: str
 
         """
         raise NotImplementedError
 
     def __iter__(self):
-        """Iterate name and theme in the manager.
+        """Return an iterator of theme names in the gallery.
 
-        :return: Return a generator of (name, theme) in the manager.
+        :return: Return an iterator of theme names.
         :rtype: generator
 
         """
@@ -83,10 +81,11 @@ class Gallery(object):  # pragma: no cover
 
 
 class MemGallery(Gallery):
-    """Memory Theme Manager
+    """Memory Gallery
 
-    `MemThemeManager` is a in-memory implementation of `ThemeManager`. It
-    manages and operates themes in the local memory.
+    `MemGallery` is a in-memory implementation of `Gallery` which manages themes
+    in the local memory. It is simple and fast but it is not
+    thread-safe and conflict free.
 
     """
 
@@ -94,29 +93,24 @@ class MemGallery(Gallery):
         self._themes = collections.OrderedDict()
 
     def put(self, name, theme):
-        """Put a theme into the manager"""
         assert isinstance(theme, Theme)
         self._themes[name] = theme
 
     def get(self, name):
-        """Get the specified theme from the manager"""
         try:
             return self._themes[name]
         except KeyError:
             return None
 
-    def has(self, name):
-        """Check if the specified theme is in the manager"""
-        return name in self._themes
-
     def delete(self, name):
-        """Remove the specified theme from the manager"""
         try:
             del self._themes[name]
         except KeyError:
             pass  # do not complain if theme not exists
 
+    def has(self, name):
+        return name in self._themes
+
     def __iter__(self):
-        """Iterate name and theme in the manager"""
         return iter(self._themes)
 
