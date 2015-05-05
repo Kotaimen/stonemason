@@ -55,11 +55,15 @@ class FileSystemCurator(Curator):
 
     Example:
 
+    .. code-block:: shell
+
         ./samples/sample_world/sample_world.mason
         ./samples/sample_world/sample_proj.mason
         ./samples/sample_world/sample_proj.mason
 
     You could comment out a theme with a `#` at the start of the line:
+
+    .. code-block:: shell
 
         #./samples/sample_world/sample_proj.mason
 
