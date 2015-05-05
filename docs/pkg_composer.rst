@@ -24,24 +24,22 @@ Sample
 ------
 
 Below is a complex composer command which generates a `newspaper` effect
-with variable depth label haloing from for mapnik rendered images:
-
-.. code-block:: shell
+with variable depth label haloing from for mapnik rendered images::
 
     # Apply ordered dither to landbase, mimics 'halftone dither' effect
-    ( {{base}} -ordered-dither o8x8,4 )
+    ( <<base>> -ordered-dither o8x8,4 )
 
     (
         # Use a different dither for some variation
-        ( {{road}} )
+        ( <<road>> )
         # Fill halo with land color and only render on top of roads
-        ( {{label}} -channel A -morphology Dilate Disk:4 +channel +level-colors #ebe9e6 ) -compose Atop -composite
+        ( <<label>> -channel A -morphology Dilate Disk:4 +channel +level-colors #ebe9e6 ) -compose Atop -composite
         -ordered-dither o4x4,4
     ) -compose Over -composite
 
     (
         # Increase lightness of labels, Multiply later...
-        {{label}}
+        <<label>>
         -brightness-contrast +10
         # Mimics 'typewriter' effect, only works on thin fonts.
         # Find line joins of labels and thicken/darken them.
@@ -59,7 +57,7 @@ with variable depth label haloing from for mapnik rendered images:
     # The reference duotone images are converted from
     # Photoshop's classic 'Duotone' mode library.
     -brightness-contrast -12x-10
-    -colorspace gray mapnik/res/duotone/Bl-for-dark-cg9-cg2.png -clut
+    -colorspace gray Bl-for-dark-cg9-cg2.png -clut
 
     # Finally, convert to paletted PNG format
     -dither none

@@ -4,7 +4,7 @@
     stonemason.cli.commands.tileserver
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Check themes configuration.
+    Check gallery configuration.
 """
 
 __author__ = 'kotaimen'

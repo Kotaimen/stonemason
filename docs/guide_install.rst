@@ -1,15 +1,15 @@
 .. _install:
 
-.. highlight:: console
-
 Installation
 ************
+
+.. highlight:: console
 
 Environment
 ===========
 
-Due to the complexity of integrate geospatial packages, using a Python 2.7
-interpreter on a Debian distribution or Mac homebrew is highly recommended.
+Due to the complexity of integrating geospatial packages, using a Python 2.7
+interpreter on a Ubuntu distribution is highly recommended.
 
 Binary Packages
 ===============
@@ -17,7 +17,7 @@ Binary Packages
 
 .. sidebar:: Tip
 
-    Python3 related packages are all optional.
+    Python3 and packages are all optional.
 
 
 Install binary packages first:
@@ -105,12 +105,20 @@ the official installation_ manual.
 
     .. _installation: <https://github.com/mapnik/mapnik/wiki/UbuntuInstallation>
 
-Recommend `mapnik` version is latest ``2.3.x`` branch, which contains a lots
-of new features and fixes without breaking xml stylesheet, much:
+For rendering OSM or large maps, compiling the PostGIS plugin and use it as
+data source is highly recommended.
 
-    $ sudo add-apt-repository -y ppa:mapnik/nightly-2.3
-    $ sudo apt-get update
-    $ sudo apt-get install python-mapnik
+Installing from mapnik official ubuntu repository::
+
+    $ apt-get install -y software-properties-common
+    $ add-apt-repository ppa:mapnik/nightly-2.3
+    $ apt-get update
+    $ apt-get install -y libmapnik libmapnik-dev mapnik-utils python-mapnik \
+        mapnik-input-plugin-gdal mapnik-input-plugin-ogr \
+        mapnik-input-plugin-postgis \
+        mapnik-input-plugin-sqlite \
+        mapnik-input-plugin-osm
+
 
 
 Python Dependency
@@ -209,3 +217,5 @@ To build PDF version `textlive` is required::
 
     $ sudo apt-get install texlive texlive-latex-extra
     $ make latexpdf
+
+
