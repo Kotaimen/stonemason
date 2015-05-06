@@ -26,11 +26,12 @@ class ThemeModel(object):
 
 
 class MasonModel(object):
-    def __init__(self, themes, cache_servers=None, max_age=300):
+    def __init__(self, themes, cache_servers=None, max_age=300, readonly=False):
         self._mason = None
         self._tile_visitor = None
         self._max_age = max_age
         self._themes = themes
+        self._readonly = readonly
 
         if cache_servers is not None:
             self._cache = MemTileCache(servers=cache_servers)
@@ -38,7 +39,7 @@ class MasonModel(object):
             self._cache = NullTileCache()
 
     def do_init(self):
-        mason = Mason(cache=self._cache)
+        mason = Mason(cache=self._cache, readonly=self._readonly)
         for theme in self._themes:
             mason.load_map_book_from_theme(theme)
         return mason
@@ -55,6 +56,3 @@ class MasonModel(object):
             return 'max-age=0, nocache'
         else:
             return 'public, max-age=%d' % self._max_age
-
-
-

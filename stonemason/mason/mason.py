@@ -52,7 +52,7 @@ class MasonMapLibrary(object):
 
 
 class Mason(MasonMapLibrary):
-    def __init__(self, cache=None, backoff=0.1, logger=None):
+    def __init__(self, cache=None, backoff=0.1, logger=None, readonly=False):
         MasonMapLibrary.__init__(self)
         if cache is None:
             cache = NullTileCache()
@@ -60,6 +60,7 @@ class Mason(MasonMapLibrary):
         self._cache = cache
         self._backoff = backoff
         self._logger = logger
+        self._readonly = readonly
 
     def get_tile(self, name, tag, z, x, y):
         index = TileIndex(z, x, y)
@@ -77,6 +78,9 @@ class Mason(MasonMapLibrary):
             sheet = self[name][tag]
         except KeyError:
             return None
+
+        if self._readonly:
+            sheet.readonly = True
 
         # create metatile index
         stride = sheet.pyramid.stride

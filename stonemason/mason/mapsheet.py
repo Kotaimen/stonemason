@@ -10,10 +10,11 @@ from stonemason.tilestorage import ClusterStorage, TileCluster
 
 
 class MapSheet(object):
-    def __init__(self, tag, bundle, pyramid):
+    def __init__(self, tag, bundle, pyramid, readonly=False):
         self._tag = tag
         self._bundle = bundle
         self._pyramid = pyramid
+        self._readonly = readonly
 
     @property
     def tag(self):
@@ -26,6 +27,14 @@ class MapSheet(object):
     @property
     def pyramid(self):
         return self._pyramid
+
+    @property
+    def readonly(self):
+        return self._readonly
+
+    @readonly.setter
+    def readonly(self, val):
+        self._readonly = val
 
     def get_metatile(self, meta_index):
         raise NotImplementedError
@@ -53,6 +62,9 @@ class HybridMapSheet(MapSheet):
         cluster = self._storage.get(storage_meta_index)
         if cluster is not None:
             return cluster
+
+        if self.readonly:
+            return None
 
         metatile = self.get_metatile(meta_index)
         if metatile is None:
