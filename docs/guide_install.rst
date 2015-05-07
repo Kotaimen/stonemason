@@ -66,6 +66,7 @@ highly recommended install them from system package manager::
     $ sudo apt-get install gdal-bin python-gdal
     $ sudo apt-get install python3-scipy python3-numpy
     $ sudo apt-get install python3-gdal
+    $ sudo apt-get install imagemagick
 
 .. note:: Its important to install `scipy`/`numpy` first, otherwise `python-gdal`
     won't install `numpy` bindings properly. `stonemason` uses it in the custom
@@ -74,7 +75,7 @@ highly recommended install them from system package manager::
 `ubuntu-14.04-LTS` comes with reasonably recent `GEOS` and `GDAL`, for
 older ubuntu versions, install from `ubuntu-gis` PPA is recommended::
 
-    $ sudo apt-get install -qq python-software-properties
+    $ sudo apt-get install -y software-properties-common
     $ sudo add-apt-repository -y ppa:ubuntugis/ppa
     $ sudo apt-get update
     $ sudo apt-get install libgeos-dev gdal-bin python-gdal
