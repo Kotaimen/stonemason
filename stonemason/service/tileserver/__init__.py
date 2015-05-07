@@ -243,6 +243,16 @@ class TileServerPreference(object):
         return server_list
 
     @property
+    def readonly(self):
+        """Return working mode of map sheet
+
+        Return True if ``STONEMASON_READ_ONLY`` is True.
+        Default is False.
+        """
+        readonly = bool(self._app.config.get('STONEMASON_READ_ONLY', False))
+        return readonly
+
+    @property
     def verbose(self):
         """Return verbose level of logging
 
@@ -347,7 +357,9 @@ class TileServerApp(Flask):
         self._mason_model = MasonModel(
             theme_collection,
             cache_servers=self._preference.cache_servers,
-            max_age=self._preference.max_age)
+            max_age=self._preference.max_age,
+            readonly=self._preference.readonly
+        )
 
         # initialize blueprints
         themes_blueprint = themes.create_blueprint(

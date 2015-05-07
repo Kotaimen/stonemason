@@ -9,6 +9,16 @@ the map books and also critical information to assemble various components of
 these map books.
 
 
+Exceptions
+==========
+
+.. autoclass:: stonemason.mason.theme.ThemeError
+
+.. autoclass:: stonemason.mason.theme.ThemeConfigNotFound
+
+.. autoclass:: stonemason.mason.theme.InvalidThemeConfig
+
+
 Theme
 =====
 
@@ -16,12 +26,21 @@ Theme
     :members:
 
 
-Loaders
+Curator
 =======
 
+.. autoclass:: stonemason.mason.theme.Curator
+    :members:
+
+.. autoclass:: stonemason.mason.theme.FileSystemCurator
+    :members:
 
 
 Gallery
 =======
 
+.. autoclass:: stonemason.mason.theme.Gallery
+    :members:
 
+.. autoclass:: stonemason.mason.theme.MemGallery
+    :members:
