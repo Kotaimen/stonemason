@@ -40,6 +40,13 @@ class TestPyramidWalker(unittest.TestCase):
                               MetaTileIndex(3, 2, 6, 2),
                               MetaTileIndex(3, 4, 6, 2)])
 
+    def test_tilelist_walker2(self):
+        walker = TileListWalker(None, 8, self.tilelist1)
+        indexes = list(walker)
+        self.assertListEqual(indexes,
+                             [MetaTileIndex(4, 0, 8, 8),
+                              MetaTileIndex(5, 16, 24, 8)])
+
 
 if __name__ == '__main__':
     unittest.main()

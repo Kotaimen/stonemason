@@ -46,9 +46,22 @@ class CompleteWalker(object):
 
 
 class TileListWalker(object):
-    """Walked given tile list in a CSV file."""
+    """Walked given tile list in a CSV file
+
+    """
 
     def __init__(self, levels, stride, csv_file):
+        """
+
+        :param levels: Levels to render, note levels higher than `stride`
+            will not be rendered, if this is ``None``, only zoom level
+            :math:`level + stride` is rendered.
+        :type levels: list or None
+        :param stride: Stride of the metatile to render
+        :type stride: int
+        :param csv_file: CSV file to open
+        :type csv_file: str
+        """
         self.levels = levels
         self.stride = stride
         self.csv_file = csv_file
@@ -58,15 +71,21 @@ class TileListWalker(object):
             reader = csv.reader(fp)
             for row in reader:
                 tz, tx, ty = tuple(map(int, row))
-                for z in self.levels:
+
+                if self.levels:
+                    # use specified levels
+                    levels = self.levels
+                else:
+                    # use level+stride in the list
+                    levels = [tz + len(bin(self.stride)) - 3]
+
+                for z in levels:
+                    # start rendering from corresponding metatile level
                     if z < tz:
                         continue
                     if (z - tz) < len(bin(self.stride)) - 3:
                         continue
 
-                        # if tz > z and (self.stride >> (tz - z + 1)) > 0:
-                        # start rendering from corresponding metatile level
-                        # continue
                     dim = 2 ** (z - tz)
                     for x in range(tx * dim, (tx + 1) * dim, self.stride):
                         for y in range(ty * dim, (ty + 1) * dim, self.stride):
