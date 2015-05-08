@@ -222,10 +222,12 @@ def grid_crop_into_data(image, stride=1, buffer_size=0,
         if mode is not None:
             del parameters['convert']
 
+    if mode is not None:
+        image = convert_mode(image, mode)
+
     for (row, column), grid_image in grid_crop(image, stride, buffer_size):
         buf = io.BytesIO()
-        if mode is not None:
-            grid_image = convert_mode(grid_image, mode)
+
         grid_image.save(buf, format=format, **parameters)
         grid_data = buf.getvalue()
         del buf
