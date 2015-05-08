@@ -121,8 +121,6 @@ def create_walker(script, tms):
     """
     assert isinstance(script, RenderScript)
     assert isinstance(tms, TileMapSystem)
-    if script.levels is None:
-        script = script._replace(levels=tms.pyramid.levels)
 
     if script.csv_file:
         return TileListWalker(script.levels, tms.pyramid.stride,
@@ -130,4 +128,7 @@ def create_walker(script, tms):
     elif script.envelope:
         raise NotImplementedError
     else:
+        if script.levels is None:
+            # only replace levels to default when not rendering csv file
+            script = script._replace(levels=tms.pyramid.levels)
         return CompleteWalker(script.levels, tms.pyramid.stride)
