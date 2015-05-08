@@ -8,6 +8,7 @@ import os
 import io
 import zipfile
 import json
+import time
 
 from PIL import Image
 
@@ -85,6 +86,35 @@ class TestCreateTileClusterFromZipFile(ImageTestCase):
             self.assertEqual(tile.data, b'4-4-9')
             self.assertEqual(tile.mtime, 0.0)
             self.assertEqual(tile.mimetype, 'text/plain')
+
+
+class TestCreateTileClusterFromFeature(ImageTestCase):
+    def setUp(self):
+        grid_image = os.path.join(DATA_DIRECTORY,
+                                  'grid_crop', 'grid.png')
+        self.image = Image.open(grid_image)
+        self.index = MetaTileIndex(4, 4, 8, 2)
+        self.metadata = dict(mimetype='image/png', mtime=time.time())
+        self.buffer = 256
+        self.writer = find_writer(MapType('image'), TileFormat(format='PNG'))
+
+    def test_from_metatile(self):
+        tilecluster = TileCluster.from_feature(self.index,
+                                               self.image,
+                                               self.metadata,
+                                               self.writer,
+                                               self.buffer)
+        self.assertIsInstance(tilecluster, TileCluster)
+        self.assertEqual(tilecluster.index, self.index)
+        self.assertEqual(len(tilecluster.tiles), 4)
+        self.assertSetEqual(
+            {TileIndex(4, 4, 8), TileIndex(4, 5, 8),
+             TileIndex(4, 4, 9), TileIndex(4, 5, 9)},
+            {tile.index for tile in tilecluster.tiles}
+        )
+        ref_image = self.image.crop((256, 512, 512, 768))
+        tile = tilecluster[TileIndex(4, 4, 9)]
+        self.assertImageEqual(Image.open(io.BytesIO(tile.data)), ref_image)
 
 
 class TestCreateTileClusterFromLegacyZipFile(ImageTestCase):
@@ -174,7 +204,7 @@ class TestSaveClusterAsZipFile(unittest.TestCase):
         self.cluster.save_as_zip(buffer1)
         self.cluster.save_as_zip(buffer2, compressed=True)
         self.assertGreater(len(buffer1.getvalue()),
-                           len(buffer2.getvalue()))
+            len(buffer2.getvalue()))
 
 
 if __name__ == '__main__':

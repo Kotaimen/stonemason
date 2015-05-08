@@ -147,9 +147,48 @@ class TileCluster(object):
         return TileCluster(metatile.index, tiles)
 
     @staticmethod
-    def from_image(index, image, metadata, writer=None, buffer=0):
-        # XXX not necessary till we have real rendering
-        raise NotImplementedError
+    def from_feature(index, feature, metadata, writer, buffer=0):
+        """ Create a `TileCluster` object from a rendered feature.
+
+        :param index: Index of the metatile.
+        :type index: :class:`~stonemason.pyramid.MetaTileIndex`
+
+        :param feature: Feature feature
+        :type feature: A rendered map feature, typically a :class:`PIL.Image.Image`
+
+        :param metadata: Metadata of the metatile, must contain at least
+            ``mimetype`` and``mtime``.
+        :type metadata: dict
+
+        :param writer: A `MapWriter` to resplit metatile feature into small tiles.
+        :type writer: :class:`~stonemason.formatbundle.MapWriter`
+
+        :param buffer: Size of the extra pixel buffer, default is ``0``.
+        :type buffer: int
+
+        :return: created cluster object.
+        :rtype: :class:`~stonemason.tilestorage.TileCluster`
+        """
+        assert isinstance(index, MetaTileIndex)
+        assert isinstance(writer, MapWriter)
+
+        tile_indexes = dict()
+        for tile_index in index.fission():
+            row = tile_index.x - index.x
+            column = tile_index.y - index.y
+            tile_indexes[(row, column)] = tile_index
+
+        tiles = list()
+        for (row, column), data in writer.grid_crop_map(feature,
+                                                        index.stride,
+                                                        buffer):
+            tile = Tile(tile_indexes[(row, column)],
+                        data,
+                        mimetype=metadata['mimetype'],
+                        mtime=metadata['mtime'])
+            tiles.append(tile)
+        return TileCluster(index, tiles)
+
 
     @staticmethod
     def from_zip(zip_file, metadata=None):
@@ -201,9 +240,12 @@ class TileCluster(object):
                 mimetype = index['mimetype']
             except KeyError:
                 mimetype = guess_mimetype(extension)
-            if metadata is not None and 'mimetype' in metadata and metadata['mimetype'] is not None:
+            if metadata is not None and 'mimetype' in metadata and metadata[
+                'mimetype'] is not None:
                 if metadata['mimetype'] != mimetype:
-                    raise TileClusterError('Mismatching mimetype: expecting "%s", got "%s".' % (metadata['mimetype'], mimetype ))
+                    raise TileClusterError(
+                        'Mismatching mimetype: expecting "%s", got "%s".' % (
+                            metadata['mimetype'], mimetype ))
 
             mimetype = load_optional_field('mimetype')
             if mimetype is None:
