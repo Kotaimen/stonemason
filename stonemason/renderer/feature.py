@@ -28,18 +28,6 @@ class ImageFeature(Feature):
         )
         return result
 
-    def tobytes(self, fmt='PNG', parameters=None):
-        buffer = io.BytesIO()
-
-        if parameters is None:
-            parameters = dict()
-
-        self.data.save(buffer, format=fmt, parameters=parameters)
-
-        raw_data = buffer.getvalue()
-
-        return raw_data
-
 
 class VectorFeature(Feature):
     pass

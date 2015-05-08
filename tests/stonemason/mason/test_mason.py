@@ -50,7 +50,7 @@ class TestMasonTileAccessor(unittest.TestCase):
             self.tag,
             bundle,
             Pyramid(stride=2),
-            MockClusterStorage(),
+            MockClusterStorage(bundle=bundle),
             MockMetaTileRenderer())
 
         book = MapBook(self.name, Metadata())
@@ -97,7 +97,7 @@ class TestMasonMetatileRenderer(unittest.TestCase):
 
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
-        self.storage = MockClusterStorage()
+        self.storage = MockClusterStorage(bundle=bundle)
         sheet = HybridMapSheet(
             self.tag, bundle, Pyramid(stride=2),
             self.storage, MockMetaTileRenderer())

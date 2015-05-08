@@ -34,6 +34,23 @@ class MockMetaTileRenderer(MasonRenderer):
 
 
 class MockClusterStorage(ClusterStorage):
+    def __init__(self, bundle):
+        self._storage = dict()
+        self._bundle = bundle
+
+        index = MetaTileIndex(1, 0, 0, 2)
+
+        tiles = [
+            Tile(index=TileIndex(1, 0, 0), data=six.b('A tile')),
+            Tile(index=TileIndex(1, 0, 1), data=six.b('A tile')),
+            Tile(index=TileIndex(1, 1, 0), data=six.b('A tile')),
+            Tile(index=TileIndex(1, 1, 1), data=six.b('A tile'))
+        ]
+
+        cluster = TileCluster(index=index, tiles=tiles)
+
+        self._storage[index] = cluster
+
     @property
     def levels(self):
         raise NotImplementedError
@@ -43,30 +60,28 @@ class MockClusterStorage(ClusterStorage):
         return 2
 
     def get(self, index):
-        if index != MetaTileIndex(1, 0, 0, 2):
+        try:
+            return self._storage[index]
+        except KeyError:
             return None
 
-        tiles = [
-            Tile(index=TileIndex(1, 0, 0), data=six.b('A tile')),
-            Tile(index=TileIndex(1, 0, 1), data=six.b('A tile')),
-            Tile(index=TileIndex(1, 1, 0), data=six.b('A tile')),
-            Tile(index=TileIndex(1, 1, 1), data=six.b('A tile'))
-        ]
-        return TileCluster(index=index, tiles=tiles)
-
     def put(self, metatile):
-        pass
+        cluster = TileCluster.from_metatile(metatile, self._bundle.writer)
+        self._storage[metatile.index] = cluster
 
 
 class TestHybridMapSheet(unittest.TestCase):
     def setUp(self):
-        storage = MockClusterStorage()
-        renderer = MockMetaTileRenderer()
 
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
         pyramid = Pyramid()
 
-        self.matrix = HybridMapSheet('test', bundle, pyramid, storage, renderer)
+        storage = MockClusterStorage(bundle=bundle)
+
+        renderer = MockMetaTileRenderer()
+
+        self.mapsheet = HybridMapSheet(
+            'test', bundle, pyramid, storage, renderer)
 
     @skipUnlessHasGDAL()
     def test_get_tilecluster(self):
@@ -76,33 +91,29 @@ class TestHybridMapSheet(unittest.TestCase):
         meta_index = MetaTileIndex(1, 0, 0, pyramid.stride)
 
         # storage hit
-        cluster = self.matrix.get_tilecluster(meta_index)
+        cluster = self.mapsheet.get_tilecluster(meta_index)
         for tile in cluster.tiles:
             self.assertEqual(six.b('A tile'), tile.data)
 
         meta_index = MetaTileIndex(2, 0, 0, pyramid.stride)
 
         # renderer hit
-        cluster = self.matrix.get_tilecluster(meta_index)
+        cluster = self.mapsheet.get_tilecluster(meta_index)
         for tile in cluster.tiles:
             grid_image = Image.open(io.BytesIO(tile.data))
             self.assertEqual((512, 512), grid_image.size)
 
     @skipUnlessHasGDAL()
-    def test_get_metatile(self):
+    def test_render_metatile(self):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
         pyramid = Pyramid(stride=2)
 
-        meta_index = MetaTileIndex(1, 0, 0, pyramid.stride)
-
-        # storage miss (cluster storage does not support rendering metatile)
-        metatile = self.matrix.get_metatile(meta_index)
-        # self.assertIsNone(metatile)
-
-        # renderer hit
         meta_index = MetaTileIndex(2, 0, 0, pyramid.stride)
 
-        metatile = self.matrix.get_metatile(meta_index)
-        grid_image = Image.open(io.BytesIO(metatile.data))
-        self.assertEqual((1024, 1024), grid_image.size)
+        self.mapsheet.render_metatile(meta_index)
+
+        cluster = self.mapsheet.get_tilecluster(meta_index)
+        for tile in cluster.tiles:
+            grid_image = Image.open(io.BytesIO(tile.data))
+            self.assertEqual((512, 512), grid_image.size)
 
