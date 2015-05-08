@@ -27,7 +27,8 @@ THEME = dict(
 maptype = 'image'
 
 # Format of the tile data
-tileformat = dict(format='PNG', parameters={'optimized': True})
+parameters = dict(optimized=True)
+tileformat = dict(format='PNG', parameters=parameters)
 
 # Add different scale of map as schemas
 for scale in [1, 2, 3, 4]:

@@ -22,7 +22,9 @@ pyramid = dict(
 
 maptype = 'image'
 
-tileformat = dict(format='PNG')
+parameters = dict(convert=dict(mode='P', colors=64, palette=1),
+                  optimized=True)
+tileformat = dict(format='PNG', parameters=parameters)
 
 schema_1x = dict(
     tag='.png',
@@ -32,13 +34,13 @@ schema_1x = dict(
     renderer={
         'prototype': 'image',
         'layers': {
-            'root' : {
+            'root': {
                 'prototype': 'mapnik.composer',
                 'style_sheets': ["{{ theme_root }}/world_lines.xml",
                                  "{{ theme_root }}/world_halo.xml",
                                  "{{ theme_root }}/world_base.xml",
                                  "{{ theme_root }}/world_label.xml"
-                ],
+                                 ],
                 'commands': [
                     ('src_atop', 1),
                     ('dst_over', 1),
