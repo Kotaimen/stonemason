@@ -156,7 +156,6 @@ def renderer(script, queue, stats):
             except Exception as e:
                 stats.failed += 1
                 logger.exception('Error while rendering %s' % repr(index))
-                raise
             finally:
                 queue.task_done()
                 stats.progress += 1
