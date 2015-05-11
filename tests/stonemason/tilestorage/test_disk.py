@@ -43,6 +43,7 @@ class TestDiskClusterStorage(unittest.TestCase):
         storage.retire(self.metatile.index)
         self.assertIsNone(storage.get(self.metatile.index))
         self.assertFalse(storage.has(self.metatile.index))
+        storage.retire(self.metatile.index)
 
         self.assertListEqual(self.pyramid.levels, storage.levels)
         self.assertEqual(self.pyramid.stride, storage.stride)

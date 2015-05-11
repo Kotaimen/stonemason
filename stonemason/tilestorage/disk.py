@@ -27,7 +27,7 @@ def safe_makedirs(name):
     try:
         # exist_ok option only available on python3
         os.makedirs(name)
-    except OSError as e:
+    except OSError as e: # pragma: no cover
         if e.errno == errno.EEXIST:
             # Ignore "already exists" error because os.makedirs
             # does not check dir exists at each creation step
