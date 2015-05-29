@@ -43,13 +43,15 @@ class S3Storage(PersistenceStorageConcept):
     """Use AWS Simple Storage Service as persistence backend."""
 
     def __init__(self, access_key=None, secret_key=None,
-                 bucket='my_bucket', policy='private'):
+                 bucket='my_bucket', policy='private',
+                 reduced_redundancy=False):
         self._conn = boto.connect_s3(aws_access_key_id=access_key,
                                      aws_secret_access_key=secret_key, )
         self._bucket = self._conn.get_bucket(bucket_name=bucket)
 
         assert policy in ['private', 'public-read']
         self._policy = policy
+        self._reduced_redundancy = reduced_redundancy
 
     def exists(self, key):
         s3key = Key(bucket=self._bucket, name=key)
@@ -85,7 +87,10 @@ class S3Storage(PersistenceStorageConcept):
         s3key.content_type = metadata['mimetype']
         s3key.md5 = metadata['etag']
         s3key.last_modified = mtime2s3timestamp(metadata['mtime'])
-        s3key.set_contents_from_string(blob, replace=True, policy=self._policy)
+        s3key.set_contents_from_string(blob,
+                                       replace=True,
+                                       policy=self._policy,
+                                       reduced_redundancy=self._reduced_redundancy)
 
     def delete(self, key):
         s3key = Key(bucket=self._bucket, name=key)
@@ -131,6 +136,11 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
 
     :type policy: str
 
+    :param reduced_redundancy: Set storage class to REDUCED_REDUNDANCY
+        if set to `True`, default is `False`
+
+    :type reduced_redundancy: bool
+
     :param key_mode: Specifies how the s3 key is calculated from
         metatile index, possible values are:
 
@@ -176,6 +186,7 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
 
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',
+                 reduced_redundancy=False,
                  key_mode='simple', prefix='my_storage',
                  levels=range(0, 22), stride=1, format=None,
                  readonly=False):
@@ -183,7 +194,8 @@ class S3MetaTileStorage(StorageMixin, MetaTileStorage):
             raise TileStorageError('Must specify format explicitly.')
 
         s3storage = S3Storage(access_key=access_key, secret_key=secret_key,
-                              bucket=bucket, policy=policy)
+                              bucket=bucket, policy=policy,
+                              reduced_redundancy=reduced_redundancy)
 
         key_mode = create_key_mode(key_mode, sep='/')
 
@@ -217,12 +229,18 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
     :param policy: Canned policy, must be one of:
 
         `private`
-            Owner gets full control, no one else has access rights.
+            Owner gets full control, no one else has access rights, this is
+            the default.
 
         `public-read`
             Owner gets full control, no one else has read rights.
 
     :type policy: str
+
+    :param reduced_redundancy: Set storage class to REDUCED_REDUNDANCY
+        if set to `True`, default is `False`
+
+    :type reduced_redundancy: bool
 
     :param key_mode: Specifies how the s3 key is calculated from
         metatile index, possible values are:
@@ -237,6 +255,7 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
             Path mode used by old `mason` codebase.
 
         Default value is ``simple``.
+
     :type dir_mode: str
 
     :param prefix: Prefix which will be prepend to generated s3 keys.
@@ -271,6 +290,7 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
 
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',
+                 reduced_redundancy=False,
                  key_mode='simple', prefix='my_storage',
                  levels=range(0, 22), stride=1, format=None,
                  readonly=False, compressed=False):
@@ -278,7 +298,8 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
             raise TileStorageError('Must specify format explicitly.')
 
         s3storage = S3Storage(access_key=access_key, secret_key=secret_key,
-                              bucket=bucket, policy=policy)
+                              bucket=bucket, policy=policy,
+                              reduced_redundancy=reduced_redundancy)
 
         key_mode = create_key_mode(key_mode, sep='/')
 
@@ -290,4 +311,3 @@ class S3ClusterStorage(StorageMixin, ClusterStorage):
                               mimetype=format.tile_format.mimetype,
                               extension='.zip',
                               gzip=False, readonly=readonly)
-
