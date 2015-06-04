@@ -80,6 +80,7 @@ application = TileServerApp(**config)
               which is the default behaviour when debugging
               tile server is used (specified by -dd option).''')
 @click.option('--read-only', is_flag=True,
+              envvar='STONEMASON_READ_ONLY',
               help='start the server in read only mode.', )
 @click.option('--write-wsgi',
               type=click.Path(dir_okay=False, resolve_path=True, writable=True),
