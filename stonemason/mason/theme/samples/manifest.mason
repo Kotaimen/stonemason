@@ -3,3 +3,4 @@ sample_world/sample_jpeg.mason
 sample_world/sample_proj.mason
 sample_world/mapnik_composer.mason
 sample_world/world_magick.mason
+sample_world/sample_hillshade.mason

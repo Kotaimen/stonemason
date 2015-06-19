@@ -25,6 +25,15 @@ except ImportError:
     Composer = None
     HAS_IMAGEMAGICK = False
 
+try:
+    from .shaderelief import ShadeRelief
+
+    IMAGERY_LAYERS[ShadeRelief.PROTOTYPE] = ShadeRelief
+    HAS_SCIPY = True
+except ImportError:
+    ShadeRelief = None
+    HAS_SCIPY = False
+
 from .pilcarto import PILColor, PILInvert, PILBlend
 
 IMAGERY_LAYERS[PILColor.PROTOTYPE] = PILColor

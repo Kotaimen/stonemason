@@ -1,0 +1,61 @@
+# -*- encoding: utf-8 -*-
+
+maptype = 'image'
+
+# Theme definition
+THEME = dict(
+    # name tag of the theme, must be a valid identifier
+    name='sample_hillshade',
+    metadata=dict(
+        # display name
+        title='Sample: HillShade',
+        # version string
+        version='0.2.0',
+        # simple description
+        abstract='Sample theme with hill shade.',
+        # data attribution
+        attribution='Map Design: K&R, Data: Natural Earth',
+        # initial origin in (lon, lat)
+        origin=(139.0458, 35.3650),
+        # initlal zoom level
+        origin_zoom=14
+    ),
+    # list of schemas in the theme
+    schemas=[
+
+
+        dict(
+            # tag of the schema, will be append to theme name
+            tag='.png',
+            # pyramid
+            pyramid=dict(
+                # size of the metatile when rendering in tile server
+                stride=1,
+                # geographic coordinate system
+                geogcs='WGS84',
+                # projection coordinate system
+                projcs='EPSG:3857',
+                # zoom levels
+                levels=range(0, 18),
+
+                #projbounds=(15497314, 4220491, 15583673, 4300073),
+            ),
+            # maptype
+            maptype=maptype,
+            # tile format
+            tileformat = dict(format='PNG'),
+            # tile renderer
+            renderer=dict(
+                prototype=maptype,
+                layers=dict(
+                    root={
+                        'prototype': 'shaderelief',
+                        'index': "/Volumes/data/geodata/geodata/Stage/jpn-5m/index.shp",
+                        'scale': 1,
+                    }
+                )
+            )
+        )
+
+    ]
+)
