@@ -80,12 +80,14 @@ def skipUnlessHasGDAL():
 import pylibmc
 
 c = pylibmc.Client(servers=['127.0.0.1:11211'])
-r = c.get_stats()
-if r:
-    HAS_LOCAL_MEMCACHE = True
+try:
+    c.get_stats()
+except Exception:
+    HAS_LOCAL_MEMCACHE = False
 else:
     HAS_LOCAL_MEMCACHE = False
-del c, r
+finally:
+    del c
 
 
 def skipUnlessHasLocalMemcacheServer():
