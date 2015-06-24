@@ -42,10 +42,6 @@ install:
 
 services:
   - memcached
-#  - redis-server
-  
-#addons:
-#  postgresql: "9.3"
 
 # whitelist
 branches:
@@ -56,12 +52,8 @@ branches:
 
 before_script:
     - sudo apt-get install -qq wget
-    - wget -q http://download.osgeo.org/gdal/1.10.1/gdal-1.10.1.tar.gz
-    - tar xf gdal-1.10.1.tar.gz
-    - sudo cp gdal-1.10.1/data/*extra.wkt /usr/share/gdal/1.10/
+    - wget -q http://cdn.masonmaps.me/dist/gdal-1.10.1/data/esri_extra.wkt -P /usr/share/gdal/1.10/
     - rm -rf gdal-1.10.1/
-#  - psql -U postgres -c 'create database travis_ci_test;'
-#  - psql -U postgres -d travis_ci_test -c "create extension postgis;"
 
 script:
     - nosetests

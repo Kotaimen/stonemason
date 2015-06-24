@@ -54,7 +54,7 @@ install_requires = [
     'boto>=2.35.0',
     'Click>=3.0.0',
     'gunicorn>=19.0.0',
-    'pylibmc>=1.4.2',
+    'pylibmc>=1.4.3',
 ]
 
 if IS_PY3:

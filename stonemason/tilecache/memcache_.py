@@ -65,11 +65,13 @@ class MemTileCache(TileCache):
                  behaviors=None):
         super(TileCache, self).__init__()
         if behaviors is None:
-            behaviors = {'tcp_nodelay': True,
-                         'ketama': True,
-                         'remove_failed': True,
-                         'retry_timeout': 1,
-                         'dead_timeout': 60, }
+            behaviors = {
+                'tcp_nodelay': True,
+                'ketama': True,
+                # 'remove_failed': True,
+                # 'retry_timeout': 1,
+                # 'dead_timeout': 60,
+            }
         self.connection = pylibmc.Client(servers, binary=binary,
                                          behaviors=behaviors)
         # Verify connection
