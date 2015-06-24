@@ -16,7 +16,7 @@ before_install:
   - sudo apt-get update -qq
   
   # Install pillow binary requests
-  - sudo apt-get install -qq libjpeg-dev libz-dev libtiff-dev libfreetype6-dev liblcms-dev libwebp-dev libopenjpeg-dev
+  - sudo apt-get install -qq libjpeg-dev libz-dev libtiff-dev libfreetype6-dev liblcms-dev libwebp-dev libopenjpeg-dev libmemcached-dev
   
   # Install numpy/scipy (12.04 comes with very old scipy, but build from source
   # takes too much time, hopefully we don't need new version during development)
@@ -52,7 +52,6 @@ branches:
   only:
     - master
     - develop
-    - feature/refactor_rendering_system
     - /^release.*$/
 
 before_script:

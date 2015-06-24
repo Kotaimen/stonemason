@@ -54,15 +54,13 @@ install_requires = [
     'boto>=2.35.0',
     'Click>=3.0.0',
     'gunicorn>=19.0.0',
+    'pylibmc>=1.4.2',
 ]
 
 if IS_PY3:
-    install_requires.append('python3-memcached')
+    pass
 else:
-    install_requires.extend(
-        ['python-memcached',
-         'futures']
-    )
+    install_requires.append('futures>=3.0.0')
 
 tests_require = [
     'nose>=1.3.0',
@@ -160,20 +158,18 @@ package_data = {
 #
 
 setup(
-
     name='stonemason',
     version=find_version('stonemason', '__init__.py'),
     description='Map tile service toolkit.',
     long_description=long_description,
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'Operating System :: POSIX',
         'License :: OSI Approved :: MIT License',
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Multimedia :: Graphics',
-        'Topic :: Internet :: WWW/HTTP :: WSGI :: Server',
         'Programming Language :: Cython',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
@@ -197,7 +193,7 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     test_suite='tests',
-    # zip_safe=False,
+    zip_safe=False,
     cmdclass=cmdclass,
 
     extras_require={
@@ -205,4 +201,3 @@ setup(
     }
 
 )
-

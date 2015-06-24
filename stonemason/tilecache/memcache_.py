@@ -13,7 +13,7 @@ import re
 import json
 import random
 
-import memcache
+import pylibmc
 
 from stonemason.pyramid import Tile, TileIndex
 from .tilecache import TileCache, TileCacheError
@@ -26,7 +26,7 @@ class MemTileCacheError(TileCacheError):
 class MemTileCache(TileCache):
     """A tile cache based on `memcached` protocol backend.
 
-    Tile cache based on `memcached`_ protocol backend. The backend does not
+    Tile cache based on `pylibmc`_ protocol backend. The backend does not
     necessary being `memcached` itself, any storage or proxy talks its
     protocol will work, like `couchbase`_ or `nutcracker`_.
 
@@ -35,6 +35,7 @@ class MemTileCache(TileCache):
         ``memcached`` has a limit on cache object size, usually its ``4MB``.
 
     .. _memcached: <http://memcached.org/>
+    .. _pylibmc: <http://sendapatch.se/projects/pylibmc/>
     .. _couchbase: <http://www.couchbase.com/>
     .. _nutcracker:  <https://github.com/twitter/twemproxy>
 
@@ -52,21 +53,30 @@ class MemTileCache(TileCache):
 
     :param servers: A list of memcache cluster servers, default value is
         ``['localhost:11211',]``.
-
     :type servers: list
+
+    :param behaviors: `pylibmc` behaviors,
+        .. seealso:: `pylibmc` `behaviours <http://sendapatch.se/projects/pylibmc/behaviors.html>`_.
+    :type behaviors: dict or `None`
     """
 
     def __init__(self, servers=['localhost:11211'],
                  binary=True,
-                 min_compress_len=0,
                  behaviors=None):
         super(TileCache, self).__init__()
-        self.connection = memcache.Client(servers)
+        if behaviors is None:
+            behaviors = {'tcp_nodelay': True,
+                         'ketama': True,
+                         'remove_failed': True,
+                         'retry_timeout': 1,
+                         'dead_timeout': 60, }
+        self.connection = pylibmc.Client(servers, binary=binary,
+                                         behaviors=behaviors)
         # Verify connection
-        data = self.connection.get_stats()
-        if not data:
+        try:
+            self.connection.get_stats()
+        except pylibmc.Error:
             raise MemTileCacheError("Can't connect to memcache servers.")
-
 
     def _make_key(self, tag, index):
         """Generate `memcached` keys from given `tag` and `index`.
@@ -137,7 +147,6 @@ class MemTileCache(TileCache):
     def has(self, tag, index):
         _, metadata_key, _ = self._make_key(tag, index)
         return self.connection.get(metadata_key) is not None
-
 
     def retire(self, tag, index):
         key, metadata_key, _ = self._make_key(tag, index)
