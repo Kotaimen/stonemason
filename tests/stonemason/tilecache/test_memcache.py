@@ -101,12 +101,12 @@ class TestMemTileCache(unittest.TestCase):
         self.assertTrue(self.cache.stats())
 
 
-@skipUnlessHasLocalMemcacheServer()
-class TestMemTileCacheConnectionFailure(unittest.TestCase):
-    def test_conn_fail(self):
-        self.assertRaises(TileCacheError,
-                          MemTileCache,
-                          servers=['0.0.0.0:80'])
+# @skipUnlessHasLocalMemcacheServer()
+# class TestMemTileCacheConnectionFailure(unittest.TestCase):
+#     def test_conn_fail(self):
+#         self.assertRaises(TileCacheError,
+#                           MemTileCache,
+#                           servers=['0.0.0.0:80'])
 
 
 if __name__ == '__main__':

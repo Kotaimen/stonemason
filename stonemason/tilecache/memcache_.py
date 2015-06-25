@@ -64,8 +64,9 @@ class MemTileCache(TileCache):
                  binary=True,
                  behaviors=None):
         super(TileCache, self).__init__()
+        self._servers = servers
         if behaviors is None:
-            behaviors = {
+            self._behaviors = {
                 # 'tcp_nodelay': True,
                 'ketama': True,
                 # 'remove_failed': False,
@@ -73,13 +74,24 @@ class MemTileCache(TileCache):
                 # 'retry_timeout': 1,
                 # 'dead_timeout': 60,
             }
-        self.connection = pylibmc.Client(servers, binary=binary,
-                                         behaviors=behaviors)
-        # Verify connection
-        try:
-            self.connection.get_stats()
-        except pylibmc.Error as e:
-            raise MemTileCacheError("Can't connect to memcache servers.")
+        else:
+            self._behaviors = behaviors
+        self._binary = binary
+
+        self._connection = None
+
+    @property
+    def connection(self):
+        if self._connection is None:
+            self._connection = pylibmc.Client(self._servers,
+                                              binary=self._binary,
+                                              behaviors=self._behaviors)
+            # Verify connection
+            try:
+                self.connection.get_stats()
+            except pylibmc.Error as e:
+                raise MemTileCacheError("Can't connect to memcache servers.")
+        return self._connection
 
     def _make_key(self, tag, index):
         """Generate `memcached` keys from given `tag` and `index`.
