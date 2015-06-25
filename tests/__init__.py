@@ -82,13 +82,13 @@ import pylibmc
 c = pylibmc.Client(servers=['127.0.0.1:11211'])
 try:
     c.get_stats()
-except Exception:
+except pylibmc.Error:
     HAS_LOCAL_MEMCACHE = False
 else:
-    HAS_LOCAL_MEMCACHE = False
+    HAS_LOCAL_MEMCACHE = True
 finally:
     del c
 
 
 def skipUnlessHasLocalMemcacheServer():
-    return skipUnless(HAS_LOCAL_MEMCACHE, 'imagemagick not installed.')
+    return skipUnless(HAS_LOCAL_MEMCACHE, 'memcache not installed.')

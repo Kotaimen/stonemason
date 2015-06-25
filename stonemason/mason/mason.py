@@ -52,7 +52,7 @@ class MasonMapLibrary(object):
 
 
 class Mason(MasonMapLibrary):
-    def __init__(self, cache=None, backoff=0.1, logger=None, readonly=False):
+    def __init__(self, cache=None, backoff=0.2, logger=None, readonly=False):
         MasonMapLibrary.__init__(self)
         if cache is None:
             cache = NullTileCache()
@@ -67,8 +67,12 @@ class Mason(MasonMapLibrary):
 
         # get tile from cache
         key = self._make_cache_key(name, tag)
+        try:
+            tile = self._cache.get(key, index)
+        except TileCacheError as e:
+            # XXX: write some warning to log
+            tile = None
 
-        tile = self._cache.get(key, index)
         if tile is not None:
             # cache hit
             return tile
@@ -94,9 +98,15 @@ class Mason(MasonMapLibrary):
                 # a rendering is already in progress, backoff
                 time.sleep(self._backoff)
                 # check cache again
-                tile = self._cache.get(key, index)
-                if tile is not None:
-                    return tile
+                try:
+                    tile = self._cache.get(key, index)
+                except TileCacheError as e:
+                    # XXX: write some warning to log
+                    pass
+                else:
+                    if tile is not None:
+                        return tile
+
         try:
             # get tile cluster
             cluster = sheet.get_tilecluster(meta_index)
@@ -107,6 +117,7 @@ class Mason(MasonMapLibrary):
             try:
                 self._cache.put_multi(key, cluster.tiles)
             except TileCacheError:
+                # XXX: write some warning to log
                 pass
         finally:
             if self._backoff:
