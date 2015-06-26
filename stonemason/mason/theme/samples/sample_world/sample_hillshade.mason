@@ -50,8 +50,10 @@ THEME = dict(
                 layers=dict(
                     root={
                         'prototype': 'shaderelief',
-                        'index': "/Volumes/data/geodata/geodata/Stage/jpn-5m/index.shp",
+                        #'index': "/Volumes/data/geodata/geodata/Stage/jpn-5m/index.shp",
+                        'index': "/Users/ray/proj/geodata/Stage/jpn-5m/index.shp",
                         'scale': 1,
+                        'buffer': 16,
                     }
                 )
             )

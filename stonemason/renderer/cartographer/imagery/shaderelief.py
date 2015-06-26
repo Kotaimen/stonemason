@@ -20,7 +20,7 @@ if GDAL_VERSION_NUM < 1100000:
 
 gdal.UseExceptions()
 
-MAX_GREY_SCALE = 255
+MAX_SCALE = 255
 
 
 class RasterDataSource(object):
@@ -104,7 +104,6 @@ class RasterDataSource(object):
 
         return array
 
-
     def close(self):
         self._index_shp = None
 
@@ -137,7 +136,7 @@ def hillshade(aspect, slope, azimuth, altitude):
     shade = 1. * ((math.cos(zenith) * np.cos(slope)) +
                   (math.sin(zenith) * np.sin(slope) * np.cos(azimuth - aspect)))
 
-    shade[shade < 0] = 1. / MAX_GREY_SCALE
+    shade[shade < 0] = 1. / MAX_SCALE
     return shade
 
 
@@ -145,51 +144,64 @@ class ShadeRelief(ImageryLayer):
     PROTOTYPE = 'shaderelief'
 
     def __init__(self, name, index, zfactor=1,
-                 scale=111120, azimuth=315, altitude=45):
+                 scale=111120, azimuth=315, altitude=45, buffer=16):
         ImageryLayer.__init__(self, name)
         self._source = RasterDataSource(index)
         self._zfactor = zfactor
         self._scale = scale
         self._azimuth = azimuth
         self._altitude = altitude
+        self._buffer = buffer
 
     def render(self, context):
         assert isinstance(context, RenderContext)
 
-        map_proj = context.map_proj
-        map_bbox = context.map_bbox
-        map_size = context.map_size
+        left, bottom, right, top = context.map_bbox
+        width, height = context.map_size
 
-        left, bottom, right, top = map_bbox
-        width, height = map_size
+        # calculate map resolution
         res_x = (right - left) / width
         res_y = (top - bottom) / height
 
-        elevation = self._source.query(map_proj, map_bbox, map_size)
+        # calculate buffered envelope size
+        buffer_x = res_x * self._buffer
+        buffer_y = res_y * self._buffer
 
-        # aspect, slope = aspect_and_slope(
-        # elevation, res_x, res_y, self._zfactor, self._scale)
-        # diffuse = hillshade(aspect, slope, self._azimuth, 35)
-        # specular = hillshade(aspect, slope, self._azimuth, 85)
+        # calculate buffered map envelope
+        envelope = (left - buffer_x,
+                    bottom - buffer_y,
+                    right + buffer_x,
+                    top + buffer_y)
+        # calculate buffered map size
+        envelope_size = width + 2 * self._buffer, height + 2 * self._buffer
 
+        # query elevation data in target envelope
+        elevation = self._source.query(
+            context.map_proj, envelope, envelope_size)
+
+        # calculate hill shading
         zfactor = self._zfactor
         aspect, slope = aspect_and_slope(
             elevation, res_x, res_y, zfactor, self._scale)
-        detail = hillshade(aspect, slope, self._azimuth, 65)
+        detail = hillshade(aspect, slope, self._azimuth, 45)
+        #detail = detail ** (1 / 2.2)
 
-        array = (MAX_GREY_SCALE * detail).astype(np.ubyte)
+        # tone mapping
+        array = (MAX_SCALE * detail).astype(np.ubyte)
 
+        # cropping to requested map size
+        array = array[
+                self._buffer:width + self._buffer,
+                self._buffer:height + self._buffer
+                ]
+
+        # convert arrary to pil image
         pil_image = Image.fromarray(array, mode='L')
         pil_image = pil_image.convert('RGBA')
 
-        feature = ImageFeature(
-            crs=context.map_proj,
-            bounds=context.map_bbox,
-            size=context.map_size,
-            data=pil_image)
+        feature = ImageFeature(crs=context.map_proj,
+                               bounds=context.map_bbox,
+                               size=context.map_size,
+                               data=pil_image)
 
         return feature
-
-
-
-
