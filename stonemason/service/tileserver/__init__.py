@@ -8,7 +8,6 @@
 
 import re
 import os
-import logging
 
 import six
 from flask import Flask
@@ -18,6 +17,7 @@ from . import themes
 from . import maps
 from . import health
 from . import default_settings
+
 
 class FlaskAppConfig(object):  # pragma: no cover
     """Base Flask App Config
@@ -191,14 +191,11 @@ class TileServerPreference(object):
             # turn on flask testing if STONEMASON_TESTING is on
             self._app.config['TESTING'] = True
 
-        if self.debug:
-            logging.basicConfig(level=logging.DEBUG)
-
-        if self.debug and self._logger is not None:
+        if self.verbose > 0 and self._logger is not None:
             # turn on logs if verbose > 0
             for key, val in six.iteritems(self._app.config):
                 if key.startswith(self.OPTION_PREFIX):
-                    self._logger.debug('LOADED OPTION: %s=%s' % (key, val))
+                    self._logger.info('LOADED OPTION: %s=%s' % (key, val))
 
     @property
     def debug(self):
@@ -334,7 +331,7 @@ class TileServerApp(Flask):
                        instance_relative_config=True)
 
         # initialize preference
-        self._preference = TileServerPreference(self, logger=self.logger)
+        self._preference = TileServerPreference(self)
         self._preference.load(
             # load from default settings
             ObjectConfig(default_settings),

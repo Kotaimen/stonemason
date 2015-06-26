@@ -5,7 +5,6 @@ __date__ = '4/10/15'
 
 import time
 import six
-import logging
 
 from collections import OrderedDict
 
@@ -51,15 +50,16 @@ class MasonMapLibrary(object):
         return name in self._library
 
 
+
 class Mason(MasonMapLibrary):
-    def __init__(self, cache=None, backoff=0.1, readonly=False):
+    def __init__(self, cache=None, backoff=0.1, logger=None, readonly=False):
         MasonMapLibrary.__init__(self)
         if cache is None:
             cache = NullTileCache()
         assert isinstance(cache, TileCache)
         self._cache = cache
         self._backoff = backoff
-        self._logger = logging.getLogger(__name__)
+        self._logger = logger
         self._readonly = readonly
 
     def get_tile(self, name, tag, z, x, y):
@@ -128,8 +128,10 @@ class Mason(MasonMapLibrary):
         # render the metatile
         return sheet.render_metatile(meta_index)
 
+
     def _make_cache_key(self, name, tag):
         key = '%s%s' % (name, tag)
         if six.PY2 and isinstance(key, unicode):
             key = key.encode('ascii')
         return key
+
