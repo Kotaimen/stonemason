@@ -6,7 +6,9 @@ __date__ = '6/17/15'
 import os
 import math
 import numpy as np
-from PIL import Image
+import skimage.exposure
+
+from PIL import Image, ImageFilter
 from scipy import ndimage
 from osgeo import ogr, gdal, osr, gdalconst
 
@@ -95,7 +97,7 @@ class RasterDataSource(object):
         gdal.FillNodata(
             target_band,  # targetBand
             None,  # maskBand
-            1000,  # maxSearchDist
+            100,  # maxSearchDist
             0)  # smoothingIterations
 
         array = target.ReadAsArray()
@@ -136,15 +138,26 @@ def hillshade(aspect, slope, azimuth, altitude):
     shade = 1. * ((math.cos(zenith) * np.cos(slope)) +
                   (math.sin(zenith) * np.sin(slope) * np.cos(azimuth - aspect)))
 
-    shade[shade < 0] = 1. / MAX_SCALE
+    shade[shade < 0] = 0.
     return shade
 
 
 class ShadeRelief(ImageryLayer):
     PROTOTYPE = 'shaderelief'
 
-    def __init__(self, name, index, zfactor=1,
-                 scale=111120, azimuth=315, altitude=45, buffer=16):
+    def __init__(self, name, index,
+                 zfactor=1,
+                 scale=111120,
+                 azimuth=315,
+                 altitude=45,
+                 buffer=16,
+                 sigmoid_cutoff=0.8,
+                 sigmoid_gain=2,
+                 sigmoid_base=0.05,
+                 sharpen_radius=1,
+                 sharpen_percent=100,
+                 sharpen_threshold=3
+                 ):
         ImageryLayer.__init__(self, name)
         self._source = RasterDataSource(index)
         self._zfactor = zfactor
@@ -152,6 +165,14 @@ class ShadeRelief(ImageryLayer):
         self._azimuth = azimuth
         self._altitude = altitude
         self._buffer = buffer
+
+        self._sigmoid_cutoff = sigmoid_cutoff
+        self._sigmoid_gain = sigmoid_gain
+        self._sigmoid_base = sigmoid_base
+
+        self._sharpen_radius = sharpen_radius
+        self._sharpen_percent = sharpen_percent
+        self._sharpen_threshold = sharpen_threshold
 
     def render(self, context):
         assert isinstance(context, RenderContext)
@@ -183,8 +204,14 @@ class ShadeRelief(ImageryLayer):
         zfactor = self._zfactor
         aspect, slope = aspect_and_slope(
             elevation, res_x, res_y, zfactor, self._scale)
-        detail = hillshade(aspect, slope, self._azimuth, 45)
-        #detail = detail ** (1 / 2.2)
+        detail = hillshade(aspect, slope, self._azimuth, self._altitude)
+
+        # exposure
+        detail = skimage.exposure.adjust_sigmoid(detail,
+                                                 cutoff=self._sigmoid_cutoff,
+                                                 gain=self._sigmoid_gain,
+                                                 inv=False) + self._sigmoid_base
+
 
         # tone mapping
         array = (MAX_SCALE * detail).astype(np.ubyte)
@@ -198,6 +225,13 @@ class ShadeRelief(ImageryLayer):
         # convert arrary to pil image
         pil_image = Image.fromarray(array, mode='L')
         pil_image = pil_image.convert('RGBA')
+
+        pil_image = pil_image.filter(
+            ImageFilter.UnsharpMask(
+                radius=self._sharpen_radius,
+                percent=self._sharpen_percent,
+                threshold=self._sharpen_threshold
+            ))
 
         feature = ImageFeature(crs=context.map_proj,
                                bounds=context.map_bbox,
