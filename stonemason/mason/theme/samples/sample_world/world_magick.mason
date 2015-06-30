@@ -1,0 +1,91 @@
+# -*- encoding: utf-8 -*-
+
+import copy
+
+name = 'sample_magick'
+
+metadata = dict(
+    title='Sample: ImageMagick',
+    version='0.2.0',
+    abstract='''Sample map using Imagemagick composer, implements variable depth haloing.''',
+    attribution='Map Design: K&R, Data: Natural Earth',
+    origin=(0, 0),
+    origin_zoom=2
+)
+
+pyramid = dict(
+    stride=1,
+    geogcs="WGS84",
+    projcs="EPSG:3857",
+    levels=range(0, 9)
+)
+
+maptype = 'image'
+
+tileformat = dict(format='PNG')
+
+schema_1x = dict(
+    tag='.png',
+    pyramid=pyramid,
+    maptype=maptype,
+    tileformat=tileformat,
+    renderer={
+        'prototype': 'image',
+        'layers': {
+            'root': {
+                'prototype': 'imagemagick',
+                'sources': ['base', 'lines', 'halo', 'label'],
+                'command': '''
+                <<base>>
+                (
+                  <<lines>>
+                  <<halo>> -compose Atop -composite
+                ) -compose Multiply -composite
+                <<label>> -compose HardLight -composite
+                '''
+            },
+            'base': {
+                'prototype': 'mapnik',
+                'style_sheet': "{{ theme_root }}/world_base.xml",
+                'default_scale': 1,
+                'buffer_size': 256
+            },
+            'lines': {
+                'prototype': 'mapnik',
+                'style_sheet': "{{ theme_root }}/world_lines.xml",
+                'default_scale': 1,
+                'buffer_size': 256
+            },
+            'halo': {
+                'prototype': 'mapnik',
+                'style_sheet': "{{ theme_root }}/world_halo.xml",
+                'default_scale': 1,
+                'buffer_size': 256
+            },
+            'label': {
+                'prototype': 'mapnik',
+                'style_sheet': "{{ theme_root }}/world_label.xml",
+                'default_scale': 1,
+                'buffer_size': 256
+            }
+
+        }
+    }
+)
+
+schema_2x = copy.deepcopy(schema_1x)
+schema_2x['tag'] = '@2x.png'
+for layer in ['base', 'lines', 'halo', 'label']:
+    schema_2x['renderer']['layers'][layer]['default_scale'] = 2
+    schema_2x['renderer']['layers'][layer]['buffer_size'] = 512
+
+THEME = dict(
+    name=name,
+    metadata=metadata,
+    schemas=[
+        schema_1x,
+        schema_2x,
+    ]
+)
+
+

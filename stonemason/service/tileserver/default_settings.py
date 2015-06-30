@@ -15,7 +15,7 @@ STONEMASON_DEBUG = False
 STONEMASON_TESTING = False
 
 # An absolute path of theme directory.
-STONEMASON_THEMES = '.'
+STONEMASON_GALLERY = '.'
 
 # A string of memcache cache servers seperated by ``;`` or blank.
 STONEMASON_CACHE = None
@@ -24,3 +24,5 @@ STONEMASON_CACHE = None
 # to 0 to turn off the logging.
 STONEMASON_VERBOSE = 0
 
+# Cache control max age of tile api
+STONEMASON_MAX_AGE = 300

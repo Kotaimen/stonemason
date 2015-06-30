@@ -10,7 +10,12 @@ Stonemason
 
 *Stonemason* is a tile map service toolkit developed in Python.
 
-TODO: Insert a map here.
+.. figure:: _static/newspaper.png
+   :width: 100 %
+   :alt: "Newspaper" map sample render
+   :align: center
+
+   "Newspaper" Theme, using `Mapnik` cartographer and `ImageMagick` composer.
 
 
 User's Guide
@@ -19,11 +24,11 @@ User's Guide
 .. toctree::
     :maxdepth: 1
 
-    install
-    quickstart
-    config
-    themes
-    xlarge
+    guide_install
+    guide_quickstart
+    guide_concept
+    guide_gallery
+    guide_config
 
 API Reference
 #############
@@ -31,14 +36,20 @@ API Reference
 .. toctree::
     :maxdepth: 2
 
+    pkg_mason
     pkg_theme
+
+.. toctree::
+    :maxdepth: 2
+
+    pkg_tileserver
+    pkg_renderman
 
 
 .. toctree::
     :maxdepth: 2
 
     pkg_pyramid
-    pkg_tileprovider
     pkg_tilecache
     pkg_tilestorage
     pkg_formatbundle
@@ -47,7 +58,8 @@ API Reference
 .. toctree::
     :maxdepth: 2
 
-    pkg_service
+    pkg_tilerenderer
+    pkg_composer
 
 .. toctree::
     :maxdepth: 2
@@ -55,8 +67,8 @@ API Reference
     pkg_util
 
 
-Services
-########
+REST API Reference
+##################
 
 .. toctree::
     :maxdepth: 2

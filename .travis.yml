@@ -16,7 +16,7 @@ before_install:
   - sudo apt-get update -qq
   
   # Install pillow binary requests
-  - sudo apt-get install -qq libjpeg-dev libz-dev libtiff-dev libfreetype6-dev liblcms-dev libwebp-dev libopenjpeg-dev
+  - sudo apt-get install -qq libjpeg-dev libz-dev libtiff-dev libfreetype6-dev liblcms-dev libwebp-dev libopenjpeg-dev libmemcached-dev
   
   # Install numpy/scipy (12.04 comes with very old scipy, but build from source
   # takes too much time, hopefully we don't need new version during development)
@@ -26,26 +26,22 @@ before_install:
   - sudo apt-get install -qq python-numpy python-scipy
   
   # Install  Mapnik
-  - sudo apt-get install -qq libgeos-dev libgdal-dev gdal-bin python-gdal 
+  - sudo apt-get install -qq libgeos-dev libgdal-dev gdal-bin python-gdal
   - sudo apt-get install -qq python-mapnik
   
   # Check installed packages
   - geos-config --version
   - ogrinfo --version
-  - ogrinfo --formats
   - mapnik-config --version
+  - convert --version
 
 install:
   - pip install -q -r requirements-dev.txt
   - pip install -q .
-  - python setup.py build_ext --inplace
+  - python setup.py build_ext --inplace --force
 
 services:
   - memcached
-#  - redis-server
-  
-#addons:
-#  postgresql: "9.3"
 
 # whitelist
 branches:
@@ -55,19 +51,19 @@ branches:
     - /^release.*$/
 
 before_script:
-#  - psql -U postgres -c 'create database travis_ci_test;'
-#  - psql -U postgres -d travis_ci_test -c "create extension postgis;"
+    - sudo apt-get install -qq wget
+    - sudo wget -q http://cdn.masonmaps.me/dist/gdal-1.10.1/data/esri_extra.wkt -P /usr/share/gdal/1.10/
 
 script:
-  - nosetests
-  - cd docs
-  - make doctest
-  - make html
+    - nosetests
+    - python setup.py sdist
+    - cd docs
+    - make doctest
+    - make html
 
 notifications:
   email:
     recipients:
       - gliese.q@gmail.com
       - kotaimen.c@gmail.com
-
 

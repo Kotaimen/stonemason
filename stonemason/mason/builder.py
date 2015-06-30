@@ -1,174 +1,142 @@
 # -*- encoding: utf-8 -*-
-"""
-    stonemason.mason.builder
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    Implements TileProvider Factory
-
-"""
 
 __author__ = 'ray'
-__date__ = '2/5/15'
+__date__ = '4/10/15'
 
-from stonemason.provider.pyramid import Pyramid
-from stonemason.provider.formatbundle import FormatBundle, MapType, TileFormat
-from stonemason.provider.tilecache import NullTileCache, MemTileCache
-from stonemason.provider.tilestorage import NullClusterStorage, \
+import re
+import uuid
+from collections import OrderedDict
+
+import six
+
+from stonemason.pyramid import Pyramid
+from stonemason.formatbundle import MapType, TileFormat, FormatBundle
+from stonemason.tilestorage import NullClusterStorage, \
     DiskClusterStorage, S3ClusterStorage
-from stonemason.provider.tileprovider.provider import TileProvider
-
-from .theme import Theme
-
-
-class BuilderError(Exception):
-    """Base Tile Provider Error"""
-    pass
+from stonemason.renderer import MasonRenderer
+from .theme import Theme, SchemaTheme
+from .mapbook import MapBook
+from .metadata import Metadata
+from .mapsheet import MapSheet, HybridMapSheet
+from .exceptions import UnknownStorageType, InvalidMapSheetTag
 
 
-class UnknownCachePrototype(BuilderError):
-    """Unknown cache prototype"""
-    pass
-
-
-class UnknownStoragePrototype(BuilderError):
-    """Unknown storage prototype"""
-    pass
-
-
-class TileCacheFactory(object):
-    """`TileCache` Factory
-    """
-
-    KNOWN_CACHES = {
-        'memcache': MemTileCache
-    }
-
-    def create(self, prototype, **parameters):
-        """Create a `TileCache` instance
-
-        :param prototype: Prototype of the cache.
-        :type prototype: str
-
-        :param kwargs: Parameters for the specified `TileCache`.
-        :type kwargs: dict
-
-        """
-        if prototype == 'null':
-            return NullTileCache()
-
-        constructor = self.KNOWN_CACHES.get(prototype)
-        if constructor is None:
-            raise UnknownCachePrototype(prototype)
-
-        return constructor(**parameters)
-
-
-class ClusterStorageFactory(object):
-    """`ClusterStorage` Factory
-    """
-
-    KNOWN_CLUSTER_STORAGE = {
-        'disk': DiskClusterStorage,
-        's3': S3ClusterStorage
-    }
-
-
-    def create(self, prototype, pyramid, formatbundle, **parameters):
-        """Create a `ClusterStorage` instance
-
-        :param pyramid: An instance of `Pyramid`.
-        :type pyramid: :class:`~stonemason.provider.pyramid.Pyramid`
-
-        :param kwargs: A dict contains parameters for creating a `ClusterStorage`.
-        :type kwargs: dict
-
-        """
-
-        if prototype == 'null':
-            return NullClusterStorage()
-
-        constructor = self.KNOWN_CLUSTER_STORAGE.get(prototype)
-        if constructor is None:
-            raise UnknownStoragePrototype(prototype)
-
-        return constructor(pyramid=pyramid, format=formatbundle, **parameters)
-
-
-class TileProviderFactory(object):
-    """`TileProvider` Builder
-
-    `TileProviderFactory` builds `TileProvider` from themes.
-
-    An additional cache config could be taken to override the cache settings
-    in the theme, which is often used in seperate .
-    """
-
+class MapSheetBuilder(object):
     def __init__(self):
-        self._cache_factory = TileCacheFactory()
-        self._storage_factory = ClusterStorageFactory()
+        self._tag = ''
+        self._map_type = MapType('image')
+        self._tile_format = TileFormat('PNG')
+        self._pyramid = Pyramid()
+        self._storage = NullClusterStorage()
+        self._renderer = MasonRenderer({})
 
-    def create_from_theme(self, tag, theme, external_cache=None):
-        """Build `TileProvider` from a stonemason theme
+    def build(self):
+        if re.match('^[0-9].*', self._tag):
+            raise InvalidMapSheetTag(
+                'Tag of TileMatrix should not start with a number')
 
-        :param theme: A stonemason `Theme` instance.
-        :type theme: :class:`~stonemason.mason.theme.Theme`
+        bundle = FormatBundle(self._map_type, self._tile_format)
 
-        :param cache_config: A dict contains configs for creating a `TileCache`.
-        :type cache_config: dict
-        """
-        assert isinstance(theme, Theme)
-        assert isinstance(external_cache, dict) or external_cache is None
+        map_sheet = HybridMapSheet(
+            self._tag, bundle, self._pyramid, self._storage, self._renderer)
 
-        tag = tag
+        return map_sheet
 
-        pyramid = self._build_pyramid_from_theme(theme)
+    def build_tag(self, tag):
+        assert isinstance(tag, six.string_types)
+        self._tag = tag
 
-        metadata = self._build_metadata_from_theme(theme)
+    def build_pyramid(self, **config):
+        self._pyramid = Pyramid(**config)
 
-        cache = self._build_cache_from_theme(theme, external_cache)
+    def build_map_type(self, t):
+        assert isinstance(t, six.string_types)
+        self._map_type = MapType(t)
 
-        storage = self._build_storage_from_theme(theme)
+    def build_tile_format(self, **config):
+        self._tile_format = TileFormat(**config)
 
-        provider = TileProvider(
-            tag, pyramid, metadata=metadata, cache=cache, storage=storage)
+    def build_storage(self, **config):
+        bundle = FormatBundle(self._map_type, self._tile_format)
 
-        return provider
-
-    def _build_metadata_from_theme(self, theme):
-        return dict(theme.metadata.attributes)
-
-    def _build_pyramid_from_theme(self, theme):
-        return Pyramid(**theme.pyramid.attributes)
-
-    def _build_cache_from_theme(self, theme, external_cache=None):
-
-        if external_cache is None:
-            prototype = theme.cache.prototype
-            parameters = theme.cache.parameters
-
+        prototype = config.pop('prototype', 'null')
+        if prototype == 'null':
+            self._storage = NullClusterStorage()
+        elif prototype == 'disk':
+            self._storage = DiskClusterStorage(format=bundle, **config)
+        elif prototype == 's3':
+            self._storage = S3ClusterStorage(format=bundle, **config)
         else:
-            assert isinstance(external_cache, dict)
+            raise UnknownStorageType(prototype)
 
-            prototype = external_cache.get('prototype', 'null')
-            parameters = external_cache.get('parameters', dict())
+    def build_renderer(self, **config):
+        expression = config.get('layers')
+        if expression is None:
+            expression = dict()
 
-        cache = self._cache_factory.create(prototype, **parameters)
+        self._renderer = MasonRenderer(expression)
 
-        return cache
 
-    def _build_storage_from_theme(self, theme):
+class MapBookBuilder(object):
+    def __init__(self):
+        self._name = ''
+        self._metadata = Metadata()
 
-        prototype = theme.storage.prototype
+        self._map_sheets = OrderedDict()
 
-        pyramid = Pyramid(**theme.pyramid.attributes)
+    def build(self):
+        return MapBook(
+            name=self._name,
+            metadata=self._metadata,
+            map_sheets=self._map_sheets
+        )
 
-        maptype = MapType(theme.maptype)
-        tileformat = TileFormat(**theme.storage.tileformat)
-        bundle = FormatBundle(maptype, tileformat)
+    def build_name(self, name):
+        assert isinstance(name, six.string_types)
+        self._name = name
 
-        parameters = theme.storage.parameters
+    def build_metadata(self, **config):
+        self._metadata = Metadata(**config)
 
-        storage = self._storage_factory.create(
-            prototype, pyramid, bundle, **parameters)
+    def add_map_sheet(self, map_sheet):
+        assert isinstance(map_sheet, MapSheet)
+        self._map_sheets[map_sheet.tag] = map_sheet
 
-        return storage
+
+def create_map_book_from_theme(theme):
+    assert isinstance(theme, Theme)
+    builder = MapBookBuilder()
+    if theme.name is not None:
+        builder.build_name(theme.name)
+    if theme.metadata is not None:
+        builder.build_metadata(**theme.metadata)
+
+    for sheet_theme in theme.schemas:
+        assert isinstance(sheet_theme, SchemaTheme)
+        map_sheet_builder = MapSheetBuilder()
+
+        sheet_tag = 'tag-%s' % uuid.uuid4().hex
+        if sheet_theme.tag is not None:
+            sheet_tag = sheet_theme.tag
+        map_sheet_builder.build_tag(sheet_tag)
+
+        if sheet_theme.pyramid is not None:
+            map_sheet_builder.build_pyramid(**sheet_theme.pyramid)
+
+        if sheet_theme.maptype is not None:
+            map_sheet_builder.build_map_type(sheet_theme.maptype)
+
+        if sheet_theme.tileformat is not None:
+            map_sheet_builder.build_tile_format(**sheet_theme.tileformat)
+
+        if sheet_theme.storage is not None:
+            map_sheet_builder.build_storage(**sheet_theme.storage)
+
+        if sheet_theme.renderer is not None:
+            map_sheet_builder.build_renderer(**sheet_theme.renderer)
+
+        map_sheet = map_sheet_builder.build()
+
+        builder.add_map_sheet(map_sheet)
+
+    return builder.build()

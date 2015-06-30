@@ -1,0 +1,77 @@
+# -*- encoding: utf-8 -*-
+
+# Theme definition
+THEME = dict(
+    # name tag of the theme, must be a valid identifier
+    name='sample',
+    metadata=dict(
+        # display name
+        title='Sample: World',
+        # version string
+        version='0.2.0',
+        # simple description
+        abstract='A simple map design, using same projection as Google Maps.',
+        # data attribution
+        attribution='Map Design: K&R, Data: Natural Earth',
+        # initial origin in (lon, lat)
+        origin=(0, 0),
+        # initlal zoom level
+        origin_zoom=2
+    ),
+    # list of schemas in the theme
+    schemas=[
+    ]
+)
+
+# Map type, must be "image" for mapnik cartographer
+maptype = 'image'
+
+# Format of the tile data
+parameters = dict(optimized=True)
+tileformat = dict(format='PNG', parameters=parameters)
+
+# Add different scale of map as schemas
+for scale in [1, 2, 3, 4]:
+    tag = '' if (scale == 1) else ('@%dx' % scale)
+
+    schema = dict(
+        # tag of the schema, will be append to theme name
+        tag='%s.png' % tag,
+        # pyramid
+        pyramid=dict(
+            # size of the metatile when rendering in tile server
+            stride=2,
+            # geographic coordinate system
+            geogcs='WGS84',
+            # projection coordinate system
+            projcs='EPSG:3857',
+            # zoom levels
+            levels=range(0, scale + 9)
+        ),
+        # maptype
+        maptype=maptype,
+        # tile format
+        tileformat=tileformat,
+        # tile storage
+        storage=dict(
+            # type of storage used
+            prototype='disk',
+            # metatile size of the storage
+            stride=8,
+            root='{{ theme_root }}/cache/%s%s' % (THEME['name'], tag)
+        ),
+        # tile renderer
+        renderer=dict(
+            prototype=maptype,
+            layers=dict(
+                root={
+                    'prototype': 'mapnik',
+                    'style_sheet': "{{ theme_root }}/sample_world.xml",
+                    'default_scale': scale,
+                    'buffer_size': 256 * scale
+                }
+            )
+        )
+    )
+    THEME['schemas'].append(schema)
+

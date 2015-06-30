@@ -1,97 +1,144 @@
 # -*- encoding: utf-8 -*-
-"""
-    stonemason.mason.mason
-    ~~~~~~~~~~~~~~~~~~~~~~
-    Facade of StoneMason.
 
-"""
+__author__ = 'ray'
+__date__ = '4/10/15'
 
-from collections import namedtuple
+import time
+import six
+import logging
 
-from .builder import TileProviderFactory
-from .theme import Theme, ThemeManager
+from collections import OrderedDict
 
+from stonemason.pyramid import TileIndex, MetaTileIndex
+from stonemason.tilecache import TileCache, NullTileCache, TileCacheError
 
-class MasonError(Exception):
-    """Base Mason Error"""
-    pass
-
-
-class ThemeNotExist(MasonError):
-    """`Theme` is not found"""
-    pass
+from .mapbook import MapBook
+from .builder import create_map_book_from_theme
+from .theme import Theme
+from .exceptions import DuplicatedMapBook
 
 
-class ThemeAlreadyLoaded(MasonError):
-    """`Theme` has already been loaded"""
-    pass
+class MasonMapLibrary(object):
+    def __init__(self):
+        self._library = OrderedDict()
+
+    def load_map_book_from_theme(self, theme):
+        assert isinstance(theme, Theme)
+
+        book = create_map_book_from_theme(theme)
+        if book.name in self:
+            raise DuplicatedMapBook(book.name)
+
+        self[book.name] = book
+
+    def names(self):
+        return self._library.keys()
+
+    def books(self):
+        return self._library.values()
+
+    def items(self):
+        return self._library.items()
+
+    def __getitem__(self, name):
+        return self._library[name]
+
+    def __setitem__(self, name, map_book):
+        assert isinstance(map_book, MapBook)
+        self._library[name] = map_book
+
+    def __contains__(self, name):
+        return name in self._library
 
 
-class ThemeNotLoaded(MasonError):
-    """`Theme` has not been loaded"""
-    pass
-
-
-class Mason(object):
-    """Stonemason Facade
-
-    `Mason` is the facade of `Stonemason`. A `Mason` object provides tiles of
-    various kinds of themes from caches, storage and renders.
-
-    Themes could be loaded or unloaded by their names. Though, these with
-    duplicated names are not allowed.
-
-    In `Mason`, tiles are served according to their tags which, for now,
-    equals to the name of their themes.
-
-    :param theme_store: A `ThemeManager` instance that contains piles of themes.
-    :type theme_store: :class:`stonemason.mason.theme.ThemeManager`
-
-    :param readonly: A bool variable that controls serving mode of `Mason`.
-    :type readonly: bool
-
-    """
-
-    def __init__(self,
-                 readonly=False,
-                 logger=None,
-                 external_cache=None):
-        assert isinstance(readonly, bool)
-
-        self._logger = logger
+class Mason(MasonMapLibrary):
+    def __init__(self, cache=None, backoff=0.2, readonly=False):
+        MasonMapLibrary.__init__(self)
+        if cache is None:
+            cache = NullTileCache()
+        assert isinstance(cache, TileCache)
+        self._cache = cache
+        self._backoff = backoff
+        self._logger = logging.getLogger(__name__)
         self._readonly = readonly
-        self._external_cache = external_cache
 
-        self._builder = TileProviderFactory()
-        self._providers = dict()
+    def get_tile(self, name, tag, z, x, y):
+        index = TileIndex(z, x, y)
 
-    def load_theme(self, theme):
-        """Load the named theme"""
-        tag = theme.name
-
-        if tag in self._providers:
-            raise ThemeAlreadyLoaded(tag)
-
-        provider = self._builder.create_from_theme(
-            tag, theme, external_cache=self._external_cache)
-
-        if self._readonly:
-            provider.readonly = True
-
-        self._providers[tag] = provider
-
-    def get_tile(self, tag, z, x, y, scale, ext):
-        """Get a tile with the given tag and parameters"""
-
+        # get tile from cache
+        key = self._make_cache_key(name, tag)
         try:
-            provider = self._providers[tag]
-        except KeyError:
-            return None
-        else:
-            tile = provider.get_tile(z, x, y)
+            tile = self._cache.get(key, index)
+        except TileCacheError as e:
+            self._logger.warning('Get from cache failed %r' % e)
+            tile = None
+
+        if tile is not None:
+            # cache hit
             return tile
 
-    def get_tile_tags(self):
-        """Get all available tile tags"""
-        return list(tag for tag in self._providers)
+        # figure out the sheet
+        try:
+            sheet = self[name][tag]
+        except KeyError:
+            return None
 
+        if self._readonly:
+            sheet.readonly = True
+
+        # create metatile index
+        stride = sheet.pyramid.stride
+        meta_index = MetaTileIndex.from_tile_index(index, stride)
+
+        # opportunistic backoff
+        if self._backoff:
+            lock_index = meta_index.to_tile_index()
+            cas = self._cache.lock(key, lock_index)
+            if cas == 0:
+                # a rendering is already in progress, backoff
+                time.sleep(self._backoff)
+                # check cache again
+                try:
+                    tile = self._cache.get(key, index)
+                except TileCacheError as e:
+                    self._logger.warning('Get from cache failed %r' % e)
+                else:
+                    if tile is not None:
+                        return tile
+
+        try:
+            # get tile cluster
+            cluster = sheet.get_tilecluster(meta_index)
+            if cluster is None:
+                return None
+
+            # populate cache with tiles in the cluster
+            try:
+                self._cache.put_multi(key, cluster.tiles)
+            except TileCacheError:
+                self._logger.warning('Write to cache failed %r' % e)
+        finally:
+            if self._backoff:
+                self._cache.unlock(key, lock_index, cas)
+        # get tile from the cluster
+        tile = cluster[index]
+
+        return tile
+
+    def render_metatile(self, name, tag, z, x, y, stride):
+        try:
+            sheet = self[name][tag]
+        except KeyError:
+            return None
+
+        # create meta index
+        meta_index = MetaTileIndex(z, x, y, stride)
+
+        # render the metatile
+        return sheet.render_metatile(meta_index)
+
+    def _make_cache_key(self, name, tag):
+        key = '%s%s' % (name, tag)
+        if six.PY2 and isinstance(key, unicode):
+            key = key.encode('ascii')
+        return key

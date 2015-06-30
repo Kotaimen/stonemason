@@ -54,15 +54,13 @@ install_requires = [
     'boto>=2.35.0',
     'Click>=3.0.0',
     'gunicorn>=19.0.0',
+    'pylibmc>=1.4.3',
 ]
 
 if IS_PY3:
-    install_requires.append('python3-memcached')
+    pass
 else:
-    install_requires.extend(
-        ['python-memcached',
-         'futures']
-    )
+    install_requires.append('futures>=3.0.0')
 
 tests_require = [
     'nose>=1.3.0',
@@ -80,8 +78,8 @@ py_modules = []
 ext_modules = []
 
 cython_modules = [
-    ('stonemason.util.geo._hilbert',
-     ['stonemason/util/geo/_hilbert.pyx', ]),
+    ('stonemason.pyramid.hilbert',
+     ['stonemason/pyramid/hilbert.pyx', ]),
 ]
 
 entry_points = '''
@@ -141,10 +139,18 @@ else:
         ext_modules.append(Extension(module, c_sources))
 
 package_data = {
-    'stonemason.mason.theme': ['samples/sample_theme.json'],
-    'stonemason.util.geo': ['*.c'],
+    'stonemason.mason.theme':
+        [
+            'samples/manifest.mason',
+            'samples/sample_world/*.mason',
+            'samples/sample_world/ne_50m_*',
+            'samples/sample_world/*.xml',
+            'samples/sample_world/readme.md',
+        ],
+    'stonemason.pyramid': ['hilbert.c'],
     'stonemason.service.tileserver.maps': ['templates/*'],
     'stonemason.service.tileserver.admin': ['templates/*'],
+
 }
 
 #
@@ -152,20 +158,18 @@ package_data = {
 #
 
 setup(
-
     name='stonemason',
     version=find_version('stonemason', '__init__.py'),
     description='Map tile service toolkit.',
     long_description=long_description,
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'Operating System :: POSIX',
         'License :: OSI Approved :: MIT License',
         'Topic :: Scientific/Engineering :: GIS',
         'Topic :: Multimedia :: Graphics',
-        'Topic :: Internet :: WWW/HTTP :: WSGI :: Server',
         'Programming Language :: Cython',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
@@ -189,7 +193,7 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     test_suite='tests',
-    # zip_safe=False,
+    zip_safe=False,
     cmdclass=cmdclass,
 
     extras_require={
@@ -197,4 +201,3 @@ setup(
     }
 
 )
-

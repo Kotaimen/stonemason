@@ -3,13 +3,15 @@
 __author__ = 'ray'
 __date__ = '3/2/15'
 
+from werkzeug.http import http_date
+from flask import abort, make_response
 from flask.views import MethodView
-from flask import render_template, abort
+from flask import render_template
 
-from ..models import MasonModel, ThemeModel
+from ..models import MasonModel
 
 
-class MapView(MethodView):
+class MapBookView(MethodView):
     """Map View
 
     A map site with named tag.
@@ -23,18 +25,85 @@ class MapView(MethodView):
 
     """
 
-    def __init__(self, mason_model, theme_model):
+    def __init__(self, mason_model):
         assert isinstance(mason_model, MasonModel)
-        assert isinstance(theme_model, ThemeModel)
         self._mason_model = mason_model
-        self._theme_model = theme_model
 
-    def get(self, tag):
+    def get(self, theme=None):
         """Retrieve a map site with the given tag."""
-        tags = self._mason_model.get_tile_tags()
-        if tag not in tags:
+        if theme is None:
+            """Retrieve an overview of all loaded maps."""
+            collection = list()
+            for book in self._mason_model.mason.books():
+                collection.append(book)
+
+            return render_template('index.html', collection=collection)
+        else:
+            book = self._mason_model.mason[theme]
+            if book is None:
+                abort(404)
+
+            return render_template('map.html', map_book=book)
+
+
+class TilesView(MethodView):
+    """Tile View
+
+    Get Map Tile with a tag, zoom level and (x, y) coordinates. Raise
+    :http:statuscode:`400` when request is not valid.
+
+    :param mason_model: A :class:`~stonemason.service.models.MasonModel` that
+                        contains mason themes.
+    :type mason_model: :class:`~stonemason.service.models.MasonModel`
+
+    """
+
+    def __init__(self, mason_model):
+        assert isinstance(mason_model, MasonModel)
+        self._model = mason_model
+    
+    def get(self, theme, z, x, y, tag):
+        """Return a tile data and raise :http:statuscode:`404` if not found.
+
+        :param theme: The Name of a theme. A string literal that uniquely
+                    identify a theme.
+        :type theme: str
+
+        :param z: A positive integer that represents the zoom level of a tile.
+        :type z: int
+
+        :param x: A positive integer that represents the coordinate along x
+                  axis. A valid value could be 0 to :math:`2^z - 1`.
+        :type x: int
+
+        :param y: A positive integer that represents the coordinate along y
+                  axis. A valid would be 0 to :math:`2^z - 1`.
+        :type y: int
+
+        :param scale: A positive integer that scales elements like font, stroke
+                      during rendering process for display on high resolution
+                      device.
+        :type scale: str
+
+        :param ext: A string literal that indicates the output format of the
+                    requested tile.
+        :type ext: str
+
+        """
+        if tag.find(' ') >= 0:
+            # tag should not contain blank space.
             abort(404)
 
-        theme = self._theme_model.get_theme(tag)
+        tile = self._model.mason.get_tile(theme, tag, z, x, y)
+        if tile is None:
+            abort(404)
 
-        return render_template('map.html', theme=theme.describe())
+        response = make_response(tile.data)
+
+        # set response headers
+        response.headers['Content-Type'] = tile.mimetype
+        response.headers['ETag'] = tile.etag
+        response.headers['Last-Modified'] = http_date(tile.mtime)
+        response.headers['Cache-Control'] = self._model.cache_control
+
+        return response

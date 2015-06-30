@@ -1,9 +1,9 @@
 Map Format
 **********
 
-.. module::stonemason.provider.formatbundle
+.. module::stonemason.formatbundle
 
-:mod:`stonemason.provider.formatbundle` defines map types, tile formats and
+:mod:`stonemason.formatbundle` defines map types, tile formats and
 their conversions.
 
 .. warning:: Contents of this package are subject to change if dynamic
@@ -13,7 +13,7 @@ their conversions.
 Exceptions
 ==========
 
-.. automodule:: stonemason.provider.formatbundle.exceptions
+.. automodule:: stonemason.formatbundle.exceptions
     :members:
     :undoc-members:
 
@@ -21,13 +21,13 @@ Exceptions
 Map Type
 ========
 
-.. autoclass:: stonemason.provider.formatbundle.MapType
+.. autoclass:: stonemason.formatbundle.MapType
     :members:
 
 Tile Format
 ===========
 
-.. autoclass:: stonemason.provider.formatbundle.TileFormat
+.. autoclass:: stonemason.formatbundle.TileFormat
     :members:
 
 Common Image Formats
@@ -53,16 +53,16 @@ for a complete list of image format parameters.
 Format Bundle
 =============
 
-.. autoclass:: stonemason.provider.formatbundle.FormatBundle
+.. autoclass:: stonemason.formatbundle.FormatBundle
     :members:
 
 
 Map Writer
 ==========
 
-.. autoclass:: stonemason.provider.formatbundle.MapWriter
+.. autoclass:: stonemason.formatbundle.MapWriter
     :members:
 
-.. autoclass:: stonemason.provider.formatbundle.mapwriter.ImageMapWriter
+.. autoclass:: stonemason.formatbundle.mapwriter.ImageMapWriter
     :members:
 

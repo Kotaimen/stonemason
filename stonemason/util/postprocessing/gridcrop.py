@@ -130,6 +130,19 @@ def grid_crop(image, stride=1, buffer_size=0):
             yield (row, column), grid
 
 
+def convert_mode(image, mode):
+    """Convert image mode if necessary determinate from parameters."""
+    if mode is None or image.mode == mode['mode']:
+        # only convert when mode changes
+        return image
+    # call PIL convert
+    if mode['mode'] == 'P':
+        # PIL only supports dithering
+        image = image.convert('RGB')
+
+    return image.convert(**mode)
+
+
 def grid_crop_into_data(image, stride=1, buffer_size=0,
                         format=None, parameters=None):
     """Crop MetaTile image into a grid and written as image files.
@@ -137,14 +150,39 @@ def grid_crop_into_data(image, stride=1, buffer_size=0,
     Same as :func:`grid_crop` except returns image file data instead of
     :class:`PIL.Image.Image`.
 
-    Some examples:
+    `format` is one of supported image formats::
 
-        format='JPEG'
-        parameters={'optimize'=True, 'quality'=80}
+        'JPEG'
+        'PNG'
+        'WEBP'
+        'TIFF'
+
+    `format` and `parameters` are passed directly to :meth:`PIL.Image.Image.save()`::
+
+        args = {
+            'format': 'JPEG',
+            'parameters': {'optimize':True, 'quality':80}
+        }
+        image.save(fp, **args)
+
+    `parameter` can also have a ``convert`` key which contains mode conversion
+     arguments which is passed to :meth:`PIL.Image.Image.convert()`::
+
+        args = {
+            'format': 'JPEG',
+            'parameters': {
+                'optimize': True,
+                'convert': {
+                    'mode': 'P',
+                    'colors': 64
+                }
+            }
+        }
+        image.convert(**args['convert'])
 
     .. _image formats: <https://pillow.readthedocs.org/handbook/image-file-formats.html>
 
-    See :func:`~stonemason.util.postprocessing.gridrop` for parameter descriptions.
+    See :func:`~stonemason.util.postprocessing.gridcrop()` for parameter descriptions.
 
     :param image: Image to crop, must be square.
     :type image: :class:`PIL.Image.Image` or `bytes` or `file`
@@ -177,9 +215,19 @@ def grid_crop_into_data(image, stride=1, buffer_size=0,
 
     if parameters is None:
         parameters = {}
+        mode = None
+    else:
+        parameters = parameters.copy()
+        mode = parameters.get('convert', None)
+        if mode is not None:
+            del parameters['convert']
+
+    if mode is not None:
+        image = convert_mode(image, mode)
 
     for (row, column), grid_image in grid_crop(image, stride, buffer_size):
         buf = io.BytesIO()
+
         grid_image.save(buf, format=format, **parameters)
         grid_data = buf.getvalue()
         del buf

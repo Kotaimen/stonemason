@@ -10,10 +10,10 @@ import os
 import json
 import unittest
 
-import six
-
 from stonemason.service.tileserver import TileServerApp
 from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
+
+from tests import skipUnlessHasGDAL
 
 
 class TestTileServerAppSetup(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestTileServerAppSetup(unittest.TestCase):
         app = TileServerApp()
         self.assertEqual(False, app.config['STONEMASON_DEBUG'])
         self.assertEqual(False, app.config['STONEMASON_TESTING'])
-        self.assertEqual('.', app.config['STONEMASON_THEMES'])
+        self.assertEqual('.', app.config['STONEMASON_GALLERY'])
         self.assertEqual(None, app.config['STONEMASON_CACHE'])
         self.assertEqual(0, app.config['STONEMASON_VERBOSE'])
 
@@ -38,10 +38,11 @@ class TestTileServerAppSetup(unittest.TestCase):
         self.assertIn('STONEMASON_DEBUG', app.config)
 
 
+@skipUnlessHasGDAL()
 class TestTileServerApp(unittest.TestCase):
     def setUp(self):
         self.app = TileServerApp(
-            STONEMASON_THEMES=SAMPLE_THEME_DIRECTORY,
+            STONEMASON_GALLERY=SAMPLE_THEME_DIRECTORY,
             STONEMASON_TESTING=True)
 
         self.client = self.app.test_client()
@@ -55,36 +56,25 @@ class TestTileServerApp(unittest.TestCase):
         for theme in themes:
             self.assertIn('name', theme)
             self.assertIn('metadata', theme)
-            self.assertIn('pyramid', theme)
-            self.assertIn('cache', theme)
-            self.assertIn('storage', theme)
+            self.assertIn('schemas', theme)
+
 
     def test_get_theme(self):
-        resp = self.client.get('/themes/antique')
+        resp = self.client.get('/themes/sample')
         data = json.loads(resp.data.decode('utf-8'))
 
         theme = data['result']
 
         self.assertIn('name', theme)
         self.assertIn('metadata', theme)
-        self.assertIn('pyramid', theme)
-        self.assertIn('cache', theme)
-        self.assertIn('storage', theme)
-
-    def test_get_tile_tags(self):
-        resp = self.client.get('/tiles')
-        data = json.loads(resp.data.decode('utf-8'))
-
-        tags = data['result']
-
-        self.assertIn('antique', tags)
-
+        self.assertIn('schemas', theme)
+        
     def test_get_tile(self):
         resp = self.client.get('/tiles/antique/1/1/1.jpg')
         self.assertEqual(404, resp.status_code)
 
     def test_get_map(self):
-        resp = self.client.get('/maps/antique')
+        resp = self.client.get('/maps/sample')
         self.assertEqual(200, resp.status_code)
 
     def test_health_check(self):

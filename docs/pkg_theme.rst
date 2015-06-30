@@ -1,18 +1,22 @@
 Theme System
 ************
 
-:mod:`stonemason.mason.theme`
+.. module:: stonemason.mason.theme
 
-A `Theme` is the main configuration for stonemason. It defines a large amount
-of configs for a :class:`~stonemason.provider.tileprovider.TileProvider` to
-serve tiles from different kinds of storage.
+The `Theme` module is the configuration module for stonemason. By setting up
+configurations in a theme file, you tell stonemason how and where to load all
+the map books and also critical information to assemble various components of
+these map books.
 
 
 Exceptions
 ==========
 
 .. autoclass:: stonemason.mason.theme.ThemeError
-    :members:
+
+.. autoclass:: stonemason.mason.theme.ThemeConfigNotFound
+
+.. autoclass:: stonemason.mason.theme.InvalidThemeConfig
 
 
 Theme
@@ -22,43 +26,21 @@ Theme
     :members:
 
 
+Curator
+=======
 
-Theme Element
-=============
-
-.. autoclass:: stonemason.mason.theme.ThemeElement
+.. autoclass:: stonemason.mason.theme.Curator
     :members:
 
-.. autoclass:: stonemason.mason.theme.ThemeMetadata
-    :members:
-
-.. autoclass:: stonemason.mason.theme.ThemePyramid
-    :members:
-
-.. autoclass:: stonemason.mason.theme.ThemeCache
-    :members:
-
-.. autoclass:: stonemason.mason.theme.ThemeStorage
+.. autoclass:: stonemason.mason.theme.FileSystemCurator
     :members:
 
 
-Theme Loader
-============
+Gallery
+=======
 
-.. autoclass:: stonemason.mason.theme.ThemeLoader
+.. autoclass:: stonemason.mason.theme.Gallery
     :members:
 
-.. autoclass:: stonemason.mason.theme.JsonThemeLoader
-
-.. autoclass:: stonemason.mason.theme.LocalThemeLoader
-
-
-Theme Manager
-=============
-
-.. autoclass:: stonemason.mason.theme.ThemeManager
+.. autoclass:: stonemason.mason.theme.MemGallery
     :members:
-
-.. autoclass:: stonemason.mason.theme.MemThemeManager
-
-

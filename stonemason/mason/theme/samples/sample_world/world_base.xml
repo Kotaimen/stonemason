@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Map[]>
+<Map srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over" background-color="#add8e6" buffer-size="256" maximum-extent="-20037508.34,-20037508.34,20037508.34,20037508.34">
+
+<Parameters>
+  <Parameter name="bounds">-180,-85.0511,180,85.0511</Parameter>
+  <Parameter name="center">0,0,2</Parameter>
+  <Parameter name="format">png8</Parameter>
+  <Parameter name="minzoom">0</Parameter>
+  <Parameter name="maxzoom">22</Parameter>
+  <Parameter name="scale">2</Parameter>
+  <Parameter name="metatile">1</Parameter>
+  <Parameter name="id"><![CDATA[World]]></Parameter>
+  <Parameter name="_updated">1429720461000</Parameter>
+  <Parameter name="tilejson"><![CDATA[2.0.0]]></Parameter>
+  <Parameter name="scheme"><![CDATA[xyz]]></Parameter>
+</Parameters>
+
+
+<Style name="countries-land" filter-mode="first">
+  <Rule>
+    <PolygonSymbolizer fill="#ffffe0" gamma="0.5" clip="false" />
+  </Rule>
+</Style>
+<Style name="countries-effect_shadow" filter-mode="first" image-filters="agg-stack-blur(16,16)" comp-op="multiply">
+  <Rule>
+    <PolygonSymbolizer fill="#add8e6" clip="false" />
+  </Rule>
+</Style>
+<Layer name="countries"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    <StyleName>countries-effect_shadow</StyleName>
+    <StyleName>countries-land</StyleName>
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_countries_lakes.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[countries]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="encoding"><![CDATA[iso-8859-1]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="admin0_boundary"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_boundary_lines_land.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[ne50madmin0boundaryl]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="admin0_boundary_disputed"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_boundary_lines_disputed_areas.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[ne50madmin0boundaryl2]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="graticules_10"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_graticules_10.shp]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="geographic_lines"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_geographic_lines.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[geographic_lines]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="country_labels"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_admin_0_countries_lakes.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[countries2]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="encoding"><![CDATA[iso-8859-1]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+<Layer name="places"
+  srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+    
+    <Datasource>
+       <Parameter name="file"><![CDATA[ne_50m_populated_places_simple.shp]]></Parameter>
+       <Parameter name="id"><![CDATA[places]]></Parameter>
+       <Parameter name="project"><![CDATA[World]]></Parameter>
+       <Parameter name="srs"><![CDATA[]]></Parameter>
+       <Parameter name="encoding"><![CDATA[iso-8859-1]]></Parameter>
+       <Parameter name="type"><![CDATA[shape]]></Parameter>
+    </Datasource>
+  </Layer>
+
+</Map>

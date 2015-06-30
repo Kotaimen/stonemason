@@ -11,38 +11,41 @@ from click.testing import CliRunner
 
 from stonemason.cli import cli
 
+from tests import skipUnlessHasMapnik
 
+@skipUnlessHasMapnik()
 class TestStonemasonCLI(unittest.TestCase):
     def test_main(self):
         runner = CliRunner()
         result = runner.invoke(cli, [])
         self.assertEqual(result.exit_code, 0)
 
+    def test_init_command(self):
+        runner = CliRunner()
+        with runner.isolated_filesystem():
+            result = runner.invoke(cli, ['--gallery=gallery_', '-v', 'check'], )
+            self.assertNotEqual(result.exit_code, 0)
+
+            result = runner.invoke(cli, ['--gallery=gallery_', 'init'])
+            self.assertEqual(result.exit_code, 0)
+            self.assertTrue(os.path.exists('gallery_'))
+
     def test_check_command(self):
         runner = CliRunner()
         with runner.isolated_filesystem():
-            result = runner.invoke(cli, ['--themes=themes_', '-v', 'check'], )
+            result = runner.invoke(cli, ['--gallery=gallery_', '-v', 'check'], )
             self.assertNotEqual(result.exit_code, 0)
 
-            result = runner.invoke(cli, ['--themes=themes_', 'init'])
+            result = runner.invoke(cli, ['--gallery=gallery_', 'init'])
             self.assertEqual(result.exit_code, 0)
-            self.assertTrue(os.path.exists('themes_'))
+            self.assertTrue(os.path.exists('gallery_'))
 
             result = runner.invoke(cli, ['init'],
-                                   env={'STONEMASON_THEMES': 'themes_'})
+                                   env={'STONEMASON_GALLERY': 'gallery_'})
             self.assertNotEqual(result.exit_code, 0)
 
-            result = runner.invoke(cli, ['--themes=themes_', '-v', 'check'], )
+            result = runner.invoke(cli, ['--gallery=gallery_', '-v', 'check'], )
             self.assertEqual(result.exit_code, 0)
-
-    # def test_tileserver_command(self):
-    #     runner = CliRunner()
-    #     with runner.isolated_filesystem():
-    #         result = runner.invoke(cli, ['init'])
-    #         self.assertEqual(result.exit_code, 0)
-    #
-    #         result = runner.invoke(cli, ['-dd', 'tileserver'])
-    #         self.assertEqual(result.exit_code, 0)
 
 
 if __name__ == '__main__':

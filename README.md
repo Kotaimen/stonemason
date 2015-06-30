@@ -19,9 +19,9 @@ Features:
 - Distributed render backend
 - Tile caching and permanent storage (done)
 - Debug server for map design (done)
-- Mapnik as raster renderer.
-- High quality relief renderer.
-- Image composer based on PIL and imagemagick.
+- Mapnik as raster renderer (done)
+- High quality relief renderer
+- Image composer based on PIL and imagemagick (done)
 - Zero configuration deployment (done)
 
 > TODO: Add a demo page here.

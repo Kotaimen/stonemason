@@ -6,22 +6,29 @@ Utilities
 
 Contains utility functions and classes.
 
-General
-=======
+Guessing Mimetypes
+==================
 
-.. automodule:: stonemason.util.guesstypes
+.. autofunction:: stonemason.util.guesstypes.guess_mimetype
+
+.. autofunction:: stonemason.util.guesstypes.guess_extension
+
+Temporary filename
+==================
+
+.. autofunction:: stonemason.util.tempfn.generate_temp_filename
+
+
+TicTac Timer
+============
+
+.. autofunction:: stonemason.util.timer.human_duration
+
+.. autoclass::  stonemason.util.timer.Timer
     :members:
 
-.. automodule:: stonemason.util.tempfn
-    :members:
 
-Geo
-===
-
-.. automodule:: stonemason.util.geo.hilbert
-    :members:
-
-Postprocessing
+Image Cropping
 ==============
 
 .. automodule:: stonemason.util.postprocessing.gridcrop

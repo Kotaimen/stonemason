@@ -12,6 +12,8 @@ __author__ = 'kotaimen'
 __date__ = '3/2/15'
 
 import multiprocessing
+import pprint
+import os
 
 import click
 import gunicorn.app.base
@@ -21,6 +23,7 @@ from stonemason.service.tileserver import TileServerApp
 
 from ..main import cli
 from ..context import pass_context, Context
+
 
 class TileServer(gunicorn.app.base.BaseApplication):
     """Integrated gunicorn application server"""
@@ -42,6 +45,16 @@ class TileServer(gunicorn.app.base.BaseApplication):
         return self.application
 
 
+def write_wsgi_file(app_config, write_wsgi):
+    with open(write_wsgi, 'w') as fp:
+        fp.write('''#! -*- coding: ascii -*-
+from stonemason.service.tileserver import TileServerApp
+config = \
+%s
+application = TileServerApp(**config)
+''' % pprint.pformat(app_config, indent=4))
+
+
 @cli.command('tileserver', short_help='frontend tile server.')
 @click.option('-b', '--bind', default='127.0.0.1:7086', type=str,
               help='address and port to bind to.')
@@ -60,11 +73,28 @@ class TileServer(gunicorn.app.base.BaseApplication):
               host1:port1;host2:port2.
               Read from envvar STONEMASON_CACHE.
               ''')
+@click.option('--max-age', default=300, type=int,
+              envvar='STONEMASON_MAX_AGE',
+              help='''Max-age of cache control header returned by tile api,
+              default is 300. Set to 0 disables cache control header,
+              which is the default behaviour when debugging
+              tile server is used (specified by -dd option).''')
 @click.option('--read-only', is_flag=True,
+              envvar='STONEMASON_READ_ONLY',
               help='start the server in read only mode.', )
+@click.option('--write-wsgi',
+              type=click.Path(dir_okay=False, resolve_path=True, writable=True),
+              default=None,
+              help='''Write a WSGI application file using current given
+              configuration and exit.''')
+@click.option('--dry-run', is_flag=True, default=False,
+              help='''Create the server instance without running it,
+              then exit.''')
 @pass_context
-def tile_server_command(ctx, bind, read_only, workers, threads, cache):
-    """Starts tile server using given themes configuration.
+def tile_server_command(ctx, bind, read_only, workers,
+                        threads, cache, max_age,
+                        write_wsgi, dry_run):
+    """Starts tile server using given gallery configuration.
 
     Debug option:
 
@@ -92,24 +122,52 @@ def tile_server_command(ctx, bind, read_only, workers, threads, cache):
     host, port = bind.split(':')
     port = int(port)
 
+    # disable cache control when debugging
+    if ctx.debug > 1:
+        max_age = 0
+
     app_config = {
-        'STONEMASON_THEMES': ctx.themes,
+        'STONEMASON_GALLERY': ctx.gallery,
         'STONEMASON_READ_ONLY': read_only,
         'STONEMASON_DEBUG': bool(ctx.debug),
         'STONEMASON_VERBOSE': ctx.verbose,
         'STONEMASON_CACHE': cache,
+        'STONEMASON_MAX_AGE': max_age,
     }
 
     # Flask based WSGI application
     app = TileServerApp(**app_config)
 
-    if ctx.debug > 1:
-        # run Flask server in debug mode
+    # write wsgi file
+    if write_wsgi:
+        if ctx.verbose:
+            click.secho('Writing WSGI application to %s' % write_wsgi,
+                        fg='green')
+        write_wsgi_file(app_config, write_wsgi)
+        return 0
+
+    elif ctx.debug > 1:
+        # run in flask debug mude
         if ctx.verbose:
             click.secho('Starting Flask debug tile server.', fg='green')
-        app.run(host=host, port=port, debug=ctx.debug)
+
+        extra_files = list()
+        for root, dirs, files in os.walk(ctx.gallery):
+            if 'cache' in dirs:
+                dirs.remove('cache')  # don't visit CVS directories
+            for filename in files:
+                if filename.endswith('.mason'):
+                    extra_files.append(os.path.join(root, filename))
+        if ctx.verbose:
+                click.secho('Watching %d extra files.' % len(extra_files), fg='green')
+
+        if not dry_run:
+            app.run(host=host, port=port,
+                    debug=ctx.debug,
+                    extra_files=extra_files)
+
     else:
-        # otherwise, start gunicorn server
+        # start a gunicorn server
 
         if workers == 0:
             # by default, use cpu num * 2
@@ -131,4 +189,5 @@ def tile_server_command(ctx, bind, read_only, workers, threads, cache):
             'preload_app': False
         }
         server = TileServer(app, options)
-        server.run()
+        if not dry_run:
+            server.run()

@@ -4,7 +4,7 @@
     stonemason.cli.commands.tileserver
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Check themes configuration.
+    Check gallery configuration.
 """
 
 __author__ = 'kotaimen'
@@ -18,30 +18,42 @@ from ..main import cli
 from ..context import pass_context, Context
 
 from stonemason.mason import Mason
-from stonemason.mason.theme import MemThemeManager, LocalThemeLoader
+from stonemason.mason.theme import MemGallery, FileSystemCurator
 
 
-@cli.command('check', short_help='check theme configuration.')
+@cli.command('check', short_help='check gallery configuration.')
 @pass_context
 def check_command(ctx):
-    """Check whether the theme configuration is valid without start the server.
+    """Check whether the gallery configuration is valid without start
+    tile server or rendering.
     """
-    click.echo('Checking themes configuration at %s...' % ctx.themes)
+    click.echo('Checking configuration at %s...' % ctx.gallery)
 
-    if not os.path.exists(ctx.themes):
+    if not os.path.exists(ctx.gallery):
         raise click.Abort()
 
-    manager = MemThemeManager()
-    loader = LocalThemeLoader(ctx.themes)
-    loader.load_into(manager)
+    gallery = MemGallery()
+    loader = FileSystemCurator(ctx.gallery)
+    loader.add_to(gallery)
 
     mason = Mason()
-    for theme in manager.iterthemes():
-        if ctx.verbose > 0:
-            click.secho('name="%s"' % theme.name, fg='green')
-            click.secho('\t%r' % theme.pyramid, fg='green')
-            click.secho('\t%r' % theme.metadata, fg='green')
-            click.secho('\t%r' % theme.storage, fg='green')
-            mason.load_theme(theme)
+    for theme_name in gallery:
+        theme = gallery.get(theme_name)
+        mason.load_map_book_from_theme(theme)
+
+        book = mason[theme_name]
+
+        click.echo('Theme: %s' % book.name)
+        if ctx.verbose:
+            click.secho('\t%s' % repr(book.metadata), fg='green')
+
+        for n, m in enumerate(theme.schemas):
+            click.echo('\tSchema: %s %s' % (book.name, m.tag))
+            if ctx.verbose:
+                click.secho('\t\tmaptype=%s' % repr(m.maptype), fg='green')
+                click.secho('\t\ttileformat=%s' % repr(m.tileformat), fg='green')
+                click.secho('\t\tpyramid=%s' % repr(m.pyramid), fg='green')
+                click.secho('\t\tstorage=%s' % repr(m.storage), fg='green')
+                click.secho('\t\trenderer=%s' % repr(m.renderer), fg='green')
 
     click.echo('Check completed.')

@@ -1,0 +1,93 @@
+# -*- encoding: utf-8 -*-
+
+# Theme definition
+THEME = dict(
+    # name tag of the theme, must be a valid identifier
+    name='proj',
+    metadata=dict(
+        # display name
+        title='Sample: Projections',
+        # version string
+        version='0.2.0',
+        # simple description
+        abstract='Sample theme with various scale and projections.',
+        # data attribution
+        attribution='Map Design: K&R, Data: Natural Earth',
+        # initial origin in (lon, lat)
+        origin=(0, 0),
+        # initlal zoom level
+        origin_zoom=3
+    ),
+    # list of schemas in the theme
+    schemas=[
+    ]
+)
+
+# Map type, must be "image" for mapnik cartographer
+maptype = 'image'
+
+# Format of the tile data
+tileformat = dict(format='PNG', parameters={'optimized': True})
+
+
+# Projections
+PROJECTIONS = [
+    ('Google Mercator', 3857, (-1456000, 6340000, 194000, 8600000)),
+    ('North Pole LAEA Atlantic', 3574, (-3500000, -3500000, 3500000, 3500000)),
+    ('South Pole Lambert Azimuthal Equal Area', 102020,
+     (-2750000, -2750000, 2750000, 2750000)),
+    ('Eckert II', 54014, (-18500000, -10000000, 18500000, 10000000)),
+    ('World Cassini', 54028, (-10000000, -10000000, 10000000, 10000000)),
+    ('USA Contiguous Equal Area Conic', 102003,
+     (-6500000, -3500000, 3500000, 4000000)),
+    ('USA Contiguous Equidistant Conic', 102005,
+     (-6500000, -3500000, 3500000, 4000000)),
+    ('Japan Plane Rectangular CS XVIII', 30178,
+     (-1000000, 600000, 1150000, 3000000)),
+    ('Australian Albers', 3577,
+     (-3000000, -5500000, 3000000, -700000)),
+]
+
+for scale in [2, ]:
+    for proj, epsg, bounds in PROJECTIONS:
+        scale_tag = '' if (scale == 1) else ('@%dx' % scale)
+        tag = '_EPSG:%d(%s)%s.png' % (epsg,
+                                      proj.replace(' ', '_'),
+                                      scale_tag)
+        tileformat = tileformat
+
+        schema = dict(
+            # tag of the schema, will be append to theme name
+            tag=tag,
+            # pyramid
+            pyramid=dict(
+                # size of the metatile when rendering in tile server
+                stride=1,
+                # geographic coordinate system
+                geogcs='WGS84',
+                # projection coordinate system
+                projcs='EPSG:%d' % epsg,
+                # map boundary
+                projbounds=bounds,
+                # zoom levels
+                levels=range(2, scale + 8)
+            ),
+            # maptype
+            maptype=maptype,
+            # tile format
+            tileformat=tileformat,
+            # tile renderer
+            renderer=dict(
+                prototype=maptype,
+                layers=dict(
+                    root={
+                        'prototype': 'mapnik',
+                        'style_sheet': "{{ theme_root }}/sample_world.xml",
+                        'default_scale': scale,
+                        'buffer_size': 256 * scale
+                    }
+                )
+            )
+        )
+        THEME['schemas'].append(schema)
+
