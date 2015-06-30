@@ -70,7 +70,7 @@ class Mason(MasonMapLibrary):
         try:
             tile = self._cache.get(key, index)
         except TileCacheError as e:
-            # XXX: write some warning to log
+            self._logger.warning('Get from cache failed %r' % e)
             tile = None
 
         if tile is not None:
@@ -101,8 +101,7 @@ class Mason(MasonMapLibrary):
                 try:
                     tile = self._cache.get(key, index)
                 except TileCacheError as e:
-                    # XXX: write some warning to log
-                    pass
+                    self._logger.warning('Get from cache failed %r' % e)
                 else:
                     if tile is not None:
                         return tile
@@ -117,8 +116,7 @@ class Mason(MasonMapLibrary):
             try:
                 self._cache.put_multi(key, cluster.tiles)
             except TileCacheError:
-                # XXX: write some warning to log
-                pass
+                self._logger.warning('Write to cache failed %r' % e)
         finally:
             if self._backoff:
                 self._cache.unlock(key, lock_index, cas)
