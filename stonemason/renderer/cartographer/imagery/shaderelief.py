@@ -60,51 +60,56 @@ class RasterDataSource(object):
         target_geotransform = left, target_res_x, 0.0, top, 0.0, -target_res_y
         target_projection = target_crs.ExportToWkt()
 
-        driver = gdal.GetDriverByName('MEM')
-        target = driver.Create('',
-                               target_width, target_height, 1,
-                               gdal.GDT_Float32)
-        target.SetGeoTransform(target_geotransform)
-        target.SetProjection(target_projection)
+        try:
+            driver = gdal.GetDriverByName('MEM')
+            target = driver.Create('test',
+                                   target_width, target_height, 1,
+                                   gdal.GDT_Float32)
+            target.SetGeoTransform(target_geotransform)
+            target.SetProjection(target_projection)
 
-        target_band = target.GetRasterBand(1)
-        target_band.SetNoDataValue(self.NODATA_VALUE)
-        target_band.SetColorInterpretation(gdalconst.GCI_Undefined)
-        target_band.Fill(self.NODATA_VALUE)
+            target_band = target.GetRasterBand(1)
+            target_band.SetNoDataValue(self.NODATA_VALUE)
+            target_band.SetColorInterpretation(gdalconst.GCI_Undefined)
+            target_band.Fill(self.NODATA_VALUE)
 
-        self._index.SetSpatialFilter(filter_envelope)
+            self._index.SetSpatialFilter(filter_envelope)
 
-        for n, feature in enumerate(self._index):
-            # iterate raster data files covering the target area
+            for n, feature in enumerate(self._index):
+                # iterate raster data files covering the target area
 
-            location = os.path.join(self._basedir, feature.GetField('location'))
-            print n, location
+                location = os.path.join(
+                    self._basedir, feature.GetField('location'))
+                # print n, location
 
-            source = gdal.OpenShared(location, gdalconst.GA_ReadOnly)
-            source_projection = source.GetProjection()
+                try:
+                    source = gdal.OpenShared(location, gdalconst.GA_ReadOnly)
+                    source_projection = source.GetProjection()
 
-            resample = gdalconst.GRA_Bilinear
+                    resample = gdalconst.GRA_Bilinear
 
-            ret = gdal.ReprojectImage(source,
-                                      target,
-                                      source_projection,
-                                      target_projection,
-                                      resample,
-                                      1024)
+                    ret = gdal.ReprojectImage(source,
+                                              target,
+                                              source_projection,
+                                              target_projection,
+                                              resample,
+                                              1024)
+                finally:
+                    source = None
 
-            source = None
+            try:
+                gdal.FillNodata(target_band, None, 100, 0)
+            except RuntimeError:
+                # gdal raises exception for missing temporary files to remove,
+                # however FillNodata still works.
+                pass
 
-        gdal.FillNodata(
-            target_band,  # targetBand
-            None,  # maskBand
-            100,  # maxSearchDist
-            0)  # smoothingIterations
+            array = target.ReadAsArray()
 
-        array = target.ReadAsArray()
+            return array
 
-        target = None
-
-        return array
+        finally:
+            target = None
 
     def close(self):
         self._index_shp = None
