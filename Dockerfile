@@ -1,4 +1,4 @@
-FROM        kotaimen/stonemason-base:0.2.0.dev0
+FROM        kotaimen/stonemason-base:0.2.0rc1
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
 

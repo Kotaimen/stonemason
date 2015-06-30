@@ -5,6 +5,7 @@ __date__ = '4/10/15'
 
 import time
 import six
+import logging
 
 from collections import OrderedDict
 
@@ -50,16 +51,15 @@ class MasonMapLibrary(object):
         return name in self._library
 
 
-
 class Mason(MasonMapLibrary):
-    def __init__(self, cache=None, backoff=0.1, logger=None, readonly=False):
+    def __init__(self, cache=None, backoff=0.2, readonly=False):
         MasonMapLibrary.__init__(self)
         if cache is None:
             cache = NullTileCache()
         assert isinstance(cache, TileCache)
         self._cache = cache
         self._backoff = backoff
-        self._logger = logger
+        self._logger = logging.getLogger(__name__)
         self._readonly = readonly
 
     def get_tile(self, name, tag, z, x, y):
@@ -67,8 +67,12 @@ class Mason(MasonMapLibrary):
 
         # get tile from cache
         key = self._make_cache_key(name, tag)
+        try:
+            tile = self._cache.get(key, index)
+        except TileCacheError as e:
+            self._logger.warning('Get from cache failed %r' % e)
+            tile = None
 
-        tile = self._cache.get(key, index)
         if tile is not None:
             # cache hit
             return tile
@@ -94,9 +98,14 @@ class Mason(MasonMapLibrary):
                 # a rendering is already in progress, backoff
                 time.sleep(self._backoff)
                 # check cache again
-                tile = self._cache.get(key, index)
-                if tile is not None:
-                    return tile
+                try:
+                    tile = self._cache.get(key, index)
+                except TileCacheError as e:
+                    self._logger.warning('Get from cache failed %r' % e)
+                else:
+                    if tile is not None:
+                        return tile
+
         try:
             # get tile cluster
             cluster = sheet.get_tilecluster(meta_index)
@@ -107,7 +116,7 @@ class Mason(MasonMapLibrary):
             try:
                 self._cache.put_multi(key, cluster.tiles)
             except TileCacheError:
-                pass
+                self._logger.warning('Write to cache failed %r' % e)
         finally:
             if self._backoff:
                 self._cache.unlock(key, lock_index, cas)
@@ -128,10 +137,8 @@ class Mason(MasonMapLibrary):
         # render the metatile
         return sheet.render_metatile(meta_index)
 
-
     def _make_cache_key(self, name, tag):
         key = '%s%s' % (name, tag)
         if six.PY2 and isinstance(key, unicode):
             key = key.encode('ascii')
         return key
-

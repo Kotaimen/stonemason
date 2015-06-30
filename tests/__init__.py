@@ -77,16 +77,18 @@ def skipUnlessHasGDAL():
     return skipUnless(geo.HAS_GDAL, 'python-gdal not installed.')
 
 
-import memcache
+import pylibmc
 
-c = memcache.Client(servers=['127.0.0.1:11211'])
-r = c.get_stats()
-if r:
-    HAS_LOCAL_MEMCACHE = True
-else:
+c = pylibmc.Client(servers=['127.0.0.1:11211'])
+try:
+    c.get_stats()
+except pylibmc.Error:
     HAS_LOCAL_MEMCACHE = False
-del c, r
+else:
+    HAS_LOCAL_MEMCACHE = True
+finally:
+    del c
 
 
 def skipUnlessHasLocalMemcacheServer():
-    return skipUnless(HAS_LOCAL_MEMCACHE, 'imagemagick not installed.')
+    return skipUnless(HAS_LOCAL_MEMCACHE, 'memcache not installed.')
