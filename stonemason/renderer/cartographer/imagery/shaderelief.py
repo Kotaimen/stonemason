@@ -21,6 +21,7 @@ if GDAL_VERSION_NUM < 1100000:
     raise ImportError('ERROR: Require GDAL 1.10.0 or above')
 
 gdal.UseExceptions()
+ogr.UseExceptions()
 
 MAX_SCALE = 255
 
@@ -32,7 +33,9 @@ class RasterDataSource(object):
         driver = ogr.GetDriverByName("ESRI Shapefile")
         self._basedir = os.path.dirname(index)
         self._index_shp = driver.Open(index, gdalconst.GA_ReadOnly)
-        self._index = self._index_shp.GetLayerByName('index')
+        self._index = self._index_shp.GetLayer(0)
+        if self._index is None:
+            raise RuntimeError('Index layer not found!')
 
     def query(self, proj, envelope, size):
         left, bottom, right, top = envelope
