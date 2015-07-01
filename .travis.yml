@@ -16,7 +16,7 @@ before_install:
   - sudo apt-get update -qq
   
   # Install pillow binary requests
-  - sudo apt-get install -qq libjpeg-dev libz-dev libtiff-dev libfreetype6-dev liblcms-dev libwebp-dev libopenjpeg-dev
+  - sudo apt-get install -qq libjpeg-dev libz-dev libtiff-dev libfreetype6-dev liblcms-dev libwebp-dev libopenjpeg-dev libmemcached-dev
   
   # Install numpy/scipy (12.04 comes with very old scipy, but build from source
   # takes too much time, hopefully we don't need new version during development)
@@ -42,27 +42,17 @@ install:
 
 services:
   - memcached
-#  - redis-server
-  
-#addons:
-#  postgresql: "9.3"
 
 # whitelist
 branches:
   only:
     - master
     - develop
-    - feature/refactor_rendering_system
     - /^release.*$/
 
 before_script:
     - sudo apt-get install -qq wget
-    - wget -q http://download.osgeo.org/gdal/1.10.1/gdal-1.10.1.tar.gz
-    - tar xf gdal-1.10.1.tar.gz
-    - sudo cp gdal-1.10.1/data/*extra.wkt /usr/share/gdal/1.10/
-    - rm -rf gdal-1.10.1/
-#  - psql -U postgres -c 'create database travis_ci_test;'
-#  - psql -U postgres -d travis_ci_test -c "create extension postgis;"
+    - sudo wget -q http://cdn.masonmaps.me/dist/gdal-1.10.1/data/esri_extra.wkt -P /usr/share/gdal/1.10/
 
 script:
     - nosetests

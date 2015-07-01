@@ -26,7 +26,7 @@ RUN         apt-get update && \
 #
 RUN         apt-get update &&\
             apt-get -y install python-dev python-pip \
-                libz-dev \
+                libz-dev libmemcached-dev \
                 libjpeg-dev libtiff-dev libfreetype6-dev \
                 libwebp-dev liblcms2-dev imagemagick \
                 libgeos-dev libgdal-dev gdal-bin python-gdal \
@@ -48,9 +48,9 @@ RUN         apt-get update &&\
 # Speedup pip by install "must have" python packages first
 #
 RUN         pip install \
-                pillow flask boto gunicorn six Click python-memcached \
-                nose coverage tox Cython Pygments alabaster \
-                Sphinx sphinxcontrib-httpdomain moto
+                pillow flask boto boto3 moto gunicorn six Click python-memcached \
+                pylibmc nose coverage tox Cython Pygments alabaster \
+                Sphinx sphinxcontrib-httpdomain
 
 #
 # Check installed software

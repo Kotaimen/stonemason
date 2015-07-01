@@ -13,7 +13,7 @@ import re
 import json
 import random
 
-import memcache
+import pylibmc
 
 from stonemason.pyramid import Tile, TileIndex
 from .tilecache import TileCache, TileCacheError
@@ -26,7 +26,7 @@ class MemTileCacheError(TileCacheError):
 class MemTileCache(TileCache):
     """A tile cache based on `memcached` protocol backend.
 
-    Tile cache based on `memcached`_ protocol backend. The backend does not
+    Tile cache based on `pylibmc`_ protocol backend. The backend does not
     necessary being `memcached` itself, any storage or proxy talks its
     protocol will work, like `couchbase`_ or `nutcracker`_.
 
@@ -35,6 +35,7 @@ class MemTileCache(TileCache):
         ``memcached`` has a limit on cache object size, usually its ``4MB``.
 
     .. _memcached: <http://memcached.org/>
+    .. _pylibmc: <http://sendapatch.se/projects/pylibmc/>
     .. _couchbase: <http://www.couchbase.com/>
     .. _nutcracker:  <https://github.com/twitter/twemproxy>
 
@@ -52,21 +53,45 @@ class MemTileCache(TileCache):
 
     :param servers: A list of memcache cluster servers, default value is
         ``['localhost:11211',]``.
-
     :type servers: list
+
+    :param behaviors: `pylibmc` behaviors,
+        .. seealso:: `pylibmc` `behaviours <http://sendapatch.se/projects/pylibmc/behaviors.html>`_.
+    :type behaviors: dict or `None`
     """
 
     def __init__(self, servers=['localhost:11211'],
                  binary=True,
-                 min_compress_len=0,
                  behaviors=None):
         super(TileCache, self).__init__()
-        self.connection = memcache.Client(servers)
-        # Verify connection
-        data = self.connection.get_stats()
-        if not data:
-            raise MemTileCacheError("Can't connect to memcache servers.")
+        self._servers = servers
+        if behaviors is None:
+            self._behaviors = {
+                # 'tcp_nodelay': True,
+                'ketama': True,
+                # 'remove_failed': False,
+                'cas': True,
+                # 'retry_timeout': 1,
+                # 'dead_timeout': 60,
+            }
+        else:
+            self._behaviors = behaviors
+        self._binary = binary
 
+        self._connection = None
+
+    @property
+    def connection(self):
+        if self._connection is None:
+            self._connection = pylibmc.Client(self._servers,
+                                              binary=self._binary,
+                                              behaviors=self._behaviors)
+            # Verify connection
+            try:
+                self.connection.get_stats()
+            except pylibmc.Error as e:
+                raise MemTileCacheError("Can't connect to memcache servers.")
+        return self._connection
 
     def _make_key(self, tag, index):
         """Generate `memcached` keys from given `tag` and `index`.
@@ -108,7 +133,10 @@ class MemTileCache(TileCache):
         key, metadata_key, _ = self._make_key(tag, index)
 
         # get data and metadata in a single call
-        values = self.connection.get_multi([key, metadata_key])
+        try:
+            values = self.connection.get_multi([key, metadata_key])
+        except pylibmc.Error as e:
+            raise MemTileCacheError('Pylibmc error: %r' % e)
 
         try:
             data = values[key]
@@ -127,26 +155,36 @@ class MemTileCache(TileCache):
     def put(self, tag, tile, ttl=0):
         key, metadata_key, _ = self._make_key(tag, tile.index)
         metadata = self._make_metadata(tile)
-        data = {key: tile.data,
-                metadata_key: metadata}
+        data = {
+            key: tile.data,
+            metadata_key: metadata
+        }
+        try:
+            failed = self.connection.set_multi(data, time=ttl)
+        except pylibmc.Error as e:
+            raise MemTileCacheError('Pylibmc error: %r' % e)
 
-        failed = self.connection.set_multi(data, time=ttl)
         if len(failed) > 0:
             raise MemTileCacheError('Tile not writen: "%s"' % failed)
 
     def has(self, tag, index):
         _, metadata_key, _ = self._make_key(tag, index)
-        return self.connection.get(metadata_key) is not None
-
+        try:
+            return self.connection.get(metadata_key) is not None
+        except pylibmc.Error as e:
+            return None
 
     def retire(self, tag, index):
         key, metadata_key, _ = self._make_key(tag, index)
-
-        self.connection.delete_multi([key, metadata_key])
+        try:
+            self.connection.delete_multi([key, metadata_key])
+        except pylibmc.Error as e:
+            pass
 
     def put_multi(self, tag, tiles, ttl=0):
         assert tiles
         data = {}
+        n = 0
         for n, tile in enumerate(tiles):
             key, metadata_key, _ = self._make_key(tag, tile.index)
             data[key] = tile.data
@@ -154,7 +192,11 @@ class MemTileCache(TileCache):
         else:
             assert len(data) == (n + 1) * 2
 
-        failed = self.connection.set_multi(data, time=ttl)
+        try:
+            failed = self.connection.set_multi(data, time=ttl)
+        except pylibmc.Error as e:
+            raise MemTileCacheError('Pylibmc error: %r' % e)
+
         if len(failed) > 0:
             raise MemTileCacheError('Tile not writen: "%s"' % len(failed))
 
@@ -168,20 +210,32 @@ class MemTileCache(TileCache):
         _, _, lock_key = self._make_key(tag, index)
 
         # check lock
+        try:
+            ret = self.connection.get(lock_key)
+        except pylibmc.Error as e:
+            return 0
 
-        if self.connection.get(lock_key) is not None:
+        if ret is not None:
             # already locked
             return 0
         else:
             # XXX: potential random collision
             cas = random.getrandbits(31)
-            self.connection.set(lock_key, cas, time=ttl)
-            return cas
+            try:
+                self.connection.set(lock_key, cas, time=ttl)
+            except pylibmc.Error as e:
+                return 0
+            else:
+                return cas
 
     def unlock(self, tag, index, cas):
         _, _, lock_key = self._make_key(tag, index)
 
-        value = self.connection.get(lock_key)
+        try:
+            value = self.connection.get(lock_key)
+        except pylibmc.Error as e:
+            return True
+
         if value is None:
             # already unlocked
             return True
@@ -191,7 +245,10 @@ class MemTileCache(TileCache):
         else:
             # XXX: need "compare and delete" lock flag, potential inconsistency
             # delete the lock flag
-            self.connection.delete(lock_key)
+            try:
+                self.connection.delete(lock_key)
+            except pylibmc.Error as e:
+                pass
         return True
 
     def close(self):
