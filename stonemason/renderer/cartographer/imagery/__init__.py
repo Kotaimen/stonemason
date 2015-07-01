@@ -34,7 +34,7 @@ except ImportError:
     ShadeRelief = None
     HAS_SCIPY = False
 
-from .pilcarto import PILColor, PILInvert, PILBlend
+from .pilcarto import PILColor, PILInvert, PILBlend, PILComposer
 
 IMAGERY_LAYERS[PILColor.PROTOTYPE] = PILColor
 
@@ -42,5 +42,5 @@ IMAGERY_LAYERS[PILInvert.PROTOTYPE] = PILInvert
 
 IMAGERY_LAYERS[PILBlend.PROTOTYPE] = PILBlend
 
-
+IMAGERY_LAYERS[PILComposer.PROTOTYPE] = PILComposer
 

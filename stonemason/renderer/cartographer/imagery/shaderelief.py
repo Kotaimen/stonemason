@@ -65,7 +65,7 @@ class RasterDataSource(object):
 
         try:
             driver = gdal.GetDriverByName('MEM')
-            target = driver.Create('test',
+            target = driver.Create('',
                                    target_width, target_height, 1,
                                    gdal.GDT_Float32)
             target.SetGeoTransform(target_geotransform)

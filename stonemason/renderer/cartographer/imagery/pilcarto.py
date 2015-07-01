@@ -3,6 +3,7 @@
 __author__ = 'ray'
 __date__ = '4/20/15'
 
+import numpy as np
 from PIL import Image, ImageMath, ImageChops, ImageOps
 
 from ...layerexpr import ImageryLayer, TransformLayer, CompositeLayer
@@ -161,55 +162,62 @@ def pil_multiply(dst, src):
     return im
 
 
-# Just for test
 def pil_overlay(dst, src):
+    # from agg overlay
     assert isinstance(dst, Image.Image)
     assert isinstance(src, Image.Image)
 
-    POSITION = (253, 253)
+    dst_array = np.array(dst.convert('RGBA'))
+    src_array = np.array(src.convert('RGBA'))
 
-    print ('dst:', dst.getpixel(POSITION))
-    print ('src:', src.getpixel(POSITION))
+    base_mask = np.iinfo(dst_array.dtype).max
+    base_shift = base_mask.bit_length()
+    cal_type = np.int
+    val_type = dst_array.dtype
 
-    dst_bands = dst.split()
-    src_bands = src.split()
-    mask = dst.point(lambda i: i <= 127 and 255 or 0)
+    sr = src_array[..., 0].astype(cal_type)
+    sg = src_array[..., 1].astype(cal_type)
+    sb = src_array[..., 2].astype(cal_type)
+    sa = src_array[..., 3].astype(cal_type)
 
-    print ('mask:', mask.getpixel(POSITION))
+    dr = dst_array[..., 0].astype(cal_type)
+    dg = dst_array[..., 1].astype(cal_type)
+    db = dst_array[..., 2].astype(cal_type)
+    da = dst_array[..., 3].astype(cal_type)
 
-    def _multiply(d, s):
-        im = ImageMath.eval(
-            '2 * float(a) * float(b) / 255.0 + 0.5', a=d, b=s).convert('L')
-        return im
+    d1a = (base_mask - da).astype(cal_type)
+    s1a = (base_mask - sa).astype(cal_type)
+    sada = (sa * da).astype(cal_type)
 
-    def _screen(d, s):
-        im = ImageMath.eval(
-            '255 - (2 * (255.0 - float(a)) * (255.0 - float(b)) / 255.0) + 0.5',
-            a=d, b=s).convert('L')
-        return im
+    dr = np.where(
+        2 * dr < da,
+        2 * sr * dr + sr * d1a + dr * s1a,
+        sada - 2 * (da - dr) * (sa - sr) + sr * d1a + dr * s1a + base_mask)
+    dr = np.right_shift(dr, base_shift).astype(val_type)
 
-    def _composite(d, s, m):
-        im = ImageMath.eval(
-            'm * a / 255 + (255 - m) * b / 255', m=m, a=d, b=s).convert('L')
-        return im
+    dg = np.where(
+        2 * dg < da,
+        2 * sg * dg + sg * d1a + dg * s1a,
+        sada - 2 * (da - dg) * (sa - sg) + sg * d1a + dg * s1a + base_mask)
+    dg = np.right_shift(dg, base_shift).astype(val_type)
 
-    branch1 = Image.merge('RGBA', map(_multiply, dst_bands, src_bands))
-    print ('b1:', branch1.getpixel(POSITION))
+    db = np.where(
+        2 * db < da,
+        2 * sb * db + sb * d1a + db * s1a,
+        sada - 2 * (da - db) * (sa - sb) + sb * d1a + db * s1a + base_mask)
+    db = np.right_shift(db, base_shift).astype(val_type)
 
-    branch2 = Image.merge('RGBA', map(_screen, dst_bands, src_bands))
-    print ('b2:', branch2.getpixel(POSITION))
+    da = (sa + da -
+          np.right_shift(sa * da + base_mask, base_shift)).astype(val_type)
 
-    result = Image.merge('RGBA',
-                         map(_composite, branch1.split(), branch2.split(),
-                             mask.split()))
-    # result = Image.composite(branch1, branch2, mask)
+    result = np.dstack((dr, dg, db, da))
 
-    print ('result:', result.getpixel(POSITION))
-    return result
+    im = Image.fromarray(result, 'RGBA')
+    return im
 
 
 class PILComposer(CompositeLayer):
-    PROTOTYPE = 'pil.compose'
+    PROTOTYPE = 'pil.composer'
 
     SUPPORTED_MODES = {
         'over': pil_over,
@@ -217,6 +225,7 @@ class PILComposer(CompositeLayer):
         # Multiply and Screens
         'screen': pil_screen,
         'multiply': pil_multiply,
+        'overlay': pil_overlay,
 
         # Simple arithmetic blend modes
         'lighten': pil_lighten,
@@ -260,4 +269,5 @@ class PILComposer(CompositeLayer):
             bounds=context.map_bbox,
             size=context.map_size,
             data=dst)
+
         return feature
