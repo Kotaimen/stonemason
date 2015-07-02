@@ -25,6 +25,13 @@ ogr.UseExceptions()
 
 MAX_SCALE = 255
 
+VRT_SIMPLE_SOURCE_TEMPLATE = """
+<SimpleSource>
+    <SourceFilename relativeToVRT="1">%(filename)s</SourceFilename>
+    <SourceBand>%(band)d</SourceBand>
+</SimpleSource>
+"""
+
 
 class RasterDataSource(object):
     NODATA_VALUE = np.finfo(np.float32).min.item()
@@ -37,7 +44,7 @@ class RasterDataSource(object):
         if self._index is None:
             raise RuntimeError('Index layer not found!')
 
-    def query(self, proj, envelope, size):
+    def query(self, proj, envelope, size, band=1):
         left, bottom, right, top = envelope
 
         envelope_wkt = "POLYGON ((" \
@@ -64,6 +71,8 @@ class RasterDataSource(object):
         target_projection = target_crs.ExportToWkt()
 
         try:
+
+            # create memory data source
             driver = gdal.GetDriverByName('MEM')
             target = driver.Create('',
                                    target_width, target_height, 1,
@@ -73,31 +82,56 @@ class RasterDataSource(object):
 
             target_band = target.GetRasterBand(1)
             target_band.SetNoDataValue(self.NODATA_VALUE)
-            target_band.SetColorInterpretation(gdalconst.GCI_Undefined)
+            target_band.SetColorInterpretation(gdalconst.GCI_GrayIndex)
             target_band.Fill(self.NODATA_VALUE)
 
+            # find data source intersection with target envelope
             self._index.SetSpatialFilter(filter_envelope)
 
             for n, feature in enumerate(self._index):
-                # iterate raster data files covering the target area
 
                 location = os.path.join(
                     self._basedir, feature.GetField('location'))
-                # print n, location
 
                 try:
                     source = gdal.OpenShared(location, gdalconst.GA_ReadOnly)
                     source_projection = source.GetProjection()
 
+                    # create vrt for target band
+                    width, height = source.RasterXSize, source.RasterYSize
+                    vrt_driver = gdal.GetDriverByName('VRT')
+                    vrt_source = vrt_driver.Create(
+                        '', width, height, 1, gdalconst.GDT_Float32)
+                    vrt_source.SetGeoTransform(source.GetGeoTransform())
+                    vrt_source.SetProjection(proj)
+
+                    vrt_band = vrt_source.GetRasterBand(1)
+                    vrt_band.SetNoDataValue(
+                        source.GetRasterBand(band).GetNoDataValue())
+
+                    simple_source = VRT_SIMPLE_SOURCE_TEMPLATE % dict(
+                        filename=location,
+                        band=band,
+                        src_width=width,
+                        src_height=height,
+                        dst_width=width,
+                        dst_height=height,
+                    )
+                    metadata = vrt_band.GetMetadata()
+                    metadata['source_0'] = simple_source
+                    vrt_band.SetMetadata(metadata, 'vrt_sources')
+
+                    # projection
                     resample = gdalconst.GRA_Bilinear
 
-                    ret = gdal.ReprojectImage(source,
+                    ret = gdal.ReprojectImage(vrt_source,
                                               target,
                                               source_projection,
                                               target_projection,
                                               resample,
                                               1024)
                 finally:
+                    vrt_source = None
                     source = None
 
             try:
@@ -150,7 +184,7 @@ def hillshade(aspect, slope, azimuth, altitude):
     return shade
 
 
-class ShadeRelief(ImageryLayer):
+class ShadedRelief(ImageryLayer):
     PROTOTYPE = 'shaderelief'
 
     def __init__(self, name, index,
@@ -220,7 +254,6 @@ class ShadeRelief(ImageryLayer):
                                                  gain=self._sigmoid_gain,
                                                  inv=False) + self._sigmoid_base
 
-
         # tone mapping
         array = (MAX_SCALE * detail).astype(np.ubyte)
 
@@ -247,3 +280,4 @@ class ShadeRelief(ImageryLayer):
                                data=pil_image)
 
         return feature
+

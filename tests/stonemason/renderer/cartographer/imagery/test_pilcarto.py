@@ -84,7 +84,7 @@ class TestPILCompose(ImageTestCase):
         )
 
         dst = Image.open(dst_filename)
-        src = Image.open(src_filename).convert('RGBA')
+        src = Image.open(src_filename)
 
         result = pil_overlay(dst, src)
 
@@ -94,3 +94,4 @@ class TestPILCompose(ImageTestCase):
         self.assertEqual(expected.mode, result.mode)
         self.assertEqual(expected.format, result.format)
         self.assertImageEqual(expected, result)
+

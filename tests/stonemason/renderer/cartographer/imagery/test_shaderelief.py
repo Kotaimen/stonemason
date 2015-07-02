@@ -14,7 +14,7 @@ import skimage.exposure
 
 from tests import TEST_DIRECTORY
 
-from stonemason.renderer.cartographer.imagery.shaderelief import *
+from stonemason.renderer.cartographer.imagery.shadedrelief import *
 
 
 def array2image(array):
