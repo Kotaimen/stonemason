@@ -44,7 +44,13 @@ class RasterDataSource(object):
         if self._index is None:
             raise RuntimeError('Index layer not found!')
 
-    def query(self, proj, envelope, size, band=1):
+    def query(self, proj, envelope, size, bands=[1]):
+        if len(bands) == 0:
+            return []
+
+        if isinstance(bands, int):
+            bands = [bands]
+
         left, bottom, right, top = envelope
 
         envelope_wkt = "POLYGON ((" \
@@ -59,31 +65,33 @@ class RasterDataSource(object):
         target_crs = osr.SpatialReference()
         target_crs.SetFromUserInput(proj)
 
+        # transform filter envelope crs to index crs
         index_crs = self._index.GetSpatialRef()
         if not target_crs.IsSame(index_crs):
             transform = osr.CoordinateTransformation(target_crs, index_crs)
             filter_envelope.Transform(transform)
 
-        target_width, target_height = size
-        target_res_x = (right - left) / target_width
-        target_res_y = (top - bottom) / target_height
-        target_geotransform = left, target_res_x, 0.0, top, 0.0, -target_res_y
-        target_projection = target_crs.ExportToWkt()
-
         try:
 
             # create memory data source
+            target_width, target_height = size
+            target_res_x = (right - left) / target_width
+            target_res_y = (top - bottom) / target_height
+            target_geotransform = \
+                left, target_res_x, 0.0, top, 0.0, -target_res_y
+            target_projection = target_crs.ExportToWkt()
+
             driver = gdal.GetDriverByName('MEM')
             target = driver.Create('',
-                                   target_width, target_height, 1,
+                                   target_width, target_height, len(bands),
                                    gdal.GDT_Float32)
             target.SetGeoTransform(target_geotransform)
             target.SetProjection(target_projection)
 
-            target_band = target.GetRasterBand(1)
-            target_band.SetNoDataValue(self.NODATA_VALUE)
-            target_band.SetColorInterpretation(gdalconst.GCI_GrayIndex)
-            target_band.Fill(self.NODATA_VALUE)
+            for band_no in range(1, target.RasterCount + 1):
+                target_band = target.GetRasterBand(band_no)  # start from 1
+                target_band.SetNoDataValue(self.NODATA_VALUE)
+                target_band.Fill(self.NODATA_VALUE)
 
             # find data source intersection with target envelope
             self._index.SetSpatialFilter(filter_envelope)
@@ -101,25 +109,28 @@ class RasterDataSource(object):
                     width, height = source.RasterXSize, source.RasterYSize
                     vrt_driver = gdal.GetDriverByName('VRT')
                     vrt_source = vrt_driver.Create(
-                        '', width, height, 1, gdalconst.GDT_Float32)
+                        '', width, height, len(bands), gdalconst.GDT_Float32)
                     vrt_source.SetGeoTransform(source.GetGeoTransform())
                     vrt_source.SetProjection(proj)
 
-                    vrt_band = vrt_source.GetRasterBand(1)
-                    vrt_band.SetNoDataValue(
-                        source.GetRasterBand(band).GetNoDataValue())
+                    for n, band_no in enumerate(bands, start=1):
+                        # add source band to vrt band
+                        vrt_band = vrt_source.GetRasterBand(n)
+                        nodata = source.GetRasterBand(band_no).GetNoDataValue()
+                        if nodata is not None:
+                            vrt_band.SetNoDataValue(float(nodata))
 
-                    simple_source = VRT_SIMPLE_SOURCE_TEMPLATE % dict(
-                        filename=location,
-                        band=band,
-                        src_width=width,
-                        src_height=height,
-                        dst_width=width,
-                        dst_height=height,
-                    )
-                    metadata = vrt_band.GetMetadata()
-                    metadata['source_0'] = simple_source
-                    vrt_band.SetMetadata(metadata, 'vrt_sources')
+                        simple_source = VRT_SIMPLE_SOURCE_TEMPLATE % dict(
+                            filename=location,
+                            band=band_no,
+                            src_width=width,
+                            src_height=height,
+                            dst_width=width,
+                            dst_height=height,
+                        )
+                        metadata = vrt_band.GetMetadata()
+                        metadata['source_%d' % n] = simple_source
+                        vrt_band.SetMetadata(metadata, 'vrt_sources')
 
                     # projection
                     resample = gdalconst.GRA_Bilinear
@@ -134,16 +145,20 @@ class RasterDataSource(object):
                     vrt_source = None
                     source = None
 
-            try:
-                gdal.FillNodata(target_band, None, 100, 0)
-            except RuntimeError:
-                # gdal raises exception for missing temporary files to remove,
-                # however FillNodata still works.
-                pass
+            array_list = []
+            for band_no in range(1, target.RasterCount + 1):
+                target_band = target.GetRasterBand(band_no)
+                try:
+                    gdal.FillNodata(target_band, None, 100, 0)
+                except RuntimeError:
+                    # gdal raises exception for missing temporary files to remove,
+                    # however FillNodata still works.
+                    pass
 
-            array = target.ReadAsArray()
+                array = target_band.ReadAsArray()
+                array_list.append(array)
 
-            return array
+            return array_list
 
         finally:
             target = None
@@ -185,7 +200,7 @@ def hillshade(aspect, slope, azimuth, altitude):
 
 
 class ShadedRelief(ImageryLayer):
-    PROTOTYPE = 'shaderelief'
+    PROTOTYPE = 'shadedrelief'
 
     def __init__(self, name, index,
                  zfactor=1,
@@ -240,7 +255,7 @@ class ShadedRelief(ImageryLayer):
 
         # query elevation data in target envelope
         elevation = self._source.query(
-            context.map_proj, envelope, envelope_size)
+            context.map_proj, envelope, envelope_size, bands=[1])[0]
 
         # calculate hill shading
         zfactor = self._zfactor
@@ -265,7 +280,7 @@ class ShadedRelief(ImageryLayer):
 
         # convert arrary to pil image
         pil_image = Image.fromarray(array, mode='L')
-        pil_image = pil_image.convert('RGBA')
+        # pil_image = pil_image.convert('RGBA')
 
         pil_image = pil_image.filter(
             ImageFilter.UnsharpMask(
@@ -281,3 +296,66 @@ class ShadedRelief(ImageryLayer):
 
         return feature
 
+
+class ColoredRelief(ImageryLayer):
+    PROTOTYPE = 'coloredrelief'
+
+    def __init__(self, name, index, color_bands=None, alpha_band=None, buffer=0):
+        ImageryLayer.__init__(self, name)
+
+        if color_bands is None:
+            color_bands = [1, 2, 3]
+
+        if len(color_bands) != 3:
+            raise RuntimeError('Insufficient color bands number!')
+
+        self._source = RasterDataSource(index)
+        self._color_bands = color_bands
+        self._alpha_band = alpha_band
+        self._buffer = buffer
+
+    def render(self, context):
+        left, bottom, right, top = context.map_bbox
+        width, height = context.map_size
+
+        # calculate map resolution
+        res_x = (right - left) / width
+        res_y = (top - bottom) / height
+
+        # calculate buffered envelope size
+        buffer_x = res_x * self._buffer
+        buffer_y = res_y * self._buffer
+
+        # calculate buffered map envelope
+        envelope = (left - buffer_x,
+                    bottom - buffer_y,
+                    right + buffer_x,
+                    top + buffer_y)
+        # calculate buffered map size
+        envelope_size = width + 2 * self._buffer, height + 2 * self._buffer
+
+        # query elevation data in target envelope
+        query_bands = self._color_bands
+        if self._alpha_band is not None:
+            query_bands.append(self._alpha_band)
+
+        bands = self._source.query(
+            context.map_proj, envelope, envelope_size, bands=query_bands)
+
+        result = np.dstack(bands).astype(np.ubyte)
+        result = result[
+                 self._buffer:width + self._buffer,
+                 self._buffer:height + self._buffer]
+
+        if len(bands) == 4:
+            pil_image = Image.fromarray(result, 'RGBA')
+        else:
+            pil_image = Image.fromarray(result, 'RGB')
+            pil_image = pil_image.convert('RGBA')
+
+        feature = ImageFeature(crs=context.map_proj,
+                               bounds=context.map_bbox,
+                               size=context.map_size,
+                               data=pil_image)
+
+        return feature

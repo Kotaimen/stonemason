@@ -26,9 +26,10 @@ except ImportError:
     HAS_IMAGEMAGICK = False
 
 try:
-    from .shadedrelief import ShadedRelief
+    from .shadedrelief import ShadedRelief, ColoredRelief
 
     IMAGERY_LAYERS[ShadedRelief.PROTOTYPE] = ShadedRelief
+    IMAGERY_LAYERS[ColoredRelief.PROTOTYPE] = ColoredRelief
     HAS_SCIPY = True
 except ImportError:
     ShadeRelief = None
