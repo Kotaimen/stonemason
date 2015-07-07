@@ -10,8 +10,7 @@ from ...feature import ImageFeature
 from .imagemagick import ImageMagickComposer
 
 
-class Composer(CompositeLayer):
-
+class IMComposer(CompositeLayer):
     PROTOTYPE = 'imagemagick'
 
     def __init__(self, name, layers, command=None, tempdir=None, tempfmt='png'):

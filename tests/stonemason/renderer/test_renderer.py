@@ -13,19 +13,8 @@ class TestMasonRenderer(ImageTestCase):
     def setUp(self):
         expr = {
             'root': {
-                'prototype': 'pil.blend',
-                'sources': ['l1', 'l2'],
-
-            },
-            'l1': {
-                'prototype': 'pil.invert',
-                'source': 'l3'
-            },
-            'l2': {
-                'prototype': 'pil.color',
-            },
-            'l3': {
-                'prototype': 'pil.color',
+                'prototype': 'basic.color',
+                'color': '#00f'
             }
         }
 
@@ -40,7 +29,6 @@ class TestMasonRenderer(ImageTestCase):
 
         feature = self.renderer.render(context)
 
-        expected = Image.new('RGB', (256, 256), (127, 127, 127))
+        expected = Image.new('RGBA', (256, 256), '#00f')
 
         self.assertImageEqual(expected, feature.data)
-

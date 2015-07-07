@@ -5,6 +5,14 @@ __date__ = '4/21/15'
 
 IMAGERY_LAYERS = {}
 
+from .basic import Color, Blend, Filter
+
+IMAGERY_LAYERS[Color.PROTOTYPE] = Color
+
+IMAGERY_LAYERS[Filter.PROTOTYPE] = Filter
+
+IMAGERY_LAYERS[Blend.PROTOTYPE] = Blend
+
 try:
     from .mapnik_ import Mapnik_, MapnikComposer
 
@@ -17,9 +25,9 @@ except ImportError:
     HAS_MAPNIK = False
 
 try:
-    from .composer import Composer
+    from .imcomposer import IMComposer
 
-    IMAGERY_LAYERS[Composer.PROTOTYPE] = Composer
+    IMAGERY_LAYERS[IMComposer.PROTOTYPE] = IMComposer
     HAS_IMAGEMAGICK = True
 except ImportError:
     Composer = None
@@ -35,13 +43,13 @@ except ImportError:
     ShadeRelief = None
     HAS_SCIPY = False
 
-from .pilcarto import PILColor, PILInvert, PILBlend, PILComposer
+try:
+    from .pilcomposer import PILComposer
 
-IMAGERY_LAYERS[PILColor.PROTOTYPE] = PILColor
-
-IMAGERY_LAYERS[PILInvert.PROTOTYPE] = PILInvert
-
-IMAGERY_LAYERS[PILBlend.PROTOTYPE] = PILBlend
-
-IMAGERY_LAYERS[PILComposer.PROTOTYPE] = PILComposer
-
+    IMAGERY_LAYERS[PILComposer.PROTOTYPE] = PILComposer
+    HAS_SCIPY = True
+    HAS_SKIMAGE = True
+except ImportError:
+    PILComposer = None
+    HAS_SCIPY = False
+    HAS_SKIMAGE = False

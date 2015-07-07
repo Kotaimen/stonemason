@@ -63,11 +63,15 @@ THEME = dict(
                         'index': "/Users/ray/proj/geodata/Stage/NaturalEarth3.1/index.shp",
                         'buffer': 8,
                     },
-                    root={
+                    root_={
                         'prototype': 'pil.composer',
-                        'sources': ['shade', 'color'],
+                        'sources': ['color', 'shade'],
                         'command': ['overlay']
-
+                    },
+                    root={
+                        'prototype': 'basic.filter',
+                        'source': 'root_',
+                        'filter_name': 'SMOOTH',
                     }
                 )
             )

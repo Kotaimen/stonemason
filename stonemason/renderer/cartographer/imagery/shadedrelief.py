@@ -261,13 +261,16 @@ class ShadedRelief(ImageryLayer):
         zfactor = self._zfactor
         aspect, slope = aspect_and_slope(
             elevation, res_x, res_y, zfactor, self._scale)
-        detail = hillshade(aspect, slope, self._azimuth, self._altitude)
+        detail = hillshade(aspect, slope, self._azimuth, 45)
+        specular = hillshade(aspect, slope, self._azimuth, 85)
 
         # exposure
         detail = skimage.exposure.adjust_sigmoid(detail,
                                                  cutoff=self._sigmoid_cutoff,
                                                  gain=self._sigmoid_gain,
                                                  inv=False) + self._sigmoid_base
+
+
 
         # tone mapping
         array = (MAX_SCALE * detail).astype(np.ubyte)

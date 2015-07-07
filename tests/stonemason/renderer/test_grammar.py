@@ -16,19 +16,26 @@ class TestGrammar(ImageTestCase):
     def test(self):
         e = {
             'root': {
-                'prototype': 'pil.blend',
+                'prototype': 'basic.blend',
+                'sources': ['c1', 'l3'],
+                'alpha': 0
+            },
+            'c1': {
+                'prototype': 'basic.blend',
                 'sources': ['l1', 'l2'],
-
+                'alpha': 1
             },
             'l1': {
-                'prototype': 'pil.invert',
-                'source': 'l3'
+                'prototype': 'basic.color',
+                'color': '#00f'
             },
             'l2': {
-                'prototype': 'pil.color',
+                'prototype': 'basic.color',
+                'color': '#f00'
             },
             'l3': {
-                'prototype': 'pil.color',
+                'prototype': 'basic.color',
+                'color': '#0f0'
             }
         }
 
@@ -42,7 +49,7 @@ class TestGrammar(ImageTestCase):
 
         feature = layer.render(context)
 
-        expected = Image.new('RGB', (256, 256), (127, 127, 127))
+        expected = Image.new('RGBA', (256, 256), '#0f0')
 
         self.assertImageEqual(feature.data, expected)
 

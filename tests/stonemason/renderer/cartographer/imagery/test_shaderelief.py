@@ -3,18 +3,14 @@
 __author__ = 'ray'
 __date__ = '6/28/15'
 
-import os
 import unittest
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import ndimage
+
 from PIL import Image as im
+from tests import TEST_DIRECTORY, carto, skipUnlessHasScipy, \
+    skipUnlessHasSkimage
 
-import skimage.exposure
-
-from tests import TEST_DIRECTORY
-
-from stonemason.renderer.cartographer.imagery.shadedrelief import *
+if carto.HAS_SCIPY and carto.HAS_SKIMAGE:
+    from stonemason.renderer.cartographer.imagery.shadedrelief import *
 
 
 def array2image(array):
@@ -29,6 +25,7 @@ def array2png(array):
     image = im.fromarray(array, mode='L')
     image = image.convert('RGBA')
     return image
+
 
 #
 # def make_test_gradient_image():
@@ -71,6 +68,8 @@ def mock_elevation():
     return elevation
 
 
+@skipUnlessHasScipy()
+@skipUnlessHasSkimage()
 class TestAspectAndSlope(unittest.TestCase):
     def test_aspect_and_slope(self):
         elevation = mock_elevation()
@@ -79,6 +78,9 @@ class TestAspectAndSlope(unittest.TestCase):
             elevation, resx=1, resy=1, zfactor=1, scale=1)
 
         shade = hillshade(aspect, slope, 315, 45)
+
+        import skimage.exposure
+
         shade = skimage.exposure.adjust_sigmoid(shade, cutoff=0.8, gain=2,
                                                 inv=False) + 0.05
 
