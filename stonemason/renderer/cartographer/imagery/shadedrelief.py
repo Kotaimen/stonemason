@@ -5,6 +5,8 @@ __date__ = '6/17/15'
 
 import os
 import math
+import tempfile
+
 import numpy as np
 import skimage.exposure
 
@@ -22,6 +24,8 @@ if GDAL_VERSION_NUM < 1100000:
 
 gdal.UseExceptions()
 ogr.UseExceptions()
+
+gdal.SetConfigOption('CPL_TMPDIR', tempfile.gettempdir())
 
 MAX_SCALE = 255
 
@@ -303,7 +307,8 @@ class ShadedRelief(ImageryLayer):
 class ColoredRelief(ImageryLayer):
     PROTOTYPE = 'coloredrelief'
 
-    def __init__(self, name, index, color_bands=None, alpha_band=None, buffer=0):
+    def __init__(self, name, index, color_bands=None, alpha_band=None,
+                 buffer=0):
         ImageryLayer.__init__(self, name)
 
         if color_bands is None:
