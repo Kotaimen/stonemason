@@ -8,6 +8,7 @@ import math
 import tempfile
 
 import numpy as np
+import skimage
 import skimage.exposure
 
 from PIL import Image, ImageFilter
@@ -235,6 +236,22 @@ class ShadedRelief(ImageryLayer):
         self._sharpen_percent = sharpen_percent
         self._sharpen_threshold = sharpen_threshold
 
+    def array2pil(self, array, width, height):
+        #        array = (MAX_SCALE * detail).astype(np.ubyte)
+
+        # cropping to requested map size
+        array = array[
+                self._buffer:width + self._buffer,
+                self._buffer:height + self._buffer
+                ]
+
+        image = skimage.img_as_ubyte(array)
+
+        # convert arrary to pil image
+        pil_image = Image.fromarray(image, mode='L')
+
+        return pil_image
+
     def render(self, context):
         assert isinstance(context, RenderContext)
 
@@ -265,41 +282,35 @@ class ShadedRelief(ImageryLayer):
         zfactor = self._zfactor
         aspect, slope = aspect_and_slope(
             elevation, res_x, res_y, zfactor, self._scale)
-        detail = hillshade(aspect, slope, self._azimuth, 45)
-        specular = hillshade(aspect, slope, self._azimuth, 85)
+
+        detail = hillshade(aspect, slope, self._azimuth, self._altitude)
+
+        specular = hillshade(aspect, slope, 300 - self._azimuth, self._altitude)
 
         # exposure
         detail = skimage.exposure.adjust_sigmoid(detail,
                                                  cutoff=self._sigmoid_cutoff,
-                                                 gain=self._sigmoid_gain,
-                                                 inv=False) + self._sigmoid_base
+                                                 gain=self._sigmoid_gain)
 
+        specular = skimage.exposure.adjust_sigmoid(specular,
+                                                   cutoff=self._sigmoid_cutoff,
+                                                   gain=self._sigmoid_gain / 2.)
 
+        detail_image = self.array2pil(detail, width, height)
+        specular_image = self.array2pil(specular, width, height)
 
-        # tone mapping
-        array = (MAX_SCALE * detail).astype(np.ubyte)
+        mask = elevation / 1600.
+        mask[mask > 1] = 1
+        mask[mask < 0] = 0
 
-        # cropping to requested map size
-        array = array[
-                self._buffer:width + self._buffer,
-                self._buffer:height + self._buffer
-                ]
+        mask_image = self.array2pil(mask, width, height)
 
-        # convert arrary to pil image
-        pil_image = Image.fromarray(array, mode='L')
-        # pil_image = pil_image.convert('RGBA')
-
-        pil_image = pil_image.filter(
-            ImageFilter.UnsharpMask(
-                radius=self._sharpen_radius,
-                percent=self._sharpen_percent,
-                threshold=self._sharpen_threshold
-            ))
+        relief_image = Image.composite(detail_image, specular_image, mask_image)
 
         feature = ImageFeature(crs=context.map_proj,
                                bounds=context.map_bbox,
                                size=context.map_size,
-                               data=pil_image)
+                               data=relief_image)
 
         return feature
 
