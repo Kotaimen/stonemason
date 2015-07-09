@@ -5,7 +5,6 @@ __date__ = '6/17/15'
 
 import os
 import math
-import inspect
 import tempfile
 
 import numpy as np
@@ -290,8 +289,8 @@ class ShadedRelief(ImageryLayer):
 
         # query elevation data in target envelope
         source_index = self._source_index
-        if inspect.isfunction(self._source_index):
-            source_index = self._source_index(res_x, res_y)
+        if callable(source_index):
+            source_index = source_index(res_x, res_y)
 
         source = RasterDataSource(source_index)
         elevation = source.query(
@@ -299,7 +298,7 @@ class ShadedRelief(ImageryLayer):
 
         # calculate hill shading
         zfactor = self._zfactor
-        if inspect.isfunction(zfactor):
+        if callable(zfactor):
             zfactor = zfactor(res_x, res_y)
 
         aspect, slope = aspect_and_slope(elevation,
