@@ -5,6 +5,7 @@ __date__ = '6/17/15'
 
 import os
 import math
+import inspect
 import tempfile
 
 import numpy as np
@@ -44,6 +45,9 @@ class RasterDataSource(object):
         driver = ogr.GetDriverByName("ESRI Shapefile")
         self._basedir = os.path.dirname(index)
         self._index_shp = driver.Open(index, gdalconst.GA_ReadOnly)
+        if self._index_shp is None:
+            raise RuntimeError('Index not found: %s' % index)
+
         self._index = self._index_shp.GetLayer(0)
         if self._index is None:
             raise RuntimeError('Index layer not found!')
@@ -65,7 +69,7 @@ class RasterDataSource(object):
                        "%(lt)f %(bm)f" \
                        "))" % dict(lt=left, bm=bottom, rt=right, tp=top)
 
-        filter_envelope = ogr.CreateGeometryFromWkt(envelope_wkt)
+        filter_geom = ogr.CreateGeometryFromWkt(envelope_wkt)
         target_crs = osr.SpatialReference()
         target_crs.SetFromUserInput(proj)
 
@@ -73,7 +77,10 @@ class RasterDataSource(object):
         index_crs = self._index.GetSpatialRef()
         if not target_crs.IsSame(index_crs):
             transform = osr.CoordinateTransformation(target_crs, index_crs)
-            filter_envelope.Transform(transform)
+            filter_geom.Transform(transform)
+
+        filter_envelope = filter_geom.GetEnvelope()
+        filter_res = (filter_envelope[1] - filter_envelope[0]) / size[0]
 
         try:
 
@@ -98,23 +105,24 @@ class RasterDataSource(object):
                 target_band.Fill(self.NODATA_VALUE)
 
             # find data source intersection with target envelope
-            self._index.SetSpatialFilter(filter_envelope)
+            self._index.SetSpatialFilter(filter_geom)
 
             for n, feature in enumerate(self._index):
 
                 location = os.path.join(
                     self._basedir, feature.GetField('location'))
-
+                # print n, location
                 try:
                     source = gdal.OpenShared(location, gdalconst.GA_ReadOnly)
                     source_projection = source.GetProjection()
+                    source_geotransform = source.GetGeoTransform()
 
                     # create vrt for target band
                     width, height = source.RasterXSize, source.RasterYSize
                     vrt_driver = gdal.GetDriverByName('VRT')
                     vrt_source = vrt_driver.Create(
                         '', width, height, len(bands), gdalconst.GDT_Float32)
-                    vrt_source.SetGeoTransform(source.GetGeoTransform())
+                    vrt_source.SetGeoTransform(source_geotransform)
                     vrt_source.SetProjection(proj)
 
                     for n, band_no in enumerate(bands, start=1):
@@ -136,8 +144,14 @@ class RasterDataSource(object):
                         metadata['source_%d' % n] = simple_source
                         vrt_band.SetMetadata(metadata, 'vrt_sources')
 
-                    # projection
-                    resample = gdalconst.GRA_Bilinear
+                    # find resample methods.
+                    src_res_x = source_geotransform[1]
+                    if src_res_x > filter_res:
+                        # scale down
+                        resample = gdalconst.GRA_CubicSpline
+                    else:
+                        # scale up
+                        resample = gdalconst.GRA_Bilinear
 
                     ret = gdal.ReprojectImage(vrt_source,
                                               target,
@@ -220,7 +234,7 @@ class ShadedRelief(ImageryLayer):
                  sharpen_threshold=3
                  ):
         ImageryLayer.__init__(self, name)
-        self._source = RasterDataSource(index)
+        self._source_index = index
         self._zfactor = zfactor
         self._scale = scale
         self._azimuth = azimuth
@@ -258,15 +272,23 @@ class ShadedRelief(ImageryLayer):
         envelope_size = width + 2 * self._buffer, height + 2 * self._buffer
 
         # query elevation data in target envelope
-        elevation = self._source.query(
+        source_index = self._source_index
+        if inspect.isfunction(self._source_index):
+            source_index = self._source_index(res_x, res_y)
+
+        source = RasterDataSource(source_index)
+        elevation = source.query(
             context.map_proj, envelope, envelope_size, bands=[1])[0]
 
         # calculate hill shading
         zfactor = self._zfactor
+        if inspect.isfunction(zfactor):
+            zfactor = zfactor(res_x, res_y)
+
         aspect, slope = aspect_and_slope(
             elevation, res_x, res_y, zfactor, self._scale)
         detail = hillshade(aspect, slope, self._azimuth, 45)
-        specular = hillshade(aspect, slope, self._azimuth, 85)
+        # specular = hillshade(aspect, slope, self._azimuth, 85)
 
         # exposure
         detail = skimage.exposure.adjust_sigmoid(detail,
