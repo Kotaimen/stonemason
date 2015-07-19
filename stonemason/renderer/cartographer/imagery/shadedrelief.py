@@ -8,8 +8,11 @@ import math
 import tempfile
 
 import numpy as np
+
 import skimage
 import skimage.exposure
+import skimage.filters
+import skimage.segmentation
 
 from PIL import Image, ImageFilter
 from scipy import ndimage
@@ -27,8 +30,6 @@ gdal.UseExceptions()
 ogr.UseExceptions()
 
 gdal.SetConfigOption('CPL_TMPDIR', tempfile.gettempdir())
-
-MAX_SCALE = 255
 
 VRT_SIMPLE_SOURCE_TEMPLATE = """
 <SimpleSource>
@@ -191,6 +192,10 @@ class RasterDataSource(object):
         self.close()
 
 
+#
+# Helper functions
+#
+
 def aspect_and_slope(elevation, resx, resy, zfactor, scale):
     """ create aspect and slope from raster """
     kernel = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
@@ -206,7 +211,7 @@ def aspect_and_slope(elevation, resx, resy, zfactor, scale):
 
 
 def hillshade(aspect, slope, azimuth, altitude):
-    """ create hillshade from aspect and slope """
+    """Create hillshading from aspect and slope """
     zenith = math.radians(90. - float(altitude) % 360.)
     azimuth = math.radians(float(azimuth))
 
@@ -217,53 +222,47 @@ def hillshade(aspect, slope, azimuth, altitude):
     return shade
 
 
+def array2pil(array, width, height, buffer):
+    """ Convert a numpy image to PIL image"""
+
+    # cropping to requested map size
+    array = array[buffer:width + buffer, buffer:height + buffer]
+
+    image = skimage.img_as_ubyte(array)
+
+    # convert arrary to pil image
+    pil_image = Image.fromarray(image, mode='L')
+
+    return pil_image
+
+
+#
+# Shaded relief
+#
+
 class ShadedRelief(ImageryLayer):
+    # XXX: this should be renamed to 'SwissRelief'
+
     PROTOTYPE = 'shadedrelief'
 
     def __init__(self, name, index,
                  zfactor=1,
                  scale=111120,
                  azimuth=315,
-                 altitude=45,
+                 # altitude=45,
                  buffer=16,
-                 sigmoid_cutoff=0.8,
-                 sigmoid_gain=2,
-                 sigmoid_base=0.05,
-                 sharpen_radius=1,
-                 sharpen_percent=100,
-                 sharpen_threshold=3
+                 relief_exposure=0.5,
+                 relief_contrast=4,
+                 height_mask_cutoff=3000,
+                 height_mask_gamma=0.5
                  ):
         ImageryLayer.__init__(self, name)
         self._source_index = index
         self._zfactor = zfactor
         self._scale = scale
         self._azimuth = azimuth
-        self._altitude = altitude
+        # self._altitude = altitude
         self._buffer = buffer
-
-        self._sigmoid_cutoff = sigmoid_cutoff
-        self._sigmoid_gain = sigmoid_gain
-        self._sigmoid_base = sigmoid_base
-
-        self._sharpen_radius = sharpen_radius
-        self._sharpen_percent = sharpen_percent
-        self._sharpen_threshold = sharpen_threshold
-
-    def array2pil(self, array, width, height):
-        #        array = (MAX_SCALE * detail).astype(np.ubyte)
-
-        # cropping to requested map size
-        array = array[
-                self._buffer:width + self._buffer,
-                self._buffer:height + self._buffer
-                ]
-
-        image = skimage.img_as_ubyte(array)
-
-        # convert arrary to pil image
-        pil_image = Image.fromarray(image, mode='L')
-
-        return pil_image
 
     def render(self, context):
         assert isinstance(context, RenderContext)
@@ -293,47 +292,49 @@ class ShadedRelief(ImageryLayer):
             source_index = source_index(res_x, res_y)
 
         source = RasterDataSource(source_index)
-        elevation = source.query(
-            context.map_proj, envelope, envelope_size, bands=[1])[0]
 
-        # calculate hill shading
+        elevation = source.query(context.map_proj, envelope,
+                                 envelope_size, bands=[1])[0]
+
+        # calculate aspect and slope from elevation
         zfactor = self._zfactor
         if callable(zfactor):
             zfactor = zfactor(res_x, res_y)
 
         aspect, slope = aspect_and_slope(elevation,
-                                         res_x, res_y, zfactor, self._scale)
+                                         res_x, res_y,
+                                         zfactor, self._scale)
 
-        detail = hillshade(aspect, slope, self._azimuth, self._altitude)
+        # use different lighting angle and altitude to get different exposures
+        diffuse = hillshade(aspect, slope, self._azimuth, 30)
+        detail = hillshade(aspect, slope, self._azimuth, 60)
+        specular = hillshade(aspect, slope, self._azimuth - 180, 85)
 
-        specular = hillshade(aspect, slope, self._azimuth, 55)
+        # toning by blend several relief exposures together
+        relief = diffuse * 0.5 + detail * 0.3 + specular * 0.1
 
-        # exposure
-        detail = skimage.exposure.adjust_sigmoid(detail,
-                                                 cutoff=self._sigmoid_cutoff,
-                                                 gain=self._sigmoid_gain)
+        lowkey_relief = skimage.exposure.adjust_sigmoid(relief,
+                                                        cutoff=0.51,
+                                                        gain=4)
+        highkey_relief = skimage.exposure.adjust_sigmoid(relief,
+                                                         cutoff=0.46,
+                                                         gain=1.3)
 
-        specular = skimage.exposure.adjust_sigmoid(specular,
-                                                   cutoff=self._sigmoid_cutoff,
-                                                   gain=1/self._sigmoid_gain)
+        # height field as mask
+        height_mask = skimage.exposure.rescale_intensity(elevation,
+                                                         in_range=(0, 3000))
+        height_mask = 1.0 - skimage.exposure.adjust_gamma(height_mask, 0.5)
+        relief = highkey_relief * height_mask + (
+                                                1. - height_mask) * lowkey_relief
 
-        detail_image = self.array2pil(detail, width, height)
-        specular_image = self.array2pil(specular, width, height)
+        relief_image = array2pil(relief, width, height, self._buffer)
+        # relief_image = relief_image.filter(ImageFilter.SHARPEN)
 
-        mask = elevation / 1600.
-        mask[mask > 1] = 1
-        mask[mask < 0] = 0
-
-        mask_image = self.array2pil(mask, width, height)
-
-        relief_image = Image.composite(detail_image, specular_image, mask_image)
-        
-        
+        # make image feature result
         feature = ImageFeature(crs=context.map_proj,
                                bounds=context.map_bbox,
                                size=context.map_size,
                                data=relief_image)
-
         return feature
 
 
@@ -384,8 +385,7 @@ class ColoredRelief(ImageryLayer):
             context.map_proj, envelope, envelope_size, bands=query_bands)
 
         result = np.dstack(bands).astype(np.ubyte)
-        result = result[
-                 self._buffer:width + self._buffer,
+        result = result[self._buffer:width + self._buffer,
                  self._buffer:height + self._buffer]
 
         if len(bands) == 4:
