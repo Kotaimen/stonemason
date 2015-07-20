@@ -241,19 +241,19 @@ def array2pil(array, width, height, buffer):
 #
 
 class ShadedRelief(ImageryLayer):
-    # XXX: this should be renamed to 'SwissRelief'
-
     PROTOTYPE = 'shadedrelief'
 
     def __init__(self, name, index,
                  zfactor=1,
                  scale=111120,
                  azimuth=315,
-                 # altitude=45,
+                 altitude=45,  # XXX: unused
                  buffer=16,
-                 relief_exposure=0.5,
-                 relief_contrast=4,
-                 height_mask_cutoff=3000,
+                 high_relief_cutoff=0.5,
+                 high_relief_gain=5,
+                 low_relief_cutoff=0.5,
+                 low_relief_gain=2,
+                 height_mask_range=(0, 5000),
                  height_mask_gamma=0.5
                  ):
         ImageryLayer.__init__(self, name)
@@ -263,6 +263,13 @@ class ShadedRelief(ImageryLayer):
         self._azimuth = azimuth
         # self._altitude = altitude
         self._buffer = buffer
+
+        self._high_relief_cutoff = high_relief_cutoff
+        self._high_relief_gain = high_relief_gain
+        self._low_relief_cutoff = low_relief_cutoff
+        self._low_relief_gain = low_relief_gain
+        self._height_mask_range = height_mask_range
+        self._height_mask_gamma = height_mask_gamma
 
     def render(self, context):
         assert isinstance(context, RenderContext)
@@ -313,22 +320,27 @@ class ShadedRelief(ImageryLayer):
         # toning by blend several relief exposures together
         relief = diffuse * 0.5 + detail * 0.3 + specular * 0.1
 
-        lowkey_relief = skimage.exposure.adjust_sigmoid(relief,
-                                                        cutoff=0.51,
-                                                        gain=4)
-        highkey_relief = skimage.exposure.adjust_sigmoid(relief,
-                                                         cutoff=0.46,
-                                                         gain=1.3)
+        # make high contrast and low contrast version
+        high_relief = skimage.exposure.adjust_sigmoid(
+            relief,
+            cutoff=self._high_relief_cutoff,
+            gain=self._high_relief_gain)
+        low_relief = skimage.exposure.adjust_sigmoid(
+            relief,
+            cutoff=self._low_relief_cutoff,
+            gain=self._low_relief_gain)
 
         # height field as mask
-        height_mask = skimage.exposure.rescale_intensity(elevation,
-                                                         in_range=(0, 3000))
-        height_mask = 1.0 - skimage.exposure.adjust_gamma(height_mask, 0.5)
-        relief = highkey_relief * height_mask + (
-                                                1. - height_mask) * lowkey_relief
+        height_mask = skimage.exposure.rescale_intensity(
+            elevation,
+            in_range=self._height_mask_range)
+        height_mask = 1.0 - skimage.exposure.adjust_gamma(
+            height_mask, self._height_mask_gamma)
+
+        # blend different contrast together using heightfield mask
+        relief = low_relief * height_mask + (1. - height_mask) * high_relief
 
         relief_image = array2pil(relief, width, height, self._buffer)
-        # relief_image = relief_image.filter(ImageFilter.SHARPEN)
 
         # make image feature result
         feature = ImageFeature(crs=context.map_proj,
