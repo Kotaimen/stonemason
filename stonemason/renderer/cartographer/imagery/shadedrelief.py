@@ -7,20 +7,21 @@ import os
 import math
 import tempfile
 
+from PIL import Image, ImageFilter
+from osgeo import ogr, gdal, osr, gdalconst
+
 import numpy as np
+from scipy import ndimage
 
 import skimage
 import skimage.exposure
 import skimage.filters
 import skimage.segmentation
+import skimage.morphology
 
-from PIL import Image, ImageFilter
-from scipy import ndimage
-from osgeo import ogr, gdal, osr, gdalconst
-
-from ...layerexpr import ImageryLayer
-from ...feature import ImageFeature
-from ...context import RenderContext
+from stonemason.renderer.layerexpr import ImageryLayer
+from stonemason.renderer.feature import ImageFeature
+from stonemason.renderer.context import RenderContext
 
 GDAL_VERSION_NUM = int(gdal.VersionInfo('VERSION_NUM'))
 if GDAL_VERSION_NUM < 1100000:
@@ -196,34 +197,63 @@ class RasterDataSource(object):
 # Helper functions
 #
 
-def aspect_and_slope(elevation, resx, resy, zfactor, scale):
-    """ create aspect and slope from raster """
+def aspect_and_slope(elevation, resolution, scale, z_factor=1.0):
+    """Generate aspect and slope map from given elevation raster.
+
+    :return: Aspect and slope map in a tuple ``(aspect, slope)``.
+    :rtype: tuple
+    """
+
+    res_x, res_y = resolution
     kernel = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
-    dx = ndimage.convolve(elevation, kernel / (8. * resx), mode='nearest')
+    dx = ndimage.convolve(elevation, kernel / (8. * res_x), mode='nearest')
 
     kernel = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
-    dy = ndimage.convolve(elevation, kernel / (8. * resy), mode='nearest')
+    dy = ndimage.convolve(elevation, kernel / (8. * res_y), mode='nearest')
 
-    slope = np.arctan(float(zfactor) / float(scale) * np.hypot(dx, dy))
+    slope = np.arctan(float(z_factor) / float(scale) * np.hypot(dx, dy))
     aspect = math.pi / 2. - np.arctan2(dy, -dx)
 
     return aspect, slope
 
 
-def hillshade(aspect, slope, azimuth, altitude):
-    """Create hillshading from aspect and slope """
+def hill_shading(aspect, slope, azimuth=315, altitude=45):
+    """Generate hill shading map from aspect and slope, which are the result of
+    :func:`~stonemason.renderer.cartographer.imagery.shadedrelief.aspect_and_slope`.
+
+    :return: Generated shaded relief.
+    :rtype: numpy.array
+    """
     zenith = math.radians(90. - float(altitude) % 360.)
     azimuth = math.radians(float(azimuth))
 
-    shade = 1. * ((math.cos(zenith) * np.cos(slope)) +
-                  (math.sin(zenith) * np.sin(slope) * np.cos(azimuth - aspect)))
+    shade = ((math.cos(zenith) * np.cos(slope)) +
+             (math.sin(zenith) * np.sin(slope) * np.cos(azimuth - aspect)))
 
     shade[shade < 0] = 0.
     return shade
 
 
-def array2pil(array, width, height, buffer):
-    """ Convert a numpy image to PIL image"""
+def array2pillow(array, width, height, buffer=0):
+    """ Convert a numpy array image to PIL image, note only greyscale image is
+    supported.
+
+    :param array: Input image.
+    :type array: numpy.array
+
+    :param width: Width of the image in pixel.
+    :type width: int
+
+    :param height: Height of the image in pixel.
+    :param height: int
+
+    :param buffer: Extra buffer size to crop around the given image, default
+        is ``0``.
+    :type buffer: int
+
+    :return: Converted PIL image.
+    :rtype: :class:`PIL.Image.Image`
+    """
 
     # cropping to requested map size
     array = array[buffer:width + buffer, buffer:height + buffer]
@@ -236,6 +266,152 @@ def array2pil(array, width, height, buffer):
     return pil_image
 
 
+def simple_shaded_relief(elevation, resolution, scale=111120,
+                         z_factor=1., azimuth=315, altitude=45,
+                         cutoff=0.707, gain=4):
+    """Render a simple shaded relief.
+
+    :param elevation: Array like digital elevation raster.
+    :type elevation: numpy.array
+
+    :param resolution: Resolution of the elevation, in ``(x, y)`` tuple.
+    :type resolution: tuple
+
+    :param scale: Ratio of vertical units to horizontal. If the horizontal
+        unit of the elevation raster is degrees (e.g: ``WGS84``), set `scale`
+        to ``111120`` if the vertical unit is meter, or set to ``370400``
+        if vertical unit is feet.
+    :type scale: float
+
+    :param z_factor: Vertical exaggeration used to pre-multiply the elevations,
+        default value is ``1``, which means no exaggeration.
+    :type z_factor: float
+
+    :param azimuth: Azimuth of the light, in degrees.  ``0`` comes from north,
+        ``90`` from the east... default value is ``315``.
+    :type azimuth: float
+
+    :param altitude: Altitude of the light, in degrees. ``90`` if the light
+        comes from top, ``0`` is raking light, default value is ``45``
+    :type altitude: float
+
+    :param cutoff: `Cutoff` parameter of the sigmoid contrast function, see
+        :func:`skimage.exposure.adjust_sigmoid`, default value is ``0.707``.
+    :type cutoff: float
+
+    :param gain: `Gain` parameter of the sigmoid contrast function, see
+        :func:`skimage.exposure.adjust_sigmoid`, default value is ``5``.
+    :type gain: float
+
+    :return: Rendered shaded relief as a image.
+    :rtype: numpy.array
+    """
+    aspect, slope = aspect_and_slope(elevation, resolution, scale=scale,
+                                     z_factor=z_factor)
+    shading = hill_shading(aspect, slope, azimuth=azimuth, altitude=altitude)
+
+    shading = skimage.exposure.adjust_sigmoid(shading, cutoff=cutoff, gain=gain)
+
+    return shading
+
+
+def swiss_shaded_relief(elevation, resolution, scale=111120,
+                        z_factor=1., azimuth=315, altitude=45,
+                        high_relief_cutoff=0.7,
+                        high_relief_gain=5,
+                        low_relief_cutoff=0.7,
+                        low_relief_gain=1,
+                        height_mask_range=(0, 3000),
+                        height_mask_gamma=0.5
+                        ):
+    """Render a high quality shaded relief presented by Imhof.
+
+    :param elevation: Array like digital elevation raster.
+    :type elevation: numpy.array
+
+    :param resolution: Resolution of the elevation, in ``(x, y)`` tuple.
+    :type resolution: tuple
+
+    :param scale: Ratio of vertical units to horizontal. If the horizontal
+        unit of the elevation raster is degrees (e.g: ``WGS84``), set `scale`
+        to ``111120`` if the vertical unit is meter, or set to ``370400``
+        if vertical unit is feet.
+    :type scale: float
+
+    :param z_factor: Vertical exaggeration used to pre-multiply the elevations,
+        default value is ``1``, which means no exaggeration.
+    :type z_factor: float
+
+    :param azimuth: Azimuth of the light, in degrees.  ``0`` comes from north,
+        ``90`` from the east... default value is ``315``.
+    :type azimuth: float
+
+    :param altitude: Altitude of the light, in degrees. ``90`` if the light
+        comes from top, ``0`` is raking light, default value is ``45``
+    :type altitude: float
+
+    :param high_relief_cutoff: Sigmoid contrast cutoff of the high elevation
+        areas, default value is ``0.7``
+    :type high_relief_cutoff: float
+
+    :param high_relief_gain: Sigmoid contrast gain of the high elevation
+        areas, default value is ``5``.
+    :type high_relief_gain: float
+
+    :param low_relief_cutoff: Sigmoid contrast cutoff of the low elevation
+        areas, default value is ``0.7``.
+    :type low_relief_cutoff: float
+
+    :param low_relief_gain: Sigmoid contrast gain of the low elevation
+        areas, default value is ``1``.
+    :type low_relief_gain: float
+
+    :param height_mask_range: A tuple specifies range of height mask in
+        meters, default is ``(0, 3000)``.
+    :type height_mask_range: tuple
+
+    :param height_mask_gamma: Gamma correction of the height mask,
+        default is ``0.5``.
+    :type height_mask_gamma: float
+
+    :return: Rendered shaded relief as a image.
+    :rtype: numpy.array
+    """
+
+    aspect, slope = aspect_and_slope(elevation, resolution, scale=scale,
+                                     z_factor=z_factor)
+
+    # use different lighting angle to calculate different exposures
+    assert azimuth > 180
+    diffuse = hill_shading(aspect, slope, azimuth, 30)
+    detail = hill_shading(aspect, slope, azimuth, 60)
+    specular = hill_shading(aspect, slope, azimuth - 180, 80)
+
+    # toning by blend different exposures together:
+    #    diffuse <-a- detail <-b- specular
+    a, b = 0.6, 0.9
+    shading = (diffuse * a + detail * (1 - a)) * b + specular * (1 - b)
+
+    # make a high contrast and low contrast version
+    high_relief = skimage.exposure.adjust_sigmoid(
+        shading, cutoff=high_relief_cutoff, gain=high_relief_gain)
+
+    low_relief = skimage.exposure.adjust_sigmoid(
+        shading, cutoff=low_relief_cutoff, gain=low_relief_gain)
+
+    # height field as mask
+    height_mask = skimage.exposure.rescale_intensity(
+        elevation, in_range=height_mask_range)
+
+    height_mask = 1.0 - skimage.exposure.adjust_gamma(
+        height_mask, height_mask_gamma)
+
+    # blend different contrast together using heightfield mask
+    shading = low_relief * height_mask + (1. - height_mask) * high_relief
+
+    return shading
+
+
 #
 # Shaded relief
 #
@@ -243,33 +419,33 @@ def array2pil(array, width, height, buffer):
 class ShadedRelief(ImageryLayer):
     PROTOTYPE = 'shadedrelief'
 
-    def __init__(self, name, index,
+    def __init__(self, name,
+                 index,
+                 buffer=16,
                  zfactor=1,
                  scale=111120,
                  azimuth=315,
-                 altitude=45,  # XXX: unused
-                 buffer=16,
-                 high_relief_cutoff=0.5,
-                 high_relief_gain=5,
-                 low_relief_cutoff=0.5,
-                 low_relief_gain=2,
-                 height_mask_range=(0, 5000),
-                 height_mask_gamma=0.5
+                 altitude=45,
+                 **args
                  ):
         ImageryLayer.__init__(self, name)
-        self._source_index = index
-        self._zfactor = zfactor
+
+        if callable(index):
+            self._source_index = index
+        else:
+            self._source_index = lambda x, y: index
+
+        if callable(zfactor):
+            self._zfactor = zfactor
+        else:
+            self._zfactor = lambda x, y: zfactor
+
         self._scale = scale
         self._azimuth = azimuth
-        # self._altitude = altitude
+        self._altitude = altitude
         self._buffer = buffer
 
-        self._high_relief_cutoff = high_relief_cutoff
-        self._high_relief_gain = high_relief_gain
-        self._low_relief_cutoff = low_relief_cutoff
-        self._low_relief_gain = low_relief_gain
-        self._height_mask_range = height_mask_range
-        self._height_mask_gamma = height_mask_gamma
+        self._renderer_parameters = args
 
     def render(self, context):
         assert isinstance(context, RenderContext)
@@ -290,59 +466,30 @@ class ShadedRelief(ImageryLayer):
                     bottom - buffer_y,
                     right + buffer_x,
                     top + buffer_y)
+
         # calculate buffered map size
         envelope_size = width + 2 * self._buffer, height + 2 * self._buffer
 
         # query elevation data in target envelope
-        source_index = self._source_index
-        if callable(source_index):
-            source_index = source_index(res_x, res_y)
+        source_index = self._source_index(res_x, res_y)
 
         source = RasterDataSource(source_index)
 
         elevation = source.query(context.map_proj, envelope,
                                  envelope_size, bands=[1])[0]
 
-        # calculate aspect and slope from elevation
-        zfactor = self._zfactor
-        if callable(zfactor):
-            zfactor = zfactor(res_x, res_y)
+        # calculate shaded relief
+        zfactor = self._zfactor(res_x, res_y)
+        relief = swiss_shaded_relief(elevation,
+                                     (res_x, res_y),
+                                     scale=self._scale,
+                                     z_factor=zfactor,
+                                     azimuth=self._azimuth,
+                                     altitude=self._altitude,
+                                     **self._renderer_parameters)
 
-        aspect, slope = aspect_and_slope(elevation,
-                                         res_x, res_y,
-                                         zfactor, self._scale)
-
-        # use different lighting angle and altitude to get different exposures
-        diffuse = hillshade(aspect, slope, self._azimuth, 30)
-        detail = hillshade(aspect, slope, self._azimuth, 60)
-        specular = hillshade(aspect, slope, self._azimuth - 180, 85)
-
-        # toning by blend several relief exposures together
-        relief = diffuse * 0.5 + detail * 0.3 + specular * 0.1
-
-        # make high contrast and low contrast version
-        high_relief = skimage.exposure.adjust_sigmoid(
-            relief,
-            cutoff=self._high_relief_cutoff,
-            gain=self._high_relief_gain)
-        low_relief = skimage.exposure.adjust_sigmoid(
-            relief,
-            cutoff=self._low_relief_cutoff,
-            gain=self._low_relief_gain)
-
-        # height field as mask
-        height_mask = skimage.exposure.rescale_intensity(
-            elevation,
-            in_range=self._height_mask_range)
-        height_mask = 1.0 - skimage.exposure.adjust_gamma(
-            height_mask, self._height_mask_gamma)
-
-        # blend different contrast together using heightfield mask
-        relief = low_relief * height_mask + (1. - height_mask) * high_relief
-
-        relief_image = array2pil(relief, width, height, self._buffer)
-
-        # make image feature result
+        # convert to image feature
+        relief_image = array2pillow(relief, width, height, self._buffer)
         feature = ImageFeature(crs=context.map_proj,
                                bounds=context.map_bbox,
                                size=context.map_size,
@@ -385,6 +532,7 @@ class ColoredRelief(ImageryLayer):
                     bottom - buffer_y,
                     right + buffer_x,
                     top + buffer_y)
+
         # calculate buffered map size
         envelope_size = width + 2 * self._buffer, height + 2 * self._buffer
 

@@ -4,86 +4,93 @@ __author__ = 'ray'
 __date__ = '6/28/15'
 
 import unittest
-
-from PIL import Image as im
+import os
+from PIL import Image
 from tests import TEST_DIRECTORY, carto, skipUnlessHasScipy, \
     skipUnlessHasSkimage
 
 if carto.HAS_SCIPY and carto.HAS_SKIMAGE:
-    from stonemason.renderer.cartographer.imagery.shadedrelief import *
+    import numpy as np
+    from stonemason.renderer.cartographer.imagery.shadedrelief import \
+        simple_shaded_relief, swiss_shaded_relief, array2pillow
+    import skimage.filters
+    import skimage.external.tifffile
+    import skimage.draw
+    import skimage.io
+    import skimage.morphology
+    import skimage.exposure
 
 
 def array2image(array):
     array = array.astype(np.float)
-    image = im.fromarray(array)
+    image = Image.fromarray(array)
     # image = image.convert('RGBA')
     return image
 
 
 def array2png(array):
     array = array.astype(np.uint8)
-    image = im.fromarray(array, mode='L')
+    image = Image.fromarray(array, mode='L')
     image = image.convert('RGBA')
     return image
 
 
-#
-# def make_test_gradient_image():
-#     array = np.fromfunction(lambda i, j: j, (512, 512), dtype=np.uint8)
-#     image = array2image(array)
-#     image.save(os.path.join(TEST_DIRECTORY, 'gradient.png'), 'png')
-#
+def cone(size=512, z_factor=1.0, padding=16):
+    center = (size / 2 - 1, size / 2 - 1)
 
-# def contour(elevation):
-#     width, height = elevation.shape
-#     x = np.linspace(0, width, width)
-#     y = np.linspace(0, height, height)
-#     X, Y = np.meshgrid(x, y)
-#
-#     plt.contourf(X, Y, elevation, 8, alpha=.75, cmap='jet')
-#     C = plt.contour(X, Y, elevation, 8, colors='black', linewidth=.5)
-#
-#     plt.clabel(C, inline=1, fontsize=10)
-#
-#     plt.xticks(())
-#     plt.yticks(())
-#     plt.show()
-
-
-def mock_elevation():
-    stride = 512
-    center = (stride / 2 - 1, stride / 2 - 1)
-
-    scale = 1.0
-
-    def circle(x, y):
-        z = stride / 2. - np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2)
+    def f(x, y):
+        z = (size - padding * 2) / 2. - \
+            np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2)
         z[z < 0] = 0
-        return scale * z
+        z = z * 2. / size
+        z = np.abs(0.2 - z) * 2
+        return z
 
-    elevation = np.fromfunction(circle, (stride, stride), dtype=np.float)
+    elevation = np.fromfunction(f, (size, size), dtype=np.float)
+    elevation = skimage.filters.gaussian_filter(elevation, sigma=3)
+    elevation = skimage.exposure.rescale_intensity(elevation)
 
-    # contour(elevation)
+    elevation *= z_factor
 
     return elevation
 
 
 @skipUnlessHasScipy()
 @skipUnlessHasSkimage()
-class TestAspectAndSlope(unittest.TestCase):
-    def test_aspect_and_slope(self):
-        elevation = mock_elevation()
+class TestShadedRelief(unittest.TestCase):
+    def setUp(self):
+        self.output_dir = os.path.join(TEST_DIRECTORY, 'shaded_relief')
+        if not os.path.exists(self.output_dir):
+            os.mkdir(self.output_dir)
+        self.size = 1024
+        self.height = 3000.
+        self.resolution = self.height / (self.size * 2.)
+        self.dem = cone(self.size, z_factor=self.height)
 
-        aspect, slope = aspect_and_slope(
-            elevation, resx=1, resy=1, zfactor=1, scale=1)
+        skimage.io.imsave(os.path.join(self.output_dir, 'elevation.png'),
+                          skimage.exposure.rescale_intensity(self.dem))
 
-        shade = hillshade(aspect, slope, 315, 45)
+    def test_simple_shaded_relief(self):
+        relief = simple_shaded_relief(self.dem,
+                                      (self.resolution,
+                                       self.resolution),
+                                      scale=1, z_factor=1,
+                                      azimuth=315,
+                                      altitude=45,
+                                      cutoff=0.7071,
+                                      gain=5,
+                                      )
+        image = array2pillow(relief, self.size, self.size)
+        filename = os.path.join(self.output_dir, 'simple_cone.png')
+        image.save(filename, 'PNG')
 
-        import skimage.exposure
-
-        shade = skimage.exposure.adjust_sigmoid(shade, cutoff=0.8, gain=2,
-                                                inv=False) + 0.05
-
-        shade = (255 * shade).astype(np.ubyte)
-        image = array2png(shade)
-        image.save(os.path.join(TEST_DIRECTORY, 'hillshade2.png'), 'png')
+    def test_swiss_shaded_relief(self):
+        relief = swiss_shaded_relief(self.dem,
+                                     (self.resolution,
+                                      self.resolution),
+                                     scale=1, z_factor=1,
+                                     azimuth=315,
+                                     )
+        image = array2pillow(relief, self.size, self.size)
+        filename = os.path.join(self.output_dir, 'swiss_cone.png')
+        image.save(filename, 'PNG')
