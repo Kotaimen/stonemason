@@ -383,13 +383,13 @@ def swiss_shaded_relief(elevation, resolution, scale=111120,
 
     # use different lighting angle to calculate different exposures
     assert azimuth > 180
-    diffuse = hill_shading(aspect, slope, azimuth, 30)
-    detail = hill_shading(aspect, slope, azimuth, 60)
-    specular = hill_shading(aspect, slope, azimuth - 180, 80)
+    diffuse = hill_shading(aspect, slope, azimuth, 35)
+    detail = hill_shading(aspect, slope, azimuth - 180, 50)
+    specular = hill_shading(aspect, slope, azimuth, 90)
 
     # toning by blend different exposures together:
     #    diffuse <-a- detail <-b- specular
-    a, b = 0.6, 0.9
+    a, b = 0.67, 0.72
     shading = (diffuse * a + detail * (1 - a)) * b + specular * (1 - b)
 
     # make a high contrast and low contrast version
