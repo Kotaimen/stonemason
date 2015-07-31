@@ -82,30 +82,24 @@ THEME = dict(
             renderer=dict(
                 prototype=maptype,
                 layers=dict(
-                    shade={
-                        'prototype': 'shadedrelief',
-                        'index': index_func,
+                    relief={
+                        'prototype': 'relief.swiss',
+                        # 'index': index_func,
+                        'index': '/Users/ray/proj/geodata/Stage/jpn-5m/index.shp',
                         'scale': 1,
-                        'buffer': 8,
-                        'sigmoid_cutoff': 0.71,
-                        'sigmoid_gain': 2,
-                        'sigmoid_base': 0,
+                        'buffer': 8
+
                     },
                     color={
-                        'prototype': 'coloredrelief',
+                        'prototype': 'relief.color',
                         'index': "/Users/ray/proj/geodata/Stage/NaturalEarth3.1/index.shp",
                         'buffer': 8,
                     },
-                    root_={
+                    root={
                         'prototype': 'pil.composer',
-                        'sources': ['color', 'shade'],
+                        'sources': ['relief', 'color'],
                         'command': ['overlay']
                     },
-                    root={
-                        'prototype': 'basic.filter',
-                        'source': 'root_',
-                        'filter_name': 'SMOOTH',
-                    }
                 )
             )
         )

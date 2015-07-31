@@ -74,12 +74,12 @@ class PILComposer(CompositeLayer):
 
             stack.append(arr)
 
-        src = stack.pop()
+        dst = stack.pop()
         for cmd in self._command:
-            dst = stack.pop()
-            src = self.SUPPORTED_MODES[cmd](src, dst)
+            src = stack.pop()
+            dst = self.SUPPORTED_MODES[cmd](src, dst)
 
-        img = compop.demultiply(src)
+        img = compop.demultiply(dst)
         img = compop.img_as_ubyte(img)
         img = compop.array2img(img, mode='RGBA')
 

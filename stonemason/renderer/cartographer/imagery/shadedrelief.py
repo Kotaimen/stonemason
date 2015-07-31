@@ -3,14 +3,10 @@
 __author__ = 'ray'
 __date__ = '6/17/15'
 
-import os
 import math
-import tempfile
-
-from PIL import Image, ImageFilter
-from osgeo import ogr, gdal, osr, gdalconst
 
 import numpy as np
+from PIL import Image, ImageOps
 from scipy import ndimage
 
 import skimage
@@ -23,174 +19,7 @@ from stonemason.renderer.layerexpr import ImageryLayer
 from stonemason.renderer.feature import ImageFeature
 from stonemason.renderer.context import RenderContext
 
-GDAL_VERSION_NUM = int(gdal.VersionInfo('VERSION_NUM'))
-if GDAL_VERSION_NUM < 1100000:
-    raise ImportError('ERROR: Require GDAL 1.10.0 or above')
-
-gdal.UseExceptions()
-ogr.UseExceptions()
-
-gdal.SetConfigOption('CPL_TMPDIR', tempfile.gettempdir())
-
-VRT_SIMPLE_SOURCE_TEMPLATE = """
-<SimpleSource>
-    <SourceFilename relativeToVRT="1">%(filename)s</SourceFilename>
-    <SourceBand>%(band)d</SourceBand>
-</SimpleSource>
-"""
-
-
-class RasterDataSource(object):
-    NODATA_VALUE = np.finfo(np.float32).min.item()
-
-    def __init__(self, index):
-        driver = ogr.GetDriverByName("ESRI Shapefile")
-        self._basedir = os.path.dirname(index)
-        self._index_shp = driver.Open(index, gdalconst.GA_ReadOnly)
-        if self._index_shp is None:
-            raise RuntimeError('Index not found: %s' % index)
-
-        self._index = self._index_shp.GetLayer(0)
-        if self._index is None:
-            raise RuntimeError('Index layer not found!')
-
-    def query(self, proj, envelope, size, bands=[1]):
-        if len(bands) == 0:
-            return []
-
-        if isinstance(bands, int):
-            bands = [bands]
-
-        left, bottom, right, top = envelope
-
-        envelope_wkt = "POLYGON ((" \
-                       "%(lt)f %(bm)f," \
-                       "%(lt)f %(tp)f," \
-                       "%(rt)f %(tp)f," \
-                       "%(rt)f %(bm)f," \
-                       "%(lt)f %(bm)f" \
-                       "))" % dict(lt=left, bm=bottom, rt=right, tp=top)
-
-        filter_geom = ogr.CreateGeometryFromWkt(envelope_wkt)
-        target_crs = osr.SpatialReference()
-        target_crs.SetFromUserInput(proj)
-
-        # transform filter envelope crs to index crs
-        index_crs = self._index.GetSpatialRef()
-        if not target_crs.IsSame(index_crs):
-            transform = osr.CoordinateTransformation(target_crs, index_crs)
-            filter_geom.Transform(transform)
-
-        filter_envelope = filter_geom.GetEnvelope()
-        filter_res = (filter_envelope[1] - filter_envelope[0]) / size[0]
-
-        try:
-
-            # create memory data source
-            target_width, target_height = size
-            target_res_x = (right - left) / target_width
-            target_res_y = (top - bottom) / target_height
-            target_geotransform = \
-                left, target_res_x, 0.0, top, 0.0, -target_res_y
-            target_projection = target_crs.ExportToWkt()
-
-            driver = gdal.GetDriverByName('MEM')
-            target = driver.Create('',
-                                   target_width, target_height, len(bands),
-                                   gdal.GDT_Float32)
-            target.SetGeoTransform(target_geotransform)
-            target.SetProjection(target_projection)
-
-            for band_no in range(1, target.RasterCount + 1):
-                target_band = target.GetRasterBand(band_no)  # start from 1
-                target_band.SetNoDataValue(self.NODATA_VALUE)
-                target_band.Fill(self.NODATA_VALUE)
-
-            # find data source intersection with target envelope
-            self._index.SetSpatialFilter(filter_geom)
-
-            for n, feature in enumerate(self._index):
-
-                location = os.path.join(
-                    self._basedir, feature.GetField('location'))
-                # print n, location
-                try:
-                    source = gdal.OpenShared(location, gdalconst.GA_ReadOnly)
-                    source_projection = source.GetProjection()
-                    source_geotransform = source.GetGeoTransform()
-
-                    # create vrt for target band
-                    width, height = source.RasterXSize, source.RasterYSize
-                    vrt_driver = gdal.GetDriverByName('VRT')
-                    vrt_source = vrt_driver.Create(
-                        '', width, height, len(bands), gdalconst.GDT_Float32)
-                    vrt_source.SetGeoTransform(source_geotransform)
-                    vrt_source.SetProjection(proj)
-
-                    for n, band_no in enumerate(bands, start=1):
-                        # add source band to vrt band
-                        vrt_band = vrt_source.GetRasterBand(n)
-                        nodata = source.GetRasterBand(band_no).GetNoDataValue()
-                        if nodata is not None:
-                            vrt_band.SetNoDataValue(float(nodata))
-
-                        simple_source = VRT_SIMPLE_SOURCE_TEMPLATE % dict(
-                            filename=location,
-                            band=band_no,
-                            src_width=width,
-                            src_height=height,
-                            dst_width=width,
-                            dst_height=height,
-                        )
-                        metadata = vrt_band.GetMetadata()
-                        metadata['source_%d' % n] = simple_source
-                        vrt_band.SetMetadata(metadata, 'vrt_sources')
-
-                    # find resample methods.
-                    src_res_x = source_geotransform[1]
-                    if src_res_x > filter_res:
-                        # scale down
-                        resample = gdalconst.GRA_CubicSpline
-                    else:
-                        # scale up
-                        resample = gdalconst.GRA_Bilinear
-
-                    ret = gdal.ReprojectImage(vrt_source,
-                                              target,
-                                              source_projection,
-                                              target_projection,
-                                              resample,
-                                              1024)
-                finally:
-                    vrt_source = None
-                    source = None
-
-            array_list = []
-            for band_no in range(1, target.RasterCount + 1):
-                target_band = target.GetRasterBand(band_no)
-                try:
-                    gdal.FillNodata(target_band, None, 100, 0)
-                except RuntimeError:
-                    # gdal raises exception for missing temporary files to remove,
-                    # however FillNodata still works.
-                    pass
-
-                array = target_band.ReadAsArray()
-                array_list.append(array)
-
-            return array_list
-
-        finally:
-            target = None
-
-    def close(self):
-        self._index_shp = None
-
-    def __enter__(self):
-        yield self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
+from .datasource import ElevationDataSource, RGBImageDataSource
 
 
 #
@@ -412,151 +241,234 @@ def swiss_shaded_relief(elevation, resolution, scale=111120,
     return shading
 
 
-#
-# Shaded relief
-#
+def _calc_resolution(envelope, size):
+    left, bottom, right, top = envelope
+    width, height = size
 
-class ShadedRelief(ImageryLayer):
-    PROTOTYPE = 'shadedrelief'
+    # calculate map resolution
+    res_x = (right - left) / width
+    res_y = (top - bottom) / height
 
-    def __init__(self, name,
-                 index,
-                 buffer=16,
+    return res_x, res_y
+
+
+def _buffer_envelope(envelope, resolution, buffer):
+    left, bottom, right, top = envelope
+    res_x, res_y = resolution
+
+    # calculate buffered envelope size
+    buffer_x = res_x * buffer
+    buffer_y = res_y * buffer
+
+    # calculate buffered map envelope
+    envelope = (left - buffer_x, bottom - buffer_y,
+                right + buffer_x, top + buffer_y)
+    return envelope
+
+
+def _buffer_size(size, buffer):
+    width, height = size
+    size = width + 2 * buffer, height + 2 * buffer
+    return size
+
+
+class Parameter(object):
+    def __init__(self, value=None):
+        self._value = value
+
+    def __call__(self, resolution):
+        if callable(self._value):
+            return self._value(resolution)
+        else:
+            return self._value
+
+
+class SimpleRelief(ImageryLayer):
+    PROTOTYPE = 'relief.simple'
+
+    def __init__(self, name, index,
                  zfactor=1,
                  scale=111120,
                  azimuth=315,
                  altitude=45,
-                 **args
-                 ):
-        ImageryLayer.__init__(self, name)
-
-        if callable(index):
-            self._source_index = index
-        else:
-            self._source_index = lambda x, y: index
-
-        if callable(zfactor):
-            self._zfactor = zfactor
-        else:
-            self._zfactor = lambda x, y: zfactor
-
-        self._scale = scale
-        self._azimuth = azimuth
-        self._altitude = altitude
-        self._buffer = buffer
-
-        self._renderer_parameters = args
-
-    def render(self, context):
-        assert isinstance(context, RenderContext)
-
-        left, bottom, right, top = context.map_bbox
-        width, height = context.map_size
-
-        # calculate map resolution
-        res_x = (right - left) / width
-        res_y = (top - bottom) / height
-
-        # calculate buffered envelope size
-        buffer_x = res_x * self._buffer
-        buffer_y = res_y * self._buffer
-
-        # calculate buffered map envelope
-        envelope = (left - buffer_x,
-                    bottom - buffer_y,
-                    right + buffer_x,
-                    top + buffer_y)
-
-        # calculate buffered map size
-        envelope_size = width + 2 * self._buffer, height + 2 * self._buffer
-
-        # query elevation data in target envelope
-        source_index = self._source_index(res_x, res_y)
-
-        source = RasterDataSource(source_index)
-
-        elevation = source.query(context.map_proj, envelope,
-                                 envelope_size, bands=[1])[0]
-
-        # calculate shaded relief
-        zfactor = self._zfactor(res_x, res_y)
-        relief = swiss_shaded_relief(elevation,
-                                     (res_x, res_y),
-                                     scale=self._scale,
-                                     z_factor=zfactor,
-                                     azimuth=self._azimuth,
-                                     altitude=self._altitude,
-                                     **self._renderer_parameters)
-
-        # convert to image feature
-        relief_image = array2pillow(relief, width, height, self._buffer)
-        feature = ImageFeature(crs=context.map_proj,
-                               bounds=context.map_bbox,
-                               size=context.map_size,
-                               data=relief_image)
-        return feature
-
-
-class ColoredRelief(ImageryLayer):
-    PROTOTYPE = 'coloredrelief'
-
-    def __init__(self, name, index, color_bands=None, alpha_band=None,
+                 cutoff=0.707,
+                 gain=4,
                  buffer=0):
         ImageryLayer.__init__(self, name)
 
-        if color_bands is None:
-            color_bands = [1, 2, 3]
+        self._index = Parameter(index)
 
-        if len(color_bands) != 3:
-            raise RuntimeError('Insufficient color bands number!')
+        self._zfactor = Parameter(zfactor)
+        self._scale = Parameter(scale)
+        self._azimuth = Parameter(azimuth)
+        self._altitude = Parameter(altitude)
+        self._cutoff = Parameter(cutoff)
+        self._gain = Parameter(gain)
 
-        self._source = RasterDataSource(index)
-        self._color_bands = color_bands
-        self._alpha_band = alpha_band
         self._buffer = buffer
 
     def render(self, context):
-        left, bottom, right, top = context.map_bbox
-        width, height = context.map_size
+        assert isinstance(context, RenderContext)
+        crs = context.map_proj
+        envelope = context.map_bbox
+        size = context.map_size
 
-        # calculate map resolution
-        res_x = (right - left) / width
-        res_y = (top - bottom) / height
+        resolution = _calc_resolution(envelope, size)
 
-        # calculate buffered envelope size
-        buffer_x = res_x * self._buffer
-        buffer_y = res_y * self._buffer
+        buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
+        buffered_envelope_size = _buffer_size(size, self._buffer)
 
-        # calculate buffered map envelope
-        envelope = (left - buffer_x,
-                    bottom - buffer_y,
-                    right + buffer_x,
-                    top + buffer_y)
+        with ElevationDataSource(self._index(resolution)) as source:
+            elevation = source.query(
+                crs, buffered_envelope, buffered_envelope_size)[0]
 
-        # calculate buffered map size
-        envelope_size = width + 2 * self._buffer, height + 2 * self._buffer
+            zfactor = self._zfactor(resolution)
+            scale = self._scale(resolution)
+            azimuth = self._azimuth(resolution)
+            altitude = self._altitude(resolution)
+            cutoff = self._cutoff(resolution)
+            gain = self._gain(resolution)
 
-        # query elevation data in target envelope
-        query_bands = self._color_bands
-        if self._alpha_band is not None:
-            query_bands.append(self._alpha_band)
+            relief = simple_shaded_relief(elevation,
+                                          resolution,
+                                          scale=scale,
+                                          z_factor=zfactor,
+                                          azimuth=azimuth,
+                                          altitude=altitude,
+                                          cutoff=cutoff,
+                                          gain=gain)
 
-        bands = self._source.query(
-            context.map_proj, envelope, envelope_size, bands=query_bands)
+            image = skimage.img_as_ubyte(relief)
 
-        result = np.dstack(bands).astype(np.ubyte)
-        result = result[self._buffer:width + self._buffer,
-                 self._buffer:height + self._buffer]
+            pil_image = Image.fromarray(image, mode='L')
+            pil_image = ImageOps.crop(pil_image, self._buffer)
 
-        if len(bands) == 4:
-            pil_image = Image.fromarray(result, 'RGBA')
-        else:
-            pil_image = Image.fromarray(result, 'RGB')
+            feature = ImageFeature(crs=context.map_proj,
+                                   bounds=context.map_bbox,
+                                   size=context.map_size,
+                                   data=pil_image)
+
+            return feature
+
+
+class SwissRelief(ImageryLayer):
+    PROTOTYPE = 'relief.swiss'
+
+    def __init__(self, name, index,
+                 zfactor=1,
+                 scale=111120,
+                 azimuth=315,
+                 altitude=45,
+                 high_relief_cutoff=0.7,
+                 high_relief_gain=5,
+                 low_relief_cutoff=0.7,
+                 low_relief_gain=1,
+                 height_mask_range=(0, 3000),
+                 height_mask_gamma=0.5,
+                 buffer=0):
+        ImageryLayer.__init__(self, name)
+
+        self._index = Parameter(index)
+
+        self._zfactor = Parameter(zfactor)
+        self._scale = Parameter(scale)
+        self._azimuth = Parameter(azimuth)
+        self._altitude = Parameter(altitude)
+        self._high_relief_cutoff = Parameter(high_relief_cutoff)
+        self._high_relief_gain = Parameter(high_relief_gain)
+        self._low_relief_cutoff = Parameter(low_relief_cutoff)
+        self._low_relief_gain = Parameter(low_relief_gain)
+        self._height_mask_range = Parameter(height_mask_range)
+        self._height_mask_gamma = Parameter(height_mask_gamma)
+
+        self._buffer = buffer
+
+    def render(self, context):
+        assert isinstance(context, RenderContext)
+        crs = context.map_proj
+        envelope = context.map_bbox
+        size = context.map_size
+
+        resolution = _calc_resolution(envelope, size)
+
+        buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
+        buffered_envelope_size = _buffer_size(size, self._buffer)
+
+        with ElevationDataSource(self._index(resolution)) as source:
+            elevation = source.query(
+                crs, buffered_envelope, buffered_envelope_size)[0]
+
+            zfactor = self._zfactor(resolution)
+            scale = self._scale(resolution)
+            azimuth = self._azimuth(resolution)
+            altitude = self._altitude(resolution)
+            high_relief_cutoff = self._high_relief_cutoff(resolution)
+            high_relief_gain = self._high_relief_gain(resolution)
+            low_relief_cutoff = self._low_relief_cutoff(resolution)
+            low_relief_gain = self._low_relief_gain(resolution)
+            height_mask_range = self._height_mask_range(resolution)
+            height_mask_gamma = self._height_mask_gamma(resolution)
+
+            relief = swiss_shaded_relief(elevation,
+                                         resolution,
+                                         scale=scale,
+                                         z_factor=zfactor,
+                                         azimuth=azimuth,
+                                         altitude=altitude,
+                                         high_relief_cutoff=high_relief_cutoff,
+                                         low_relief_cutoff=low_relief_cutoff,
+                                         high_relief_gain=high_relief_gain,
+                                         low_relief_gain=low_relief_gain,
+                                         height_mask_range=height_mask_range,
+                                         height_mask_gamma=height_mask_gamma)
+
+            image = skimage.img_as_ubyte(relief)
+
+            pil_image = Image.fromarray(image, mode='L')
+            pil_image = ImageOps.crop(pil_image, self._buffer)
+
+            feature = ImageFeature(crs=context.map_proj,
+                                   bounds=context.map_bbox,
+                                   size=context.map_size,
+                                   data=pil_image)
+
+            return feature
+
+
+class ColorRelief(ImageryLayer):
+    PROTOTYPE = 'relief.color'
+
+    def __init__(self, name, index, buffer=0):
+        ImageryLayer.__init__(self, name)
+
+        self._index = Parameter(index)
+        self._buffer = buffer
+
+    def render(self, context):
+        assert isinstance(context, RenderContext)
+        crs = context.map_proj
+        envelope = context.map_bbox
+        size = context.map_size
+
+        resolution = _calc_resolution(envelope, size)
+
+        buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
+        buffered_envelope_size = _buffer_size(size, self._buffer)
+
+        with RGBImageDataSource(self._index(resolution)) as source:
+            channels = source.query(
+                crs, buffered_envelope, buffered_envelope_size)
+
+            rgb_array = np.dstack(channels).astype(np.ubyte)
+
+            pil_image = Image.fromarray(rgb_array, 'RGB')
             pil_image = pil_image.convert('RGBA')
 
-        feature = ImageFeature(crs=context.map_proj,
-                               bounds=context.map_bbox,
-                               size=context.map_size,
-                               data=pil_image)
+            pil_image = ImageOps.crop(pil_image, self._buffer)
 
-        return feature
+            feature = ImageFeature(crs=context.map_proj,
+                                   bounds=context.map_bbox,
+                                   size=context.map_size,
+                                   data=pil_image)
+
+            return feature

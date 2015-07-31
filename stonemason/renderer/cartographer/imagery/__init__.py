@@ -34,13 +34,16 @@ except ImportError:
     HAS_IMAGEMAGICK = False
 
 try:
-    from .shadedrelief import ShadedRelief, ColoredRelief
+    from .shadedrelief import SimpleRelief, SwissRelief, ColorRelief
 
-    IMAGERY_LAYERS[ShadedRelief.PROTOTYPE] = ShadedRelief
-    IMAGERY_LAYERS[ColoredRelief.PROTOTYPE] = ColoredRelief
+    IMAGERY_LAYERS[SimpleRelief.PROTOTYPE] = SimpleRelief
+    IMAGERY_LAYERS[SwissRelief.PROTOTYPE] = SwissRelief
+    IMAGERY_LAYERS[ColorRelief.PROTOTYPE] = ColorRelief
     HAS_SCIPY = True
 except ImportError:
-    ShadeRelief = None
+    SimpleRelief = None
+    SwissRelief = None
+    ColorRelief = None
     HAS_SCIPY = False
 
 try:
