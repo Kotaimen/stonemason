@@ -145,13 +145,15 @@ def simple_shaded_relief(elevation, resolution, scale=111120,
 
 
 def swiss_shaded_relief(elevation, resolution, scale=111120,
-                        z_factor=1., azimuth=315, altitude=45,
-                        high_relief_cutoff=0.7,
+                        z_factor=1., azimuth=315,
+                        altitude=(45, 50, 80),
+                        high_relief_cutoff=0.6,
                         high_relief_gain=5,
-                        low_relief_cutoff=0.7,
-                        low_relief_gain=1,
+                        low_relief_cutoff=0.72,
+                        low_relief_gain=2,
                         height_mask_range=(0, 3000),
-                        height_mask_gamma=0.5
+                        height_mask_gamma=0.5,
+                        blend=(0.65, 0.75),
                         ):
     """Render a high quality shaded relief presented by Imhof.
 
@@ -212,13 +214,14 @@ def swiss_shaded_relief(elevation, resolution, scale=111120,
 
     # use different lighting angle to calculate different exposures
     assert azimuth > 180
-    diffuse = hill_shading(aspect, slope, azimuth, 30)
-    detail = hill_shading(aspect, slope, azimuth, 60)
-    specular = hill_shading(aspect, slope, azimuth - 180, 80)
+    a1, a2, a3 = altitude
+    diffuse = hill_shading(aspect, slope, azimuth, a1)
+    detail = hill_shading(aspect, slope, azimuth - 180, a2)
+    specular = hill_shading(aspect, slope, azimuth, a3)
 
     # toning by blend different exposures together:
     #    diffuse <-a- detail <-b- specular
-    a, b = 0.6, 0.9
+    a, b = blend
     shading = (diffuse * a + detail * (1 - a)) * b + specular * (1 - b)
 
     # make a high contrast and low contrast version
