@@ -361,13 +361,14 @@ class SwissRelief(ImageryLayer):
                  zfactor=1,
                  scale=111120,
                  azimuth=315,
-                 altitude=45,
-                 high_relief_cutoff=0.7,
+                 altitude=(45, 50, 80),
+                 high_relief_cutoff=0.6,
                  high_relief_gain=5,
-                 low_relief_cutoff=0.7,
-                 low_relief_gain=1,
+                 low_relief_cutoff=0.72,
+                 low_relief_gain=2,
                  height_mask_range=(0, 3000),
                  height_mask_gamma=0.5,
+                 blend=(0.65, 0.75),
                  buffer=0):
         ImageryLayer.__init__(self, name)
 
@@ -383,6 +384,7 @@ class SwissRelief(ImageryLayer):
         self._low_relief_gain = Parameter(low_relief_gain)
         self._height_mask_range = Parameter(height_mask_range)
         self._height_mask_gamma = Parameter(height_mask_gamma)
+        self._blend = Parameter(blend)
 
         self._buffer = buffer
 
@@ -411,6 +413,7 @@ class SwissRelief(ImageryLayer):
             low_relief_gain = self._low_relief_gain(resolution)
             height_mask_range = self._height_mask_range(resolution)
             height_mask_gamma = self._height_mask_gamma(resolution)
+            blend = self._blend(resolution)
 
             relief = swiss_shaded_relief(elevation,
                                          resolution,
@@ -423,7 +426,9 @@ class SwissRelief(ImageryLayer):
                                          high_relief_gain=high_relief_gain,
                                          low_relief_gain=low_relief_gain,
                                          height_mask_range=height_mask_range,
-                                         height_mask_gamma=height_mask_gamma)
+                                         height_mask_gamma=height_mask_gamma,
+                                         blend=blend
+                                         )
 
             image = skimage.img_as_ubyte(relief)
 
