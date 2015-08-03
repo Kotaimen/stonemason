@@ -147,13 +147,13 @@ def simple_shaded_relief(elevation, resolution, scale=111120,
 def swiss_shaded_relief(elevation, resolution, scale=111120,
                         z_factor=1., azimuth=315,
                         altitude=(45, 50, 80),
+                        blend=(0.65, 0.75),
                         high_relief_cutoff=0.6,
                         high_relief_gain=5,
                         low_relief_cutoff=0.72,
                         low_relief_gain=2,
                         height_mask_range=(0, 3000),
                         height_mask_gamma=0.5,
-                        blend=(0.65, 0.75),
                         ):
     """Render a high quality shaded relief presented by Imhof.
 
@@ -178,8 +178,11 @@ def swiss_shaded_relief(elevation, resolution, scale=111120,
     :type azimuth: float
 
     :param altitude: Altitude of the light, in degrees. ``90`` if the light
-        comes from top, ``0`` is raking light, default value is ``45``
-    :type altitude: float
+        comes from top, ``0`` is raking light, default value is ``(45, 50, 80)``.
+    :type altitude: tuple
+
+    :param blend: Blend opacity of hillshading.
+    :type blend: tuple
 
     :param high_relief_cutoff: Sigmoid contrast cutoff of the high elevation
         areas, default value is ``0.7``
@@ -209,37 +212,43 @@ def swiss_shaded_relief(elevation, resolution, scale=111120,
     :rtype: numpy.array
     """
 
-    aspect, slope = aspect_and_slope(elevation, resolution, scale=scale,
+    aspect, slope = aspect_and_slope(elevation, resolution,
+                                     scale=scale,
                                      z_factor=z_factor)
 
-    # use different lighting angle to calculate different exposures
+    # Use different lighting angle to calculate different exposures:
+    #   diffuse = hill_shading(aspect, slope, azimuth, z1)
+    #   detail = hill_shading(aspect, slope, azimuth - 180, z2)
+    #   specular = hill_shading(aspect, slope, azimuth, z3)
+    # Toning by blend different exposures together:
+    #    diffuse <-p- detail <-q- specular
+
     assert azimuth > 180
-    a1, a2, a3 = altitude
-    diffuse = hill_shading(aspect, slope, azimuth, a1)
-    detail = hill_shading(aspect, slope, azimuth - 180, a2)
-    specular = hill_shading(aspect, slope, azimuth, a3)
+    zenith = lambda a: math.radians(90. - float(a) % 360.)
+    z1, z2, z3 = tuple(map(zenith, altitude))
+    azimuth = math.radians(float(azimuth))
+    p, q = blend
 
-    # toning by blend different exposures together:
-    #    diffuse <-a- detail <-b- specular
-    a, b = blend
-    shading = (diffuse * a + detail * (1 - a)) * b + specular * (1 - b)
-
-    # make a high contrast and low contrast version
-    high_relief = skimage.exposure.adjust_sigmoid(
-        shading, cutoff=high_relief_cutoff, gain=high_relief_gain)
-
-    low_relief = skimage.exposure.adjust_sigmoid(
-        shading, cutoff=low_relief_cutoff, gain=low_relief_gain)
+    shading = np.cos(slope) * \
+              (p * q * np.cos(z1) - (-1 + p) * q * np.cos(z2) -
+               (-1 + q) * np.cos(z3)) + \
+              np.cos(aspect - azimuth) * np.sin(slope) * \
+              (p * q * np.sin(z1) + (-1 + p) * q * np.sin(z2) -
+               (-1 + q) * np.sin(z3))
+    shading[shading < 0] = 0.
 
     # height field as mask
-    height_mask = skimage.exposure.rescale_intensity(
-        elevation, in_range=height_mask_range)
-
-    height_mask = 1.0 - skimage.exposure.adjust_gamma(
-        height_mask, height_mask_gamma)
+    height_mask = skimage.exposure.rescale_intensity(elevation,
+                                                     in_range=height_mask_range)
+    # apply gamma
+    height_mask **= height_mask_gamma
 
     # blend different contrast together using heightfield mask
-    shading = low_relief * height_mask + (1. - height_mask) * high_relief
+    c1, c2 = high_relief_cutoff, low_relief_cutoff
+    g1, g2 = high_relief_gain, low_relief_gain
+
+    shading = height_mask / (1 + np.exp((-shading + c1) * g1)) \
+              + (1 - height_mask) / (1 + np.exp((-shading + c2) * g2))
 
     return shading
 
