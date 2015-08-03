@@ -7,7 +7,7 @@ import os
 import unittest
 
 from stonemason.renderer.cartographer import LayerFactory
-from stonemason.renderer.cartographer.imagery import Color, Filter, Blend
+from stonemason.renderer.cartographer.imagery import Color, Blend, MinPILFilter
 
 from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 from tests import skipUnlessHasScipy, skipUnlessHasSkimage
@@ -30,8 +30,8 @@ class TestLayerFactory(unittest.TestCase):
             'test', 'basic.color', color='#000')
 
         layer = self.factory.create_transform_layer(
-            'test', 'basic.filter', source=source, filter_name='blur')
-        self.assertIsInstance(layer, Filter)
+            'test', 'basic.filter.MinFilter', source=source)
+        self.assertIsInstance(layer, MinPILFilter)
 
     def test_create_composite_layer(self):
         source1 = self.factory.create_terminal_layer(
