@@ -5,12 +5,16 @@ __date__ = '4/21/15'
 
 IMAGERY_LAYERS = {}
 
-from .basic import Color, Blend, Filter
+from .basic import Color, Blend, MedianPILFilter, MinPILFilter, MaxPILFilter, \
+    GaussianBlurPILFilter, UnsharpMaskPILFilter, GammaAdjustment
 
 IMAGERY_LAYERS[Color.PROTOTYPE] = Color
-
-IMAGERY_LAYERS[Filter.PROTOTYPE] = Filter
-
+IMAGERY_LAYERS[MedianPILFilter.PROTOTYPE] = MedianPILFilter
+IMAGERY_LAYERS[MinPILFilter.PROTOTYPE] = MinPILFilter
+IMAGERY_LAYERS[MaxPILFilter.PROTOTYPE] = MaxPILFilter
+IMAGERY_LAYERS[GaussianBlurPILFilter.PROTOTYPE] = GaussianBlurPILFilter
+IMAGERY_LAYERS[UnsharpMaskPILFilter.PROTOTYPE] = UnsharpMaskPILFilter
+IMAGERY_LAYERS[GammaAdjustment.PROTOTYPE] = GammaAdjustment
 IMAGERY_LAYERS[Blend.PROTOTYPE] = Blend
 
 try:

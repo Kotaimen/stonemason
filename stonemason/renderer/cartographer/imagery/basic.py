@@ -3,6 +3,7 @@
 __author__ = 'ray'
 __date__ = '7/6/15'
 
+import numpy as np
 from PIL import Image, ImageColor, ImageFilter
 
 from ...layerexpr import ImageryLayer, TransformLayer, CompositeLayer
@@ -32,23 +33,10 @@ class Color(ImageryLayer):
         return feature
 
 
-_BUILTIN_FILTERS = dict(
-    (i.__name__.lower(), i) for i in ImageFilter.BuiltinFilter.__subclasses__())
-
-
-class Filter(TransformLayer):
-    PROTOTYPE = 'basic.filter'
-
-    def __init__(self, name, layer, filter_name):
+class _FilterLayer(TransformLayer):
+    def __init__(self, name, layer, image_filter):
         TransformLayer.__init__(self, name, layer)
-
-        filter_name = filter_name.lower()
-        if filter_name not in _BUILTIN_FILTERS:
-            raise ValueError(
-                'Unknown filter name %s, builtin filters include %s' % filter_name,
-                _BUILTIN_FILTERS.keys())
-
-        self._filter = _BUILTIN_FILTERS[filter_name]
+        self._filter = image_filter
 
     def render(self, context):
         assert isinstance(context, RenderContext)
@@ -57,12 +45,86 @@ class Filter(TransformLayer):
 
         pil_image = src.filter(self._filter)
 
-        feature = ImageFeature(
-            crs=context.map_proj,
-            bounds=context.map_bbox,
-            size=context.map_size,
-            data=pil_image
-        )
+        feature = ImageFeature(crs=context.map_proj,
+                               bounds=context.map_bbox,
+                               size=context.map_size,
+                               data=pil_image)
+
+        return feature
+
+
+class MedianPILFilter(_FilterLayer):
+    PROTOTYPE = 'basic.filter.MedianFilter'
+
+    def __init__(self, name, layer, size=3):
+        image_filter = ImageFilter.MedianFilter(size)
+        _FilterLayer.__init__(self, name, layer, image_filter)
+
+
+class MinPILFilter(_FilterLayer):
+    PROTOTYPE = 'basic.filter.MinFilter'
+
+    def __init__(self, name, layer, size=3):
+        image_filter = ImageFilter.MinFilter(size)
+        _FilterLayer.__init__(self, name, layer, image_filter)
+
+
+class MaxPILFilter(_FilterLayer):
+    PROTOTYPE = 'basic.filter.MaxFilter'
+
+    def __init__(self, name, layer, size=3):
+        image_filter = ImageFilter.MaxFilter(size)
+        _FilterLayer.__init__(self, name, layer, image_filter)
+
+
+class GaussianBlurPILFilter(_FilterLayer):
+    PROTOTYPE = 'filter.GaussianBlur'
+
+    def __init__(self, name, layer, radius=2):
+        image_filter = ImageFilter.GaussianBlur(radius)
+        _FilterLayer.__init__(self, name, layer, image_filter)
+
+
+class UnsharpMaskPILFilter(_FilterLayer):
+    PROTOTYPE = 'basic.filter.UnsharpMask'
+
+    def __init__(self, name, layer, radius=2, percent=150, threshold=3):
+        image_filter = ImageFilter.UnsharpMask(radius, percent, threshold)
+        _FilterLayer.__init__(self, name, layer, image_filter)
+
+
+class GammaAdjustment(TransformLayer):
+    PROTOTYPE = 'basic.exposure.gamma'
+
+    def __init__(self, name, layer, gamma=1, gain=1):
+        TransformLayer.__init__(self, name, layer)
+        if gamma < 0:
+            raise ValueError("Gamma should be a non-negative real number.")
+
+        self._gamma = gamma
+        self._gain = gain
+
+    def render(self, context):
+        assert isinstance(context, RenderContext)
+
+        src = self._layer.render(context).data
+
+        array = np.array(src)
+
+        dtype = array.dtype.type
+        dtype_limits = np.iinfo(dtype)
+
+        scale = float(dtype_limits.max - dtype_limits.min)
+
+        out = ((array / scale) ** self._gamma) * scale * self._gain
+        out = dtype(out)
+
+        pil_image = Image.fromarray(out, mode='RGBA')
+
+        feature = ImageFeature(crs=context.map_proj,
+                               bounds=context.map_bbox,
+                               size=context.map_size,
+                               data=pil_image)
 
         return feature
 
