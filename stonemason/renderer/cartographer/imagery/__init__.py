@@ -60,3 +60,13 @@ except ImportError:
     PILComposer = None
     HAS_SCIPY = False
     HAS_SKIMAGE = False
+
+try:
+    from .storage import DiskStorageLayer, S3StorageLayer
+
+    IMAGERY_LAYERS[DiskStorageLayer.PROTOTYPE] = DiskStorageLayer
+    IMAGERY_LAYERS[S3StorageLayer.PROTOTYPE] = S3StorageLayer
+
+except ImportError:
+    DiskStorageLayer = None
+    S3StorageLayer = None

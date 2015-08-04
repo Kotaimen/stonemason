@@ -59,6 +59,8 @@ def save_index(name, location, geometry):
     layer.CreateField(field_location)
 
     feature = ogr.Feature(layer.GetLayerDefn())
+
+    location = os.path.relpath(location, os.path.dirname(name))
     feature.SetField("location", location)
     feature.SetGeometry(geometry)
 
@@ -78,10 +80,10 @@ def mock_dem_5m():
     name = os.path.join(DATA_DIRECTORY, 'raster', 'fujisan_5m.tif')
     index_name = os.path.join(DATA_DIRECTORY, 'raster', 'index_5m.shp')
 
-    with ElevationDataSource(
-            '/Volumes/data/geodata/geodata/Stage/jpn-5m/index.shp') as source:
-        elev_5m = source.query(crs, envelope, size)
-        save_raster(name, crs, envelope, size, elev_5m, domain)
+    # with ElevationDataSource(
+    #         '/Volumes/data/geodata/geodata/Stage/jpn-5m/index.shp') as source:
+    #     elev_5m = source.query(crs, envelope, size)
+    #     save_raster(name, crs, envelope, size, elev_5m, domain)
 
     save_index(index_name, name, Envelope(*envelope).to_geometry())
 
@@ -95,10 +97,10 @@ def mock_dem_10m():
     name = os.path.join(DATA_DIRECTORY, 'raster', 'fujisan_10m.tif')
     index_name = os.path.join(DATA_DIRECTORY, 'raster', 'index_10m.shp')
 
-    with ElevationDataSource(
-            '/Volumes/data/geodata/geodata/Stage/JPN10M/index.shp') as source:
-        elev_10m = source.query(crs, envelope, size)
-        save_raster(name, crs, envelope, size, elev_10m, domain)
+    # with ElevationDataSource(
+    #         '/Volumes/data/geodata/geodata/Stage/JPN10M/index.shp') as source:
+    #     elev_10m = source.query(crs, envelope, size)
+    #     save_raster(name, crs, envelope, size, elev_10m, domain)
 
     save_index(index_name, name, Envelope(*envelope).to_geometry())
 
@@ -110,7 +112,7 @@ class TestRasterDataSource(unittest.TestCase):
         pass
 
     def test_query(self):
-        crs = 'WGS84'
+        crs = 'EPSG:4326'
         envelope = (138.695869, 35.330960, 138.765564, 35.398994)
         size = (256, 256)
 

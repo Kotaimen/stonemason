@@ -7,7 +7,7 @@ from collections import namedtuple
 
 _RenderContext = namedtuple(
     'RenderContext',
-    '''map_proj map_bbox map_size scale_factor''')
+    '''map_proj map_bbox map_size scale_factor meta_index''')
 
 
 class RenderContext(_RenderContext):
@@ -72,9 +72,10 @@ class RenderContext(_RenderContext):
     """
 
     def __new__(cls, map_proj=None, map_bbox=None, map_size=None,
-                scale_factor=1):
+                scale_factor=1, meta_index=None):
         return _RenderContext.__new__(cls,
                                       map_proj=map_proj,
                                       map_bbox=map_bbox,
                                       map_size=map_size,
-                                      scale_factor=scale_factor)
+                                      scale_factor=scale_factor,
+                                      meta_index=meta_index)
