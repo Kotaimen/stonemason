@@ -142,19 +142,23 @@ def comp_op_src_over(src, dst):
     """
     assert src.shape == dst.shape
 
-    sr, sg, sb, sa = src[..., 0], src[..., 1], src[..., 2], src[..., 3]
-    dr, dg, db, da = dst[..., 0], dst[..., 1], dst[..., 2], dst[..., 3]
+    sa = src[..., 3]
 
-    s1a = 1. - sa
+    # sr, sg, sb, sa = src[..., 0], src[..., 1], src[..., 2], src[..., 3]
+    # dr, dg, db, da = dst[..., 0], dst[..., 1], dst[..., 2], dst[..., 3]
+    
+    s1a = (1. - sa)[..., np.newaxis]
 
-    dr = sr + dr * s1a
-    dg = sg + dg * s1a
-    db = sb + db * s1a
-    da = sa + da * s1a
+    # dr = sr + dr * s1a
+    # dg = sg + dg * s1a
+    # db = sb + db * s1a
+    # da = sa + da * s1a
+    #
+    # composite = np.dstack((dr, dg, db, da))
 
-    composite = np.dstack((dr, dg, db, da))
+    dst = src + dst * s1a
 
-    return composite
+    return dst
 
 
 def comp_op_dst_over(src, dst):
