@@ -73,7 +73,9 @@ def tile_renderer_command(ctx, theme_name, schema_tag,
     if workers == 0:
         workers = multiprocessing.cpu_count()
 
-    script = RenderScript(gallery=ctx.gallery,
+    script = RenderScript(verbose=ctx.verbose,
+                          debug=ctx.debug,
+                          gallery=ctx.gallery,
                           theme_name=theme_name,
                           schema_tag=schema_tag,
                           levels=levels,

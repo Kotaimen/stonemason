@@ -65,20 +65,29 @@ def create_mason(script):
     return mason
 
 
-def setup_logger(log_file='render.log', level=logging.WARNING):
+def setup_logger(log_file='render.log', debug=False, verbose=False):
     global logger
     if logger is not None:
         return
 
+    if debug or verbose:
+        print_level = logging.DEBUG
+        write_level = logging.DEBUG
+    else:
+        print_level = logging.INFO
+        write_level = logging.WARNING
+
     # borrow multiprocessing's logger so we can reliably write to console
-    logger = multiprocessing.log_to_stderr(level=logging.INFO)
+    logger = multiprocessing.log_to_stderr(level=print_level)
 
     # also attach a file handler for warning and errors
     formatter = logging.Formatter(
         '[%(asctime)s - %(levelname)s/%(processName)s] %(message)s')
     handler = logging.FileHandler(log_file)
     handler.setFormatter(formatter)
-    handler.setLevel(level)
+
+    handler.setLevel(write_level)
+
     logger.addHandler(handler)
 
 
@@ -92,7 +101,7 @@ def walker(script, queue, stats):
     assert isinstance(queue, multiprocessing.queues.Queue)
     # assert isinstance(stats, Stats)
 
-    setup_logger(script.log_file)
+    setup_logger(script.log_file, script.debug)
 
     mason = create_mason(script)
 
@@ -103,16 +112,19 @@ def walker(script, queue, stats):
     assert isinstance(map_sheet, MapSheet)
     pyramid = map_sheet.pyramid
     assert isinstance(pyramid, Pyramid)
+
     # replace stride in renderer pyramid with storage stride
     pyramid = pyramid._replace(stride=map_sheet._storage.stride)
 
     # create tms from new pyramid
     tms = TileMapSystem(pyramid)
+    logger.debug('Created TMS: %r', tms)
 
     # walk the pyramid
     walker = create_walker(script, tms)
+    logger.debug('Created walker: %r', walker)
 
-    logger.info('Started spawning metatiles from #%d' % stats.progress)
+    logger.info('Started spawning metatiles from #%d.' % stats.progress)
 
     # put indexes into the queue
     n = 0
@@ -129,9 +141,10 @@ def renderer(script, queue, stats):
     assert isinstance(queue, multiprocessing.queues.Queue)
     # assert isinstance(stats, Stats)
 
-    setup_logger(script.log_file)
+    setup_logger(script.log_file, script.debug)
 
     mason = create_mason(script)
+    logger.debug('Created Mason from render script.')
 
     while True:
         index = queue.get()
@@ -181,7 +194,7 @@ def renderman(script):
     """
 
     assert isinstance(script, RenderScript)
-    setup_logger(script.log_file)
+    setup_logger(script.log_file, script.debug)
 
     # shared stats
     stats = multiprocessing.sharedctypes.Value(RenderStats)
@@ -197,6 +210,7 @@ def renderman(script):
     producer.start()
 
     # create all renderer processes
+    logging.info('Stonemason Renderman')
     workers = []
     for n in range(script.workers):
         logging.info('Creating renderer#%d', n)
@@ -221,9 +235,9 @@ def renderman(script):
         producer.join()
         queue.join()
     except KeyboardInterrupt:
-        logger.info('===== Canceled =====')
+        logger.info('Interrupted.')
     else:
-        logger.info('===== Completed =====')
+        logger.info('Completed.')
     finally:
         # return unwrapped ctypes object
         return stats.get_obj()
