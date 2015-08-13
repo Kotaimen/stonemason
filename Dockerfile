@@ -20,7 +20,6 @@ ADD         . ./
 RUN         pip install -rrequirements-dev.txt && \
             pip install . && \
             python setup.py build_ext -if && \
-            tox -e py27geo && \
             stonemason init && \
             stonemason check && \
             rm -rf /tmp/stonemason
