@@ -12,11 +12,11 @@ class LexicalError(RendererError):
     pass
 
 
-class LayerConfigNotFound(LexicalError):
+class NodeConfigNotFound(LexicalError):
     pass
 
 
-class InvalidLayerConfig(LexicalError):
+class InvalidNodeConfig(LexicalError):
     pass
 
 

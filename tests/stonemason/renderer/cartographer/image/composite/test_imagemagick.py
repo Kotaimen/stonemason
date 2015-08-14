@@ -11,8 +11,8 @@ from distutils.version import LooseVersion
 
 from PIL import Image
 
-from stonemason.renderer.cartographer.imagery.imagemagick import ImageMagickComposer, ImageMagickError
-
+from stonemason.renderer.cartographer.image.composite.imblender import \
+    ImageMagickComposer, ImageMagickError
 from tests import skipUnlessHasImageMagick, DATA_DIRECTORY
 
 

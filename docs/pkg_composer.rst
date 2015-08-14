@@ -8,16 +8,16 @@ Map composing.
 Image
 =====
 
-.. autoclass:: stonemason.renderer.cartographer.imagery.composer.Composer
+.. autoclass:: stonemason.renderer.cartographer.image.AlphaBlender
     :members:
 
 ImageMagick
 -----------
 
-.. autodata:: stonemason.renderer.cartographer.imagery.HAS_IMAGEMAGICK
+.. autodata:: stonemason.renderer.cartographer.HAS_IMAGEMAGICK
     :annotation:
 
-.. autoclass:: stonemason.renderer.cartographer.imagery.imagemagick.ImageMagickComposer
+.. autoclass:: stonemason.renderer.cartographer.image.IMComposer
     :members:
 
 Sample

@@ -91,7 +91,8 @@ class FileSystemCurator(Curator):
 
             template = template_env.get_template(filename)
 
-            data_root = os.path.join(os.environ['HOME'], 'proj/geodata/')
+            home = os.environ.get('HOME', '.')
+            data_root = os.path.join(home, 'proj/geodata/')
             template_variables = dict(theme_root=basename, data_root=data_root)
 
             source = template.render(**template_variables).encode('utf-8')

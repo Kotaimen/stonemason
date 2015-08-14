@@ -5,13 +5,15 @@ __date__ = '6/28/15'
 
 import unittest
 import os
+
 from PIL import Image
+
 from tests import TEST_DIRECTORY, carto, skipUnlessHasScipy, \
     skipUnlessHasSkimage
 
 if carto.HAS_SCIPY and carto.HAS_SKIMAGE:
     import numpy as np
-    from stonemason.renderer.cartographer.imagery.shadedrelief import \
+    from stonemason.renderer.cartographer.image.terminal.relief import \
         simple_shaded_relief, swiss_shaded_relief, array2pillow
     import skimage.filters
     import skimage.external.tifffile

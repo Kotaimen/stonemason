@@ -74,24 +74,6 @@ class DataDomain(object):
     DATA_TYPE = gdalconst.GDT_Int32
 
 
-class GreyScaleDomain(DataDomain):
-    DIMENSION = 1
-    NODATAVALUE = -1
-    DATA_TYPE = gdalconst.GDT_Byte
-
-
-class RGBDomain(DataDomain):
-    DIMENSION = 3
-    NODATAVALUE = -1
-    DATA_TYPE = gdalconst.GDT_Byte
-
-
-class ElevationDomain(GreyScaleDomain):
-    DIMENSION = 1
-    NODATAVALUE = np.finfo(np.float32).min.item()
-    DATA_TYPE = gdalconst.GDT_Float32
-
-
 class RasterDataSource(object):
     def __init__(self, index, domain=None):
 
@@ -109,7 +91,14 @@ class RasterDataSource(object):
             domain = DataDomain()
         self._domain = domain
 
+    @property
+    def domain(self):
+        return self._domain
+
     def query(self, crs, envelope, size):
+
+        domain = self._domain
+
         # calculate result information
         target_crs = osr.SpatialReference()
         target_crs.SetFromUserInput(crs)
@@ -117,22 +106,25 @@ class RasterDataSource(object):
 
         target_transform = GeoTransform.from_envelope(envelope, size)
         target_width, target_height = size
-        target_band_num = self._domain.DIMENSION
+        target_band_num = domain.DIMENSION
+
+
+        # create target raster dataset
+        driver = gdal.GetDriverByName('MEM')
+
+        target = driver.Create(
+            '', target_width, target_height, target_band_num, domain.DATA_TYPE)
 
         try:
-            # create target raster dataset
-            driver = gdal.GetDriverByName('MEM')
-            target = driver.Create(
-                '', target_width, target_height, target_band_num,
-                self._domain.DATA_TYPE)
+            # initialize
             assert isinstance(target, gdal.Dataset)
             target.SetGeoTransform(target_transform.make_tuple())
             target.SetProjection(target_projection)
             for band_no in range(1, target_band_num + 1):
                 band = target.GetRasterBand(band_no)
                 assert isinstance(band, gdal.Band)
-                band.SetNoDataValue(self._domain.NODATAVALUE)
-                band.Fill(self._domain.NODATAVALUE)
+                band.SetNoDataValue(domain.NODATAVALUE)
+                band.Fill(domain.NODATAVALUE)
 
             # set query bounding geometry
             query_geom = Envelope(*envelope).to_geometry(srs=target_crs)
@@ -144,13 +136,14 @@ class RasterDataSource(object):
 
             self._index.SetSpatialFilter(query_geom)
 
-            # retrieve source data and fill target area
+            # retrieve source data
             for n, record in enumerate(self._index):
                 location = os.path.join(
                     self._basedir, record.GetField('location'))
                 logging.debug('Reading:[%d]%s' % (n, location))
+
+                source = gdal.OpenShared(location, gdalconst.GA_ReadOnly)
                 try:
-                    source = gdal.OpenShared(location, gdalconst.GA_ReadOnly)
                     source_projection = source.GetProjection()
                     source_transform = GeoTransform.from_tuple(
                         source.GetGeoTransform())
@@ -171,22 +164,24 @@ class RasterDataSource(object):
                         logging.debug('Warp Error:[%d]%s' % (n, location))
 
                 finally:
+                    # close source data
                     source = None
 
             result = []
             for band_no in range(1, target.RasterCount + 1):
                 band = target.GetRasterBand(band_no)
-                try:
-                    gdal.FillNodata(band, None, 100, 0)
-                except RuntimeError:
-                    # gdal raises exception if failed to remove temporary files,
-                    # however FillNodata still works if we just ignore it.
-                    pass
+                # try:
+                #     gdal.FillNodata(band, None, 100, 0)
+                # except RuntimeError:
+                #     # gdal raises exception if failed to remove temporary files,
+                #     # however FillNodata still works if we just ignore it.
+                #     pass
                 result.append(band.ReadAsArray())
 
             return np.array(result)
 
         finally:
+            # close target data
             target = None
 
     def _find_resample_method(self, resolution_a, resolution_b):
@@ -210,13 +205,25 @@ class RasterDataSource(object):
         self.close()
 
 
-class ElevationDataSource(RasterDataSource):
+class RGBDomain(DataDomain):
+    DIMENSION = 3
+    NODATAVALUE = -1
+    DATA_TYPE = gdalconst.GDT_Byte
+
+
+class ElevationDomain(DataDomain):
+    DIMENSION = 1
+    NODATAVALUE = np.finfo(np.float32).min.item()
+    DATA_TYPE = gdalconst.GDT_Float32
+
+
+class ElevationData(RasterDataSource):
     def __init__(self, index):
         domain = ElevationDomain()
         RasterDataSource.__init__(self, index, domain=domain)
 
 
-class RGBImageDataSource(RasterDataSource):
+class RGBImageData(RasterDataSource):
     def __init__(self, index):
         domain = RGBDomain()
         RasterDataSource.__init__(self, index, domain=domain)

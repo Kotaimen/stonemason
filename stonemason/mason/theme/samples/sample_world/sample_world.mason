@@ -65,7 +65,7 @@ for scale in [1, 2, 3, 4]:
             prototype=maptype,
             layers=dict(
                 root={
-                    'prototype': 'mapnik',
+                    'prototype': 'image.term.mapnik',
                     'style_sheet': "{{ theme_root }}/sample_world.xml",
                     'default_scale': scale,
                     'buffer_size': 256 * scale

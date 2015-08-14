@@ -10,18 +10,20 @@ except ImportError:
 
 from PIL import Image
 
-from ...layerexpr import ImageryLayer
-from ...feature import ImageFeature
-from ...context import RenderContext
+from stonemason.renderer.expression import TermNode
+from stonemason.renderer.feature import ImageFeature
+from stonemason.renderer.context import RenderContext
 
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.tilestorage import MetaTileStorage, DiskMetaTileStorage, \
     S3MetaTileStorage
 
+__all__ = ['S3StorageNode', 'DiskStorageNode']
 
-class _MetatileLayer(ImageryLayer):
+
+class _MetaTileStorageNode(TermNode):
     def __init__(self, name, storage):
-        ImageryLayer.__init__(self, name)
+        TermNode.__init__(self, name)
         assert isinstance(storage, MetaTileStorage)
 
         self._storage = storage
@@ -47,9 +49,7 @@ class _MetatileLayer(ImageryLayer):
         return feature
 
 
-class DiskStorageLayer(_MetatileLayer):
-    PROTOTYPE = 'data.storage.disk'
-
+class DiskStorageNode(_MetaTileStorageNode):
     def __init__(self, name, **kwargs):
         parameters = dict(kwargs)
 
@@ -62,12 +62,11 @@ class DiskStorageLayer(_MetatileLayer):
         bundle = FormatBundle(maptype, TileFormat(**tileformat))
 
         storage = DiskMetaTileStorage(format=bundle, **parameters)
-        _MetatileLayer.__init__(self, name, storage)
+
+        _MetaTileStorageNode.__init__(self, name, storage)
 
 
-class S3StorageLayer(_MetatileLayer):
-    PROTOTYPE = 'data.storage.s3'
-
+class S3StorageNode(_MetaTileStorageNode):
     def __init__(self, name, **kwargs):
         parameters = dict(kwargs)
 
@@ -80,4 +79,5 @@ class S3StorageLayer(_MetatileLayer):
         bundle = FormatBundle(maptype, TileFormat(**tileformat))
 
         storage = S3MetaTileStorage(format=bundle, **parameters)
-        _MetatileLayer.__init__(self, name, storage)
+
+        _MetaTileStorageNode.__init__(self, name, storage)

@@ -13,7 +13,7 @@ class TestLayerToken(unittest.TestCase):
         self.name = 'test'
         self.prototype = 'null'
         self.parameters = dict(param1=1, param2=2)
-        self.token = LayerToken(self.name, self.prototype, param1=1, param2=2)
+        self.token = TermToken(self.name, self.prototype, param1=1, param2=2)
 
     def test_name(self):
         self.assertEqual(self.name, self.token.name)
@@ -86,7 +86,7 @@ class TestTokenizer(unittest.TestCase):
         tokenizer = DictTokenizer(expr)
         token = list(tokenizer.next_token())[0]
 
-        self.assertIsInstance(token, LayerToken)
+        self.assertIsInstance(token, TermToken)
         self.assertEqual('root', token.name)
         self.assertEqual(None, token.prototype)
         self.assertDictEqual({}, token.parameters)
@@ -106,7 +106,7 @@ class TestTokenizer(unittest.TestCase):
         self.assertEqual(1, len(tokens))
 
         token = tokens[0]
-        self.assertIsInstance(token, LayerToken)
+        self.assertIsInstance(token, TermToken)
         self.assertEqual('root', token.name)
         self.assertEqual('p1', token.prototype)
         self.assertDictEqual(dict(param1=1, param2=2), token.parameters)
@@ -132,7 +132,7 @@ class TestTokenizer(unittest.TestCase):
         self.assertEqual(2, len(tokens))
 
         token = tokens[0]
-        self.assertIsInstance(token, LayerToken)
+        self.assertIsInstance(token, TermToken)
         self.assertEqual('s1', token.name)
         self.assertEqual('p1', token.prototype)
         self.assertDictEqual(dict(param1=1, param2=2), token.parameters)
@@ -170,13 +170,13 @@ class TestTokenizer(unittest.TestCase):
         self.assertEqual(3, len(tokens))
 
         token = tokens[0]
-        self.assertIsInstance(token, LayerToken)
+        self.assertIsInstance(token, TermToken)
         self.assertEqual('s1', token.name)
         self.assertEqual('p1', token.prototype)
         self.assertDictEqual(dict(param1=1, param2=2), token.parameters)
 
         token = tokens[1]
-        self.assertIsInstance(token, LayerToken)
+        self.assertIsInstance(token, TermToken)
         self.assertEqual('s2', token.name)
         self.assertEqual('p2', token.prototype)
         self.assertDictEqual(dict(param1=1, param2=2), token.parameters)

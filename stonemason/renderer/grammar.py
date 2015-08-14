@@ -3,8 +3,8 @@
 __author__ = 'ray'
 __date__ = '4/20/15'
 
-from .cartographer import LayerFactory, EmptyLayer
-from .tokenizer import LayerToken, TransformToken, CompositeToken, DictTokenizer
+from .tokenizer import TermToken, TransformToken, CompositeToken, DictTokenizer
+from .expression import NullNode, RenderNodeFactory
 
 
 class RenderGrammar(object):
@@ -16,58 +16,57 @@ class RenderGrammar(object):
 
     def __init__(self, tokenizer, start='root', factory=None):
         assert isinstance(tokenizer, DictTokenizer)
+        assert isinstance(factory, RenderNodeFactory)
         self._tokenizer = tokenizer
         self._start = start
-        self._factory = LayerFactory()
+        self._factory = factory
 
     def parse(self):
         stack = list()
 
         for token in self._tokenizer.next_token(start=self._start):
             if isinstance(token, TransformToken):
-                source_layer = stack.pop()
-                if source_layer is None:
+                source_node = stack.pop()
+                if source_node is None:
                     raise ValueError
 
-                layer = self._factory.create_transform_layer(
+                node = self._factory.create_transform_node(
                     token.name,
                     token.prototype,
-                    source_layer,
+                    source_node,
                     **token.parameters)
 
-                stack.append(layer)
+                stack.append(node)
 
             elif isinstance(token, CompositeToken):
-                source_layers = list()
+                source_nodes = list()
                 for i in token.sources:
-                    source_layer = stack.pop()
-                    if source_layer is None:
+                    source_node = stack.pop()
+                    if source_node is None:
                         raise ValueError
-                    source_layers.append(source_layer)
+                    source_nodes.append(source_node)
 
-                layer = self._factory.create_composite_layer(
+                node = self._factory.create_composite_node(
                     token.name,
                     token.prototype,
-                    source_layers,
+                    source_nodes,
                     **token.parameters)
 
-                stack.append(layer)
+                stack.append(node)
 
-            elif isinstance(token, LayerToken):
-                layer = self._factory.create_terminal_layer(
+            elif isinstance(token, TermToken):
+                node = self._factory.create_terminal_node(
                     token.name,
                     token.prototype,
                     **token.parameters)
 
-                stack.append(layer)
+                stack.append(node)
             else:
                 raise ValueError
 
         try:
-            layer = stack.pop()
+            node = stack.pop()
         except IndexError:
-            return EmptyLayer('empty')
+            return NullNode('empty')
         else:
-            return layer
-
-
+            return node

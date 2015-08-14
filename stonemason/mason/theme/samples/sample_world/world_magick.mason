@@ -33,7 +33,7 @@ schema_1x = dict(
         'prototype': 'image',
         'layers': {
             'root': {
-                'prototype': 'imagemagick',
+                'prototype': 'image.composite.imagemagick',
                 'sources': ['base', 'lines', 'halo', 'label'],
                 'command': '''
                 <<base>>
@@ -45,25 +45,25 @@ schema_1x = dict(
                 '''
             },
             'base': {
-                'prototype': 'mapnik',
+                'prototype': 'image.term.mapnik',
                 'style_sheet': "{{ theme_root }}/world_base.xml",
                 'default_scale': 1,
                 'buffer_size': 256
             },
             'lines': {
-                'prototype': 'mapnik',
+                'prototype': 'image.term.mapnik',
                 'style_sheet': "{{ theme_root }}/world_lines.xml",
                 'default_scale': 1,
                 'buffer_size': 256
             },
             'halo': {
-                'prototype': 'mapnik',
+                'prototype': 'image.term.mapnik',
                 'style_sheet': "{{ theme_root }}/world_halo.xml",
                 'default_scale': 1,
                 'buffer_size': 256
             },
             'label': {
-                'prototype': 'mapnik',
+                'prototype': 'image.term.mapnik',
                 'style_sheet': "{{ theme_root }}/world_label.xml",
                 'default_scale': 1,
                 'buffer_size': 256

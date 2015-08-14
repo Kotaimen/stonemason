@@ -3,7 +3,7 @@
 __author__ = 'ray'
 __date__ = '4/21/15'
 
-from .exceptions import LexicalError, InvalidLayerConfig, LayerConfigNotFound
+from .exceptions import LexicalError, InvalidNodeConfig, NodeConfigNotFound
 
 
 class AbstractToken(object):  # pragma: no cover
@@ -31,7 +31,7 @@ class AbstractToken(object):  # pragma: no cover
             self.__class__.__name__, self.name, self.parameters)
 
 
-class LayerToken(AbstractToken):
+class TermToken(AbstractToken):
     """Layer Token
 
     A basic terminal token that represents a layer .
@@ -86,7 +86,7 @@ class DictTokenizer(object):
             return
 
         if not isinstance(token, dict):
-            raise InvalidLayerConfig(start)
+            raise InvalidNodeConfig(start)
 
         parameters = dict(token)
 
@@ -109,5 +109,5 @@ class DictTokenizer(object):
             yield CompositeToken(name, prototype, source_names, **parameters)
 
         else:
-            yield LayerToken(name, prototype, **parameters)
+            yield TermToken(name, prototype, **parameters)
 

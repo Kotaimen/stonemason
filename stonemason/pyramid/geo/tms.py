@@ -60,7 +60,7 @@ class TileMapSystem(object):
     >>> tms.geogcs # doctest: +ELLIPSIS
     <osgeo.osr.SpatialReference; proxy of <Swig Object of type 'OSRSpatialReferenceShadow *' at ...> >
     >>> tms.pyramid.geogcs
-    '+proj=longlat +datum=WGS84 +no_defs '
+    '+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs '
     >>> tms.forward_projection # doctest: +ELLIPSIS
     <osgeo.osr.CoordinateTransformation; proxy of <Swig Object of type 'OSRCoordinateTransformationShadow *' at ...> >
     >>> index = MetaTileIndex(4, 12, 12, 8)

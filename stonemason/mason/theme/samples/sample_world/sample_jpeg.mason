@@ -56,7 +56,7 @@ for quality in QUALITIES:
             prototype=maptype,
             layers=dict(
                 root={
-                    'prototype': 'mapnik',
+                    'prototype': 'image.term.mapnik',
                     'style_sheet': "{{ theme_root }}/sample_world.xml",
                     'default_scale': 1,
                     'buffer_size': 256

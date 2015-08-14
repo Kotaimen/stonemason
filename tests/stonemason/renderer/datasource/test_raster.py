@@ -6,14 +6,18 @@ __date__ = '7/29/15'
 import os
 import unittest
 
-import numpy as np
-from osgeo import ogr, gdal, osr, gdalconst
+from tests import carto
 
-from stonemason.pyramid.geo.tms import Envelope
-from stonemason.renderer.cartographer.imagery.datasource import \
-    ElevationDomain, ElevationDataSource, GeoTransform
+if carto.HAS_SCIPY:
+    import numpy as np
 
-from tests import DATA_DIRECTORY
+if carto.HAS_GDAL:
+    from osgeo import ogr, gdal, osr
+    from stonemason.pyramid.geo.tms import Envelope
+    from stonemason.renderer.datasource.raster import \
+        ElevationDomain, ElevationData, GeoTransform
+
+from tests import DATA_DIRECTORY, skipUnlessHasGDAL, skipUnlessHasScipy
 
 
 def save_raster(name, crs, envelope, size, array, domain):
@@ -105,6 +109,8 @@ def mock_dem_10m():
     save_index(index_name, name, Envelope(*envelope).to_geometry())
 
 
+@skipUnlessHasGDAL()
+@skipUnlessHasScipy()
 class TestRasterDataSource(unittest.TestCase):
     def setUp(self):
         # mock_dem_5m()
@@ -118,7 +124,7 @@ class TestRasterDataSource(unittest.TestCase):
 
         index_name = os.path.join(DATA_DIRECTORY, 'raster', 'index_5m.shp')
 
-        with ElevationDataSource(index_name) as source:
+        with ElevationData(index_name) as source:
             elev_5m = source.query(crs, envelope, size)[0]
 
         filename = os.path.join(DATA_DIRECTORY, 'raster', 'fujisan_5m.tif')

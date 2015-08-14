@@ -8,9 +8,12 @@ import mapnik
 
 from PIL import Image
 
-from ...layerexpr import ImageryLayer
-from ...feature import ImageFeature
-from ...context import RenderContext
+from stonemason.renderer.expression import TermNode
+from stonemason.renderer.feature import ImageFeature
+from stonemason.renderer.context import RenderContext
+
+__all__ = ['Mapnik_', 'MapnikComposer', 'MapnikCartoError',
+           'InvalidCommandNumber', 'InvalidComposeMode']
 
 
 class MapnikCartoError(Exception):
@@ -25,15 +28,13 @@ class InvalidCommandNumber(MapnikCartoError):
     pass
 
 
-class Mapnik_(ImageryLayer):
-    PROTOTYPE = 'mapnik'
-
+class Mapnik_(TermNode):
     def __init__(self, name,
                  style_sheet='map.xml',
                  buffer_size=0,
                  base_path=None,
                  default_scale=None):
-        ImageryLayer.__init__(self, name)
+        TermNode.__init__(self, name)
         assert isinstance(buffer_size, int)
 
         # check theme path
@@ -75,26 +76,23 @@ class Mapnik_(ImageryLayer):
         pil_image = Image.frombuffer(
             'RGBA', (map_width, map_height), raw_data, 'raw', 'RGBA', 0, 1)
 
-        feature = ImageFeature(
-            crs=context.map_proj,
-            bounds=context.map_bbox,
-            size=context.map_size,
-            data=pil_image)
+        feature = ImageFeature(crs=context.map_proj,
+                               bounds=context.map_bbox,
+                               size=context.map_size,
+                               data=pil_image)
 
         return feature
 
 
-class MapnikComposer(ImageryLayer):
-    PROTOTYPE = 'mapnik.composer'
-
+class MapnikComposer(TermNode):
     def __init__(self, name, style_sheets, commands,
                  buffer_size=0,
                  base_path=None,
                  default_scale=None):
-        ImageryLayer.__init__(self, name)
+        TermNode.__init__(self, name)
         assert isinstance(style_sheets, list)
         assert isinstance(commands, list)
-        
+
         if len(commands) != len(style_sheets) - 1:
             raise InvalidCommandNumber(
                 'len(commands) should be len(style_sheets) - 1')

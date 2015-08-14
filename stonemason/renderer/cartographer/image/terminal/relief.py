@@ -8,18 +8,19 @@ import math
 import numpy as np
 from PIL import Image, ImageOps
 from scipy import ndimage
-
 import skimage
 import skimage.exposure
 import skimage.filters
 import skimage.segmentation
 import skimage.morphology
 
-from stonemason.renderer.layerexpr import ImageryLayer
+from stonemason.renderer.expression import TermNode
 from stonemason.renderer.feature import ImageFeature
 from stonemason.renderer.context import RenderContext
 
-from .datasource import ElevationDataSource, RGBImageDataSource
+from stonemason.renderer.datasource import ElevationData, RGBImageData
+
+__all__ = ['SimpleRelief', 'SwissRelief', 'ColorRelief']
 
 
 #
@@ -48,7 +49,7 @@ def aspect_and_slope(elevation, resolution, scale, z_factor=1.0):
 
 def hill_shading(aspect, slope, azimuth=315, altitude=45):
     """Generate hill shading map from aspect and slope, which are the result of
-    :func:`~stonemason.renderer.cartographer.imagery.shadedrelief.aspect_and_slope`.
+    :func:`~stonemason.renderer.cartographer.image.shadedrelief.aspect_and_slope`.
 
     :return: Generated shaded relief.
     :rtype: numpy.array
@@ -295,9 +296,7 @@ class Parameter(object):
             return self._value
 
 
-class SimpleRelief(ImageryLayer):
-    PROTOTYPE = 'relief.simple'
-
+class SimpleRelief(TermNode):
     def __init__(self, name, index,
                  zfactor=1,
                  scale=111120,
@@ -306,7 +305,7 @@ class SimpleRelief(ImageryLayer):
                  cutoff=0.707,
                  gain=4,
                  buffer=0):
-        ImageryLayer.__init__(self, name)
+        TermNode.__init__(self, name)
 
         self._index = Parameter(index)
 
@@ -330,7 +329,7 @@ class SimpleRelief(ImageryLayer):
         buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
         buffered_envelope_size = _buffer_size(size, self._buffer)
 
-        with ElevationDataSource(self._index(resolution)) as source:
+        with ElevationData(self._index(resolution)) as source:
             elevation = source.query(
                 crs, buffered_envelope, buffered_envelope_size)[0]
 
@@ -363,9 +362,7 @@ class SimpleRelief(ImageryLayer):
             return feature
 
 
-class SwissRelief(ImageryLayer):
-    PROTOTYPE = 'relief.swiss'
-
+class SwissRelief(TermNode):
     def __init__(self, name, index,
                  zfactor=1,
                  scale=111120,
@@ -379,7 +376,7 @@ class SwissRelief(ImageryLayer):
                  height_mask_gamma=0.5,
                  blend=(0.65, 0.75),
                  buffer=0):
-        ImageryLayer.__init__(self, name)
+        TermNode.__init__(self, name)
 
         self._index = Parameter(index)
 
@@ -408,7 +405,7 @@ class SwissRelief(ImageryLayer):
         buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
         buffered_envelope_size = _buffer_size(size, self._buffer)
 
-        with ElevationDataSource(self._index(resolution)) as source:
+        with ElevationData(self._index(resolution)) as source:
             elevation = source.query(
                 crs, buffered_envelope, buffered_envelope_size)[0]
 
@@ -452,11 +449,9 @@ class SwissRelief(ImageryLayer):
             return feature
 
 
-class ColorRelief(ImageryLayer):
-    PROTOTYPE = 'relief.color'
-
+class ColorRelief(TermNode):
     def __init__(self, name, index, buffer=0):
-        ImageryLayer.__init__(self, name)
+        TermNode.__init__(self, name)
 
         self._index = Parameter(index)
         self._buffer = buffer
@@ -472,7 +467,7 @@ class ColorRelief(ImageryLayer):
         buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
         buffered_envelope_size = _buffer_size(size, self._buffer)
 
-        with RGBImageDataSource(self._index(resolution)) as source:
+        with RGBImageData(self._index(resolution)) as source:
             channels = source.query(
                 crs, buffered_envelope, buffered_envelope_size)
 

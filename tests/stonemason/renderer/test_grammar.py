@@ -8,12 +8,14 @@ from PIL import Image
 from stonemason.renderer.context import RenderContext
 from stonemason.renderer.grammar import RenderGrammar
 from stonemason.renderer.tokenizer import DictTokenizer
+from stonemason.renderer.expression import ImageNodeFactory
+from stonemason.renderer.cartographer import register_image_render_node
 
 from tests import ImageTestCase
 
 
 class TestGrammar(ImageTestCase):
-    def test(self):
+    def test_parse(self):
         e = {
             'root': {
                 'prototype': 'basic.blend',
@@ -39,8 +41,12 @@ class TestGrammar(ImageTestCase):
             }
         }
 
-        tok = DictTokenizer(e)
-        g = RenderGrammar(tok)
+        tokenizer = DictTokenizer(e)
+
+        factory = ImageNodeFactory()
+        register_image_render_node(factory)
+
+        g = RenderGrammar(tokenizer, start='root', factory=factory)
 
         layer = g.parse()
 
@@ -52,4 +58,3 @@ class TestGrammar(ImageTestCase):
         expected = Image.new('RGBA', (256, 256), '#0f0')
 
         self.assertImageEqual(feature.data, expected)
-

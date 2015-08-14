@@ -59,7 +59,7 @@ class ImageTestCase(unittest.TestCase):
 # Conditional tests for optional decencies
 #
 
-carto = importlib.import_module('stonemason.renderer.cartographer.imagery')
+carto = importlib.import_module('stonemason.renderer.cartographer')
 
 
 def skipUnlessHasMapnik():

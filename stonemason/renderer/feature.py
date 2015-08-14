@@ -3,9 +3,7 @@
 __author__ = 'ray'
 __date__ = '4/19/15'
 
-import io
 from collections import namedtuple
-
 
 _Feature = namedtuple('Feature', 'crs bounds size data')
 

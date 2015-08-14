@@ -83,22 +83,21 @@ THEME = dict(
                 prototype=maptype,
                 layers=dict(
                     relief={
-                        'prototype': 'relief.swiss',
-                        # 'index': index_func,
+                        'prototype': 'image.term.relief.swiss',
                         'index': '/Users/ray/proj/geodata/Stage/jpn-5m/index.shp',
                         'scale': 1,
                         'buffer': 8
 
                     },
                     color={
-                        'prototype': 'relief.color',
+                        'prototype': 'image.term.relief.color',
                         'index': "/Users/ray/proj/geodata/Stage/NaturalEarth3.1/index.shp",
                         'buffer': 8,
                     },
                     root={
-                        'prototype': 'pil.composer',
+                        'prototype': 'image.composite.alphablender',
                         'sources': ['relief', 'color'],
-                        'command': ['overlay']
+                        'alpha': 0.5
                     },
                 )
             )

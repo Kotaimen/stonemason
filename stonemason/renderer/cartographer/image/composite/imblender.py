@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-__author__ = 'kotaimen'
-__date__ = '3/16/15'
+__author__ = 'ray'
+__date__ = '4/22/15'
 
 import io
 import os
@@ -11,12 +11,17 @@ import subprocess
 import six
 from PIL import Image
 
+from stonemason.renderer.expression import CompositeNode
+from stonemason.renderer.context import RenderContext
+from stonemason.renderer.feature import ImageFeature
 from stonemason.util.tempfn import generate_temp_filename
 
 try:
     output = subprocess.check_output(['convert', '-version'])
 except subprocess.CalledProcessError:
-    raise ImportError("Cannot find imagemagick convert command.")
+    raise ImportError("Cannot find ImageMagick convert command.")
+
+__all__ = ['IMComposer', 'ImageMagickError']
 
 
 class ImageMagickError(Exception):
@@ -80,12 +85,11 @@ class ImageMagickComposer(object):
                  export_format='png',
                  import_format='png',
                  tempdir=None,
-    ):
+                 ):
         self._export_format = export_format
         self._import_format = import_format
         self._tempdir = tempdir
         self._command = self.parse_command(command)
-
 
     def compose(self, images):
         """ Compose given `images` using composer command.
@@ -169,3 +173,26 @@ class ImageMagickComposer(object):
             if match:
                 tag = match.group(1)
                 yield (i, tag)
+
+
+class IMComposer(CompositeNode):
+    def __init__(self, name, nodes, command=None, tempdir=None, tempfmt='png'):
+        CompositeNode.__init__(self, name, nodes)
+        self._composer = ImageMagickComposer(
+            command,
+            export_format=tempfmt,
+            import_format=tempfmt,
+            tempdir=tempdir)
+
+    def render(self, context):
+        assert isinstance(context, RenderContext)
+
+        sources = dict((l.name, l.render(context).data) for l in self._nodes)
+
+        result = self._composer.compose(sources)
+
+        return ImageFeature(
+            crs=context.map_proj,
+            bounds=context.map_bbox,
+            size=context.map_size,
+            data=result)
