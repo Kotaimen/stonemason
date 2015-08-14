@@ -1,4 +1,4 @@
-FROM        kotaimen/stonemason-base:0.2.0rc1
+FROM        kotaimen/stonemason-base
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
 
@@ -20,7 +20,6 @@ ADD         . ./
 RUN         pip install -rrequirements-dev.txt && \
             pip install . && \
             python setup.py build_ext -if && \
-            tox -e py27geo && \
             stonemason init && \
             stonemason check && \
             rm -rf /tmp/stonemason
