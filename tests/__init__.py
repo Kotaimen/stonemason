@@ -59,7 +59,7 @@ class ImageTestCase(unittest.TestCase):
 # Conditional tests for optional decencies
 #
 
-carto = importlib.import_module('stonemason.renderer.cartographer.imagery')
+carto = importlib.import_module('stonemason.renderer.cartographer')
 
 
 def skipUnlessHasMapnik():
@@ -68,6 +68,13 @@ def skipUnlessHasMapnik():
 
 def skipUnlessHasImageMagick():
     return skipUnless(carto.HAS_IMAGEMAGICK, 'imagemagick not installed.')
+
+
+def skipUnlessHasScipy():
+    return skipUnless(carto.HAS_SCIPY, 'scipy not installed.')
+
+def skipUnlessHasSkimage():
+    return skipUnless(carto.HAS_SKIMAGE, 'scikit-skimage not installed.')
 
 
 geo = importlib.import_module('stonemason.pyramid.geo')

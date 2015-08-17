@@ -22,6 +22,14 @@ Known issues:
 v0.2.0
 ------
 
-Scheduled at 2015-04.
+Scheduled at 2015-08.
 
-
+Feature:
+- Python based configuration format
+- Implemented cartographer subsystem:
+  - Imagemagick composer
+  - Mapnik renderer
+  - Shaded relief
+- Stability and bug fixes
+- Performance turning
+- Docker deployment

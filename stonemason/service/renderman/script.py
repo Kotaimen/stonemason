@@ -16,6 +16,7 @@ import collections
 _RenderScript = collections.namedtuple(
     '_RenderScript',
     '''
+    verbose debug
     gallery theme_name schema_tag
     levels envelope csv_file
     workers log_file
@@ -35,6 +36,12 @@ class RenderScript(_RenderScript):
         :class:`~stonemason.pyramid.geo.Envelope`,
         :class:`~stonemason.pyramid.geo.TileMapSystem`,
         :class:`~stonemason.services.renderman.PyramidWalker`.
+
+    :param verbose: Be verbose.
+    :type verbose: int
+
+    :param debug: Enable debug mode.
+    :type debug: bool
 
     :param gallery: Gallery root directory.
     :type gallery: str
@@ -65,10 +72,12 @@ class RenderScript(_RenderScript):
     :type progress: int
     """
 
-    def __new__(cls, gallery='', theme_name='', schema_tag='',
+    def __new__(cls, verbose=0, debug=False,
+                gallery='', theme_name='', schema_tag='',
                 levels=None, envelope=(), csv_file=None,
                 workers=1, log_file=None, progress=0):
         return _RenderScript.__new__(cls,
+                                     verbose,debug,
                                      gallery, theme_name, schema_tag,
                                      levels, envelope, csv_file,
                                      workers, log_file, progress)
