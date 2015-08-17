@@ -50,7 +50,8 @@ RUN         apt-get update &&\
 RUN         pip install \
                 pillow flask boto boto3 moto gunicorn six Click python-memcached \
                 pylibmc nose coverage tox Cython Pygments alabaster \
-                Sphinx sphinxcontrib-httpdomain
+                Sphinx sphinxcontrib-httpdomain \
+                scikit-image
 
 #
 # Check installed software
