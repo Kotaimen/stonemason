@@ -5,7 +5,7 @@ __date__ = '4/20/15'
 
 import unittest
 
-from stonemason.renderer.expression import *
+from stonemason.renderer.engine.rendernode import *
 
 
 class TestTerminalNode(unittest.TestCase):

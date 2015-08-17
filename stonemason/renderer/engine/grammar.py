@@ -1,12 +1,15 @@
 # -*- encoding: utf-8 -*-
 
 __author__ = 'ray'
-__date__ = '4/21/15'
+__date__ = '4/20/15'
 
-from .exceptions import LexicalError, InvalidNodeConfig, NodeConfigNotFound
+from stonemason.renderer.engine.rendernode import NullNode
+from stonemason.renderer.engine.factory import RenderNodeFactory
+
+from stonemason.renderer.exceptions import InvalidNodeConfig
 
 
-class AbstractToken(object):  # pragma: no cover
+class Token(object):  # pragma: no cover
     """Abstract Token Interface"""
 
     def __init__(self, name, prototype, **parameters):
@@ -31,7 +34,7 @@ class AbstractToken(object):  # pragma: no cover
             self.__class__.__name__, self.name, self.parameters)
 
 
-class TermToken(AbstractToken):
+class TermToken(Token):
     """Layer Token
 
     A basic terminal token that represents a layer .
@@ -39,14 +42,14 @@ class TermToken(AbstractToken):
     pass
 
 
-class TransformToken(AbstractToken):
+class TransformToken(Token):
     """Transform Token
 
     Operational token that transform a layer.
     """
 
     def __init__(self, name, prototype, source, **parameters):
-        AbstractToken.__init__(self, name, prototype, **parameters)
+        Token.__init__(self, name, prototype, **parameters)
         self._source = source
 
     @property
@@ -54,14 +57,14 @@ class TransformToken(AbstractToken):
         return self._source
 
 
-class CompositeToken(AbstractToken):
+class CompositeToken(Token):
     """Composite Token
 
     Operational token that compose a group of layers.
     """
 
     def __init__(self, name, prototype, sources, **parameters):
-        AbstractToken.__init__(self, name, prototype, **parameters)
+        Token.__init__(self, name, prototype, **parameters)
         assert isinstance(sources, list)
         self._sources = sources
 
@@ -111,3 +114,67 @@ class DictTokenizer(object):
         else:
             yield TermToken(name, prototype, **parameters)
 
+
+class RenderGrammar(object):
+    """Expression Grammar for Rendering
+
+    The `RenderGrammar` takes a layer tokenizer and parses into a layer
+    renderer.
+    """
+
+    def __init__(self, tokenizer, start='root', factory=None):
+        assert isinstance(tokenizer, DictTokenizer)
+        assert isinstance(factory, RenderNodeFactory)
+        self._tokenizer = tokenizer
+        self._start = start
+        self._factory = factory
+
+    def parse(self):
+        stack = list()
+
+        for token in self._tokenizer.next_token(start=self._start):
+            if isinstance(token, TransformToken):
+                source_node = stack.pop()
+                if source_node is None:
+                    raise ValueError
+
+                node = self._factory.create_transform_node(
+                    token.name,
+                    token.prototype,
+                    source_node,
+                    **token.parameters)
+
+                stack.append(node)
+
+            elif isinstance(token, CompositeToken):
+                source_nodes = list()
+                for i in token.sources:
+                    source_node = stack.pop()
+                    if source_node is None:
+                        raise ValueError
+                    source_nodes.append(source_node)
+
+                node = self._factory.create_composite_node(
+                    token.name,
+                    token.prototype,
+                    source_nodes,
+                    **token.parameters)
+
+                stack.append(node)
+
+            elif isinstance(token, TermToken):
+                node = self._factory.create_terminal_node(
+                    token.name,
+                    token.prototype,
+                    **token.parameters)
+
+                stack.append(node)
+            else:
+                raise ValueError
+
+        try:
+            node = stack.pop()
+        except IndexError:
+            return NullNode('empty')
+        else:
+            return node

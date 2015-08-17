@@ -10,7 +10,8 @@ from PIL import Image
 
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, MetaTileIndex
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.renderer import MasonRenderer, ImageFeature
+from stonemason.renderer import MasonRenderer
+from stonemason.renderer.cartographer import ImageFeature
 from stonemason.tilestorage import ClusterStorage, MetaTileStorage, TileCluster
 from stonemason.mason.mapsheet import ClusterMapSheet, MetaTileMapSheet
 

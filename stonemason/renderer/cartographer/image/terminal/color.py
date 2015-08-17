@@ -5,9 +5,10 @@ __date__ = '8/7/15'
 
 from PIL import Image, ImageColor
 
-from stonemason.renderer.expression import TermNode
-from stonemason.renderer.feature import ImageFeature
-from stonemason.renderer.context import RenderContext
+from stonemason.renderer.engine.rendernode import TermNode
+from stonemason.renderer.engine.context import RenderContext
+
+from ..feature import ImageFeature
 
 __all__ = ['Color']
 

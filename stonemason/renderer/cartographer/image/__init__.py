@@ -3,6 +3,5 @@
 __author__ = 'ray'
 __date__ = '4/21/15'
 
-from .terminal import *
-from .transform import *
-from .composite import *
+from .factory import ImageNodeFactory
+from .feature import ImageFeature

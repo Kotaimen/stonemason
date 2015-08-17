@@ -5,9 +5,10 @@ __date__ = '8/7/15'
 
 from PIL import ImageFilter
 
-from stonemason.renderer.expression import TransformNode
-from stonemason.renderer.feature import ImageFeature
-from stonemason.renderer.context import RenderContext
+from stonemason.renderer.engine.rendernode import TransformNode
+from stonemason.renderer.engine.context import RenderContext
+
+from ..feature import ImageFeature
 
 __all__ = ['MinFilter']
 

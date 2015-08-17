@@ -6,9 +6,10 @@ __date__ = '4/21/15'
 import os
 import unittest
 
-from stonemason.renderer.expression import ImageNodeFactory
-from stonemason.renderer.cartographer import register_image_render_node
-from stonemason.renderer.cartographer.image import *
+from stonemason.renderer.cartographer.image import ImageNodeFactory
+from stonemason.renderer.cartographer.image.terminal import Color
+from stonemason.renderer.cartographer.image.transform import MinFilter
+from stonemason.renderer.cartographer.image.composite import AlphaBlender
 
 from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
 
@@ -19,7 +20,6 @@ style_sheet = os.path.join(
 class TestImageNodeFactory(unittest.TestCase):
     def setUp(self):
         self.factory = ImageNodeFactory()
-        register_image_render_node(self.factory)
 
     def test_create_terminal_node(self):
         node = self.factory.create_terminal_node(
@@ -41,5 +41,6 @@ class TestImageNodeFactory(unittest.TestCase):
             'test', 'image.term.color', color='#000')
 
         layer = self.factory.create_composite_node(
-            'test', 'image.composite.alphablender', sources=[source1, source2], alpha=0.5)
+            'test', 'image.composite.alphablender', sources=[source1, source2],
+            alpha=0.5)
         self.assertIsInstance(layer, AlphaBlender)

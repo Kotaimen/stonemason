@@ -7,10 +7,10 @@ import os
 
 from PIL import Image
 
-from stonemason.renderer.cartographer.image import Mapnik_, MapnikComposer
-from stonemason.renderer.context import RenderContext
 from stonemason.pyramid import Pyramid, MetaTileIndex
 from stonemason.pyramid.geo import TileMapSystem
+from stonemason.renderer.cartographer.image.terminal import *
+from stonemason.renderer.engine.context import RenderContext
 
 from tests import SAMPLE_THEME_DIRECTORY, DATA_DIRECTORY, TEST_DIRECTORY
 from tests import skipUnlessHasMapnik, ImageTestCase
@@ -65,7 +65,7 @@ class TestMapnikLayer(ImageTestCase):
                           # North America Equidistant Conic
                           geogcs='NAD83',
                           geogbounds=(-160, 20, -55, 75),
-                          projbounds=(-6200000, -360000, 3740000, 500000 ))
+                          projbounds=(-6200000, -360000, 3740000, 500000))
 
         tms = TileMapSystem(pyramid)
         index = MetaTileIndex(4, 0, 0, 16)
@@ -122,7 +122,6 @@ class TestMapnikComposer(ImageTestCase):
 
         expected = Image.open(test_file)
         self.assertImageEqual(expected, image)
-
 
     def test_compose_with_three(self):
         layer = MapnikComposer(

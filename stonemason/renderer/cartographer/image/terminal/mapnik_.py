@@ -4,13 +4,15 @@ __author__ = 'ray'
 __date__ = '4/21/15'
 
 import os
+
 import mapnik
 
 from PIL import Image
 
-from stonemason.renderer.expression import TermNode
-from stonemason.renderer.feature import ImageFeature
-from stonemason.renderer.context import RenderContext
+from stonemason.renderer.engine.rendernode import TermNode
+from stonemason.renderer.engine.context import RenderContext
+
+from ..feature import ImageFeature
 
 __all__ = ['Mapnik_', 'MapnikComposer', 'MapnikCartoError',
            'InvalidCommandNumber', 'InvalidComposeMode']

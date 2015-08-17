@@ -12,15 +12,11 @@ class LexicalError(RendererError):
     pass
 
 
-class NodeConfigNotFound(LexicalError):
+class SemanticError(RendererError):
     pass
 
 
 class InvalidNodeConfig(LexicalError):
-    pass
-
-
-class SemanticError(RendererError):
     pass
 
 

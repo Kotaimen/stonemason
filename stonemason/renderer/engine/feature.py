@@ -9,12 +9,8 @@ _Feature = namedtuple('Feature', 'crs bounds size data')
 
 
 class Feature(_Feature):  # pragma: no cover
-    pass
-
-
-class ImageFeature(Feature):
     def __new__(cls, crs=None, bounds=None, size=None, data=None):
-        return Feature.__new__(
+        return _Feature.__new__(
             cls, crs=crs, bounds=bounds, size=size, data=data)
 
     def __repr__(self):
@@ -26,10 +22,3 @@ class ImageFeature(Feature):
         )
         return result
 
-
-class VectorFeature(Feature):
-    pass
-
-
-class RasterFeature(Feature):
-    pass

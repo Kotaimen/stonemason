@@ -5,9 +5,10 @@ __date__ = '8/7/15'
 
 from PIL import Image
 
-from stonemason.renderer.expression import CompositeNode
-from stonemason.renderer.feature import ImageFeature
-from stonemason.renderer.context import RenderContext
+from stonemason.renderer.engine.rendernode import CompositeNode
+from stonemason.renderer.engine.context import RenderContext
+
+from ..feature import ImageFeature
 
 __all__ = ['AlphaBlender']
 

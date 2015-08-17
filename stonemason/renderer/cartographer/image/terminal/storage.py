@@ -10,13 +10,13 @@ except ImportError:
 
 from PIL import Image
 
-from stonemason.renderer.expression import TermNode
-from stonemason.renderer.feature import ImageFeature
-from stonemason.renderer.context import RenderContext
-
+from stonemason.renderer.engine.rendernode import TermNode
+from stonemason.renderer.engine.context import RenderContext
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
 from stonemason.tilestorage import MetaTileStorage, DiskMetaTileStorage, \
     S3MetaTileStorage
+
+from ..feature import ImageFeature
 
 __all__ = ['S3StorageNode', 'DiskStorageNode']
 

@@ -9,12 +9,14 @@ import re
 import subprocess
 
 import six
+
 from PIL import Image
 
-from stonemason.renderer.expression import CompositeNode
-from stonemason.renderer.context import RenderContext
-from stonemason.renderer.feature import ImageFeature
+from stonemason.renderer.engine.rendernode import CompositeNode
+from stonemason.renderer.engine.context import RenderContext
 from stonemason.util.tempfn import generate_temp_filename
+
+from ..feature import ImageFeature
 
 try:
     output = subprocess.check_output(['convert', '-version'])
