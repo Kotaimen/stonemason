@@ -24,6 +24,7 @@ before_install:
 #  - sudo pip install -q numpy
 #  - sudo pip install -q scipy
   - sudo apt-get install -qq python-numpy python-scipy
+  - sudo easy_install -U distribute
   - sudo pip install scikit-image
   
   # Install  Mapnik
@@ -39,7 +40,7 @@ before_install:
 install:
   - pip install -q -r requirements-dev.txt
   - pip install -q .
-  - python setup.py build_ext --inplace --force
+  - python setup.py build_ext -if
 
 services:
   - memcached
