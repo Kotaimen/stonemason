@@ -3,10 +3,7 @@
 __author__ = 'ray'
 __date__ = '8/3/15'
 
-try:
-    import cStringIO as StringIO
-except ImportError:
-    import StringIO
+from io import BytesIO
 
 from PIL import Image
 
@@ -38,7 +35,7 @@ class _MetaTileStorageNode(TermNode):
             raise RuntimeError(
                 '[%s] MetaTile %s not found!' % (self.name, meta_index))
 
-        stream = StringIO.StringIO(meta_tile.data)
+        stream = BytesIO(meta_tile.data)
         pil_image = Image.open(stream)
 
         feature = ImageFeature(crs=context.map_proj,
