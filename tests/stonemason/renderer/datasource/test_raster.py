@@ -6,18 +6,21 @@ __date__ = '7/29/15'
 import os
 import unittest
 
-from tests import carto
-
-if carto.HAS_SCIPY:
+try:
     import numpy as np
-
-if carto.HAS_GDAL:
     from osgeo import ogr, gdal, osr
-    from stonemason.pyramid.geo.tms import Envelope
+except ImportError as e:
+    raise unittest.SkipTest('Missing Test Dependencies. %s' % str(e))
+
+try:
     from stonemason.renderer.datasource.raster import \
         ElevationDomain, ElevationData, GeoTransform
+except ImportError as e:
+    raise unittest.SkipTest(str(e))
 
-from tests import DATA_DIRECTORY, skipUnlessHasGDAL, skipUnlessHasScipy
+from stonemason.pyramid.geo.tms import Envelope
+
+from tests import DATA_DIRECTORY
 
 
 def save_raster(name, crs, envelope, size, array, domain):
@@ -109,8 +112,6 @@ def mock_dem_10m():
     save_index(index_name, name, Envelope(*envelope).to_geometry())
 
 
-@skipUnlessHasGDAL()
-@skipUnlessHasScipy()
 class TestRasterDataSource(unittest.TestCase):
     def setUp(self):
         # mock_dem_5m()

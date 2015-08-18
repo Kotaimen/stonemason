@@ -4,19 +4,24 @@ __author__ = 'ray'
 __date__ = '4/21/15'
 
 import os
+import unittest
 
 from PIL import Image
 
+try:
+    from stonemason.renderer.cartographer.image.terminal.mapnik_ import Mapnik_, \
+        MapnikComposer
+except ImportError as e:
+    raise unittest.SkipTest(str(e))
+
 from stonemason.pyramid import Pyramid, MetaTileIndex
 from stonemason.pyramid.geo import TileMapSystem
-from stonemason.renderer.cartographer.image.terminal import *
 from stonemason.renderer.engine.context import RenderContext
 
 from tests import SAMPLE_THEME_DIRECTORY, DATA_DIRECTORY, TEST_DIRECTORY
-from tests import skipUnlessHasMapnik, ImageTestCase
+from tests import ImageTestCase
 
 
-@skipUnlessHasMapnik()
 class TestMapnikLayer(ImageTestCase):
     def setUp(self):
         theme_root = os.path.join(SAMPLE_THEME_DIRECTORY, 'sample_world')
@@ -92,7 +97,6 @@ class TestMapnikLayer(ImageTestCase):
         image1.save(output2, 'png')
 
 
-@skipUnlessHasMapnik()
 class TestMapnikComposer(ImageTestCase):
     def setUp(self):
         theme_root = os.path.join(SAMPLE_THEME_DIRECTORY, 'sample_world')

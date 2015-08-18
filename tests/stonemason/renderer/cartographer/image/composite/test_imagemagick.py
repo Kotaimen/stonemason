@@ -11,12 +11,15 @@ from distutils.version import LooseVersion
 
 from PIL import Image
 
-from stonemason.renderer.cartographer.image.composite.imblender import \
-    ImageMagickComposer, ImageMagickError
-from tests import skipUnlessHasImageMagick, DATA_DIRECTORY
+try:
+    from stonemason.renderer.cartographer.image.composite.imblender import \
+        ImageMagickComposer, ImageMagickError
+except ImportError as e:
+    raise unittest.SkipTest(str(e))
+
+from tests import DATA_DIRECTORY
 
 
-@skipUnlessHasImageMagick()
 class TestImageMagickComposer(unittest.TestCase):
     def setUp(self):
         self.image1 = Image.open(

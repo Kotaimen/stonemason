@@ -3,24 +3,29 @@
 __author__ = 'ray'
 __date__ = '6/28/15'
 
-import unittest
 import os
+import unittest
 
 from PIL import Image
 
-from tests import TEST_DIRECTORY, carto, skipUnlessHasScipy, \
-    skipUnlessHasSkimage
-
-if carto.HAS_SCIPY and carto.HAS_SKIMAGE:
+try:
     import numpy as np
-    from stonemason.renderer.cartographer.image.terminal.relief import \
-        simple_shaded_relief, swiss_shaded_relief, array2pillow
     import skimage.filters
     import skimage.external.tifffile
     import skimage.draw
     import skimage.io
     import skimage.morphology
     import skimage.exposure
+except ImportError as e:
+    raise unittest.SkipTest('Missing Test Dependencies. %s' % str(e))
+
+try:
+    from stonemason.renderer.cartographer.image.terminal.relief import \
+        simple_shaded_relief, swiss_shaded_relief, array2pillow
+except ImportError as e:
+    raise unittest.SkipTest(str(e))
+
+from tests import TEST_DIRECTORY
 
 
 def array2image(array):
@@ -57,8 +62,6 @@ def cone(size=512, z_factor=1.0, padding=16):
     return elevation
 
 
-@skipUnlessHasScipy()
-@skipUnlessHasSkimage()
 class TestShadedRelief(unittest.TestCase):
     def setUp(self):
         self.output_dir = os.path.join(TEST_DIRECTORY, 'shaded_relief')
