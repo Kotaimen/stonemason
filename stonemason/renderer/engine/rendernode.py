@@ -51,6 +51,16 @@ class CompositeNode(RenderNode):  # pragma: no cover
         return '%s(%r, %s)' % (self.__class__.__name__, self.name, components)
 
 
-class NullNode(TermNode):
+class NullTermNode(TermNode):
+    def render(self, context):
+        return None
+
+
+class NullTransformNode(TransformNode):
+    def render(self, context):
+        return None
+
+
+class NullCompositeNode(CompositeNode):
     def render(self, context):
         return None

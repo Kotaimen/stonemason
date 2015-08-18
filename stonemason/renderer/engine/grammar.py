@@ -3,10 +3,9 @@
 __author__ = 'ray'
 __date__ = '4/20/15'
 
-from stonemason.renderer.engine.rendernode import NullNode
-from stonemason.renderer.engine.factory import RenderNodeFactory
-
-from stonemason.renderer.exceptions import InvalidNodeConfig
+from .rendernode import NullTermNode
+from .factory import RenderNodeFactory
+from .exceptions import InvalidToken, SourceNotFound
 
 
 class Token(object):  # pragma: no cover
@@ -83,27 +82,43 @@ class DictTokenizer(object):
         assert isinstance(expression, dict)
         self._expression = expression
 
+    def _is_token(self, expr):
+        return isinstance(expr, dict) and 'prototype' in expr \
+               and expr['prototype'] is not None
+
+    def _is_terminal_token(self, expr):
+        return 'source' not in expr and 'sources' not in expr
+
+    def _is_transform_token(self, expr):
+        return 'source' in expr and 'sources' not in expr
+
+    def _is_composite_token(self, expr):
+        return 'sources' in expr and 'source' not in expr
+
     def next_token(self, start='root'):
-        token = self._expression.get(start)
-        if token is None:
-            return
+        expr = self._expression.get(start)
+        if expr is None:
+            # stop iteration
+            raise StopIteration
 
-        if not isinstance(token, dict):
-            raise InvalidNodeConfig(start)
-
-        parameters = dict(token)
+        if not self._is_token(expr):
+            raise InvalidToken(start)
 
         name = start
+        parameters = dict(expr)
         prototype = parameters.pop('prototype', None)
 
-        if 'source' in token:
+        if self._is_terminal_token(expr):
+            yield TermToken(name, prototype, **parameters)
+
+        elif self._is_transform_token(expr):
             source_name = parameters.pop('source')
             for t in self.next_token(start=source_name):
                 yield t
 
             yield TransformToken(name, prototype, source_name, **parameters)
 
-        elif 'sources' in token:
+        elif self._is_composite_token(expr):
             source_names = parameters.pop('sources')
             for source_name in source_names:
                 for t in self.next_token(start=source_name):
@@ -112,7 +127,7 @@ class DictTokenizer(object):
             yield CompositeToken(name, prototype, source_names, **parameters)
 
         else:
-            yield TermToken(name, prototype, **parameters)
+            raise InvalidToken(start)
 
 
 class RenderGrammar(object):
@@ -136,7 +151,7 @@ class RenderGrammar(object):
             if isinstance(token, TransformToken):
                 source_node = stack.pop()
                 if source_node is None:
-                    raise ValueError
+                    raise SourceNotFound
 
                 node = self._factory.create_transform_node(
                     token.name,
@@ -151,7 +166,7 @@ class RenderGrammar(object):
                 for i in token.sources:
                     source_node = stack.pop()
                     if source_node is None:
-                        raise ValueError
+                        raise SourceNotFound
                     source_nodes.append(source_node)
 
                 node = self._factory.create_composite_node(
@@ -170,11 +185,12 @@ class RenderGrammar(object):
 
                 stack.append(node)
             else:
-                raise ValueError
+                # Should not reach here
+                raise NotImplementedError
 
         try:
             node = stack.pop()
         except IndexError:
-            return NullNode('empty')
+            return NullTermNode('empty')
         else:
             return node

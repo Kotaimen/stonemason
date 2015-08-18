@@ -8,8 +8,11 @@ import unittest
 from PIL import Image
 
 from stonemason.renderer.engine.context import RenderContext
-from stonemason.renderer.cartographer import ImageNodeFactory
-from stonemason.renderer.engine.grammar import *
+from stonemason.renderer.engine.factory import RenderNodeFactory
+from stonemason.renderer.engine.grammar import TermToken, TransformToken, \
+    CompositeToken, DictTokenizer, RenderGrammar, InvalidToken
+from stonemason.renderer.engine.rendernode import NullTermNode, \
+    NullTransformNode, NullCompositeNode
 
 from tests import ImageTestCase
 
@@ -78,24 +81,15 @@ class TestCompositeToken(unittest.TestCase):
 class TestTokenizer(unittest.TestCase):
     def test_empty_expr(self):
         expr = {}
-
         tokenizer = DictTokenizer(expr)
         self.assertListEqual(list(), list(tokenizer.next_token()))
 
-    def test_expr_without_prototype(self):
-        expr = {
-            'root': {
-
-            }
-        }
-
+    def test_incomplete_expr(self):
+        expr = {'root': {}}
         tokenizer = DictTokenizer(expr)
-        token = list(tokenizer.next_token())[0]
 
-        self.assertIsInstance(token, TermToken)
-        self.assertEqual('root', token.name)
-        self.assertEqual(None, token.prototype)
-        self.assertDictEqual({}, token.parameters)
+        self.assertRaises(
+            InvalidToken, lambda: next(tokenizer.next_token()))
 
     def test_single_expr(self):
         expr = {
@@ -195,46 +189,43 @@ class TestTokenizer(unittest.TestCase):
         self.assertDictEqual(dict(param1=1, param2=2), token.parameters)
 
 
+class TestRenderNodeFactory(RenderNodeFactory):
+    def __init__(self):
+        RenderNodeFactory.__init__(self)
+        self.register_node('test.term.null', NullTermNode)
+        self.register_node('test.transform.null', NullTransformNode)
+        self.register_node('test.composite.null', NullCompositeNode)
+
+
 class TestGrammar(ImageTestCase):
     def test_parse(self):
         e = {
             'root': {
-                'prototype': 'basic.blend',
+                'prototype': 'test.composite.null',
                 'sources': ['c1', 'l3'],
-                'alpha': 0
             },
             'c1': {
-                'prototype': 'basic.blend',
+                'prototype': 'test.composite.null',
                 'sources': ['l1', 'l2'],
-                'alpha': 1
             },
             'l1': {
-                'prototype': 'basic.color',
-                'color': '#00f'
+                'prototype': 'test.term.null',
             },
             'l2': {
-                'prototype': 'basic.color',
-                'color': '#f00'
+                'prototype': 'test.term.null',
             },
             'l3': {
-                'prototype': 'basic.color',
-                'color': '#0f0'
+                'prototype': 'test.term.null',
             }
         }
 
         tokenizer = DictTokenizer(e)
-
-        factory = ImageNodeFactory()
+        factory = TestRenderNodeFactory()
 
         g = RenderGrammar(tokenizer, start='root', factory=factory)
+        renderer = g.parse()
 
-        layer = g.parse()
+        context = RenderContext()
+        feature = renderer.render(context)
 
-        context = RenderContext(
-            'EPSG:3857', (-180, -85, 180, 85), (256, 256))
-
-        feature = layer.render(context)
-
-        expected = Image.new('RGBA', (256, 256), '#0f0')
-
-        self.assertImageEqual(feature.data, expected)
+        self.assertIsNone(feature)

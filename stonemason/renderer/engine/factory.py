@@ -4,6 +4,7 @@ __author__ = 'ray'
 __date__ = '8/17/15'
 
 from .rendernode import RenderNode
+from .exceptions import UnknownPrototype, DependencyNotFound
 
 
 class RenderNodeFactory(object):
@@ -14,9 +15,10 @@ class RenderNodeFactory(object):
         try:
             init = self._register[prototype]
         except KeyError:
-            raise ValueError('Unknown prototype: "%s"!' % prototype)
+            raise UnknownPrototype('"%s"' % prototype)
         if init is None:
-            raise ValueError('Failed to load render node: "%s"!' % prototype)
+            raise DependencyNotFound(
+                """Missing dependencies for: "%s"!""" % prototype)
         return init
 
     def register_node(self, prototype, node_class):
