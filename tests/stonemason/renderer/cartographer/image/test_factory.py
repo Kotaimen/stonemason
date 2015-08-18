@@ -3,18 +3,12 @@
 __author__ = 'ray'
 __date__ = '4/21/15'
 
-import os
 import unittest
 
 from stonemason.renderer.cartographer.image import ImageNodeFactory
 from stonemason.renderer.cartographer.image.terminal import Color
 from stonemason.renderer.cartographer.image.transform import MinFilter
 from stonemason.renderer.cartographer.image.composite import AlphaBlender
-
-from stonemason.mason.theme import SAMPLE_THEME_DIRECTORY
-
-style_sheet = os.path.join(
-    SAMPLE_THEME_DIRECTORY, 'sample_world', 'sample_world.xml')
 
 
 class TestImageNodeFactory(unittest.TestCase):
