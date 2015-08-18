@@ -46,7 +46,8 @@ class MapSheetBuilder(object):
             map_sheet = MetaTileMapSheet(
                 self._tag, bundle, self._pyramid, self._storage, self._renderer)
         else:
-            assert False
+            # Should not reach here
+            raise NotImplementedError
 
         return map_sheet
 
