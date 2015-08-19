@@ -32,8 +32,7 @@ class _MetaTileStorageNode(TermNode):
 
         meta_tile = self._storage.get(meta_index)
         if meta_tile is None:
-            raise RuntimeError(
-                '[%s] MetaTile %s not found!' % (self.name, meta_index))
+            return None
 
         stream = BytesIO(meta_tile.data)
         pil_image = Image.open(stream)
@@ -51,11 +50,7 @@ class DiskStorageNode(_MetaTileStorageNode):
         parameters = dict(kwargs)
 
         maptype = MapType(parameters.pop('maptype', 'image'))
-
-        try:
-            tileformat = parameters.pop('tileformat', dict())
-        except KeyError:
-            raise ValueError('Must specify "tileformat" for storage layer.')
+        tileformat = parameters.pop('tileformat', dict())
         bundle = FormatBundle(maptype, TileFormat(**tileformat))
 
         storage = DiskMetaTileStorage(format=bundle, **parameters)
@@ -68,11 +63,7 @@ class S3StorageNode(_MetaTileStorageNode):
         parameters = dict(kwargs)
 
         maptype = MapType(parameters.pop('maptype', 'image'))
-
-        try:
-            tileformat = parameters.pop('tileformat')
-        except KeyError:
-            raise ValueError('Must specify "tileformat" for storage layer.')
+        tileformat = parameters.pop('tileformat', dict())
         bundle = FormatBundle(maptype, TileFormat(**tileformat))
 
         storage = S3MetaTileStorage(format=bundle, **parameters)
