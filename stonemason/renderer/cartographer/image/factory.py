@@ -14,14 +14,14 @@ class ImageNodeFactory(RenderNodeFactory):
     def __init__(self):
         RenderNodeFactory.__init__(self)
 
-        self.register_node('image.term.color', Color)
-        self.register_node('image.term.mapnik', Mapnik_)
-        self.register_node('image.term.mapnik.composer', MapnikComposer)
-        self.register_node('image.term.relief.simple', SimpleRelief)
-        self.register_node('image.term.relief.swiss', SwissRelief)
-        self.register_node('image.term.relief.color', ColorRelief)
-        self.register_node('image.term.storage.disk', DiskStorageNode)
-        self.register_node('image.term.storage.s3', S3StorageNode)
+        self.register_node('image.input.color', Color)
+        self.register_node('image.input.mapnik', Mapnik_)
+        self.register_node('image.input.mapnik.composer', MapnikComposer)
+        self.register_node('image.input.relief.simple', SimpleRelief)
+        self.register_node('image.input.relief.swiss', SwissRelief)
+        self.register_node('image.input.relief.color', ColorRelief)
+        self.register_node('image.input.storage.disk', DiskStorageNode)
+        self.register_node('image.input.storage.s3', S3StorageNode)
 
         # load transform nodes
         self.register_node('image.transform.filter.min', MinFilter)

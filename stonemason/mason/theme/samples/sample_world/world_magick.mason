@@ -45,25 +45,25 @@ schema_1x = dict(
                 '''
             },
             'base': {
-                'prototype': 'image.term.mapnik',
+                'prototype': 'image.input.mapnik',
                 'style_sheet': "{{ theme_root }}/world_base.xml",
                 'default_scale': 1,
                 'buffer_size': 256
             },
             'lines': {
-                'prototype': 'image.term.mapnik',
+                'prototype': 'image.input.mapnik',
                 'style_sheet': "{{ theme_root }}/world_lines.xml",
                 'default_scale': 1,
                 'buffer_size': 256
             },
             'halo': {
-                'prototype': 'image.term.mapnik',
+                'prototype': 'image.input.mapnik',
                 'style_sheet': "{{ theme_root }}/world_halo.xml",
                 'default_scale': 1,
                 'buffer_size': 256
             },
             'label': {
-                'prototype': 'image.term.mapnik',
+                'prototype': 'image.input.mapnik',
                 'style_sheet': "{{ theme_root }}/world_label.xml",
                 'default_scale': 1,
                 'buffer_size': 256
