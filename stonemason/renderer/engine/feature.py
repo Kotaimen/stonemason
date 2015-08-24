@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.engine.feature
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    The interface of render result.
+"""
 __author__ = 'ray'
 __date__ = '4/19/15'
 
@@ -9,6 +14,23 @@ _Feature = namedtuple('Feature', 'crs bounds size data')
 
 
 class Feature(_Feature):  # pragma: no cover
+    """Render Feature
+
+    A `Feature` is a area of geographic object returned by a render node. It is
+    a blob of data that is proper geo referenced.
+
+    :param crs: projection string accepted by ``GDAL``.
+    :type crs: str
+    :param bounds: a tuple of ``(left, bottom, right, top)`` that represents
+        boundary of the feature.
+    :type bounds: tuple
+    :param size: a tuple of ``(width, height)`` that represents the pixel size
+        of the area of the feature.
+    :type size: tuple
+    :param data: feature data.
+    :type data: any
+
+    """
     def __new__(cls, crs=None, bounds=None, size=None, data=None):
         return _Feature.__new__(
             cls, crs=crs, bounds=bounds, size=size, data=data)
