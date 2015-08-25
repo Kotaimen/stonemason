@@ -19,7 +19,7 @@ class Feature(_Feature):  # pragma: no cover
     A `Feature` is a area of geographic object returned by a render node. It is
     a blob of data that is proper geo referenced.
 
-    :param crs: projection string accepted by ``GDAL``.
+    :param crs: The coordinate reference system of the feature.
     :type crs: str
     :param bounds: a tuple of ``(left, bottom, right, top)`` that represents
         boundary of the feature.

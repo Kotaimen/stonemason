@@ -39,7 +39,7 @@ class RenderNode(object):  # pragma: no cover
         :type context: :class:`~stonemason.renderer.RenderContext`
 
         :return: The representation of specified features.
-        :rtype: :class:`~stonemason.renderer.Feature`
+        :rtype: :class:`~stonemason.renderer.engine.Feature`
         """
         raise NotImplementedError
 

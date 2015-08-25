@@ -63,7 +63,8 @@ class RenderContext(_RenderContext):
             resolution = scale\_factor * PPI
 
 
-    :param map_proj: The coordinate reference system of the target map.
+    :param map_proj: The coordinate reference system of the target map. Projection
+        string accepted by :py:meth:`osgeo.osr.SpatialReference.SetFromUserInput`.
     :type map_proj: str
 
     :param map_bbox: Map bounding box on projection coordinate system,
@@ -83,7 +84,13 @@ class RenderContext(_RenderContext):
 
     :param meta_index: Special index for retrieve data from metatile storage
         renderer node.
-    :type meta_index: :class:`~stonemason.pyramid.MetaIndex`
+    :type meta_index: :class:`~stonemason.pyramid.MetaTileIndex`
+
+    .. seealso::
+
+        `Documentation for OGRSpatialReference::SetFromUserInput <http://www.gdal.org/classOGRSpatialReference.html#aec3c6a49533fe457ddc763d699ff8796>`_
+
+
     """
 
     def __new__(cls, map_proj=None, map_bbox=None, map_size=None,
