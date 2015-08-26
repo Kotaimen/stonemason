@@ -10,12 +10,19 @@ Stonemason
 
 *Stonemason* is a tile map service toolkit developed in Python.
 
-.. figure:: _static/newspaper.png
+.. figure:: _static/MtKurohime.jpg
    :width: 100 %
-   :alt: "Newspaper" map sample render
+   :alt: Mt. Kurohime
    :align: center
 
-   "Newspaper" Theme, using `Mapnik` cartographer and `ImageMagick` composer.
+   Shaded relief map near Mt. Kurohime.
+
+.. figure:: _static/newspaper.png
+   :width: 100 %
+   :alt: Newspaper
+   :align: center
+
+   Mimics a halftone printed newspaper.
 
 
 User's Guide
