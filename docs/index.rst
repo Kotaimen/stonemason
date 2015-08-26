@@ -45,7 +45,6 @@ API Reference
     pkg_tileserver
     pkg_renderman
 
-
 .. toctree::
     :maxdepth: 2
 
@@ -54,13 +53,11 @@ API Reference
     pkg_tilestorage
     pkg_formatbundle
 
-
 .. toctree::
     :maxdepth: 2
 
     pkg_renderer
-    pkg_tilerenderer
-    pkg_composer
+
 
 .. toctree::
     :maxdepth: 2
