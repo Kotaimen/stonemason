@@ -55,6 +55,8 @@ install_requires = [
     'Click>=4.0',
     'gunicorn>=19.0.0',
     'pylibmc>=1.5.0',
+    'numpy>=1.6',
+    'scipy>=0.9'
 ]
 
 if IS_PY3:
