@@ -65,6 +65,7 @@ API Reference
 .. toctree::
     :maxdepth: 2
 
+    pkg_renderer
     pkg_tilerenderer
     pkg_composer
 
