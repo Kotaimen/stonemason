@@ -173,7 +173,7 @@ class RasterDataSource(object):
 
                 (domain.DIMENSION \\times height \\times width)
 
-        :rtype: :class:`~numpy.ndarray`
+        :rtype: numpy.array
 
         """
 

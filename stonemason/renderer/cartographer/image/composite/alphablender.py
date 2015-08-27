@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.cartographer.image.composite.alphablender
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    Implementation of composite render node that performs alpha blending.
+"""
 __author__ = 'ray'
 __date__ = '8/7/15'
 
@@ -14,6 +19,30 @@ __all__ = ['AlphaBlender']
 
 
 class AlphaBlender(CompositeNode):
+    """Alpha Blender
+
+    `AlphaBlender` is a composite node that performs alpha blending on
+    two source nodes.
+
+    .. math::
+
+        \\begin{align}
+        src1 & = nodes[0] \\\\
+        src2 & = nodes[1] \\\\
+        out & = src1 \\times (1.0 - alpha) + src2 \\times alpha
+        \\end{align}
+
+    :param name: a string literal that identifies the node
+    :type name: str
+
+    :param nodes: a list of two source render nodes.
+    :type nodes: list
+
+    :param alpha: alpha value for alpha blending, ranging from ``0`` to ``1.0``.
+        default value is ``0.5``.
+    :type alpha: float
+
+    """
     def __init__(self, name, nodes, alpha=0.5):
         CompositeNode.__init__(self, name, nodes)
         if len(nodes) != 2:

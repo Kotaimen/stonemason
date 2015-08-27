@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.cartographer.image.terminal.relief
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    Implementation of shaded relief render node.
+"""
 __author__ = 'ray'
 __date__ = '6/17/15'
 
@@ -49,7 +54,7 @@ def aspect_and_slope(elevation, resolution, scale, z_factor=1.0):
 
 def hill_shading(aspect, slope, azimuth=315, altitude=45):
     """Generate hill shading map from aspect and slope, which are the result of
-    :func:`~stonemason.renderer.cartographer.image.shadedrelief.aspect_and_slope`.
+    :func:`~stonemason.renderer.cartographer.image.relief.aspect_and_slope`.
 
     :return: Generated shaded relief.
     :rtype: numpy.array
@@ -297,6 +302,77 @@ class Parameter(object):
 
 
 class SimpleRelief(TermNode):
+    """Simple Shaded Relief Render Node
+
+    `SimpleRelief` produces shaded relief in a simple fast way. Hill shade is
+    generated from aspect and slope calculated from raster elevation data,
+
+    **Formulas**:
+
+    1. Calculate aspect and slope:
+
+        .. math::
+
+            \\begin{align}
+            slope\_radians& = \\arctan (z\_factor \\div scale \\times \\sqrt{ ( \\frac{\\mathrm{d} z}{\\mathrm{d} x} )^2 + ( \\frac{\\mathrm{d} z}{\\mathrm{d} y} )^2 } ) \\\\
+            aspect\_radians& = \\frac{\pi}{2} - \\arctan2 ( \\frac{\\mathrm{d} z}{\\mathrm{d} y}, -\\frac{\\mathrm{d} z}{\\mathrm{d} x} )
+            \\end{align}
+
+    2. Calculate hillshade:
+
+        .. math::
+
+            \\begin{equation}
+            \\begin{split}
+            hillshade &= 1.0 \\times ((\\cos(zenith\_rad) \\times \\cos(slope\_rad))\\\\
+                      & \quad + sin(zenith\_rad) \\times \\sin(slope\_rad) \\times \\cos(azimuth\_rad - aspect\_rad))
+            \\end{split}
+            \\end{equation}
+
+    For detail, please see `How Hillshade works`_.
+
+    .. _How Hillshade works: http://help.arcgis.com/EN/arcgisdesktop/10.0/help/index.html#/How_Hillshade_works/009z000000z2000000/
+
+
+    :param name: a string literal that identifies the node
+    :type name: str
+
+    :param index: pathname of raster index file.
+    :type index: str
+
+    :param z_factor: Vertical exaggeration used to pre-multiply the elevations,
+        default value is ``1``, which means no exaggeration.
+    :type z_factor: float
+
+    :param scale: Ratio of vertical units to horizontal. If the horizontal
+        unit of the elevation raster is degrees (e.g: ``WGS84``), set `scale`
+        to ``111120`` if the vertical unit is meter, or set to ``370400``
+        if vertical unit is feet.
+    :type scale: float
+
+    :param azimuth: Azimuth of the light, in degrees.  ``0`` comes from north,
+        ``90`` from the east... default value is ``315``.
+    :type azimuth: float
+
+    :param altitude: Altitude of the light, in degrees. ``90`` if the light
+        comes from top, ``0`` is raking light, default value is ``45``
+    :type altitude: float
+
+    :param cutoff: `Cutoff` parameter of the sigmoid contrast function, see
+        :func:`skimage.exposure.adjust_sigmoid`, default value is ``0.707``.
+    :type cutoff: float
+
+    :param gain: `Gain` parameter of the sigmoid contrast function, see
+        :func:`skimage.exposure.adjust_sigmoid`, default value is ``5``.
+    :type gain: float
+
+    :param buffer: extra pixels added to ensure continuity of rendered feature.
+    :type buffer: int
+
+    :return: Rendered shaded relief as a image.
+    :rtype: numpy.array
+
+    """
     def __init__(self, name, index,
                  zfactor=1,
                  scale=111120,
@@ -319,6 +395,15 @@ class SimpleRelief(TermNode):
         self._buffer = buffer
 
     def render(self, context):
+        """Render a image feature.
+
+        :param context: requirements and conditions for feature rendering.
+        :type context: :class:`~stonemason.renderer.engine.RenderContext`
+
+        :return: a image feature.
+        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
+
+        """
         assert isinstance(context, RenderContext)
         crs = context.map_proj
         envelope = context.map_bbox
@@ -363,6 +448,110 @@ class SimpleRelief(TermNode):
 
 
 class SwissRelief(TermNode):
+    """Swiss Relief Render Node
+
+    Maps with coloured relief shading, modulated by elevation and by exposure
+    to illumination, present topography in a particularly vivid and descriptive
+    manner, helping map-readers to conceive more easily the terrain’s important
+    landforms.
+
+    `SwissRelief` produces shaded relief in a more complex way comparing with
+    the `SimpleRelief`. It introduces a new contemporary digital procedure to
+    mimic the style used on Swiss topographic maps developed by `Eduard Imhof`_,
+    a professor of cartography and artist. One of Imhof’s most important
+    contributions was the development of a photomechanical process for the
+    production of coloured shaded relief (around 1945).
+
+    .. _Eduard Imhof: https://en.wikipedia.org/wiki/Eduard_Imhof
+
+
+
+    Illumination Model:
+
+        The illumination model of `SwissRelief` combines shaded reliefs
+        illuminated by three different light angles and intensities to
+        provide a simulated effect of global illumination.
+
+        This approach avoids “dead” mountain ridges in transition zones,
+        emphasizing and clarifying important topographic features, such as
+        ridges, valleys and watersheds.
+
+    Aerial Perspective:
+
+        The aerial perspective effect is an essential design component of
+        traditional shaded relief, which is based on natural observation.
+        The concept is familiar to anyone who has hiked up a mountain--the
+        veiling effects of atmospheric haze cause topographic features in
+        the distance to look fainter than features in the foreground.
+
+        When aerial perspective is applied to map shaded relief, higher
+        topographic features should be shown with slightly more contrast
+        than lowland features because they appear closer to readers who,
+        theoretically, view the map from above.
+
+        For more detail, please refer to `Creating Swiss-style shaded relief in Photoshop`_.
+
+        .. _Creating Swiss-style shaded relief in Photoshop: http://www.shadedrelief.com/shading/Swiss.html
+
+    :param name: a string literal that identifies the node
+    :type name: str
+
+    :param index: pathname of raster index file.
+    :type index: str
+
+    :param z_factor: Vertical exaggeration used to pre-multiply the elevations,
+        default value is ``1``, which means no exaggeration.
+    :type z_factor: float
+
+    :param scale: Ratio of vertical units to horizontal. If the horizontal
+        unit of the elevation raster is degrees (e.g: ``WGS84``), set `scale`
+        to ``111120`` if the vertical unit is meter, or set to ``370400``
+        if vertical unit is feet.
+    :type scale: float
+
+    :param azimuth: Azimuth of the light, in degrees.  ``0`` comes from north,
+        ``90`` from the east... default value is ``315``.
+    :type azimuth: float
+
+    :param altitude: a list of altitude of the light, in degrees. ``90`` if the light
+        comes from top, ``0`` is raking light, default value is ``45``
+    :type altitude: list
+
+    :param high_relief_cutoff: `Cutoff` parameter of the sigmoid contrast function, see
+        :func:`skimage.exposure.adjust_sigmoid`, default value is ``0.6``. Used by
+        high altitude relief.
+    :type high_relief_cutoff: float
+
+    :param high_relief_gain: `Gain` parameter of the sigmoid contrast function, see
+        :func:`skimage.exposure.adjust_sigmoid`, default value is ``5``. Used by
+        high altitude relief.
+    :type gain: float
+
+    :param low_relief_cutoff: `Cutoff` parameter of the sigmoid contrast function, see
+        :func:`skimage.exposure.adjust_sigmoid`, default value is ``0.72``. Used by
+        high altitude relief.
+    :type high_relief_cutoff: float
+
+    :param low_relief_gain: `Gain` parameter of the sigmoid contrast function, see
+        :func:`skimage.exposure.adjust_sigmoid`, default value is ``2``. Used by
+        low altitude relief.
+    :type gain: float
+
+    :param height_mask_range: A ``(min, max)`` tuple that mask the lowland range,
+        default value is ``(0, 3000)``.
+    :type height_mask_range: tuple
+
+    :param height_mask_gamma: gamma correction applied on the height mask, default
+        value is 0.5.
+    :type height_mask_gamma: float
+
+    :param blend: two weight values for composing diffuse, detail and specular hillshades.
+    :type blend: tuple
+
+    :param buffer: extra pixels added to ensure continuity of rendered feature.
+    :type buffer: int
+
+    """
     def __init__(self, name, index,
                  zfactor=1,
                  scale=111120,
@@ -395,6 +584,15 @@ class SwissRelief(TermNode):
         self._buffer = buffer
 
     def render(self, context):
+        """Render a image feature.
+
+        :param context: requirements and conditions for feature rendering.
+        :type context: :class:`~stonemason.renderer.engine.RenderContext`
+
+        :return: a image feature.
+        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
+
+        """
         assert isinstance(context, RenderContext)
         crs = context.map_proj
         envelope = context.map_bbox
@@ -450,6 +648,20 @@ class SwissRelief(TermNode):
 
 
 class ColorRelief(TermNode):
+    """Image Raster Render Node
+
+    The `ColorRelief` render node renders raster data set with RGB bands.
+
+    :param name: a string literal that identifies the node
+    :type name: str
+
+    :param index: pathname of raster index file.
+    :type index: str
+
+    :param buffer: extra pixels added to ensure continuity of rendered feature.
+    :type buffer: int
+
+    """
     def __init__(self, name, index, buffer=0):
         TermNode.__init__(self, name)
 
@@ -457,6 +669,15 @@ class ColorRelief(TermNode):
         self._buffer = buffer
 
     def render(self, context):
+        """Render a image feature.
+
+        :param context: requirements and conditions for feature rendering.
+        :type context: :class:`~stonemason.renderer.engine.RenderContext`
+
+        :return: a image feature.
+        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
+
+        """
         assert isinstance(context, RenderContext)
         crs = context.map_proj
         envelope = context.map_bbox

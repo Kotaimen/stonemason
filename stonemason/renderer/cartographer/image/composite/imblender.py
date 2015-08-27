@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.cartographer.image.composite.imblender
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    Implementation of render node that compose image features by ImageMagick.
+"""
 __author__ = 'ray'
 __date__ = '4/22/15'
 
@@ -178,6 +183,84 @@ class ImageMagickComposer(object):
 
 
 class IMComposer(CompositeNode):
+    """ImageMagick Composite Render Node
+
+    The `IMComposer` composes image feature produced by source render nodes by
+    `ImageMagick` command.
+
+    Below is a complex composer command which generates a `newspaper` effect
+    with variable depth label haloing from for mapnik rendered images::
+
+        # Apply ordered dither to landbase, mimics 'halftone dither' effect
+        ( <<base>> -ordered-dither o8x8,4 )
+
+        (
+            # Use a different dither for some variation
+            ( <<road>> )
+            # Fill halo with land color and only render on top of roads
+            ( <<label>> -channel A
+            -morphology Dilate Disk:4
+            +channel
+            +level-colors #ebe9e6
+            ) -compose Atop -composite -ordered-dither o4x4,4
+        ) -compose Over -composite
+
+        (
+            # Increase lightness of labels, Multiply later...
+            <<label>>
+            -brightness-contrast +10
+            # Mimics 'typewriter' effect, only works on thin fonts.
+            # Find line joins of labels and thicken/darken them.
+            # Uses ImageMagick's morphology operation, slow!
+            ( +clone -channel A
+              -morphology HMT LineJunctions
+              -morphology Dilate Disk:1
+              +channel
+            ) -compose Multiply -composite
+        )  -compose Darken -composite
+
+        # Make "real" duotone effect, not fake color tint.
+        # Convert to grayscale then apply duotone lookup table.
+
+        # The reference duotone images are converted from
+        # Photoshop's classic 'Duotone' mode library.
+        -brightness-contrast -12x-10
+        -colorspace gray Bl-for-dark-cg9-cg2.png -clut
+
+        # Finally, convert to paletted PNG format
+        -dither none
+        -colors 128
+
+    .. figure:: _static/newspaper.png
+       :width: 100 %
+       :alt: "Newspaper" map sample render
+       :align: center
+
+       Sample render using 4 mapnik layers and imagemagick composer
+
+
+    :param name: a string literal that identifies the node
+    :type name: str
+
+    :param nodes: a list of two source render nodes.
+    :type nodes: list
+
+    :param command: Command string sent to `imagemagick convert`, images are
+        referenced using ``{{tag}}``, note the command should generate
+        exactly one image.
+    :type command: str
+
+    :param tempdir: Directory of temporary image files will be written, by
+        default, system temporary directory will be used.  Specify a fast
+        SSD volume or memory disk is recommended.
+    :type tempdir: str or None
+
+    :param tempfmt: Format imagemagick use to write image files,  must
+        be one of the format supported by `PIL` installation.  Uncompressed
+        format like ``tiff`` is recommended.
+    :type tempfmt: str
+
+    """
     def __init__(self, name, nodes, command=None, tempdir=None, tempfmt='png'):
         CompositeNode.__init__(self, name, nodes)
         self._composer = ImageMagickComposer(

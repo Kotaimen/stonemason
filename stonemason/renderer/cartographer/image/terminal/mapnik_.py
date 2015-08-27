@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.cartographer.image.terminal.mapnik_
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    Image Map rendered by Mapnik.
+"""
 __author__ = 'ray'
 __date__ = '4/21/15'
 
@@ -31,6 +36,32 @@ class InvalidCommandNumber(MapnikCartoError):
 
 
 class Mapnik_(TermNode):
+    """ Mapnik Render Node
+
+    Mapnik is a Free Toolkit for developing mapping applications.
+    It is written in modern C++ and has Python bindings that support
+    fast-paced agile development.
+
+    Mapnik takes a theme xml file as its input, which defines data source
+    and style for rendering, and produces a map image.
+
+    :param name: a string literal that identifies the node
+    :type name: str
+
+    :param style_sheet: pathname of the mapnik xml configuration file.
+    :type style_sheet: str
+
+    :param buffer_size: data around the specified area will be rendered to enhance
+        connectivity between continuous area(tile).
+    :type buffer_size: int
+
+    :param base_path: pathname of mapnik resources.
+    :type base_path: str
+
+    :param default_scale: used to scale font/symbol/thickness, useful when scaling
+    :type default_scale: float
+
+    """
     def __init__(self, name,
                  style_sheet='map.xml',
                  buffer_size=0,
@@ -53,6 +84,15 @@ class Mapnik_(TermNode):
         self._map.buffer_size = buffer_size
 
     def render(self, context):
+        """Render a image feature.
+
+        :param context: requirements and conditions for feature rendering.
+        :type context: :class:`~stonemason.renderer.engine.RenderContext`
+
+        :return: a image feature.
+        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
+
+        """
         assert isinstance(context, RenderContext)
 
         if self._default_scale is None:
@@ -87,6 +127,31 @@ class Mapnik_(TermNode):
 
 
 class MapnikComposer(TermNode):
+    """Mapnik Composer Render Node
+
+    A `MapnikComposer` composes maps defined by a list of style sheets with
+    corresponding composite commands.
+
+    :param name: a string literal that identifies the node
+    :type name: str
+
+    :param style_sheets: a list of pathname of the mapnik xml configuration file.
+    :type style_sheet: list
+
+    :param commands: a list of composite commands.
+    :type commands: list
+
+    :param buffer_size: data around the specified area will be rendered to enhance
+        connectivity between continuous area(tile).
+    :type buffer_size: int
+
+    :param base_path: pathname of mapnik resources.
+    :type base_path: str
+
+    :param default_scale: used to scale font/symbol/thickness, useful when scaling
+    :type default_scale: float
+
+    """
     def __init__(self, name, style_sheets, commands,
                  buffer_size=0,
                  base_path=None,
@@ -115,6 +180,15 @@ class MapnikComposer(TermNode):
             self._maps.append(map)
 
     def render(self, context):
+        """Render a image feature.
+
+        :param context: requirements and conditions for feature rendering.
+        :type context: :class:`~stonemason.renderer.engine.RenderContext`
+
+        :return: a image feature.
+        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
+
+        """
         assert isinstance(context, RenderContext)
 
         base = self.render_mapnik_image(self._maps[0], context)
