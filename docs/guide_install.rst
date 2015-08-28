@@ -116,9 +116,32 @@ To build PDF version `textlive` is required::
     $ make latexpdf
 
 
-
 Docker Image
 ============
 
-A pre-built public docker image is available from docker hub
-``kotaimen/stonemason-dev``.
+A official docker image with all dependencies installed,  which can be used
+to quickly build a sample tile service:
+
+.. code-block:: Dockerfile
+
+    FROM        kotaimen/stonemason-dev
+    MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
+
+    ENV         DEBIAN_FRONTEND noninteractive
+
+    WORKDIR     /var/stonemason
+    # Or, COPY your gallery here
+    RUN         stonemason init
+
+    EXPOSE      80
+    ENTRYPOINT  ["stonemason", "tileserver", "--bind=0.0.0.0:80"]
+
+
+To start tileserver in docker container, use::
+
+    $ docker build -t stonemason-sample .
+    $ docker run -p 0.0.0.0:8080:80 stonemason-sample
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Starting gunicorn 19.2.1
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://0.0.0.0:7086 (43027)
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Using worker: threads
+    [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054

@@ -5,7 +5,7 @@ Quick Start
 
 .. highlight:: console
 
-After you have installed everything using :doc:`install` manual,
+After you have installed everything using :doc:`guide_install` manual,
 the `stonemason` CLI should be available as ``stonemason``::
 
     $ stonemason --version
@@ -52,7 +52,7 @@ Check Configuration
 To verify theme configuration, use ``check`` subcommand::
 
     $ stonemason --gallery=map_gallery check
-    Checking configuration at /Users/kotaimen/proj/python/stonemason/map_gallery...
+    Checking configuration at /.../proj/python/stonemason/map_gallery...
     Theme: sample
             Schema: sample .png
             Schema: sample @2x.png
@@ -92,8 +92,9 @@ Configure Memcache
     `Twitter's nutcracker <https://github.com/twitter/twemproxy>`_.
 
 
-To start serving tiles, a memcache server is required, the sample theme
-generated above requires one listening on local TCP port ``11211``::
+Adding a cache will make frequently visited tiles faster, its also required
+when a clustered tile storage is present, here we assume a local memcache
+server is listening at 11211::
 
 
     $ telnet localhost 11211
@@ -111,29 +112,24 @@ generated above requires one listening on local TCP port ``11211``::
     END
 
 
-Configure Redis
-===============
-
-Redis is used in distributed deployment as message queue, which is not
-required in the quickstart.
-
 Tile Server
 ===========
 
 After created a sample themes root, you can start the tile server::
 
     $ export STONEMASON_GALLERY=`~/map_gallery`
-    $ stonemason -dd tileserver --bind=127.0.0.1:8000
-
-The ``-dd`` option means a debugging flask server will be started, to start
-To production server using `Gunicorn`, don't supply the ``-dd`` option::
-
     $ stonemason tileserver --bind=0.0.0.0:8000
     [2015-03-02 18:09:30 +0800] [42985] [INFO] Starting gunicorn 19.2.1
     [2015-03-02 18:09:30 +0800] [42985] [INFO] Listening at: http://127.0.0.1:7086 (42985)
     [2015-03-02 18:09:30 +0800] [42985] [INFO] Using worker: sync
     [2015-03-02 18:09:30 +0800] [43013] [INFO] Booting worker with pid: 43013
     [2015-03-02 18:09:31 +0800] [43014] [INFO] Booting worker with pid: 43014
+
+This start a production server using ``Gunicorn``, to view debug info, sepecify
+``--debug`` once, to start in a ``flask`` debug server which supports inline
+debug and reload, specify ``--debug`` option twice, or use shorthand ``-dd``::
+
+    $ stonemason -dd tileserver --bind=127.0.0.1:8000
 
 
 Open http://localhost:7086 in the browser, you should see a start page like
@@ -151,25 +147,24 @@ this:
 
 
 When the built in `Gunicorn` server is used, you can specify number
-of worker processes used and number of threads per worker::
+of worker processes used::
 
-    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2 --threads=4
+    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2
     [2015-03-02 18:10:00 +0800] [43027] [INFO] Starting gunicorn 19.2.1
     [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://127.0.0.1:7086 (43027)
-    [2015-03-02 18:10:00 +0800] [43027] [INFO] Using worker: threads
     [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054
     [2015-03-02 18:10:00 +0800] [43055] [INFO] Booting worker with pid: 43055
 
 
 If you have `memcache` server configured above, use it to caching tiles::
 
-    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2 --threads=2 --cache=localhost:11211
+    $ stonemason tileserver --bind=0.0.0.0:8000 --workers=2 --cache=localhost:11211
 
 Or define it in envvar ``STONEMASON_CACHE``::
 
     $ export STONEMASON_CACHE=localhost:11211
 
-If a memcache cluster is used, separate each node with ``;`` or space::
+If a memcache cluster is used, separate each node with ``;``::
 
     $ export STONEMASON_CACHE=10.0.16.1:11211;10.0.16.2:11211
 
@@ -225,37 +220,6 @@ This writes ``application.py``:
 To serve this application using `Gunicorn`, run::
 
     $ gunicorn -b 0.0.0.0:8080 application -w 4
-
-
-Docker Container
-================
-
-We also provided a official base docker image which can be used to quickly
-build a sample tile service:
-
-.. code-block:: Dockerfile
-
-    FROM        kotaimen/stonemason-dev
-    MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
-
-    ENV         DEBIAN_FRONTEND noninteractive
-
-    WORKDIR     /var/stonemason
-    # Or, COPY your gallery here
-    RUN         stonemason init
-
-    EXPOSE      80
-    ENTRYPOINT  ["stonemason", "tileserver", "--bind=0.0.0.0:80"]
-
-
-To start tileserver in docker container, use::
-
-    $ docker build -t stonemason-sample .
-    $ docker run -p 0.0.0.0:8080:80 stonemason-sample
-    [2015-03-02 18:10:00 +0800] [43027] [INFO] Starting gunicorn 19.2.1
-    [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://0.0.0.0:7086 (43027)
-    [2015-03-02 18:10:00 +0800] [43027] [INFO] Using worker: threads
-    [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054
 
 
 Renderer
