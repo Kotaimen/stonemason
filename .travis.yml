@@ -54,7 +54,7 @@ branches:
 
 before_script:
     - sudo apt-get install -qq wget
-    - sudo wget -q http://cdn.masonmaps.me/dist/gdal-1.10.1/data/esri_extra.wkt -P /usr/share/gdal/1.10/
+    - sudo wget -q http://cdn.masonmaps.me/dist/ubuntu-14.04/gdal-1.10.1/data/esri_extra.wkt -P /usr/share/gdal/1.10/
 
 script:
     - nosetests
