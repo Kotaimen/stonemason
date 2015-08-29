@@ -48,13 +48,15 @@ long_description = read('README.md')
 # Requirements
 #
 install_requires = [
-    'six>=1.8.0',
+    'six>=1.9.0',
     'Flask>=0.10',
     'Pillow>=2.3.0',
     'boto>=2.35.0',
-    'Click>=3.0.0',
+    'Click>=4.0',
     'gunicorn>=19.0.0',
-    'pylibmc>=1.4.3',
+    'pylibmc>=1.5.0',
+    'numpy>=1.6',
+    'scipy>=0.9'
 ]
 
 if IS_PY3:

@@ -60,7 +60,7 @@ class TileMapSystem(object):
     >>> tms.geogcs # doctest: +ELLIPSIS
     <osgeo.osr.SpatialReference; proxy of <Swig Object of type 'OSRSpatialReferenceShadow *' at ...> >
     >>> tms.pyramid.geogcs
-    '+proj=longlat +datum=WGS84 +no_defs '
+    '+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs '
     >>> tms.forward_projection # doctest: +ELLIPSIS
     <osgeo.osr.CoordinateTransformation; proxy of <Swig Object of type 'OSRCoordinateTransformationShadow *' at ...> >
     >>> index = MetaTileIndex(4, 12, 12, 8)
@@ -189,7 +189,6 @@ class TileMapSystem(object):
         """
         return self._pyramid
 
-
     def _init_spatial_ref(self, pyramid):
         # create projection coordinate system from Pyramid
         self._projcs = osr.SpatialReference()
@@ -209,6 +208,20 @@ class TileMapSystem(object):
             if code is None or authority is None:
                 raise TileMapError("Cannot figure out geogcs automaticlly.")
             self._geogcs.SetFromUserInput('%s:%s' % (authority, code))
+
+        # XXX: Fix up wkt +over issue
+        # By default PROJ.4 wraps output longitudes in the range -180 to 180.
+        # The +over switch can be used to disable the default wrapping which
+        # is done at a low level.
+        projcs = self._projcs.ExportToProj4()
+        if '+over' not in projcs.split():
+            projcs += ' +over'
+            self._projcs.ImportFromProj4(projcs)
+
+        geogcs = self._geogcs.ExportToProj4()
+        if '+over' not in geogcs.split():
+            geogcs += ' +over'
+            self._geogcs.ImportFromProj4(geogcs)
 
     def _init_projections(self, pyramid):
         self._forward_projection = osr.CoordinateTransformation(self._geogcs,
@@ -285,7 +298,6 @@ class TileMapSystem(object):
                             norm_max_y * scale + offset_y)
 
         return envelope
-
 
     def __repr__(self):
         return '''GeographicSystem

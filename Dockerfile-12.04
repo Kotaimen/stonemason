@@ -30,27 +30,18 @@ RUN         apt-get update &&\
                 libjpeg-dev libtiff-dev libfreetype6-dev \
                 libwebp-dev liblcms2-dev imagemagick \
                 libgeos-dev libgdal-dev gdal-bin python-gdal \
-                python-mapnik
-
-
-#
-# Install binary packages
-#
-RUN         apt-get update &&\
-            apt-get -y install python-dev python-pip \
-                libz-dev \
-                libjpeg-dev libtiff-dev libfreetype6-dev \
-                libwebp-dev liblcms2-dev imagemagick \
-                libgeos-dev libgdal-dev gdal-bin python-gdal \
+                python-numpy python-scipy \
                 python-mapnik
 
 #
 # Speedup pip by install "must have" python packages first
 #
-RUN         pip install \
+RUN         easy_install -U distribute && \
+            pip install \
                 pillow flask boto boto3 moto gunicorn six Click python-memcached \
                 pylibmc nose coverage tox Cython Pygments alabaster \
-                Sphinx sphinxcontrib-httpdomain
+                Sphinx sphinxcontrib-httpdomain \
+                scikit-image
 
 #
 # Check installed software

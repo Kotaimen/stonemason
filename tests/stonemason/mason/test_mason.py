@@ -7,11 +7,11 @@ import unittest
 
 import six
 
-from stonemason.mason import Mason, MapBook, Metadata, HybridMapSheet
+from stonemason.mason import Mason, MapBook, Metadata, ClusterMapSheet
 from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTileIndex
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
-from stonemason.tilestorage import MetaTileStorage
-from .test_mapsheet import MockClusterStorage, MockMetaTileRenderer
+from .test_mapsheet import MockClusterStorage, MockMetaTileStorage, \
+    MockMetaTileRenderer, mock_image_data
 
 
 class NullMapBook(MapBook):
@@ -46,7 +46,7 @@ class TestMasonTileAccessor(unittest.TestCase):
 
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
-        sheet = HybridMapSheet(
+        sheet = ClusterMapSheet(
             self.tag,
             bundle,
             Pyramid(stride=2),
@@ -58,34 +58,16 @@ class TestMasonTileAccessor(unittest.TestCase):
 
         self.mason[book.name] = book
 
-
     def test_get_tile(self):
         tile = self.mason.get_tile(self.name, self.tag, 1, 0, 0)
 
         index = TileIndex(1, 0, 0)
 
-        expected = Tile(index=index, data=six.b('A tile'))
+        image_data = mock_image_data('RGB', (256, 256), '#000')
+
+        expected = Tile(index=index, data=image_data)
         self.assertEqual(expected.index, tile.index)
         self.assertEqual(expected.data, tile.data)
-
-
-class MockMetaTileStorage(MetaTileStorage):
-    def __init__(self):
-        self._storage = dict()
-
-    @property
-    def levels(self):
-        return [1]
-
-    @property
-    def stride(self):
-        return 1
-
-    def put(self, metatile):
-        self._storage[metatile.index] = metatile
-
-    def get(self, index):
-        return self._storage.get(index)
 
 
 class TestMasonMetatileRenderer(unittest.TestCase):
@@ -98,12 +80,12 @@ class TestMasonMetatileRenderer(unittest.TestCase):
         bundle = FormatBundle(MapType('image'), TileFormat('PNG'))
 
         self.storage = MockClusterStorage(bundle=bundle)
-        sheet = HybridMapSheet(
+        sheet = ClusterMapSheet(
             self.tag, bundle, Pyramid(stride=2),
             self.storage, MockMetaTileRenderer())
 
         book = MapBook(self.name, Metadata())
-        book[sheet.tag]= sheet
+        book[sheet.tag] = sheet
 
         self.mason[book.name] = book
 

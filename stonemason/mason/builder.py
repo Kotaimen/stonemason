@@ -11,13 +11,15 @@ import six
 
 from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.tilestorage import NullClusterStorage, \
-    DiskClusterStorage, S3ClusterStorage
 from stonemason.renderer import MasonRenderer
+from stonemason.tilestorage import NullClusterStorage, ClusterStorage, \
+    MetaTileStorage, DiskClusterStorage, S3ClusterStorage, DiskMetaTileStorage, \
+    S3MetaTileStorage
+
 from .theme import Theme, SchemaTheme
 from .mapbook import MapBook
 from .metadata import Metadata
-from .mapsheet import MapSheet, HybridMapSheet
+from .mapsheet import MapSheet, ClusterMapSheet, MetaTileMapSheet
 from .exceptions import UnknownStorageType, InvalidMapSheetTag
 
 
@@ -37,8 +39,15 @@ class MapSheetBuilder(object):
 
         bundle = FormatBundle(self._map_type, self._tile_format)
 
-        map_sheet = HybridMapSheet(
-            self._tag, bundle, self._pyramid, self._storage, self._renderer)
+        if isinstance(self._storage, ClusterStorage):
+            map_sheet = ClusterMapSheet(
+                self._tag, bundle, self._pyramid, self._storage, self._renderer)
+        elif isinstance(self._storage, MetaTileStorage):
+            map_sheet = MetaTileMapSheet(
+                self._tag, bundle, self._pyramid, self._storage, self._renderer)
+        else:
+            # Should not reach here
+            raise NotImplementedError
 
         return map_sheet
 
@@ -66,6 +75,10 @@ class MapSheetBuilder(object):
             self._storage = DiskClusterStorage(format=bundle, **config)
         elif prototype == 's3':
             self._storage = S3ClusterStorage(format=bundle, **config)
+        elif prototype == 'disk.metatile':
+            self._storage = DiskMetaTileStorage(format=bundle, **config)
+        elif prototype == 's3.metatile':
+            self._storage = S3MetaTileStorage(format=bundle, **config)
         else:
             raise UnknownStorageType(prototype)
 

@@ -90,7 +90,10 @@ class FileSystemCurator(Curator):
             env_g = {}
 
             template = template_env.get_template(filename)
-            template_variables = dict(theme_root=basename)
+
+            home = os.environ.get('HOME', '.')
+            data_root = os.path.join(home, 'proj/geodata/')
+            template_variables = dict(theme_root=basename, data_root=data_root)
 
             source = template.render(**template_variables).encode('utf-8')
             # print (source)
@@ -126,5 +129,3 @@ class FileSystemCurator(Curator):
         """Valid the format of a theme config"""
         if not isinstance(theme_config, dict):
             raise InvalidThemeConfig('"THEME" should be a dict object')
-
-

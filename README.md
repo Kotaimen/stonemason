@@ -20,7 +20,7 @@ Features:
 - Tile caching and permanent storage (done)
 - Debug server for map design (done)
 - Mapnik as raster renderer (done)
-- High quality relief renderer
+- High quality relief renderer (done)
 - Image composer based on PIL and imagemagick (done)
 - Zero configuration deployment (done)
 

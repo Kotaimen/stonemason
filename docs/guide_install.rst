@@ -8,77 +8,30 @@ Installation
 Environment
 ===========
 
-Due to the complexity of integrating geospatial packages, using a Python 2.7
-interpreter on a Ubuntu distribution is highly recommended.
+Due to the complexity of integrating geospatial/imageprocessing/scientific dependencies,
+only recent Ubuntu and Homebrew environment are supported.
 
 Binary Packages
 ===============
 
+Install binary packages first::
 
-.. sidebar:: Tip
-
-    Python3 and packages are all optional.
-
-
-Install binary packages first:
-
-**ubuntu**
-
-First, install Python::
-
-    $ sudo apt-get install python-dev python-pip
-    $ sudo apt-get install python3-dev python3-pip
-
-
-Install packages for PIL/Pillow::
-
-    $ sudo apt-get install libjpeg-dev libz-dev libtiff-dev libfreetype6-dev libwebp-dev liblcms2-dev
-
-Install memcache::
-
-    $ sudo apt-get install memcached libmemcached-dev
-
-**Mac**
-
-On MacOS, use `homebrew <http://brew.sh/>`_ to install binary packages::
-
-    $ brew install python python3
-    $ brew install libjpeg libz libtiff freetype libwebp lcms2
-    $ brew install memcached libmemcached
-
-Optional Packages
-=================
-
-Most geospatial dependencies are optional, only required when component
-is actually used.
+     $ sudo apt-get install imagemagick \
+     >     python-dev python-pip \
+     >     python-scipy python-numpy python-matplotlib cython \
+     >     libboost-dev libboost-filesystem-dev libboost-program-options-dev \
+     >     libboost-python-dev libboost-regex-dev libboost-system-dev \
+     >     libboost-thread-dev \
+     >     libz-dev libfreetype6-dev libharfbuzz-dev \
+     >     libwebp-dev liblcms2-dev  libjpeg-dev libtiff-dev \
+     >     libproj-dev libgeos-dev libgdal-dev gdal-bin python-gdal \
+     >     libboost-all-dev libicu-dev \
+     >     libfreetype6-dev libsqlite3-dev libpq-dev libxml2-dev \
+     >     libmemcached-dev
 
 
 GEOS/GDAL
 ~~~~~~~~~
-
-**ubuntu**
-
-Because geospatial libraries already have a very large dependency tree, its 
-highly recommended install them from system package manager::
-
-    $ sudo apt-get install libgeos-dev
-    $ sudo apt-get install python-scipy python-numpy
-    $ sudo apt-get install gdal-bin python-gdal
-    $ sudo apt-get install python3-scipy python3-numpy
-    $ sudo apt-get install python3-gdal
-    $ sudo apt-get install imagemagick
-
-.. note:: Its important to install `scipy`/`numpy` first, otherwise `python-gdal`
-    won't install `numpy` bindings properly. `stonemason` uses it in the custom
-    relief shading renderer.
-
-`ubuntu-14.04-LTS` comes with reasonably recent `GEOS` and `GDAL`, for
-older ubuntu versions, install from `ubuntu-gis` PPA is recommended::
-
-    $ sudo apt-get install -y software-properties-common
-    $ sudo add-apt-repository -y ppa:ubuntugis/ppa
-    $ sudo apt-get update
-    $ sudo apt-get install libgeos-dev gdal-bin python-gdal
 
 For copyright reasons, `GDAL` debian package don't have some projection
 data files included, this requires extra patching form source::
@@ -88,38 +41,26 @@ data files included, this requires extra patching form source::
     $ sudo cp gdal-1.10.1/data/*extra.wkt /usr/share/gdal/1.10/
 
 
-**Mac**
-
-    $ pip install numpy scipy
-    $ brew install geos gdal
 
 Mapnik
 ~~~~~~
 
-At the time of writing, the stable `mapnik` version is still ``2.2.0``, it comes
-with `ubuntu-14.04-LTS` and can be installed from system package manager::
-
-    $ apt-get install python-mapnik
-
-To install the latest nightly ``2.3.x`` branch or ``3.0.0-pre`` branch, check
-the official installation_ manual.
+For mapnik installation, check check the official installation_ manual.
 
     .. _installation: <https://github.com/mapnik/mapnik/wiki/UbuntuInstallation>
 
-For rendering OSM or large maps, compiling the PostGIS plugin and use it as
-data source is highly recommended.
-
-Installing from mapnik official ubuntu repository::
+Mapnik 3 separates python binding from its main repository, and does not support
+``pip install mapnik`` yet, so recommended version is still ``2.3 nightly`` branch
+on their official repository::
 
     $ apt-get install -y software-properties-common
     $ add-apt-repository ppa:mapnik/nightly-2.3
     $ apt-get update
     $ apt-get install -y libmapnik libmapnik-dev mapnik-utils python-mapnik \
-        mapnik-input-plugin-gdal mapnik-input-plugin-ogr \
-        mapnik-input-plugin-postgis \
-        mapnik-input-plugin-sqlite \
-        mapnik-input-plugin-osm
-
+    >    mapnik-input-plugin-gdal mapnik-input-plugin-ogr \
+    >    mapnik-input-plugin-postgis \
+    >    mapnik-input-plugin-sqlite \
+    >    mapnik-input-plugin-osm
 
 
 Python Dependency
@@ -127,40 +68,8 @@ Python Dependency
 
 After grab the source code using Git or source package, run::
 
-    $ pip3 install -rrequirements.txt
-    $ pip3 install -rrequirements-dev.txt
-
     $ pip install -rrequirements.txt
     $ pip install -rrequirements-dev.txt
-
-
-Virtualenv
-==========
-
-If you only plan using `stonemason` to render/serve maps, its recommended
-to install it into a virtualenv using `pip`.
-
-Because most binary dependency's Python binding are installed to system python,
-the virtualenv also need to include system ``site-package``::
-
-    $ pip install virtualenv
-    $ mkdir ~/www/stonemason
-    $ virtualenv ~/www/stonemason --system-site-packages
-    $ source ~/www/stonemason/bin/activate
-
-After activated virtualenv, your shell prompt will change to ``(stonemason)$``::
-
-    (stonemason)$ cd ~/proj/stonemason
-    (stonemason)$ pip install .
-    ...
-    ...
-    Successfully installed stonemason
-    Cleaning up...
-
-To quit the virtual environment, use::
-
-    (stonemason)$ deactivate
-    $
 
 
 Build and Test
@@ -171,10 +80,6 @@ If you want running `stonemason` without installing you must build all
 
     $ python setup.py build_ext --inplace
 
-Or use Python3::
-
-    $ python3 setup.py build_ext --inplace
-
 .. warning::
 
     Cython extension do not work across Python versions, if you compile
@@ -184,22 +89,13 @@ Or use Python3::
         removing 'stonemason/util/geo/_hilbert.'so
         $ python3 setup.py build_ext --inplace --force
 
-`stonemason` uses `nose` and `tox` for testing::
+`stonemason` uses `nose` for testing::
 
     $ nosetests
     ...
     ...
     Ran XXX tests in 15.23s
     OK
-    $ tox
-    ...
-    ...
-    ____________________________ summary _____________________________
-      py27: commands succeeded
-      py27geo: commands succeeded
-      py34: commands succeeded
-      docs: commands succeeded
-      congratulations :)
 
 
 .. note::  The test suites expects a memcached server listens on localhost
@@ -220,3 +116,32 @@ To build PDF version `textlive` is required::
     $ make latexpdf
 
 
+Docker Image
+============
+
+A official docker image with all dependencies installed,  which can be used
+to quickly build a sample tile service:
+
+.. code-block:: Dockerfile
+
+    FROM        kotaimen/stonemason-dev
+    MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
+
+    ENV         DEBIAN_FRONTEND noninteractive
+
+    WORKDIR     /var/stonemason
+    # Or, COPY your gallery here
+    RUN         stonemason init
+
+    EXPOSE      80
+    ENTRYPOINT  ["stonemason", "tileserver", "--bind=0.0.0.0:80"]
+
+
+To start tileserver in docker container, use::
+
+    $ docker build -t stonemason-sample .
+    $ docker run -p 0.0.0.0:8080:80 stonemason-sample
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Starting gunicorn 19.2.1
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://0.0.0.0:7086 (43027)
+    [2015-03-02 18:10:00 +0800] [43027] [INFO] Using worker: threads
+    [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054
