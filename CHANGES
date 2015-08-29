@@ -19,10 +19,10 @@ Known issues:
   on python3, see http://bugs.python.org/issue14710
 
 
-v0.2.0
-------
+v0.2.0rc2
+---------
 
-Scheduled at 2015-08.
+Release date: 2015-08-29
 
 Feature:
 - Python based configuration format
