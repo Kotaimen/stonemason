@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.datasource.raster
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    Implementation of raster data sources.
+"""
 __author__ = 'ray'
 __date__ = '7/27/15'
 
@@ -69,12 +74,61 @@ class GeoTransform(object):
 
 
 class DataDomain(object):
+    """Base Raster Data Domain
+
+    Data traits of raster data source. Difference raster data have different
+    data type. For example, elevation data  may have a data type of Float32
+    while image data may have it of Byte.
+
+    Available raster data type:
+
+        ============    =============================
+        ``byte``        :data:`gdalconst.GDT_Byte`
+        ``uint16``      :data:`gdalconst.GDT_UInt16`
+        ``int16``       :data:`gdalconst.GDT_Int16`
+        ``uint32``      :data:`gdalconst.GDT_UInt32`
+        ``int32``       :data:`gdalconst.GDT_Int32`
+        ``float32``     :data:`gdalconst.GDT_Float32`
+        ``float64``     :data:`gdalconst.GDT_Float64`
+        ``cint16``      :data:`gdalconst.GDT_CInt16`
+        ``cint32``      :data:`gdalconst.GDT_CInt32`
+        ``cfloat32``    :data:`gdalconst.GDT_CFloat32`
+        ``cfloat64``    :data:`gdalconst.GDT_CFloat64`
+        ============    =============================
+
+    """
+
+    #: Number of data bands. Default value is ``1``.
     DIMENSION = 1
+
+    #: Value for invalid data in the raster data source. Default value is ``-1``.
     NODATAVALUE = -1
-    DATA_TYPE = gdalconst.GDT_Int32
+
+    #: Data type of pixel value. Default value is ``int32``.
+    DATA_TYPE = 'int32'
 
 
 class RasterDataSource(object):
+    """Base class of Raster Data Source
+
+    `RasterDataSource` is a data store that provides raster data in the request
+    envelope. It manages a set of raster files on the disk through a index
+    shapefile. Raster files are indexed on their bounding boxes in this file.
+
+    Data domain is used to provide information about specific properties about
+    raster data.
+
+    A user could query data by providing coordinate reference system, envelope
+    and pixel size.
+
+    :param index: location of index shapefile.
+    :type index: str
+
+    :param domain: data domain
+    :type domain: :class:`~stonemason.renderer.datasource.DataDomain`
+
+    """
+
     def __init__(self, index, domain=None):
 
         driver = ogr.GetDriverByName("ESRI Shapefile")
@@ -93,9 +147,35 @@ class RasterDataSource(object):
 
     @property
     def domain(self):
+        """Get data domain of the raster data source.
+
+        :return: return data domain of the raster data source.
+        :rtype: :class:`~stonemason.renderer.datasource.DataDomain`
+        """
         return self._domain
 
     def query(self, crs, envelope, size):
+        """Get raster data of the specific area.
+
+        :param crs: coordinate reference system of the return data.
+        :type crs: str
+
+        :param envelope: data bounding box represented by a tuple of four
+            coordinates ``(left, bottom, right, top)``.
+        :type envelope: tuple
+
+        :param size: pixel size of output envelope represented by a tuple
+            of width and height. For example, ``(width, height)``
+
+        :return: a array of raster data with a shape like:
+
+            .. math::
+
+                (domain.DIMENSION \\times height \\times width)
+
+        :rtype: numpy.array
+
+        """
 
         domain = self._domain
 
@@ -112,8 +192,12 @@ class RasterDataSource(object):
         # create target raster dataset
         driver = gdal.GetDriverByName('MEM')
 
+        data_type = gdal.GetDataTypeByName(domain.DATA_TYPE)
+        if data_type == gdalconst.GDT_Unknown:
+            raise RuntimeError('Unknown data type %s' % domain.DATA_TYPE)
+
         target = driver.Create(
-            '', target_width, target_height, target_band_num, domain.DATA_TYPE)
+            '', target_width, target_height, target_band_num, data_type)
 
         try:
             # initialize
@@ -170,6 +254,7 @@ class RasterDataSource(object):
             result = []
             for band_no in range(1, target.RasterCount + 1):
                 band = target.GetRasterBand(band_no)
+                # TODO: consider removing this
                 # try:
                 #     gdal.FillNodata(band, None, 100, 0)
                 # except RuntimeError:
@@ -195,6 +280,7 @@ class RasterDataSource(object):
         return resample_method
 
     def close(self):
+        """Close the data source"""
         self._index = None
         self._metadata = None
 
@@ -206,24 +292,58 @@ class RasterDataSource(object):
 
 
 class RGBDomain(DataDomain):
+    """RGB Data Domain
+
+    Attributes of a data source with Red, Green, and Blue bands.
+    """
+
+    #: Number of data bands.
     DIMENSION = 3
+
+    #: Value for invalid data in the raster data source.
     NODATAVALUE = -1
-    DATA_TYPE = gdalconst.GDT_Byte
+
+    #: Data type of pixel value.
+    DATA_TYPE = 'byte'
 
 
 class ElevationDomain(DataDomain):
+    """Elevation Data Domain
+
+    Attributes of a data source with elevation data.
+    """
+
+    #: Number of data bands.
     DIMENSION = 1
+
+    #: Value for invalid data in the raster data source.
     NODATAVALUE = np.finfo(np.float32).min.item()
-    DATA_TYPE = gdalconst.GDT_Float32
+
+    #: Data type of pixel value.
+    DATA_TYPE = 'float32'
 
 
 class ElevationData(RasterDataSource):
+    """Elevation Data Source
+
+    A set of elevation raster data. Subclass of
+    :class:`~stonemason.renderer.datasource.RasterDataSource` with
+    :class:`~stonemason.renderer.datasource.ElevationDomain`.
+    """
+
     def __init__(self, index):
         domain = ElevationDomain()
         RasterDataSource.__init__(self, index, domain=domain)
 
 
 class RGBImageData(RasterDataSource):
+    """RGB Image Data Source
+
+    A set of raster data with red, green and blue bands. Subclass of
+    :class:`~stonemason.renderer.datasource.RasterDataSource` with
+    :class:`~stonemason.renderer.datasource.RGBDomain`.
+    """
+
     def __init__(self, index):
         domain = RGBDomain()
         RasterDataSource.__init__(self, index, domain=domain)

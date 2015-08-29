@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.cartographer.image.transform.filters
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    Implementation of render nodes that performs image filter operation.
+"""
 __author__ = 'ray'
 __date__ = '8/7/15'
 
@@ -34,6 +39,20 @@ class _FilterNode(TransformNode):
 
 
 class MinFilter(_FilterNode):
+    """Min Filter
+
+    The `MinFilter` filters a image feature with a min kernel.
+
+    :param name: a string literal that identifies the node
+    :type name: str
+
+    :param node: source render node.
+    :type nodes: :class:`stonemason.renderer.engine.RenderNode`
+
+    :param size: kernel size
+    :type size: int
+
+    """
     def __init__(self, name, node, size=3):
         image_filter = ImageFilter.MedianFilter(size)
         _FilterNode.__init__(self, name, node, image_filter)

@@ -1,5 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.cartographer.image.terminal.storage
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    Implementation of storage render nodes.
+"""
 __author__ = 'ray'
 __date__ = '8/3/15'
 
@@ -19,6 +24,15 @@ __all__ = ['S3StorageNode', 'DiskStorageNode']
 
 
 class _MetaTileStorageNode(TermNode):
+    """Base Class of MetaTile Storage Render Node
+
+    :param name: a string literal that identifies the node.
+    :type name: str
+
+    :param storage: instance of metatile storage.
+    :type storage: :class:`~stonemason.tilestorage.MetaTileStorage`
+
+    """
     def __init__(self, name, storage):
         TermNode.__init__(self, name)
         assert isinstance(storage, MetaTileStorage)
@@ -26,6 +40,15 @@ class _MetaTileStorageNode(TermNode):
         self._storage = storage
 
     def render(self, context):
+        """Render a image feature.
+
+        :param context: requirements and conditions for feature rendering.
+        :type context: :class:`~stonemason.renderer.engine.RenderContext`
+
+        :return: a image feature.
+        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
+
+        """
         assert isinstance(context, RenderContext)
 
         meta_index = context.meta_index
@@ -46,6 +69,15 @@ class _MetaTileStorageNode(TermNode):
 
 
 class DiskStorageNode(_MetaTileStorageNode):
+    """Disk MetaTile Storage Render Node
+
+    :param name: a string literal that identifies the node.
+    :type name: str
+
+    :param kwargs: parameters for setting up :class:`stonemason.tilestorage.DiskMetaTileStorage`.
+    :type kwargs: dict
+
+    """
     def __init__(self, name, **kwargs):
         parameters = dict(kwargs)
 
@@ -59,6 +91,15 @@ class DiskStorageNode(_MetaTileStorageNode):
 
 
 class S3StorageNode(_MetaTileStorageNode):
+    """S3 MetaTile Storage Render Node
+
+    :param name: a string literal that identifies the node.
+    :type name: str
+
+    :param kwargs: parameters for setting up :class:`stonemason.tilestorage.S3MetaTileStorage`.
+    :type kwargs: dict
+
+    """
     def __init__(self, name, **kwargs):
         parameters = dict(kwargs)
 

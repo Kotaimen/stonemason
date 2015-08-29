@@ -1,4 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.engine
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Core components of renderer engine.
+"""
 
 __author__ = 'ray'
 __date__ = '8/17/15'

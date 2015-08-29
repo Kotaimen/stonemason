@@ -1,4 +1,10 @@
 # -*- encoding: utf-8 -*-
+"""
+    stonemason.renderer.cartographer
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Implementation of back-ends of renderer.
+"""
 
 __author__ = 'ray'
 __date__ = '4/20/15'

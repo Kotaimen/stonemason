@@ -17,12 +17,12 @@ class TestImageNodeFactory(unittest.TestCase):
 
     def test_create_terminal_node(self):
         node = self.factory.create_terminal_node(
-            'test', 'image.term.color', color='#000')
+            'test', 'image.input.color', color='#000')
         self.assertIsInstance(node, Color)
 
     def test_create_transform_node(self):
         source = self.factory.create_terminal_node(
-            'test', 'image.term.color', color='#000')
+            'test', 'image.input.color', color='#000')
 
         node = self.factory.create_transform_node(
             'test', 'image.transform.filter.min', source=source)
@@ -30,9 +30,9 @@ class TestImageNodeFactory(unittest.TestCase):
 
     def test_create_composite_layer(self):
         source1 = self.factory.create_terminal_node(
-            'test', 'image.term.color', color='#000')
+            'test', 'image.input.color', color='#000')
         source2 = self.factory.create_terminal_node(
-            'test', 'image.term.color', color='#000')
+            'test', 'image.input.color', color='#000')
 
         layer = self.factory.create_composite_node(
             'test', 'image.composite.alphablender', sources=[source1, source2],
