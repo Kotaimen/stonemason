@@ -29,13 +29,13 @@ class TestTileServerAppSetup(unittest.TestCase):
         self.assertRaises(IOError, TileServerApp, 'settings.py')
 
     def test_config_from_env_variables(self):
-        os.environ['STONEMASON_DEBUG'] = 'True'
+        os.environ['STONEMASON_CACHE'] = '127.0.0.1'
         app = TileServerApp()
-        self.assertIn('STONEMASON_DEBUG', app.config)
+        self.assertIn('STONEMASON_CACHE', app.config)
 
     def test_config_from_cmd_varables(self):
-        app = TileServerApp(STONEMASON_DEBUG=True)
-        self.assertIn('STONEMASON_DEBUG', app.config)
+        app = TileServerApp(STONEMASON_CACHE='127.0.0.1')
+        self.assertIn('STONEMASON_CACHE', app.config)
 
 
 @skipUnlessHasGDAL()
