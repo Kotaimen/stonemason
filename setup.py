@@ -87,7 +87,8 @@ cython_modules = [
 entry_points = '''
 [console_scripts]
 stonemason=stonemason.__main__:cli
-'''
+stonemason%d=stonemason.__main__:cli
+''' % sys.version_info.major
 #
 # Custom commands
 #
@@ -165,7 +166,7 @@ setup(
     description='Map tile service toolkit.',
     long_description=long_description,
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'Operating System :: POSIX',
@@ -176,11 +177,10 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
     ],
     keywords='map tile mapnik gdal tms',
-    author='The Stonemasons',
+    author='K&R',
     author_email='kotaimen.c@gmail.com, gliese.q@gmail.com',
     url='http://github.com/kotaimen/stonemason',
     license='MIT',
