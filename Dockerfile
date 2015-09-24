@@ -27,6 +27,6 @@ RUN         stonemason init && \
 #
 # Entry
 #
+EXPOSE      80
 ENTRYPOINT  ["stonemason"]
-CMD         ["--help"]
-
+CMD         [tileserver", "--bind=0.0.0.0:80"]
