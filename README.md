@@ -24,5 +24,4 @@ Features:
 - Image composer based on PIL and imagemagick (done)
 - Zero configuration deployment (done)
 
-> TODO: Add a demo page here.
 

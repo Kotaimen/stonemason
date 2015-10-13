@@ -33,3 +33,13 @@ Feature:
 - Stability and bug fixes
 - Performance turning
 - Docker deployment
+
+
+v0.2.0
+------
+
+Release date: 2015-10-13
+
+- Supports docker-compose and AWS ECS deployment
+- Rearranged unittest sources
+
