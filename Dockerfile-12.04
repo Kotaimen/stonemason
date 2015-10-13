@@ -1,3 +1,7 @@
+#
+# For legacy travis environment
+#
+
 FROM        ubuntu:12.04
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
@@ -75,6 +79,6 @@ RUN         pip install -rrequirements-dev.txt && \
 # Check installation
 #
 RUN         python setup.py build_ext -if
-RUN         tox -e py27geo
+RUN         tox -e py27
 RUN         stonemason init
 RUN         stonemason -v check
