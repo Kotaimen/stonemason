@@ -28,8 +28,8 @@ class FormatBundle(object):
     MapType(image)
     >>> format.tile_format
     TileFormat(JPEG|image/jpeg|.jpg)
-    >>> format.writer.real_map_type
-    <class 'PIL.Image.Image'>
+    >>> format.writer.real_map_type.__name__
+    Image
 
     :param map_type: Map type of the bundle.
     :type map_type: :class:`~stonemason.formatbundle.MapType`
