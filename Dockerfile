@@ -10,19 +10,20 @@ WORKDIR     /tmp/stonemason/
 
 ADD         . ./
 
-RUN         pip install -rrequirements-dev.txt && \
-            pip install . && \
-            python setup.py build_ext -if && \
-            tox -e py27 && \
-            rm -rf /tmp/stonemason
+RUN         set -x \
+                && pip install -rrequirements-dev.txt \
+                && pip install . \
+                && apt-get install make \
+                && rm -rf /tmp/stonemason
 
 #
 # Create a sample at /var/lib/stonemason/map_gallery
 #
 WORKDIR     /var/lib/stonemason/
 
-RUN         stonemason init && \
-            stonemason check
+RUN         set -x \
+                && stonemason init \
+                && stonemason check
 
 #
 # Entry
