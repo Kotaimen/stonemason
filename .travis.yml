@@ -21,7 +21,7 @@ branches:
     - master
     - develop
     - /^release.*$/
-    - /^travis.*$/
+    - /feature/travis-trusty
 
 notifications:
   email:
