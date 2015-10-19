@@ -14,9 +14,9 @@ THEME = dict(
         # data attribution
         attribution='Map Design: K&R, Data: USGS',
         # initial origin in (lon, lat)
-        origin=(0, 0),
+        origin=(-112.311516, 36.180975), # The Grand Canyon
         # initlal zoom level
-        origin_zoom=2
+        origin_zoom=8
     ),
     # list of schemas in the theme
     schemas=[
@@ -43,7 +43,7 @@ schema = dict(
         # projection coordinate system
         projcs='EPSG:3857',
         # zoom levels
-        levels=range(0, 9)
+        levels=range(8, 15)
     ),
     # maptype
     maptype=maptype,
