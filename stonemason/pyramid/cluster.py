@@ -1,5 +1,4 @@
 # -*- encoding: utf-8 -*-
-
 """
     stonemason.tilestorage.cluster
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -13,22 +12,22 @@ import collections
 import zipfile
 import json
 import math
-
 import six
 
 from stonemason.util.guesstypes import guess_mimetype, guess_extension
-from stonemason.pyramid import Tile, TileIndex, MetaTile, MetaTileIndex
 from stonemason.formatbundle import MapWriter
-from .exceptions import TileClusterError
 
-
-
-
+from .tile import Tile, TileIndex
+from .metatile import MetaTile, MetaTileIndex
 
 # The index file name
 CLUSTER_ZIP_INDEX = 'index.json'
 CLUSTER_ZIP_INDEX_LEGACY = 'tiles.json'
 CLUSTER_ZIP_VERSION = 1
+
+
+class TileClusterError(Exception):
+    pass
 
 
 class TileCluster(object):
@@ -38,7 +37,7 @@ class TileCluster(object):
     `MetaTile`.
 
 
-    >>> from stonemason.tilestorage import TileCluster
+    >>> from stonemason.pyramid import TileCluster
     >>> from stonemason.formatbundle import MapType, TileFormat, FormatBundle
     >>> from stonemason.pyramid import MetaTile, MetaTileIndex, TileIndex
     >>> from PIL import Image
@@ -104,7 +103,6 @@ class TileCluster(object):
 
         row, column = index.x - self.index.x, index.y - self.index.y
         return self._tiles[self._tile_key_func(index)]
-
 
     @staticmethod
     def from_metatile(metatile, writer):
@@ -189,7 +187,6 @@ class TileCluster(object):
             tiles.append(tile)
         return TileCluster(index, tiles)
 
-
     @staticmethod
     def from_zip(zip_file, metadata=None):
         """Load `TileCluster` from a clustered zip file.
@@ -245,7 +242,7 @@ class TileCluster(object):
                 if metadata['mimetype'] != mimetype:
                     raise TileClusterError(
                         'Mismatching mimetype: expecting "%s", got "%s".' % (
-                            metadata['mimetype'], mimetype ))
+                            metadata['mimetype'], mimetype))
 
             mimetype = load_optional_field('mimetype')
             if mimetype is None:

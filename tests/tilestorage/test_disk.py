@@ -8,10 +8,9 @@ import os
 import shutil
 import tempfile
 
-from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid
+from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.tilestorage import DiskClusterStorage, \
-    DiskMetaTileStorage, TileCluster, \
+from stonemason.storage.tile import DiskClusterStorage, DiskMetaTileStorage, \
     InvalidMetaTile, InvalidMetaTileIndex, ReadonlyStorage
 from tests import DATA_DIRECTORY
 

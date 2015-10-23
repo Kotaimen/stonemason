@@ -21,7 +21,7 @@ except ImportError as e:
 from stonemason.renderer import RenderContext
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.pyramid import Pyramid, MetaTile, MetaTileIndex
-from stonemason.tilestorage import DiskMetaTileStorage, S3MetaTileStorage
+from stonemason.storage.tile import DiskMetaTileStorage, S3MetaTileStorage
 
 from tests import DATA_DIRECTORY, ImageTestCase
 

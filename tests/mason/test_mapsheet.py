@@ -8,11 +8,12 @@ import unittest
 
 from PIL import Image
 
-from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, MetaTileIndex
+from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, \
+    MetaTileIndex, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer import MasonRenderer
 from stonemason.renderer.cartographer import ImageFeature
-from stonemason.tilestorage import ClusterStorage, MetaTileStorage, TileCluster
+from stonemason.storage.tile import ClusterStorage, MetaTileStorage
 from stonemason.mason.mapsheet import ClusterMapSheet, MetaTileMapSheet
 
 from tests import skipUnlessHasGDAL

@@ -5,10 +5,10 @@ __date__ = '4/9/15'
 
 import time
 
-from stonemason.pyramid import MetaTileIndex, MetaTile
+from stonemason.pyramid import MetaTileIndex, MetaTile, TileCluster
 from stonemason.pyramid.geo import TileMapSystem
 from stonemason.renderer import MasonRenderer, RenderContext
-from stonemason.tilestorage import ClusterStorage, MetaTileStorage, TileCluster
+from stonemason.storage.tile import ClusterStorage, MetaTileStorage
 
 
 class MapSheet(object):

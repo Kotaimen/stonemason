@@ -15,7 +15,7 @@ from PIL import Image
 from stonemason.renderer.engine.rendernode import TermNode
 from stonemason.renderer.engine.context import RenderContext
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
-from stonemason.tilestorage import MetaTileStorage, DiskMetaTileStorage, \
+from stonemason.storage.tile import MetaTileStorage, DiskMetaTileStorage, \
     S3MetaTileStorage
 
 from ..feature import ImageFeature

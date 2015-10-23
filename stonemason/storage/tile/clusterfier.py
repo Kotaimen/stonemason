@@ -9,10 +9,11 @@
 __author__ = 'kotaimen'
 __date__ = '2/9/15'
 
-from .tilestorage import ClusterStorage, MetaTileStorage
-from .cluster import TileCluster
-
 from stonemason.formatbundle import MapWriter
+from stonemason.pyramid.cluster import TileCluster
+
+from .metatile import MetaTileStorage
+from .cluster import ClusterStorage
 
 
 class Clusterfier(ClusterStorage):

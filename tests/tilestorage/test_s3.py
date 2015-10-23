@@ -10,11 +10,9 @@ import moto
 import boto
 import boto.s3
 
-from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid
+from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.tilestorage import S3ClusterStorage, S3MetaTileStorage, \
-    TileCluster
-
+from stonemason.storage.tile import S3ClusterStorage, S3MetaTileStorage
 
 TEST_BUCKET_NAME = 'tilestorage'
 
@@ -35,7 +33,6 @@ class TestS3ClusterStorage(unittest.TestCase):
                                  data=open(grid_image, 'rb').read(),
                                  mimetype='image/png')
         self.format = FormatBundle(MapType('image'), TileFormat('PNG'))
-
 
     def test_basic(self):
         storage = S3ClusterStorage(bucket=TEST_BUCKET_NAME,
