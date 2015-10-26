@@ -8,7 +8,7 @@ import time
 from stonemason.pyramid import MetaTileIndex, MetaTile, TileCluster
 from stonemason.pyramid.geo import TileMapSystem
 from stonemason.renderer import MasonRenderer, RenderContext
-from stonemason.storage.tile import ClusterStorage, MetaTileStorage
+from stonemason.storage.tilestorage import ClusterStorage, MetaTileStorage
 
 
 class MapSheet(object):

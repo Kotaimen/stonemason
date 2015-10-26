@@ -10,7 +10,7 @@ import errno
 
 from stonemason.util.tempfn import generate_temp_filename
 
-from ..concept import PersistentStorageConcept
+from .concept import PersistentStorageConcept
 
 
 def safe_makedirs(name):

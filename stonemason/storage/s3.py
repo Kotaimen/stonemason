@@ -10,7 +10,7 @@ import six
 
 from boto.s3.key import Key
 
-from ..concept import PersistentStorageConcept
+from .concept import PersistentStorageConcept
 
 
 def s3timestamp2mtime(timestamp):
