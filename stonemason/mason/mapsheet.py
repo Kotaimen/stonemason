@@ -8,7 +8,7 @@ import time
 from stonemason.pyramid import MetaTileIndex, MetaTile, TileCluster
 from stonemason.pyramid.geo import TileMapSystem
 from stonemason.renderer import MasonRenderer, RenderContext
-from stonemason.storage.tilestorage import ClusterStorage, MetaTileStorage
+from stonemason.storage.tilestorage import ClusterStorage, MetaTileStorageConcept
 
 
 class MapSheet(object):
@@ -120,7 +120,7 @@ class ClusterMapSheet(MapSheet):
 class MetaTileMapSheet(MapSheet):
     def __init__(self, tag, bundle, pyramid, storage, renderer):
         MapSheet.__init__(self, tag, bundle, pyramid)
-        assert isinstance(storage, MetaTileStorage)
+        assert isinstance(storage, MetaTileStorageConcept)
         assert isinstance(renderer, MasonRenderer)
         self._storage = storage
         self._renderer = renderer

@@ -13,7 +13,7 @@ from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, \
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer import MasonRenderer
 from stonemason.renderer.cartographer import ImageFeature
-from stonemason.storage.tilestorage import ClusterStorage, MetaTileStorage
+from stonemason.storage.tilestorage import ClusterStorage, MetaTileStorageConcept
 from stonemason.mason.mapsheet import ClusterMapSheet, MetaTileMapSheet
 
 from tests import skipUnlessHasGDAL
@@ -87,7 +87,7 @@ def mock_metatile():
     return meta_tile
 
 
-class MockMetaTileStorage(MetaTileStorage):
+class MockMetaTileStorage(MetaTileStorageConcept):
     def __init__(self, bundle):
         self._storage = dict()
         self._bundle = bundle

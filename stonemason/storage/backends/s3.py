@@ -10,7 +10,7 @@ import six
 
 from boto.s3.key import Key
 
-from .concept import PersistentStorageConcept
+from stonemason.storage.concept import PersistentStorageConcept
 
 
 def s3timestamp2mtime(timestamp):
@@ -80,7 +80,7 @@ class S3Storage(PersistentStorageConcept):
                                        policy=self._policy,
                                        reduced_redundancy=self._reduced_redundancy)
 
-    def delete(self, key):
+    def retire(self, key):
         s3key = Key(bucket=self._bucket, name=key)
         s3key.delete()
 

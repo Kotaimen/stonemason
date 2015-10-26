@@ -13,7 +13,7 @@ from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer import MasonRenderer
 from stonemason.storage.tilestorage import NullClusterStorage, ClusterStorage, \
-    MetaTileStorage, DiskClusterStorage, S3ClusterStorage, DiskMetaTileStorage, \
+    MetaTileStorageConcept, DiskClusterStorage, S3ClusterStorage, DiskMetaTileStorage, \
     S3MetaTileStorage
 
 from .theme import Theme, SchemaTheme
@@ -42,7 +42,7 @@ class MapSheetBuilder(object):
         if isinstance(self._storage, ClusterStorage):
             map_sheet = ClusterMapSheet(
                 self._tag, bundle, self._pyramid, self._storage, self._renderer)
-        elif isinstance(self._storage, MetaTileStorage):
+        elif isinstance(self._storage, MetaTileStorageConcept):
             map_sheet = MetaTileMapSheet(
                 self._tag, bundle, self._pyramid, self._storage, self._renderer)
         else:

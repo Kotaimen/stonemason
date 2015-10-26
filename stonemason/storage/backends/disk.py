@@ -10,7 +10,7 @@ import errno
 
 from stonemason.util.tempfn import generate_temp_filename
 
-from .concept import PersistentStorageConcept
+from stonemason.storage.concept import PersistentStorageConcept
 
 
 def safe_makedirs(name):
@@ -80,7 +80,7 @@ class DiskStorage(PersistentStorageConcept):
 
         os.rename(tempname, pathname)
 
-    def delete(self, key):
+    def retire(self, key):
         pathname = key
         try:
             os.unlink(pathname)

@@ -12,7 +12,7 @@ __date__ = '2/9/15'
 from stonemason.formatbundle import MapWriter
 from stonemason.pyramid.cluster import TileCluster
 
-from .metatile import MetaTileStorage, ClusterStorage
+from .impl import MetaTileStorageConcept, ClusterStorage
 
 
 class Clusterfier(ClusterStorage):
@@ -26,7 +26,7 @@ class Clusterfier(ClusterStorage):
     """
 
     def __init__(self, storage, writer):
-        assert isinstance(storage, MetaTileStorage)
+        assert isinstance(storage, MetaTileStorageConcept)
         assert isinstance(writer, MapWriter)
 
         self._storage = storage

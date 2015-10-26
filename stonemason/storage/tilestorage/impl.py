@@ -4,208 +4,87 @@ __author__ = 'ray'
 __date__ = '10/25/15'
 
 import os
-import io
+
 import six
-import gzip
 
-from stonemason.formatbundle import FormatBundle, MapWriter
-from stonemason.pyramid import MetaTileIndex, MetaTile, TileCluster, \
-    Hilbert, Legacy
+from stonemason.formatbundle import FormatBundle
+from stonemason.pyramid import MetaTileIndex, MetaTile
 
-from ..concept import StorageKeyConcept, ObjectSerializeConcept, \
-    PersistentStorageConcept, GenericStorageImpl, StorageError
+from ..concept import PersistentStorageConcept, GenericStorageImpl
 
-from ..s3 import S3Storage
-from ..disk import DiskStorage
+from ..backends.s3 import S3Storage
+from ..backends.disk import DiskStorage
 
-
-# ==============================================================================
-# Exceptions for MetaTile Storage
-# ==============================================================================
-class MetaTileStorageError(StorageError):
-    """Base MetaTile Storage Error
-
-    The base class for all metatile storage exceptions.
-    """
-    pass
-
-
-class ReadonlyStorage(MetaTileStorageError):
-    """Read Only Storage
-
-    Raise when trying to modify a read only storage.
-    """
-    pass
-
-
-class InvalidMetaTileIndex(MetaTileStorageError):
-    """Invalid MetaTile Index
-
-    Raise when metatile index is not valid.
-    """
-    pass
-
-
-class InvalidMetaTile(MetaTileStorageError):
-    """Invalid MetaTile
-
-    Raise when metatile is not valid.
-    """
-    pass
-
-
-# ==============================================================================
-# MetaTile Key Mode
-# ==============================================================================
-class MetaTileKeyConcept(StorageKeyConcept):  # pragma: no cover
-    def __init__(self, prefix='', extension='.png', sep='/', gzip=False):
-        assert isinstance(prefix, six.string_types)
-        assert extension.startswith('.')
-        self._prefix = prefix
-        self._extension = extension
-        self._sep = sep
-
-        if gzip:  # append '.gz' to extension
-            self._extension = self._extension + '.gz'
-
-
-class HilbertKeyMode(MetaTileKeyConcept):
-    def __call__(self, index):
-        assert isinstance(index, MetaTileIndex)
-        z, x, y, stride = index
-
-        fragments = [self._prefix]
-        fragments.extend(Hilbert.coord2dir(z, x, y))
-        fragments.append('%d-%d-%d@%d%s' % (z, x, y, stride, self._extension))
-        return self._sep.join(fragments)
-
-
-class LegacyKeyMode(MetaTileKeyConcept):
-    def __call__(self, index):
-        assert isinstance(index, MetaTileIndex)
-        z, x, y, stride = index
-
-        fragments = [self._prefix]
-        fragments.extend(Legacy.coord2dir(z, x, y))
-        fragments.append('%d-%d-%d@%d%s' % (z, x, y, stride, self._extension))
-        return self._sep.join(fragments)
-
-
-class SimpleKeyMode(MetaTileKeyConcept):
-    def __call__(self, index):
-        assert isinstance(index, MetaTileIndex)
-        z, x, y, stride = index
-
-        fragments = [self._prefix]
-        fragments.extend([str(z), str(x), str(y)])
-        fragments.append('%d-%d-%d@%d%s' % (z, x, y, stride, self._extension))
-        return self._sep.join(fragments)
-
-
-KEY_MODES = dict(hilbert=HilbertKeyMode,
-                 legacy=LegacyKeyMode,
-                 simple=SimpleKeyMode)
-
-
-def create_key_mode(mode, **kwargs):
-    try:
-        class_ = KEY_MODES[mode]
-    except KeyError:
-        raise RuntimeError('Invalid storage key mode "%s"' % mode)
-    return class_(**kwargs)
-
-
-# ==============================================================================
-# MetaTile Serializer
-# ==============================================================================
-class MetaTileSerializerConcept(ObjectSerializeConcept):  # pragma: no cover
-    pass
-
-
-class MetaTileSerializer(MetaTileSerializerConcept):
-    def __init__(self, gzip=False, mimetype='image/png'):
-        self._use_gzip = bool(gzip)
-        self._mimetype = mimetype
-
-    def load(self, index, blob, metadata):
-        assert isinstance(index, MetaTileIndex)
-        assert isinstance(metadata, dict)
-
-        if self._use_gzip:
-            # decompress gzip
-            blob = gzip.GzipFile(fileobj=io.BytesIO(blob), mode='rb').read()
-
-        if metadata.get('mimetype') is None:
-            metadata['mimetype'] = self._mimetype
-
-        assert set(metadata.keys()).issuperset({'mimetype', 'etag', 'mtime'})
-
-        return MetaTile(index, data=blob, **metadata)
-
-    def save(self, index, obj):
-        assert isinstance(index, MetaTileIndex)
-        assert isinstance(obj, MetaTile)
-
-        if obj.mimetype != self._mimetype:
-            raise InvalidMetaTile('MetaTile mimetype inconsistent with storage')
-
-        blob = obj.data
-
-        if self._use_gzip:
-            buf = io.BytesIO()
-            with gzip.GzipFile(fileobj=buf, mode='wb') as fp:
-                fp.write(blob)
-            blob = buf.getvalue()
-
-        metadata = dict(
-            mimetype=obj.mimetype,
-            mtime=obj.mtime,
-            etag=obj.etag)
-
-        return blob, metadata
-
-
-class TileClusterSerializer(MetaTileSerializerConcept):
-    def __init__(self, writer, compressed=False, mimetype='image/png'):
-        assert isinstance(writer, MapWriter)
-        self._compressed = compressed
-        self._writer = writer
-        self._mimetype = mimetype
-
-    def load(self, index, blob, metadata):
-        assert isinstance(index, MetaTileIndex)
-        assert isinstance(metadata, dict)
-
-        metadata = metadata.copy()
-        # let tilecluster figure out mimetype from cluster index,
-        # since storage always assign 'application/zip' for a cluster
-        if 'mimetype' in metadata:
-            del metadata['mimetype']
-
-        assert set(metadata.keys()).issuperset({'etag', 'mtime'})
-
-        return TileCluster.from_zip(io.BytesIO(blob), metadata=metadata)
-
-    def save(self, index, obj):
-        assert isinstance(index, MetaTileIndex)
-        assert isinstance(obj, MetaTile)
-
-        if obj.mimetype != self._mimetype:
-            raise InvalidMetaTile('MetaTile mimetype inconsistent with storage')
-
-        metadata = dict(mimetype='application/zip',
-                        mtime=obj.mtime,
-                        etag=obj.etag)
-        cluster = TileCluster.from_metatile(obj, self._writer)
-        buf = io.BytesIO()
-        cluster.save_as_zip(buf, compressed=self._compressed)
-        return buf.getvalue(), metadata
+from .errors import InvalidMetaTileIndex, ReadonlyStorage, MetaTileStorageError
+from .mapper import MetaTileKeyConcept, create_key_mode
+from .serializer import MetaTileSerializerConcept, MetaTileSerializer, \
+    TileClusterSerializer
 
 
 # ==============================================================================
 # MetaTile Storage
 # ==============================================================================
-class MetaTileStorage(object):  # pragma: no cover
+class MetaTileStorageConcept(object):
+    @property
+    def levels(self):
+        """Metatile levels in the storage."""
+        raise NotImplementedError
+
+    @property
+    def stride(self):
+        """Stride of metatiles in the storage"""
+        raise NotImplementedError
+
+    def has(self, index):
+        """ Check whether given index exists in the storage.
+
+        :param index: MetaTile index.
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
+        :return: Whether the metatile exists.
+        :rtype: bool
+        """
+        raise NotImplementedError
+
+    def get(self, index):
+        """Retrieve a `MetaTile` from the storage.
+
+        Retrieve a `MetaTile` from the storage, returns ``None`` if its not
+        found ind the storage
+
+        :param index: MetaTile index of the MetaTile.
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
+        :returns: Retrieved tile cluster.
+        :rtype: :class:`~stonemason.tilestorage.MetaTile`
+        """
+        raise NotImplementedError
+
+    def put(self, metatile):
+        """Store a `MetaTile` in the storage.
+
+        Store a `MetaTile` in the storage, overriding any existing one.
+
+        :param metatile: MetaTile to store.
+        :type metatile: :class:`~stonemason.pyramid.MetaTile`
+        """
+        raise NotImplementedError
+
+    def retire(self, index):
+        """Delete `MetaTile` with given index.
+
+        If `MetaTile` does not present in cache, this operation has no effect.
+
+
+        :param index: MetaTile index of the tile cluster.
+        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
+        """
+        raise NotImplementedError
+
+    def close(self):
+        """Close underlying connection to storage backend"""
+        raise NotImplementedError
+
+
+class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
     """Persistence storage of `MetaTile`."""
 
     def __init__(self, key_concept, serializer, storage,
@@ -302,7 +181,7 @@ class MetaTileStorage(object):  # pragma: no cover
         self._storage.close()
 
 
-class S3MetaTileStorage(MetaTileStorage):
+class S3MetaTileStorage(MetaTileStorageImpl):
     """ Store `MetaTile` on AWS S3.
 
     .. warning::
@@ -406,14 +285,14 @@ class S3MetaTileStorage(MetaTileStorage):
                               bucket=bucket, policy=policy,
                               reduced_redundancy=reduced_redundancy)
 
-        MetaTileStorage.__init__(self, key_mode,
-                                 object_persistence,
-                                 s3storage,
-                                 levels=levels, stride=stride,
-                                 readonly=readonly)
+        MetaTileStorageImpl.__init__(self, key_mode,
+                                     object_persistence,
+                                     s3storage,
+                                     levels=levels, stride=stride,
+                                     readonly=readonly)
 
 
-class DiskMetaTileStorage(MetaTileStorage):
+class DiskMetaTileStorage(MetaTileStorageImpl):
     """ Store `MetaTile` on a file system.
 
     :param root: Required, root directory of the storage, must be a
@@ -485,14 +364,14 @@ class DiskMetaTileStorage(MetaTileStorage):
 
         storage = DiskStorage()
 
-        MetaTileStorage.__init__(self, key_mode,
-                                 object_persistence,
-                                 storage,
-                                 levels=levels, stride=stride,
-                                 readonly=readonly)
+        MetaTileStorageImpl.__init__(self, key_mode,
+                                     object_persistence,
+                                     storage,
+                                     levels=levels, stride=stride,
+                                     readonly=readonly)
 
 
-class S3ClusterStorage(MetaTileStorage):
+class S3ClusterStorage(MetaTileStorageImpl):
     """ Store `TileCluster` on AWS S3.
 
     :param access_key: AWS access key id, if set to `None`, try load
@@ -591,14 +470,14 @@ class S3ClusterStorage(MetaTileStorage):
                               bucket=bucket, policy=policy,
                               reduced_redundancy=reduced_redundancy)
 
-        MetaTileStorage.__init__(self, key_mode,
-                                 object_persistence,
-                                 s3storage,
-                                 levels=levels, stride=stride,
-                                 readonly=readonly)
+        MetaTileStorageImpl.__init__(self, key_mode,
+                                     object_persistence,
+                                     s3storage,
+                                     levels=levels, stride=stride,
+                                     readonly=readonly)
 
 
-class DiskClusterStorage(MetaTileStorage):
+class DiskClusterStorage(MetaTileStorageImpl):
     """ Store `TileCluster` on a file system.
 
     :param root: Required, root directory of the storage, must be a
@@ -672,36 +551,17 @@ class DiskClusterStorage(MetaTileStorage):
 
         storage = DiskStorage()
 
-        MetaTileStorage.__init__(self, key_mode,
-                                 object_persistence, storage,
-                                 levels=levels, stride=stride,
-                                 readonly=readonly)
+        MetaTileStorageImpl.__init__(self, key_mode,
+                                     object_persistence, storage,
+                                     levels=levels, stride=stride,
+                                     readonly=readonly)
 
 
 # ==============================================================================
 # Null MetaTile Storage
 # ==============================================================================
-class NullMetaTileKeyMode(MetaTileKeyConcept):
-    pass
-
-
-class NullMetaTileSerializer(MetaTileSerializerConcept):
-    pass
-
-
-class NullMetaTilePersistentStorage(PersistentStorageConcept):
-    pass
-
-
-class NullMetaTileStorage(MetaTileStorage):  # pragma: no cover
+class NullMetaTileStorage(MetaTileStorageConcept):  # pragma: no cover
     """A storage stores nothing."""
-
-    def __init__(self):
-        key_mode = NullMetaTileKeyMode()
-        serializer = NullMetaTileSerializer()
-        storage = NullMetaTilePersistentStorage()
-
-        MetaTileStorage.__init__(self, key_mode, serializer, storage)
 
     @property
     def levels(self):
@@ -727,6 +587,6 @@ class NullMetaTileStorage(MetaTileStorage):  # pragma: no cover
         pass
 
 
+# XXX: for backward compatible
+ClusterStorage = MetaTileStorageConcept
 NullClusterStorage = NullMetaTileStorage
-
-ClusterStorage = MetaTileStorage

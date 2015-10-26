@@ -15,7 +15,7 @@ from PIL import Image
 from stonemason.renderer.engine.rendernode import TermNode
 from stonemason.renderer.engine.context import RenderContext
 from stonemason.formatbundle import FormatBundle, MapType, TileFormat
-from stonemason.storage.tilestorage import MetaTileStorage, DiskMetaTileStorage, \
+from stonemason.storage.tilestorage import MetaTileStorageConcept, DiskMetaTileStorage, \
     S3MetaTileStorage
 
 from ..feature import ImageFeature
@@ -35,7 +35,7 @@ class _MetaTileStorageNode(TermNode):
     """
     def __init__(self, name, storage):
         TermNode.__init__(self, name)
-        assert isinstance(storage, MetaTileStorage)
+        assert isinstance(storage, MetaTileStorageConcept)
 
         self._storage = storage
 

@@ -169,7 +169,7 @@ class PersistentStorageConcept(object):  # pragma: no cover
         """
         raise NotImplementedError
 
-    def delete(self, key):
+    def retire(self, key):
         """Delete object with given `pathname`.
 
         :param key: A literal string that identifies the object.
@@ -186,7 +186,52 @@ class PersistentStorageConcept(object):  # pragma: no cover
 # ==============================================================================
 # Generic Storage Implementation
 # ==============================================================================
-class GenericStorageImpl(object):
+class GenericStorageConcept(object):
+    def has(self, index):
+        """Check whether given index exists.
+
+        :param index: Storage index object.
+        :type index: object
+
+        """
+        raise NotImplementedError
+
+    def put(self, index, obj):
+        """Store a given object into the storage with a given index.
+
+        :param index: Storage index object.
+        :type index: object
+
+        :param obj: Object to store.
+        :type obj: object
+
+        """
+        raise NotImplementedError
+
+    def get(self, index):
+        """Get the object with a given index.
+
+        :param index: Storage index object.
+        :type index: object
+
+        """
+        raise NotImplementedError
+
+    def delete(self, index):
+        """Delete the object with a given index.
+
+        :param index: Storage index object.
+        :type index: object
+
+        """
+        raise NotImplementedError
+
+    def close(self):
+        """Close the storage"""
+        raise NotImplementedError
+
+
+class GenericStorageImpl(GenericStorageConcept):
     """Generic Storage Implementation
 
     A generic storage implemented by composing various implements of key,
@@ -215,26 +260,13 @@ class GenericStorageImpl(object):
         self._logger = logging.getLogger(__name__)
 
     def has(self, index):
-        """Check whether given index exists.
-
-        :param index: Storage index object.
-        :type index: object
-
-        """
+        """Check whether given index exists."""
         self._logger.debug('Has object with index %s.' % repr(index))
         storage_key = self._key_mode(index)
         return self._storage.exists(storage_key)
 
     def put(self, index, obj):
-        """Store a given object into the storage with a given index.
-
-        :param index: Storage index object.
-        :type index: object
-
-        :param obj: Object to store.
-        :type obj: object
-
-        """
+        """Store a given object into the storage with a given index."""
         self._logger.debug('Put object with index %s.' % repr(index))
 
         storage_key = self._key_mode(index)
@@ -243,12 +275,7 @@ class GenericStorageImpl(object):
         self._storage.store(storage_key, blob, metadata)
 
     def get(self, index):
-        """Get the object with a given index.
-
-        :param index: Storage index object.
-        :type index: object
-
-        """
+        """Get the object with a given index."""
         self._logger.debug('Get object with index %s.' % repr(index))
 
         storage_key = self._key_mode(index)
@@ -262,16 +289,11 @@ class GenericStorageImpl(object):
         return obj
 
     def delete(self, index):
-        """Delete the object with a given index.
-
-        :param index: Storage index object.
-        :type index: object
-
-        """
+        """Delete the object with a given index."""
         self._logger.debug('Delete object with index %s.' % repr(index))
 
         storage_key = self._key_mode(index)
-        self._storage.delete(storage_key)
+        self._storage.retire(storage_key)
 
     def close(self):
         """Close the storage"""
@@ -279,39 +301,19 @@ class GenericStorageImpl(object):
         self._storage.close()
 
 
-# ==============================================================================
-# Null Storage Implementation
-# ==============================================================================
-class NullStorageKeyMode(StorageKeyConcept):
-    """Dummy Storage Key Mode"""
-    pass
+class NullStorage(GenericStorageConcept):
+    """Null Storage
 
-
-class NullObjectSerializer(ObjectSerializeConcept):
-    """Dummy Object Serializer"""
-    pass
-
-
-class NullPersistentStorage(PersistentStorageConcept):
-    """Dummy Persistent Storage"""
-    pass
-
-
-class NullStorage(GenericStorageImpl):  # pragma: no cover
-    def __init__(self):
-        keymode = NullStorageKeyMode()
-        serializer = NullObjectSerializer()
-        storage = NullPersistentStorage()
-        GenericStorageImpl.__init__(self, keymode, serializer, storage)
-
+    A dummy storage that stores nothing.
+    """
     def has(self, index):
         return False
 
-    def get(self, index):
-        return None
-
     def put(self, index, obj):
         return
+
+    def get(self, index):
+        return None
 
     def delete(self, index):
         return
