@@ -1,5 +1,9 @@
 # -*- encoding: utf-8 -*-
-
+"""
+    stonemason.storage.tilestorage.serializer
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Implements metatile serializer.
+"""
 __author__ = 'ray'
 __date__ = '10/26/15'
 
@@ -18,11 +22,24 @@ from .errors import InvalidMetaTile
 # MetaTile Serializer
 # ==============================================================================
 class MetaTileSerializerConcept(ObjectSerializeConcept):  # pragma: no cover
-    """"""
+    """MetaTile Serializer Concept"""
     pass
 
 
 class MetaTileSerializer(MetaTileSerializerConcept):
+    """MetaTile Serializer
+
+    The ``MetaTileSerializer`` implements details of how a metatile is
+    serialized to a binary data and how it is recovered from a binary dump.
+
+    :param gzip: Whether compress or decompress data.
+    :type gzip: bool
+
+    :param mimetype: Mimetype of the metatile data.
+    :type mimetype: str
+
+    """
+
     def __init__(self, gzip=False, mimetype='image/png'):
         self._use_gzip = bool(gzip)
         self._mimetype = mimetype
@@ -66,6 +83,26 @@ class MetaTileSerializer(MetaTileSerializerConcept):
 
 
 class TileClusterSerializer(MetaTileSerializerConcept):
+    """TileCluster Serializer
+
+    The ``TileClusterSerializer`` dumps a metatile into a binary data in
+    TileCluster format and load a TileCluster from a binary data.
+
+    The dumped object is metatile while the recovered object is tilecluster.
+
+    :param writer: The Serializer that convert metatile into binary data in the
+                   format of cluster tile.
+
+    :type writer: :class:`~stonemason.formatbundle.MapWriter`
+
+    :param compressed: Whether compress or decompress the data.
+    :type compressed: bool
+
+    :param mimetype: Mimetype of the metatile data.
+    :type mimetype: str
+
+    """
+
     def __init__(self, writer, compressed=False, mimetype='image/png'):
         assert isinstance(writer, MapWriter)
         self._compressed = compressed

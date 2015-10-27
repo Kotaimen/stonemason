@@ -1,5 +1,9 @@
 # -*- encoding: utf-8 -*-
-
+"""
+    stonemason.storage.backends.s3
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Implements s3 backend for storage module.
+"""
 __author__ = 'ray'
 __date__ = '10/22/15'
 
@@ -28,7 +32,41 @@ def mtime2s3timestamp(mtime):
 
 
 class S3Storage(PersistentStorageConcept):
-    """Use AWS Simple Storage Service as persistence backend."""
+    """S3 Storage
+
+    The ``S3Storage`` uses AWS Simple Storage Service as persistence backend.
+
+    :param access_key: AWS access key id, if set to `None`, try load
+        from environment variable ``AWS_ACCESS_KEY_ID``, or IAM role temporary
+        security credentials.
+    :type access_key: str or ``None``
+
+    :param secret_key: AWS secret key id, if set to `None`, try load
+        from environment variable ``AWS_SECRET_ACCESS_KEY``, or IAM role
+        temporary security credentials.
+    :type secret_key: str or ``None``
+
+    :param bucket: Required, s3 bucket name, the bucket must be created
+        first with proper permissions, policy, lifecycle management,
+        visioning, sever side encryption, and redundancy level.
+    :type bucket: str
+
+    :param policy: Canned policy, must be one of:
+
+        `private`
+            Owner gets full control, no one else has access rights.
+
+        `public-read`
+            Owner gets full control, no one else has read rights.
+
+    :type policy: str
+
+    :param reduced_redundancy: Set storage class to REDUCED_REDUNDANCY
+        if set to `True`, default is `False`
+
+    :type reduced_redundancy: bool
+
+    """
 
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',

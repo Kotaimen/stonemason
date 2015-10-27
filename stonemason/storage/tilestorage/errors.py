@@ -1,5 +1,9 @@
 # -*- encoding: utf-8 -*-
-
+"""
+    stonemason.storage.tilestorage.errors
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Exceptions for tile storage module.
+"""
 __author__ = 'ray'
 __date__ = '10/26/15'
 

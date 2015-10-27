@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 """
-    stonemason.storage.tilestorage.concept
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.storage.concept
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
     Basic concept and interface of stonemason storage.
 """
 __author__ = 'ray'

@@ -1,5 +1,9 @@
 # -*- encoding: utf-8 -*-
-
+"""
+    stonemason.storage.tilestorage.impl
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Implements metatile storage.
+"""
 __author__ = 'ray'
 __date__ = '10/25/15'
 
@@ -25,14 +29,31 @@ from .serializer import MetaTileSerializerConcept, MetaTileSerializer, \
 # MetaTile Storage
 # ==============================================================================
 class MetaTileStorageConcept(object):
+    """MetaTile Storage Concept
+
+    The ``MetaTileStorageConcept`` defines basic interfaces of a MetaTile
+    storage.
+
+    """
+
     @property
     def levels(self):
-        """Metatile levels in the storage."""
+        """Metatile levels in the storage.
+
+        :return: The level limits of the stored MetaTile.
+        :rtype: list
+
+        """
         raise NotImplementedError
 
     @property
     def stride(self):
-        """Stride of metatiles in the storage"""
+        """Stride of metatiles in the storage
+
+        :return: The stride of the stored MetaTile.
+        :rtype: int
+
+        """
         raise NotImplementedError
 
     def has(self, index):
@@ -40,21 +61,24 @@ class MetaTileStorageConcept(object):
 
         :param index: MetaTile index.
         :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
+
         :return: Whether the metatile exists.
         :rtype: bool
+
         """
         raise NotImplementedError
 
     def get(self, index):
         """Retrieve a `MetaTile` from the storage.
 
-        Retrieve a `MetaTile` from the storage, returns ``None`` if its not
-        found ind the storage
+        Retrieve a `MetaTile` from the storage, returns ``None`` if not found.
 
         :param index: MetaTile index of the MetaTile.
         :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
+
         :returns: Retrieved tile cluster.
-        :rtype: :class:`~stonemason.tilestorage.MetaTile`
+        :rtype: :class:`~stonemason.tilestorage.MetaTile` or ``None``
+
         """
         raise NotImplementedError
 
@@ -63,8 +87,9 @@ class MetaTileStorageConcept(object):
 
         Store a `MetaTile` in the storage, overriding any existing one.
 
-        :param metatile: MetaTile to store.
+        :param metatile: The MetaTile to store.
         :type metatile: :class:`~stonemason.pyramid.MetaTile`
+
         """
         raise NotImplementedError
 
@@ -73,9 +98,9 @@ class MetaTileStorageConcept(object):
 
         If `MetaTile` does not present in cache, this operation has no effect.
 
-
         :param index: MetaTile index of the tile cluster.
         :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
+
         """
         raise NotImplementedError
 
@@ -85,7 +110,29 @@ class MetaTileStorageConcept(object):
 
 
 class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
-    """Persistence storage of `MetaTile`."""
+    """MetaTile Storage Implementation
+
+    The default implementation of a MetaTile storage.
+
+    :param key_concept: Instance of implementation of MetaTileKeyConcept.
+    :type key_concept: :class:`~stonemason.storage.tilestorage.MetaTileKeyConcept`
+
+    :param serializer_concept: Instance of implementation of MetaTileSerializerConcept.
+    :type serializer_concept: :class:`~stonemason.storage.tilestorage.MetaTileSerializerConcept`
+
+    :param storage_concept: Instance of implementation of PersistentStorageConcept.
+    :type storage_concept: :class:`~stonemason.storage.PersistentStorageConcept`
+
+    :param levels: The level limits of the stored MetaTile.
+    :type levels: list
+
+    :param stride: The stride of the stored MetaTile.
+    :type stride: int
+
+    :param readonly: Disable write access of the storage.
+    :type readonly: bool
+
+    """
 
     def __init__(self, key_concept, serializer, storage,
                  levels=range(0, 23), stride=1, readonly=False):
@@ -113,40 +160,19 @@ class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
         return self._stride
 
     def has(self, index):
-        """ Check whether given index exists in the storage.
-
-        :param index: MetaTile index.
-        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
-        :return: Whether the metatile exists.
-        :rtype: bool
-        """
+        """Check whether given index exists in the storage."""
         assert isinstance(index, MetaTileIndex)
 
         return self._storage.has(index)
 
     def get(self, index):
-        """Retrieve a `MetaTile` from the storage.
-
-        Retrieve a `MetaTile` from the storage, returns ``None`` if its not
-        found ind the storage
-
-        :param index: MetaTile index of the MetaTile.
-        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
-        :returns: Retrieved tile cluster.
-        :rtype: :class:`~stonemason.tilestorage.MetaTile`
-        """
+        """Retrieve a `MetaTile` from the storage."""
         assert isinstance(index, MetaTileIndex)
 
         return self._storage.get(index)
 
     def put(self, metatile):
-        """Store a `MetaTile` in the storage.
-
-        Store a `MetaTile` in the storage, overriding any existing one.
-
-        :param metatile: MetaTile to store.
-        :type metatile: :class:`~stonemason.pyramid.MetaTile`
-        """
+        """Store a `MetaTile` in the storage."""
         assert isinstance(metatile, MetaTile)
 
         if self._readonly:
@@ -161,14 +187,7 @@ class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
         self._storage.put(metatile.index, metatile)
 
     def retire(self, index):
-        """Delete `MetaTile` with given index.
-
-        If `MetaTile` does not present in cache, this operation has no effect.
-
-
-        :param index: MetaTile index of the tile cluster.
-        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
-        """
+        """Delete `MetaTile` with given index."""
         assert isinstance(index, MetaTileIndex)
 
         if self._readonly:
@@ -177,7 +196,7 @@ class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
         self._storage.delete(index)
 
     def close(self):
-        """Close underlying connection to storage backend"""
+        """Close underlying connection to storage backend."""
         self._storage.close()
 
 
@@ -293,7 +312,7 @@ class S3MetaTileStorage(MetaTileStorageImpl):
 
 
 class DiskMetaTileStorage(MetaTileStorageImpl):
-    """ Store `MetaTile` on a file system.
+    """ Store ``MetaTile`` on a file system.
 
     :param root: Required, root directory of the storage, must be a
         absolute filesystem path.
@@ -372,7 +391,7 @@ class DiskMetaTileStorage(MetaTileStorageImpl):
 
 
 class S3ClusterStorage(MetaTileStorageImpl):
-    """ Store `TileCluster` on AWS S3.
+    """ Store ``TileCluster`` on AWS S3.
 
     :param access_key: AWS access key id, if set to `None`, try load
         from environment variable ``AWS_ACCESS_KEY_ID``, or IAM role temporary
@@ -445,6 +464,10 @@ class S3ClusterStorage(MetaTileStorageImpl):
         is ``False``, :meth:`put` and :meth:`retire` always raises
         :exc:`ReadOnlyStorage` if `readonly` is set.
     :type readonly: bool
+
+    :param compressed: Whether to compress generated cluster zip file, file
+        stored on filesystem will be gzipped, default is ``False``.
+    :type compressed: bool
 
     """
 

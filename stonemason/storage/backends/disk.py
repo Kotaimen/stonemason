@@ -1,5 +1,9 @@
 # -*- encoding: utf-8 -*-
-
+"""
+    stonemason.storage.backends.disk
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Implements disk backend for storage module.
+"""
 __author__ = 'ray'
 __date__ = '10/22/15'
 
@@ -27,10 +31,11 @@ def safe_makedirs(name):
 
 
 class DiskStorage(PersistentStorageConcept):
-    """Use regular filesystem as persistence backend."""
+    """Disk Storage
 
-    def __init__(self):
-        pass
+    The ``DiskStorage`` uses regular filesystem as persistence backend.
+
+    """
 
     def exists(self, key):
         return os.path.exists(key)
