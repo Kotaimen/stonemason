@@ -50,13 +50,14 @@ class DiskStorage(PersistentStorageConcept):
             blob = fp.read()
         mtime = os.stat(pathname).st_mtime
 
-        return blob, dict(mimetype=None, mtime=mtime, etag=None)
+        metadata = {'LastModified': mtime}
+
+        return blob, metadata
 
     def store(self, key, blob, metadata):
         assert isinstance(key, six.string_types)
         assert isinstance(blob, bytes)
         assert isinstance(metadata, dict)
-        assert 'mtime' in metadata
 
         pathname = key
 
@@ -71,11 +72,6 @@ class DiskStorage(PersistentStorageConcept):
 
         with open(tempname, 'wb') as fp:
             fp.write(blob)
-
-        # set file time to tile timestamp
-        mtime = metadata['mtime']
-        if mtime:
-            os.utime(tempname, (mtime, mtime))
 
         # move it into place
         if sys.platform == 'win32':

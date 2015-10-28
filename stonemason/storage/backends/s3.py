@@ -8,27 +8,11 @@ __author__ = 'ray'
 __date__ = '10/22/15'
 
 import time
-import email
-import boto
 import six
-
-from boto.s3.key import Key
+import boto3
+import botocore.exceptions
 
 from stonemason.storage.concept import PersistentStorageConcept
-
-
-def s3timestamp2mtime(timestamp):
-    """Convert RFC 2822 datetime string used by s3 to mtime."""
-    modified = email.utils.parsedate_tz(timestamp)
-    if modified is None:
-        return None
-    mtime = email.utils.mktime_tz(modified)
-    return float(mtime)
-
-
-def mtime2s3timestamp(mtime):
-    """Convert mtime to RFC 2822 datetime string."""
-    return email.utils.formatdate(time.time())
 
 
 class S3Storage(PersistentStorageConcept):
@@ -68,36 +52,49 @@ class S3Storage(PersistentStorageConcept):
 
     """
 
-    def __init__(self, access_key=None, secret_key=None,
-                 bucket='my_bucket', policy='private',
-                 reduced_redundancy=False):
-        self._conn = boto.connect_s3(aws_access_key_id=access_key,
-                                     aws_secret_access_key=secret_key, )
-        self._bucket = self._conn.get_bucket(bucket_name=bucket)
+    def __init__(self, access_key=None, secret_key=None, bucket='my_bucket',
+                 policy='private', reduced_redundancy=False):
+        self._s3 = boto3.resource('s3',
+                                  aws_access_key_id=access_key,
+                                  aws_secret_access_key=secret_key)
+
+        self._bucket_name = bucket
+
+        self._bucket = self._s3.Bucket(bucket)
+        self._bucket.load()  # ensure bucket exists
 
         assert policy in ['private', 'public-read']
         self._policy = policy
-        self._reduced_redundancy = reduced_redundancy
+
+        self._storage_class = 'STANDARD'
+        if reduced_redundancy:
+            self._storage_class = 'REDUCED_REDUNDANCY'
 
     def exists(self, key):
-        s3key = Key(bucket=self._bucket, name=key)
-        return s3key.exists()
+        item = self._s3.Object(self._bucket_name, key)
+        try:
+            item.load()
+        except botocore.exceptions.ClientError:
+            return False
+        else:
+            return True
 
     def retrieve(self, key):
-        s3key = Key(bucket=self._bucket, name=key)
-        if not s3key.exists():
-            # Check key existence first otherwise get_content() will
-            # retry several times, which slows thing down a lot.
+        item = self._s3.Object(self._bucket_name, key)
+
+        # Check key existence first otherwise get_content() will
+        # retry several times, which slows thing down a lot.
+        try:
+            item.load()
+        except botocore.exceptions.ClientError:
             return None, None
-        blob = s3key.get_contents_as_string()
-        if six.PY2:
-            etag = s3key.md5
-        else:
-            # Key.md5 returns bytes on py3 despite it is actually a hex string
-            etag = s3key.md5.decode()
-        metadata = dict(etag=etag,
-                        mimetype=s3key.content_type,
-                        mtime=s3timestamp2mtime(s3key.last_modified))
+
+        response = item.get()
+
+        blob = response['Body'].read()
+        metadata = response['Metadata']
+        metadata['LastModified'] = float(
+            time.mktime(item.last_modified.timetuple()))
 
         return blob, metadata
 
@@ -105,22 +102,18 @@ class S3Storage(PersistentStorageConcept):
         assert isinstance(key, six.string_types)
         assert isinstance(blob, bytes)
         assert isinstance(metadata, dict)
-        assert 'mimetype' in metadata
-        assert 'etag' in metadata
-        assert 'mtime' in metadata
 
-        s3key = Key(bucket=self._bucket, name=key)
-        s3key.content_type = metadata['mimetype']
-        s3key.md5 = metadata['etag']
-        s3key.last_modified = mtime2s3timestamp(metadata['mtime'])
-        s3key.set_contents_from_string(blob,
-                                       replace=True,
-                                       policy=self._policy,
-                                       reduced_redundancy=self._reduced_redundancy)
+        item = self._s3.Object(self._bucket_name, key)
+        item.put(
+            ACL=self._policy,
+            Body=blob,
+            Metadata=metadata,
+            StorageClass=self._storage_class,
+        )
 
     def retire(self, key):
-        s3key = Key(bucket=self._bucket, name=key)
-        s3key.delete()
+        item = self._s3.Object(self._bucket_name, key)
+        item.delete()
 
     def close(self):
-        self._conn.close()
+        del self._s3
