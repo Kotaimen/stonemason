@@ -1,6 +1,6 @@
 six>=1.8.0
 Flask>=0.10
-Pillow>=2.3.0,<3.0.0
+Pillow>=3.0.0
 pylibmc>=1.4.3
 boto>=2.35.0
 Click>=3.0.0
