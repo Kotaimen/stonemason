@@ -6,7 +6,7 @@ dist: trusty
 
 services:
   - docker
-  - memcached
+#  - memcached
 
 before_install:
   - docker build -t stonemason .
