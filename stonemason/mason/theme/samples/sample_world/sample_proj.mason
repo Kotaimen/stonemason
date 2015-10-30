@@ -70,7 +70,7 @@ for scale in [2, ]:
                 # map boundary
                 projbounds=bounds,
                 # zoom levels
-                levels=range(2, scale + 8)
+                levels=list(range(2, scale + 8))
             ),
             # maptype
             maptype=maptype,
