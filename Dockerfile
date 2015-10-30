@@ -1,4 +1,4 @@
-FROM        kotaimen/stonemason-base
+FROM        kotaimen/stonemason-base:mapnik3
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
 
@@ -11,9 +11,10 @@ WORKDIR     /tmp/stonemason/
 ADD         . ./
 
 RUN         set -x \
-                && pip install -rrequirements-dev.txt \
-                && pip install . \
-                && apt-get install make \
+                && pip3 install -rrequirements-dev.txt \
+                && pip3 install . \
+                && python3.5 setup.py build_ext -i \
+                && python3.5 -m nose \
                 && rm -rf /tmp/stonemason
 
 #
