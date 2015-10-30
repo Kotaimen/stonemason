@@ -45,9 +45,9 @@ Hilbert Curve
 
         >>> from stonemason.pyramid import hil_xy_from_s
         >>> hil_xy_from_s(10, 2)
-        (3L, 3L)
+        (3, 3)
         >>> hil_xy_from_s(829371542099833, 25)
-        (31152875L, 17840406L)
+        (31152875, 17840406)
 
     :param s: Length of the Hilbert curve.
     :param n: Order of the Hilbert curve
@@ -63,9 +63,9 @@ Hilbert Curve
 
         >>> from stonemason.pyramid import hil_s_from_xy
         >>> hil_s_from_xy(3,3, 2)
-        10L
+        10
         >>> hil_s_from_xy(31152875, 17840406, 25)
-        829371542099833L
+        829371542099833
 
     :param x: x coordinate.
     :param y: y coordinate.
