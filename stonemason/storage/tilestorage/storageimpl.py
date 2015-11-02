@@ -14,14 +14,14 @@ import six
 from stonemason.formatbundle import FormatBundle
 from stonemason.pyramid import MetaTileIndex, MetaTile
 
-from ..concept import PersistentStorageConcept, GenericStorageImpl
-
 from ..backends.s3 import S3Storage
 from ..backends.disk import DiskStorage
+from ..concept import PersistentStorageConcept, GenericStorageImpl, \
+    ReadOnlyStorage
 
-from .errors import InvalidMetaTileIndex, ReadonlyStorage, MetaTileStorageError
+from .errors import InvalidMetaTileIndex, MetaTileStorageError
 from .mapper import MetaTileKeyConcept, create_key_mode
-from .serializer import MetaTileSerializerConcept, MetaTileSerializer, \
+from .serializer import MetaTileSerializeConcept, MetaTileSerializer, \
     TileClusterSerializer
 
 
@@ -117,10 +117,10 @@ class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
     :param key_concept: Instance of implementation of MetaTileKeyConcept.
     :type key_concept: :class:`~stonemason.storage.tilestorage.MetaTileKeyConcept`
 
-    :param serializer_concept: Instance of implementation of MetaTileSerializerConcept.
-    :type serializer_concept: :class:`~stonemason.storage.tilestorage.MetaTileSerializerConcept`
+    :param serializer_concept: Instance of MetaTileSerializerConcept.
+    :type serializer_concept: :class:`~stonemason.storage.tilestorage.MetaTileSerializeConcept`
 
-    :param storage_concept: Instance of implementation of PersistentStorageConcept.
+    :param storage_concept: Instance of PersistentStorageConcept.
     :type storage_concept: :class:`~stonemason.storage.PersistentStorageConcept`
 
     :param levels: The level limits of the stored MetaTile.
@@ -134,10 +134,10 @@ class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
 
     """
 
-    def __init__(self, key_concept, serializer, storage,
+    def __init__(self, key_mode, serializer, storage,
                  levels=range(0, 23), stride=1, readonly=False):
-        assert isinstance(key_concept, MetaTileKeyConcept)
-        assert isinstance(serializer, MetaTileSerializerConcept)
+        assert isinstance(key_mode, MetaTileKeyConcept)
+        assert isinstance(serializer, MetaTileSerializeConcept)
         assert isinstance(storage, PersistentStorageConcept)
 
         self._levels = levels
@@ -145,7 +145,7 @@ class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
 
         self._readonly = readonly
 
-        self._storage = GenericStorageImpl(key_concept=key_concept,
+        self._storage = GenericStorageImpl(key_concept=key_mode,
                                            serializer_concept=serializer,
                                            storage_concept=storage)
 
@@ -176,7 +176,7 @@ class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
         assert isinstance(metatile, MetaTile)
 
         if self._readonly:
-            raise ReadonlyStorage
+            raise ReadOnlyStorage
 
         if metatile.index.z not in self._levels:
             raise InvalidMetaTileIndex('Invalid MetaTile level.')
@@ -191,7 +191,7 @@ class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
         assert isinstance(index, MetaTileIndex)
 
         if self._readonly:
-            raise ReadonlyStorage
+            raise ReadOnlyStorage
 
         self._storage.delete(index)
 

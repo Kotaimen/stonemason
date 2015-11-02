@@ -57,7 +57,15 @@ class ObjectSaveError(ObjectSerializeError):
 class PersistentStorageError(StorageError):
     """Persistent Storage Error
 
-    The base class for all internal storage exceptions .
+    The base class for all internal storage exceptions.
+    """
+    pass
+
+
+class ReadOnlyStorage(StorageError):
+    """Read Only Storage Error
+
+    Raise when storage is read only.
     """
     pass
 
@@ -306,6 +314,7 @@ class NullStorage(GenericStorageConcept):
 
     A dummy storage that stores nothing.
     """
+
     def has(self, index):
         return False
 

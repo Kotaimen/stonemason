@@ -18,14 +18,6 @@ class MetaTileStorageError(StorageError):
     pass
 
 
-class ReadonlyStorage(MetaTileStorageError):
-    """Read Only Storage
-
-    Raise when trying to modify a read only storage.
-    """
-    pass
-
-
 class InvalidMetaTileIndex(MetaTileStorageError):
     """Invalid MetaTile Index
 

@@ -21,12 +21,12 @@ from .errors import InvalidMetaTile
 # ==============================================================================
 # MetaTile Serializer
 # ==============================================================================
-class MetaTileSerializerConcept(ObjectSerializeConcept):  # pragma: no cover
+class MetaTileSerializeConcept(ObjectSerializeConcept):  # pragma: no cover
     """MetaTile Serializer Concept"""
     pass
 
 
-class MetaTileSerializer(MetaTileSerializerConcept):
+class MetaTileSerializer(MetaTileSerializeConcept):
     """MetaTile Serializer
 
     The ``MetaTileSerializer`` implements details of how a metatile is
@@ -83,7 +83,7 @@ class MetaTileSerializer(MetaTileSerializerConcept):
         return blob, metadata
 
 
-class TileClusterSerializer(MetaTileSerializerConcept):
+class TileClusterSerializer(MetaTileSerializeConcept):
     """TileCluster Serializer
 
     The ``TileClusterSerializer`` dumps a metatile into a binary data in
