@@ -7,8 +7,7 @@ import unittest
 import os
 
 import moto
-import boto
-import boto.s3
+import boto3
 
 from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
@@ -23,8 +22,9 @@ class TestS3ClusterStorage(unittest.TestCase):
     def setUp(self):
         self.mock = moto.mock_s3()
         self.mock.start()
-        self.conn = boto.connect_s3()
-        self.conn.create_bucket(TEST_BUCKET_NAME)
+        self.s3 = boto3.resource('s3')
+        self.s3.Bucket(TEST_BUCKET_NAME).create()
+
         self.pyramid = Pyramid(stride=8)
         grid_image = os.path.join(DATA_DIRECTORY,
                                   'grid_crop', 'grid.png')
@@ -69,7 +69,7 @@ class TestS3ClusterStorage(unittest.TestCase):
                                    format=self.format)
         storage.put(self.metatile)
 
-        self.assertIsNotNone(self.conn.get_bucket(TEST_BUCKET_NAME).get_key(
+        self.assertIsNotNone(self.s3.Object(TEST_BUCKET_NAME,
             'testlayer/19/453824/212288/19-453824-212288@8.zip'))
 
     def test_keymode_legacy(self):
@@ -81,7 +81,7 @@ class TestS3ClusterStorage(unittest.TestCase):
                                    format=self.format)
         storage.put(self.metatile)
 
-        self.assertIsNotNone(self.conn.get_bucket(TEST_BUCKET_NAME).get_key(
+        self.assertIsNotNone(self.s3.Object(TEST_BUCKET_NAME,
             'testlayer/19/01/9E/BB/B3/19-453824-212288@8.zip'))
         storage.close()
 
@@ -94,13 +94,12 @@ class TestS3ClusterStorage(unittest.TestCase):
                                    format=self.format)
         storage.put(self.metatile)
 
-        self.assertIsNotNone(self.conn.get_bucket(TEST_BUCKET_NAME).get_key(
+        self.assertIsNotNone(self.s3.Object(TEST_BUCKET_NAME,
             'testlayer/19/03/35/B0/B6/19-453824-212288@8.zip'))
 
         storage.close()
 
     def tearDown(self):
-        self.conn.close()
         self.mock.stop()
 
 
@@ -108,8 +107,8 @@ class TestS3MetaTileStorage(unittest.TestCase):
     def setUp(self):
         self.mock = moto.mock_s3()
         self.mock.start()
-        self.conn = boto.connect_s3()
-        self.conn.create_bucket(TEST_BUCKET_NAME)
+        self.s3 = boto3.resource('s3')
+        self.s3.Bucket(TEST_BUCKET_NAME).create()
 
         self.pyramid = Pyramid(stride=8)
         grid_image = os.path.join(DATA_DIRECTORY,
@@ -147,7 +146,6 @@ class TestS3MetaTileStorage(unittest.TestCase):
         storage.close()
 
     def tearDown(self):
-        self.conn.close()
         self.mock.stop()
 
 
