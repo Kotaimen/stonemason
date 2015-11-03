@@ -3,6 +3,8 @@
 __author__ = 'ray'
 __date__ = '10/29/15'
 
+import os
+
 from .mapper import FeatureKeyConcept, SimpleFeatureKeyMode
 from .serializer import FeatureSerializeConcept, RasterFeatureSerializer
 from .indexer import SpatialIndexConcept, ShpSpatialIndex
@@ -11,9 +13,18 @@ from ..concept import GenericStorageImpl, PersistentStorageConcept, \
     ReadOnlyStorage
 
 from ..backends.s3 import S3Storage
+from ..backends.disk import DiskStorage
 
 
 class FeatureStorageConcept(object):  # pragma: no cover
+    @property
+    def crs(self):
+        raise NotImplementedError
+
+    @property
+    def envelope(self):
+        raise NotImplementedError
+
     def has(self, key):
         raise NotImplementedError
 
@@ -46,6 +57,14 @@ class FeatureStorageImpl(FeatureStorageConcept):
 
         self._indexer = indexer
 
+    @property
+    def crs(self):
+        return self._indexer.crs
+
+    @property
+    def envelope(self):
+        return self._indexer.envelope
+
     def has(self, key):
         return self._storage.has(key)
 
@@ -67,22 +86,39 @@ class FeatureStorageImpl(FeatureStorageConcept):
         self._storage.close()
 
 
-class S3RasterFeatureStorage(FeatureStorageImpl):
-    def __init__(self, access_key=None, secret_key=None,
-                 bucket='my_bucket', policy='private',
-                 reduced_redundancy=False, index_filename='index.shp'):
-        s3storage = S3Storage(access_key=access_key, secret_key=secret_key,
-                              bucket=bucket, policy=policy,
-                              reduced_redundancy=reduced_redundancy)
+class DiskRasterFeatureStorage(FeatureStorageImpl):
+    def __init__(self, root='', index_filename='index.shp'):
+        storage = DiskStorage()
 
         key_mode = SimpleFeatureKeyMode()
 
         serializer = RasterFeatureSerializer()
 
-        indexer = ShpSpatialIndex(s3storage, index_filename)
+        indexer = ShpSpatialIndex(storage, index_filename)
 
         FeatureStorageImpl.__init__(self,
                                     key_mode=key_mode,
                                     serializer=serializer,
-                                    storage=s3storage,
+                                    storage=storage,
+                                    indexer=indexer)
+
+
+class S3RasterFeatureStorage(FeatureStorageImpl):
+    def __init__(self, access_key=None, secret_key=None,
+                 bucket='my_bucket', policy='private',
+                 reduced_redundancy=False, index_filename='index.shp'):
+        storage = S3Storage(access_key=access_key, secret_key=secret_key,
+                            bucket=bucket, policy=policy,
+                            reduced_redundancy=reduced_redundancy)
+
+        key_mode = SimpleFeatureKeyMode()
+
+        serializer = RasterFeatureSerializer()
+
+        indexer = ShpSpatialIndex(storage, index_filename)
+
+        FeatureStorageImpl.__init__(self,
+                                    key_mode=key_mode,
+                                    serializer=serializer,
+                                    storage=storage,
                                     indexer=indexer)

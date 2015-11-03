@@ -15,6 +15,15 @@ from .errors import InvalidFeatureIndex
 
 
 class SpatialIndexConcept(object):  # pragma: no cover
+
+    @property
+    def crs(self):
+        raise NotImplementedError
+
+    @property
+    def envelope(self):
+        raise NotImplementedError
+
     def intersection(self, envelope, crs='EPSG:4326'):
         raise NotImplementedError
 
@@ -36,7 +45,7 @@ class ShpSpatialIndex(SpatialIndexConcept):
             with open(basename_local + ext, 'wb') as fp:
                 blob, metadata = self._storage.retrieve(basename + ext)
                 if blob is None:
-                    raise InvalidFeatureIndex('%s is missing!' % basename + ext)
+                    raise InvalidFeatureIndex('%s is missing!' % (basename + ext))
                 fp.write(blob)
 
         # open the shapefile
@@ -56,32 +65,24 @@ class ShpSpatialIndex(SpatialIndexConcept):
         self._index = index
         self._basename_local = basename_local
 
-    def close(self):
-        self._index = None
-        self._source = None
+    @property
+    def crs(self):
+        return self._index.GetSpatialRef()
 
-        for ext in self.SHAPEFILE_EXTS:
-            filename = os.path.join(self._basename_local, ext)
-            if os.path.exists(filename):
-                os.remove(filename)
+    @property
+    def envelope(self):
+        minx, maxx, miny, maxy = self._index.GetExtent()
+        return minx, miny, maxx, maxy
 
     def intersection(self, envelope, crs='EPSG:4326'):
         target_crs = osr.SpatialReference()
         target_crs.SetFromUserInput(crs)
 
-        query_geom = Envelope(*envelope).to_geometry(srs=target_crs)
-        query_crs = self._index.GetSpatialRef()
+        target_geom = Envelope(*envelope).to_geometry(srs=target_crs)
+        if not target_crs.IsSame(self.crs):
+            target_geom.TransformTo(self.crs)
 
-        if not target_crs.IsSame(query_crs):
-            query_geom.TransformTo(query_crs)
-
-        for item in self._intersection_geometry(query_geom):
-            yield item
-
-    def _intersection_geometry(self, geometry):
-        assert isinstance(geometry, ogr.Geometry)
-
-        self._index.SetSpatialFilter(geometry)
+        self._index.SetSpatialFilter(target_geom)
 
         for feature in self._index:
             location = feature.GetField('location')
@@ -92,3 +93,12 @@ class ShpSpatialIndex(SpatialIndexConcept):
                 os.path.join(self._prefix, feature.GetField('location')))
 
             yield location
+
+    def close(self):
+        self._index = None
+        self._source = None
+
+        for ext in self.SHAPEFILE_EXTS:
+            filename = os.path.join(self._basename_local, ext)
+            if os.path.exists(filename):
+                os.remove(filename)
