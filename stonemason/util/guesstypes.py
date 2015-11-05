@@ -47,7 +47,7 @@ def guess_extension(mimetype):
 
     >>> import mimetypes
     >>> from stonemason.util.guesstypes import guess_extension
-    >>> print mimetypes.guess_extension('bad type')
+    >>> print(mimetypes.guess_extension('bad type'))
     None
     >>> guess_extension('bad type')
     ''
@@ -76,7 +76,7 @@ def guess_mimetype(extension):
 
     >>> import mimetypes
     >>> from stonemason.util.guesstypes import guess_mimetype
-    >>> print mimetypes.guess_extension('.blah')
+    >>> print(mimetypes.guess_extension('.blah'))
     None
     >>> guess_mimetype('.blah')
     'application/data'

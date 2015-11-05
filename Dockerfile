@@ -1,4 +1,4 @@
-FROM        kotaimen/stonemason-base:0.2.0
+FROM        kotaimen/stonemason-base:mapnik3
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
 
@@ -10,19 +10,21 @@ WORKDIR     /tmp/stonemason/
 
 ADD         . ./
 
-RUN         pip install -rrequirements-dev.txt && \
-            pip install . && \
-            python setup.py build_ext -if && \
-            tox -e py27 && \
-            rm -rf /tmp/stonemason
+RUN         set -x \
+                && pip3 install -rrequirements-dev.txt \
+                && pip3 install . \
+                && python3.5 setup.py build_ext -i \
+                && python3.5 -m nose \
+                && rm -rf /tmp/stonemason
 
 #
 # Create a sample at /var/lib/stonemason/map_gallery
 #
 WORKDIR     /var/lib/stonemason/
 
-RUN         stonemason init && \
-            stonemason check
+RUN         set -x \
+                && stonemason init \
+                && stonemason check
 
 #
 # Entry

@@ -86,7 +86,7 @@ def skipUnlessHasGDAL():
 
 import pylibmc
 
-c = pylibmc.Client(servers=['127.0.0.1:11211'])
+c = pylibmc.Client(servers=['localhost:11211'])
 try:
     c.get_stats()
 except pylibmc.Error:
