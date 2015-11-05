@@ -51,7 +51,7 @@ install_requires = [
     'six>=1.9.0',
     'Flask>=0.10',
     'Pillow>=3.0.0',
-    'boto>=2.35.0',
+    'boto3>=1.2.0',
     'Click>=4.0',
     'gunicorn>=19.0.0',
     'pylibmc>=1.5.0',
@@ -68,7 +68,7 @@ else:
 tests_require = [
     'nose>=1.3.0',
     'coverage>=3.7.0',
-    'moto>=0.4.0',
+    'moto>=0.4.18',
 ]
 
 py_modules = []
