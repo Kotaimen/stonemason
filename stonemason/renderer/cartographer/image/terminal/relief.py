@@ -32,6 +32,38 @@ __all__ = ['SimpleRelief', 'SwissRelief', 'ColorRelief']
 # Helper functions
 #
 
+def array2pillow(array, width, height, buffer=0):
+    """ Convert a numpy array image to PIL image, note only greyscale image is
+    supported.
+
+    :param array: Input image.
+    :type array: numpy.array
+
+    :param width: Width of the image in pixel.
+    :type width: int
+
+    :param height: Height of the image in pixel.
+    :param height: int
+
+    :param buffer: Extra buffer size to crop around the given image, default
+        is ``0``.
+    :type buffer: int
+
+    :return: Converted PIL image.
+    :rtype: :class:`PIL.Image.Image`
+    """
+
+    # cropping to requested map size
+    array = array[buffer:width + buffer, buffer:height + buffer]
+
+    image = skimage.img_as_ubyte(array)
+
+    # convert arrary to pil image
+    pil_image = Image.fromarray(image, mode='L')
+
+    return pil_image
+
+
 def aspect_and_slope(elevation, resolution, scale, z_factor=1.0):
     """Generate aspect and slope map from given elevation raster.
 
