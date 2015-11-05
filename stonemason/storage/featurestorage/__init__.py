@@ -3,4 +3,5 @@
 __author__ = 'ray'
 __date__ = '10/29/15'
 
-from .storageimpl import *
+from .raster import *
+from .concept import FeatureStorageConcept

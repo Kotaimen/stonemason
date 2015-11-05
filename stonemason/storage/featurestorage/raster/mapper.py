@@ -5,17 +5,10 @@ __date__ = '11/2/15'
 
 import six
 
-from ..concept import StorageKeyConcept, ObjectSerializeConcept
-
-
-class FeatureKeyConcept(StorageKeyConcept):  # pragma: no cover
-    pass
+from ..concept import FeatureKeyConcept
 
 
 class SimpleFeatureKeyMode(FeatureKeyConcept):
     def __call__(self, index):
         assert isinstance(index, six.string_types)
         return index
-
-
-

@@ -7,10 +7,11 @@ import os
 import unittest
 import moto
 import boto3
+import numpy as np
 
 from osgeo import osr, gdal
 
-from stonemason.storage.featurestorage import S3RasterFeatureStorage
+from stonemason.storage.featurestorage import ElevationS3Storage
 
 from tests import DATA_DIRECTORY
 
@@ -36,28 +37,10 @@ class TestS3RasterFeatureStorage(unittest.TestCase):
     def tearDown(self):
         self.mock.stop()
 
-    def test_crs(self):
-        storage = S3RasterFeatureStorage(
-            bucket=TEST_BUCKET_NAME,
-            index_filename='index_5m.shp')
-
-        crs = osr.SpatialReference()
-        crs.ImportFromEPSG(4326)
-
-        self.assertTrue(crs.IsSame(storage.crs))
-
-    def test_envelope(self):
-        storage = S3RasterFeatureStorage(
-            bucket=TEST_BUCKET_NAME,
-            index_filename='index_5m.shp')
-
-        envelope = (138.695869, 35.33096, 138.765564, 35.398994)
-        self.assertEqual(envelope, storage.envelope)
-
     def test_basic(self):
-        storage = S3RasterFeatureStorage(
+        storage = ElevationS3Storage(
             bucket=TEST_BUCKET_NAME,
-            index_filename='index_5m.shp')
+            index='index_5m.shp')
 
         test_key = self.test_key
         self.assertTrue(storage.has(test_key))
@@ -69,14 +52,11 @@ class TestS3RasterFeatureStorage(unittest.TestCase):
 
         storage.close()
 
-    def test_query(self):
-        storage = S3RasterFeatureStorage(
+    def test_intersection(self):
+        storage = ElevationS3Storage(
             bucket=TEST_BUCKET_NAME,
-            index_filename='index_5m.shp')
+            index='index_5m.shp')
 
         test_envelope = (138.6958690, 35.3309600, 138.7655640, 35.3989940)
-        for raster_key in storage.query(test_envelope, crs='EPSG:4326'):
-            raster = storage.get(raster_key)
-
-            self.assertEqual(self.test_key, raster_key)
-            self.assertIsInstance(raster, gdal.Dataset)
+        array = storage.intersection(test_envelope, crs='EPSG:4326', size=(256, 256))
+        self.assertEqual(array.shape, (1, 256, 256))

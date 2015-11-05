@@ -9,11 +9,7 @@ from osgeo import gdal, gdalconst
 
 from stonemason.util.tempfn import generate_temp_filename
 
-from ..concept import ObjectSerializeConcept
-
-
-class FeatureSerializeConcept(ObjectSerializeConcept):  # pragma: no cover
-    pass
+from ..concept import FeatureSerializeConcept
 
 
 class RasterFeatureSerializer(FeatureSerializeConcept):

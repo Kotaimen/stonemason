@@ -8,27 +8,10 @@ from osgeo import osr, ogr, gdalconst
 
 from stonemason.pyramid.geo import Envelope
 from stonemason.util.tempfn import generate_temp_filename
+from stonemason.storage.concept import PersistentStorageConcept
 
-from ..concept import PersistentStorageConcept
-
-from .errors import InvalidFeatureIndex
-
-
-class SpatialIndexConcept(object):  # pragma: no cover
-
-    @property
-    def crs(self):
-        raise NotImplementedError
-
-    @property
-    def envelope(self):
-        raise NotImplementedError
-
-    def intersection(self, envelope, crs='EPSG:4326'):
-        raise NotImplementedError
-
-    def close(self):
-        raise NotImplementedError
+from ..concept import SpatialIndexConcept
+from ..errors import InvalidFeatureIndex
 
 
 class ShpSpatialIndex(SpatialIndexConcept):
@@ -45,7 +28,8 @@ class ShpSpatialIndex(SpatialIndexConcept):
             with open(basename_local + ext, 'wb') as fp:
                 blob, metadata = self._storage.retrieve(basename + ext)
                 if blob is None:
-                    raise InvalidFeatureIndex('%s is missing!' % (basename + ext))
+                    raise InvalidFeatureIndex(
+                        '%s is missing!' % (basename + ext))
                 fp.write(blob)
 
         # open the shapefile
