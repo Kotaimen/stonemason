@@ -5,11 +5,9 @@ __date__ = '11/2/15'
 
 import os
 from osgeo import osr, ogr, gdalconst
-
 from stonemason.pyramid.geo import Envelope
 from stonemason.util.tempfn import generate_temp_filename
 from stonemason.storage.concept import PersistentStorageConcept
-
 from ..concept import SpatialIndexConcept
 from ..errors import InvalidFeatureIndex
 
@@ -68,15 +66,16 @@ class ShpSpatialIndex(SpatialIndexConcept):
 
         self._index.SetSpatialFilter(target_geom)
 
+        result = list()
         for feature in self._index:
             location = feature.GetField('location')
             if not location:
                 continue
 
-            location = os.path.normpath(
-                os.path.join(self._prefix, feature.GetField('location')))
+            location = os.path.normpath(os.path.join(self._prefix, location))
+            result.append(location)
 
-            yield location
+        return result
 
     def close(self):
         self._index = None

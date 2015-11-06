@@ -7,9 +7,8 @@ import os
 import unittest
 import moto
 import boto3
-import numpy as np
 
-from osgeo import osr, gdal
+from osgeo import gdal
 
 from stonemason.storage.featurestorage import ElevationS3Storage
 
@@ -23,7 +22,7 @@ class TestS3RasterFeatureStorage(unittest.TestCase):
         self.mock = moto.mock_s3()
         self.mock.start()
 
-        s3 = boto3.resource('s3')
+        s3 = boto3.resource('s3', region_name='us-east-1')
         s3.Bucket(TEST_BUCKET_NAME).create()
 
         self.basedir = os.path.join(DATA_DIRECTORY, 'raster')
