@@ -31,4 +31,4 @@ RUN         set -x \
 #
 EXPOSE      80
 ENTRYPOINT  ["stonemason"]
-CMD         [tileserver", "--bind=0.0.0.0:80"]
+CMD         ["tileserver", "--bind=0.0.0.0:80"]

@@ -5,8 +5,11 @@ __date__ = '11/2/15'
 
 import os
 import unittest
+from unittest.case import skip
+
 import moto
 import boto3
+
 
 from osgeo import gdal
 
@@ -16,7 +19,7 @@ from tests import DATA_DIRECTORY
 
 TEST_BUCKET_NAME = 'rasterstorage'
 
-
+@skip
 class TestS3RasterFeatureStorage(unittest.TestCase):
     def setUp(self):
         self.mock = moto.mock_s3()
