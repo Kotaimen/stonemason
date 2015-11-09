@@ -96,9 +96,10 @@ class TestGridCrop(ImageTestCase):
 
         self.assertImageEqual(Image.open(io.BytesIO(grids[(0, 0)])),
                               self.grid_image.crop(
-                                  (256, 256, 512, 512)).convert('P',
-                                                                colors=4,
-                                                                palette=1)
+                                  (256, 256, 512, 512)).convert('RGB').convert(
+                                  'P',
+                                  colors=4,
+                                  palette=1)
                               )
 
 
