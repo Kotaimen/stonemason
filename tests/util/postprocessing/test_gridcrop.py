@@ -89,10 +89,12 @@ class TestGridCrop(ImageTestCase):
                                                   stride=2,
                                                   buffer_size=256,
                                                   format='PNG',
-                                                  parameters=dict(convert='P',
-                                                                  colors=4,
-                                                                  palette=1)
-                                                  ))
+                                                  parameters=dict(
+                                                      convert=dict(mode='P',
+                                                                   colors=4,
+                                                                   palette=1),
+                                                      optimized=True
+                                                  )))
 
         self.assertImageEqual(Image.open(io.BytesIO(grids[(0, 0)])),
                               self.grid_image.crop(
@@ -102,6 +104,5 @@ class TestGridCrop(ImageTestCase):
                                   palette=1)
                               )
 
-
-if __name__ == '__main__':
-    unittest.main()
+        if __name__ == '__main__':
+            unittest.main()
