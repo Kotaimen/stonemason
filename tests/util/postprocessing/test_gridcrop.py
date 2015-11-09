@@ -6,13 +6,10 @@ __date__ = '1/5/15'
 import unittest
 import os
 import io
-
 from distutils.version import StrictVersion
-
 import six
 import PIL
 from PIL import Image
-
 import stonemason.util.postprocessing.gridcrop as gridcrop
 from tests import DATA_DIRECTORY, TEST_DIRECTORY, ImageTestCase
 
@@ -20,7 +17,7 @@ from tests import DATA_DIRECTORY, TEST_DIRECTORY, ImageTestCase
 class TestGridCrop(ImageTestCase):
     def setUp(self):
         grid_image = os.path.join(DATA_DIRECTORY, 'grid_crop',
-                                  'paletted_grid.png')
+                                  'grid.png')
         self.grid_data = open(grid_image, mode='rb').read()
         self.grid_file = open(grid_image, mode='rb')
         self.grid_image = Image.open(grid_image)
@@ -55,7 +52,6 @@ class TestGridCrop(ImageTestCase):
                               list(gridcrop.grid_crop(self.grid_data, stride=1,
                                                       buffer_size=256))[0][1])
 
-
     def test_grid_crop(self):
         grids = dict(gridcrop.grid_crop(self.grid_data, stride=2,
                                         buffer_size=256))
@@ -81,11 +77,29 @@ class TestGridCrop(ImageTestCase):
         grids = dict(gridcrop.grid_crop_into_data(self.grid_data,
                                                   stride=2,
                                                   buffer_size=256,
-                                                  format='PNG'
-        ))
+                                                  format='PNG',
+                                                  ))
 
         self.assertImageEqual(Image.open(io.BytesIO(grids[(0, 0)])),
                               self.grid_image.crop((256, 256, 512, 512)))
+
+    def test_grid_crop_into_data2(self):
+
+        grids = dict(gridcrop.grid_crop_into_data(self.grid_data,
+                                                  stride=2,
+                                                  buffer_size=256,
+                                                  format='PNG',
+                                                  parameters=dict(convert='P',
+                                                                  colors=4,
+                                                                  palette=1)
+                                                  ))
+
+        self.assertImageEqual(Image.open(io.BytesIO(grids[(0, 0)])),
+                              self.grid_image.crop(
+                                  (256, 256, 512, 512)).convert('P',
+                                                                colors=4,
+                                                                palette=1)
+                              )
 
 
 if __name__ == '__main__':

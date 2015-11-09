@@ -130,17 +130,12 @@ def grid_crop(image, stride=1, buffer_size=0):
             yield (row, column), grid
 
 
-def convert_mode(image, mode):
-    """Convert image mode if necessary determinate from parameters."""
-    if mode is None or image.mode == mode['mode']:
-        # only convert when mode changes
-        return image
-    # call PIL convert
-    if mode['mode'] == 'P':
+def convert_mode(image, mode, **parameters):
+    """Convert image parameters if necessary determinate from parameters."""
+    if mode == 'P':
         # PIL only supports dithering
         image = image.convert('RGB')
-
-    return image.convert(**mode)
+    return image.convert(mode, **parameters)
 
 
 def grid_crop_into_data(image, stride=1, buffer_size=0,
@@ -222,11 +217,11 @@ def grid_crop_into_data(image, stride=1, buffer_size=0,
         if mode is not None:
             del parameters['convert']
 
-    if mode is not None:
-        image = convert_mode(image, mode)
-
     for (row, column), grid_image in grid_crop(image, stride, buffer_size):
         buf = io.BytesIO()
+
+        if mode is not None:
+            grid_image = convert_mode(grid_image, mode, **parameters)
 
         grid_image.save(buf, format=format, **parameters)
         grid_data = buf.getvalue()
