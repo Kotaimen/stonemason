@@ -11,7 +11,7 @@ __date__ = '12/22/14'
 
 
 # Version used in the setup.py
-__version__ = '0.2.0'
+__version__ = '0.3.0.dev0'
 
 # Prevent nosetests peek into this package
 __test__ = False

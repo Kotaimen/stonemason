@@ -51,13 +51,14 @@ install_requires = [
     'six>=1.9.0',
     'Flask>=0.10',
     'Pillow>=3.0.0',
+    'Werkzeug<0.11.0',
     'boto3>=1.2.0',
     'Click>=4.0',
     'gunicorn>=19.0.0',
     'pylibmc>=1.5.0',
     'numpy>=1.6',
     'scipy>=0.9',
-    'scikit-image'
+    'scikit-image>=0.10.0'
 ]
 
 if IS_PY3:
