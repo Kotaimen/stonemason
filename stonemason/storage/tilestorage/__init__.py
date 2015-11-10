@@ -6,7 +6,7 @@ __date__ = '10/22/15'
 from .errors import *
 from .clusterfier import Clusterfier
 
-from .storageimpl import MetaTileStorageConcept, NullMetaTileStorage, \
+from .implements import MetaTileStorageConcept, NullMetaTileStorage, \
     NullClusterStorage, S3MetaTileStorage, DiskMetaTileStorage, \
     S3ClusterStorage, DiskClusterStorage, ClusterStorage, ReadOnlyStorage
 

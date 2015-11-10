@@ -9,15 +9,12 @@ __author__ = 'ray'
 __date__ = '6/17/15'
 
 import math
-
 import numpy as np
-from PIL import Image, ImageOps
-from scipy import ndimage
 import skimage
 import skimage.exposure
-import skimage.filters
-import skimage.segmentation
-import skimage.morphology
+
+from PIL import Image, ImageOps
+from scipy import ndimage
 
 from stonemason.renderer.engine.rendernode import TermNode
 from stonemason.renderer.engine.context import RenderContext
@@ -537,7 +534,8 @@ class SimpleRelief(ReliefNodeImpl):
                                  gain=gain)
 
         assert 'prototype' in raster_storage
-        if raster_storage['prototype'] not in ['elevation.s3', 'elevation.disk']:
+        if raster_storage['prototype'] not in ['elevation.s3',
+                                               'elevation.disk']:
             raise ValueError('Swiss Relief should have a Elevation source!')
 
         storage_parameters = raster_storage
@@ -682,7 +680,8 @@ class SwissRelief(ReliefNodeImpl):
                                  blend=blend)
 
         assert 'prototype' in raster_storage
-        if raster_storage['prototype'] not in ['elevation.s3', 'elevation.disk']:
+        if raster_storage['prototype'] not in ['elevation.s3',
+                                               'elevation.disk']:
             raise ValueError('Swiss Relief should have a Elevation source!')
 
         storage_parameters = raster_storage
