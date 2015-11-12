@@ -43,7 +43,7 @@ schema = dict(
         # projection coordinate system
         projcs='EPSG:3857',
         # zoom levels
-        levels=range(8, 15)
+        levels=list(range(8, 15))
     ),
     # maptype
     maptype=maptype,
@@ -63,7 +63,7 @@ schema = dict(
         layers=dict(
             root={
                 'prototype': 'image.input.relief.simple',
-                'index': "s3://stonemason-tokyo/geodata/Production/SRTM3/index.shp",
+                'datasource': "raster+s3://stonemason-tokyo/geodata/Production/SRTM3?indexname=index.shp",
                 'scale': 1
             }
         )

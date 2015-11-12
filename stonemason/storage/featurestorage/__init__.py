@@ -3,5 +3,43 @@
 __author__ = 'ray'
 __date__ = '10/29/15'
 
-from .raster import *
-from .concept import FeatureStorageConcept
+try:
+    from urllib.parse import urlparse, parse_qsl
+except ImportError:
+    # for python2.7
+    from urlparse import urlparse, parse_qsl
+
+from .concept import FeatureKeyConcept, FeatureSerializeConcept, \
+    SpatialIndexConcept, FeatureStorageConcept, FeatureStorageImpl, \
+    FeatureStorageError
+from .raster import RasterStorageConcept, S3RasterStorage, DiskRasterStorage
+
+
+class InvalidConnectionString(FeatureStorageError):
+    pass
+
+
+def create_feature_storage(conn_string):
+    try:
+        components = urlparse(conn_string)
+        dialect, backend = components.scheme.split('+')
+        prefix = components.path
+        params = dict(parse_qsl(components.query))
+    except Exception as e:
+        raise InvalidConnectionString('''
+            Connection string usages: dialect+backend://[bucket]/path[?query]
+        ''')
+
+    if backend == 's3':
+        bucket = components.netloc
+        if prefix.startswith('/'):
+            prefix=prefix[1:]
+        if dialect == 'raster':
+            return S3RasterStorage(bucket=bucket, prefix=prefix, **params)
+
+    elif backend == 'disk':
+        if dialect == 'raster':
+            return DiskRasterStorage(prefix=prefix, **params)
+
+    else:
+        raise InvalidConnectionString('Unknown backend: %s' % conn_string)

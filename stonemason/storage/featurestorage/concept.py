@@ -3,8 +3,16 @@
 __author__ = 'ray'
 __date__ = '10/29/15'
 
-from ..concept import StorageKeyConcept, ObjectSerializeConcept, \
-    PersistentStorageConcept, GenericStorageImpl, ReadOnlyStorage
+from ..concept import GenericStorageConcept, StorageKeyConcept, \
+    ObjectSerializeConcept, StorageError
+
+
+class FeatureStorageError(StorageError):
+    pass
+
+
+class InvalidFeatureIndex(FeatureStorageError):
+    pass
 
 
 class FeatureKeyConcept(StorageKeyConcept):  # pragma: no cover
@@ -33,20 +41,10 @@ class SpatialIndexConcept(object):  # pragma: no cover
 
     @property
     def crs(self):
-        """A literal string that represents the coordinate reference system of
-        the storage.
-        """
         raise NotImplementedError
 
-    @property
-    def envelope(self):
-        """A tuple of ``(minx, miny, maxx, maxy)`` that represents the bounding
-        box of the storage.
-        """
-        raise NotImplementedError
-
-    def index(self, key, feature):
-        """Add a new feature into the index.
+    def insert(self, key, feature):
+        """Insert a new feature into the index.
 
         :param key: A literal string that identified the feature.
         :type key: str
@@ -56,7 +54,15 @@ class SpatialIndexConcept(object):  # pragma: no cover
         """
         raise NotImplementedError
 
-    def intersection(self, envelope, crs='EPSG:4326'):
+    def erase(self, key):
+        """Erase a feature from the index.
+
+        :param key: A literal string that identified the feature.
+        :type key: str
+        """
+        raise NotImplementedError
+
+    def intersection(self, envelope):
         """Return reference of features in the shared area
 
         :param envelope: A tuple of ``(minx, miny, maxx, maxy)`` that represents
@@ -78,10 +84,6 @@ class FeatureStorageConcept(object):  # pragma: no cover
     def crs(self):
         raise NotImplementedError
 
-    @property
-    def envelope(self):
-        raise NotImplementedError
-
     def has(self, key):
         raise NotImplementedError
 
@@ -94,30 +96,36 @@ class FeatureStorageConcept(object):  # pragma: no cover
     def delete(self, key):
         raise NotImplementedError
 
-    def intersection(self, envelope, crs='EPSG:4326', size=None):
+    def intersection(self, envelope):
         raise NotImplementedError
 
     def close(self):
         raise NotImplementedError
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
 
 class FeatureStorageImpl(FeatureStorageConcept):
-    def __init__(self, key_mode, serializer, storage):
-        assert isinstance(key_mode, FeatureKeyConcept)
-        assert isinstance(serializer, FeatureSerializeConcept)
-        assert isinstance(storage, PersistentStorageConcept)
+    def __init__(self, storage, index):
+        assert isinstance(storage, GenericStorageConcept)
+        assert isinstance(index, SpatialIndexConcept)
 
-        self._storage = GenericStorageImpl(key_concept=key_mode,
-                                           serializer_concept=serializer,
-                                           storage_concept=storage)
+        self._storage = storage
+        self._indexer = index
+
+    @property
+    def crs(self):
+        return self._indexer.crs
 
     def has(self, key):
         return self._storage.has(key)
 
     def put(self, key, feature):
-        raise ReadOnlyStorage
-        # self._storage.put(key, feature)
-        # self._indexer.index(key, feature)
+        self._storage.put(key, feature)
 
     def get(self, key):
         return self._storage.get(key)
@@ -125,11 +133,8 @@ class FeatureStorageImpl(FeatureStorageConcept):
     def delete(self, key):
         self._storage.delete(key)
 
+    def intersection(self, envelope):
+        return list(key for key in self._indexer.intersection(envelope))
+
     def close(self):
         self._storage.close()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()

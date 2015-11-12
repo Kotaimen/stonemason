@@ -6,10 +6,8 @@ __date__ = '11/2/15'
 import os
 import six
 from osgeo import gdal, gdalconst
-
 from stonemason.util.tempfn import generate_temp_filename
-
-from ..concept import FeatureSerializeConcept
+from stonemason.storage.featurestorage.concept import FeatureSerializeConcept
 
 
 class RasterFeatureSerializer(FeatureSerializeConcept):

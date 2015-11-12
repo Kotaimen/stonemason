@@ -4,48 +4,32 @@ __author__ = 'ray'
 __date__ = '11/2/15'
 
 import os
-from osgeo import osr, ogr, gdalconst
+from osgeo import ogr, gdalconst
 from stonemason.pyramid.geo import Envelope
 from stonemason.util.tempfn import generate_temp_filename
 from stonemason.storage.concept import PersistentStorageConcept
-from ..concept import SpatialIndexConcept
-from ..errors import InvalidFeatureIndex
+from stonemason.storage.featurestorage.concept import SpatialIndexConcept, \
+    InvalidFeatureIndex
+
+SHAPEFILE_EXTENSIONS = ['.shp', '.dbf', '.prj', '.shx']
 
 
 class ShpSpatialIndex(SpatialIndexConcept):
-    SHAPEFILE_EXTS = ['.shp', '.dbf', '.prj', '.shx']
-
-    def __init__(self, storage, shapefile='index.shp'):
-        assert isinstance(storage, PersistentStorageConcept)
-        self._storage = storage
-
-        # download index shapefile and related files
-        basename, _ = os.path.splitext(shapefile)
-        basename_local = generate_temp_filename()
-        for ext in self.SHAPEFILE_EXTS:
-            with open(basename_local + ext, 'wb') as fp:
-                blob, metadata = self._storage.retrieve(basename + ext)
-                if blob is None:
-                    raise InvalidFeatureIndex(
-                        '%s is missing!' % (basename + ext))
-                fp.write(blob)
-
-        # open the shapefile
+    def __init__(self, filename='index.shp'):
         driver = ogr.GetDriverByName('ESRI Shapefile')
-        source = driver.Open(basename_local + '.shp', gdalconst.GA_ReadOnly)
+        source = driver.Open(filename, gdalconst.GA_ReadOnly)
         if source is None:
-            raise InvalidFeatureIndex('Index file not found: %s' % shapefile)
-        index = source.GetLayer(0)
-        if index is None:
+            raise InvalidFeatureIndex('Index file not found: %s' % filename)
+
+        # copy to memory
+        mem_driver = ogr.GetDriverByName('MEMORY')
+        assert isinstance(mem_driver, ogr.Driver)
+        self._index_data = mem_driver.CopyDataSource(
+            source, 'index_data', ['OVERWRITE=YES'])
+
+        self._index = self._index_data.GetLayer(0)
+        if self._index is None:
             raise InvalidFeatureIndex('Index layer not found!')
-
-        # set root prefix
-        self._prefix = os.path.split(shapefile)[0]
-
-        # resources need to be release
-        self._source = source
-        self._index = index
-        self._basename_local = basename_local
 
     @property
     def crs(self):
@@ -56,23 +40,17 @@ class ShpSpatialIndex(SpatialIndexConcept):
         minx, maxx, miny, maxy = self._index.GetExtent()
         return minx, miny, maxx, maxy
 
-    def intersection(self, envelope, crs='EPSG:4326'):
-        target_crs = osr.SpatialReference()
-        target_crs.SetFromUserInput(crs)
+    def intersection(self, envelope):
+        query_crs = self._index.GetSpatialRef()
+        query_geom = Envelope(*envelope).to_geometry(srs=query_crs)
 
-        target_geom = Envelope(*envelope).to_geometry(srs=target_crs)
-        if not target_crs.IsSame(self.crs):
-            target_geom.TransformTo(self.crs)
-
-        self._index.SetSpatialFilter(target_geom)
+        self._index.SetSpatialFilter(query_geom)
 
         result = list()
         for feature in self._index:
             location = feature.GetField('location')
             if not location:
                 continue
-
-            location = os.path.normpath(os.path.join(self._prefix, location))
             result.append(location)
 
         return result
@@ -81,7 +59,28 @@ class ShpSpatialIndex(SpatialIndexConcept):
         self._index = None
         self._source = None
 
-        for ext in self.SHAPEFILE_EXTS:
-            filename = os.path.join(self._basename_local, ext)
-            if os.path.exists(filename):
-                os.remove(filename)
+    @classmethod
+    def from_persistent_storage(self, storage, index_key):
+        assert isinstance(storage, PersistentStorageConcept)
+
+        # download index shapefile and related files
+        basename, _ = os.path.splitext(index_key)
+        tempname = generate_temp_filename()
+
+        try:
+
+            for ext in SHAPEFILE_EXTENSIONS:
+                with open(tempname + ext, 'wb') as fp:
+                    blob, metadata = storage.retrieve(basename + ext)
+                    if blob is None:
+                        raise InvalidFeatureIndex(
+                            '%s is missing!' % (basename + ext))
+                    fp.write(bytes(blob))
+
+            return ShpSpatialIndex(tempname + '.shp')
+
+        finally:
+            for ext in SHAPEFILE_EXTENSIONS:
+                to_be_release = tempname + ext
+                if os.path.exists(to_be_release):
+                    os.remove(to_be_release)
