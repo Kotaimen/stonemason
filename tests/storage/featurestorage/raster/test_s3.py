@@ -15,7 +15,7 @@ from tests import DATA_DIRECTORY
 TEST_BUCKET_NAME = 'rasterstorage'
 
 
-# @unittest.skip
+@unittest.skip
 class TestS3RasterFeatureStorage(unittest.TestCase):
     def setUp(self):
         self.mock = moto.mock_s3()
