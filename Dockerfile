@@ -11,10 +11,10 @@ WORKDIR     /tmp/stonemason/
 ADD         . ./
 
 RUN         set -x \
-                && pip3 install -rrequirements-dev.txt \
-                && pip3 install . \
-                && python3.5 setup.py build_ext -i \
-                && python3.5 -m nose \
+                && pip install -rrequirements-dev.txt \
+                && pip install . \
+                && python setup.py build_ext -i \
+                && python -m nose -v \
                 && rm -rf /tmp/stonemason
 
 #

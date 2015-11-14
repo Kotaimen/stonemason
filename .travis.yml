@@ -6,7 +6,6 @@ dist: trusty
 
 services:
   - docker
-#  - memcached
 
 before_install:
   - docker build -t stonemason .
@@ -14,7 +13,7 @@ before_install:
   - docker run -d --name memcache memcached
 
 script:
-  - docker run  -v `pwd`:/tmp/ --workdir /tmp/ --link memcache:localhost --entrypoint python3.5 stonemason -m tox
+  - docker run  -v `pwd`:/tmp/ --workdir /tmp/ --link memcache:localhost --entrypoint python stonemason -m tox -e py27
 
 notifications:
   email:
