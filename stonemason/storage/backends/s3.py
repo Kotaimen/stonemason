@@ -8,7 +8,6 @@ __author__ = 'ray'
 __date__ = '10/22/15'
 
 import time
-import email
 import six
 import requests
 import boto3
@@ -21,6 +20,7 @@ except ImportError:
     from urlparse import ParseResult, urlunparse
     from urllib import urlencode
 
+from stonemason.util.timer import timestamp2mtime
 from stonemason.storage.concept import PersistentStorageConcept, \
     PersistentStorageError
 
@@ -100,7 +100,7 @@ class S3Storage(PersistentStorageConcept):
         blob = response['Body'].read()
         metadata = response['Metadata']
         metadata['LastModified'] = float(
-            time.mktime(item.last_modified.timetuple()))
+            time.mktime(item.last_modified.utctimetuple()))
 
         return blob, metadata
 
@@ -169,10 +169,8 @@ class S3HttpStorage(PersistentStorageConcept):
                 metadata[k[11:]] = v
 
         if 'Last-Modified' in response.headers:
-            last_modified = email.utils.parsedate_tz(
+            metadata['LastModified'] = timestamp2mtime(
                 response.headers['Last-Modified'])
-            metadata['LastModified'] = float(
-                time.mktime(last_modified.timetuple()))
         else:
             metadata['LastModified'] = None
 
