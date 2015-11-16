@@ -44,7 +44,7 @@ class DiskRasterStorage(RasterStorageConcept):
 class S3RasterStorage(RasterStorageConcept):
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', prefix='', policy='private',
-                 reduced_redundancy=False, indexname='index.shp'):
+                 reduced_redundancy='STANDARD', indexname='index.shp'):
         sep = '/'
 
         key_mode = SimpleFeatureKeyMode(prefix=prefix, sep=sep)
@@ -66,7 +66,7 @@ class S3RasterStorage(RasterStorageConcept):
 class S3HttpRasterStorage(RasterStorageConcept):
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', prefix='', policy='private',
-                 reduced_redundancy=False, indexname='index.shp'):
+                 reduced_redundancy='STANDARD', indexname='index.shp'):
         sep = '/'
 
         key_mode = SimpleFeatureKeyMode(prefix=prefix, sep=sep)
