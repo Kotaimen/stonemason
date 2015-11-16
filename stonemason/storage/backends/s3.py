@@ -11,7 +11,6 @@ import time
 import email
 import six
 import requests
-import logging
 import boto3
 import botocore.exceptions
 

@@ -58,7 +58,8 @@ install_requires = [
     'pylibmc>=1.5.0',
     'numpy>=1.6',
     'scipy>=0.9',
-    'scikit-image>=0.10.0'
+    'scikit-image>=0.10.0',
+    'requests>=2.3.0'
 ]
 
 if IS_PY3:
