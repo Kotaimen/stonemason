@@ -52,13 +52,13 @@ class MetaTileSerializer(MetaTileSerializeConcept):
             # decompress gzip
             blob = gzip.GzipFile(fileobj=io.BytesIO(blob), mode='rb').read()
 
-        attributes = {}
-        attributes['etag'] = metadata.get('etag')
-        attributes['mimetype'] = metadata.get('mimetype', self._mimetype)
-        attributes['mtime'] = float(metadata.get(
-            'mtime', metadata.get('LastModified')))
+        m = {}
+        m['etag'] = metadata.get('etag', None)
+        m['mimetype'] = metadata.get('mimetype', self._mimetype)
+        m['mtime'] = float(metadata.get(
+            'mtime', metadata.get('LastModified', None)))
 
-        return MetaTile(index, data=blob, **attributes)
+        return MetaTile(index, data=blob, **m)
 
     def save(self, index, obj):
         assert isinstance(index, MetaTileIndex)
@@ -116,11 +116,11 @@ class TileClusterSerializer(MetaTileSerializeConcept):
 
         # let tilecluster figure out mimetype from cluster index,
         # since storage always assign 'application/zip' for a cluster
-        attributes = {}
-        attributes['mtime'] = float(metadata.get(
-            'mtime', metadata.get('LastModified')))
+        m = {}
+        m['mtime'] = float(metadata.get(
+            'mtime', metadata.get('LastModified', None)))
 
-        return TileCluster.from_zip(io.BytesIO(blob), metadata=attributes)
+        return TileCluster.from_zip(io.BytesIO(blob), metadata=m)
 
     def save(self, index, obj):
         assert isinstance(index, MetaTileIndex)

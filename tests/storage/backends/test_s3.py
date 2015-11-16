@@ -4,15 +4,12 @@ __author__ = 'ray'
 __date__ = '10/27/15'
 
 import unittest
-
 import six
 import moto
 import boto3
-
-from stonemason.storage.backends.s3 import S3Storage
+from stonemason.storage.backends.s3 import S3Storage, S3HttpStorage
 
 TEST_BUCKET_NAME = 'tilestorage'
-
 
 class TestS3Storage(unittest.TestCase):
     def setUp(self):
@@ -74,3 +71,14 @@ class TestS3Storage(unittest.TestCase):
     def tearDown(self):
         self.storage.close()
         self.mock.stop()
+
+
+class TestS3HttpStorage(TestS3Storage):
+    def setUp(self):
+        self.mock = moto.mock_s3()
+        self.mock.start()
+
+        s3 = boto3.resource('s3')
+        s3.Bucket(TEST_BUCKET_NAME).create()
+
+        self.storage = S3HttpStorage(bucket=TEST_BUCKET_NAME)

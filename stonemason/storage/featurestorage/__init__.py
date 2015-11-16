@@ -12,7 +12,8 @@ except ImportError:
 from .concept import FeatureKeyConcept, FeatureSerializeConcept, \
     SpatialIndexConcept, FeatureStorageConcept, FeatureStorageImpl, \
     FeatureStorageError
-from .raster import RasterStorageConcept, S3RasterStorage, DiskRasterStorage
+from .raster import RasterStorageConcept, S3RasterStorage, DiskRasterStorage, \
+    S3HttpRasterStorage
 
 
 class InvalidConnectionString(FeatureStorageError):
@@ -33,9 +34,15 @@ def create_feature_storage(conn_string):
     if backend == 's3':
         bucket = components.netloc
         if prefix.startswith('/'):
-            prefix=prefix[1:]
+            prefix = prefix[1:]
         if dialect == 'raster':
             return S3RasterStorage(bucket=bucket, prefix=prefix, **params)
+    elif backend == 's3http':
+        bucket = components.netloc
+        if prefix.startswith('/'):
+            prefix = prefix[1:]
+        if dialect == 'raster':
+            return S3HttpRasterStorage(bucket=bucket, prefix=prefix, **params)
 
     elif backend == 'disk':
         if dialect == 'raster':

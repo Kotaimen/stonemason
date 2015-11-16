@@ -286,7 +286,7 @@ class S3MetaTileStorage(MetaTileStorageImpl):
 
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',
-                 reduced_redundancy=False,
+                 reduced_redundancy='STANDARD',
                  key_mode='simple', prefix='my_storage',
                  levels=range(0, 22), stride=1, format=None,
                  readonly=False):
@@ -473,7 +473,7 @@ class S3ClusterStorage(MetaTileStorageImpl):
 
     def __init__(self, access_key=None, secret_key=None,
                  bucket='my_bucket', policy='private',
-                 reduced_redundancy=False,
+                 reduced_redundancy='STANDARD',
                  key_mode='simple', prefix='my_storage',
                  levels=range(0, 22), stride=1, format=None,
                  readonly=False, compressed=False):
