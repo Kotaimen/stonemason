@@ -18,7 +18,8 @@ try:
     from urllib.parse import ParseResult, urlunparse, urlencode
 except ImportError:
     # for python2.7
-    from urlparse import ParseResult, urlunparse, urlencode
+    from urlparse import ParseResult, urlunparse
+    from urllib import urlencode
 
 from stonemason.storage.concept import PersistentStorageConcept, \
     PersistentStorageError
