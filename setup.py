@@ -64,7 +64,7 @@ install_requires = [
 if IS_PY3:
     pass
 else:
-    install_requires.append('futures>=3.0.0')
+    install_requires.append('futures>=2.0.0,<3.0.0')
 
 tests_require = [
     'nose>=1.3.0',
