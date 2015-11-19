@@ -9,21 +9,9 @@ __date__ = '10/26/15'
 
 import io
 import gzip
-
 from stonemason.formatbundle import MapWriter
 from stonemason.pyramid import MetaTileIndex, MetaTile, TileCluster
-
-from ..concept import ObjectSerializeConcept
-
-from .errors import InvalidMetaTile
-
-
-# ==============================================================================
-# MetaTile Serializer
-# ==============================================================================
-class MetaTileSerializeConcept(ObjectSerializeConcept):  # pragma: no cover
-    """MetaTile Serializer Concept"""
-    pass
+from .concept import InvalidMetaTile, MetaTileSerializeConcept
 
 
 class MetaTileSerializer(MetaTileSerializeConcept):

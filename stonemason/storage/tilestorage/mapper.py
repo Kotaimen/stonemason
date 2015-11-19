@@ -7,45 +7,8 @@
 __author__ = 'ray'
 __date__ = '10/26/15'
 
-import six
-
 from stonemason.pyramid import MetaTileIndex, Hilbert, Legacy
-
-from ..concept import StorageKeyConcept
-
-
-# ==============================================================================
-# MetaTile Key Mode
-# ==============================================================================
-class MetaTileKeyConcept(StorageKeyConcept):  # pragma: no cover
-    """MetaTile Key Concept
-
-    Basic class for MetaTile key mode. A MetaTile key mode maps a MetaTile index
-    into a literal string.
-
-    :param prefix: Prefix of the key string.
-    :type prefix: str
-
-    :param extension: Suffix of the key string.
-    :type extension: str
-
-    :param sep: The character used to separate key components.
-    :type sep: str
-
-    :param gzip: If append .gz after extension.
-    :type gzip: bool
-
-    """
-
-    def __init__(self, prefix='', extension='.png', sep='/', gzip=False):
-        assert isinstance(prefix, six.string_types)
-        assert extension.startswith('.')
-        self._prefix = prefix
-        self._extension = extension
-        self._sep = sep
-
-        if gzip:  # append '.gz' to extension
-            self._extension = self._extension + '.gz'
+from .concept import MetaTileKeyConcept
 
 
 class HilbertKeyMode(MetaTileKeyConcept):

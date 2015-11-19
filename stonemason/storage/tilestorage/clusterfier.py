@@ -10,8 +10,9 @@ __date__ = '2/9/15'
 
 from stonemason.formatbundle import MapWriter
 from stonemason.pyramid.cluster import TileCluster
+from .concept import MetaTileStorageConcept
 
-from .implements import MetaTileStorageConcept, ClusterStorage
+ClusterStorage = MetaTileStorageConcept
 
 
 class Clusterfier(ClusterStorage):

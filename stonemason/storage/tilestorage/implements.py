@@ -8,196 +8,15 @@ __author__ = 'ray'
 __date__ = '10/25/15'
 
 import os
-
 import six
-
 from stonemason.formatbundle import FormatBundle
-from stonemason.pyramid import MetaTileIndex, MetaTile
-
-from ..backends.s3 import S3Storage
-from ..backends.disk import DiskStorage
-from ..concept import PersistentStorageConcept, GenericStorageImpl, \
-    ReadOnlyStorage
-
-from .errors import InvalidMetaTileIndex, MetaTileStorageError
-from .mapper import MetaTileKeyConcept, create_key_mode
-from .serializer import MetaTileSerializeConcept, MetaTileSerializer, \
-    TileClusterSerializer
-
-
-# ==============================================================================
-# MetaTile Storage
-# ==============================================================================
-class MetaTileStorageConcept(object):
-    """MetaTile Storage Concept
-
-    The ``MetaTileStorageConcept`` defines basic interfaces of a MetaTile
-    storage.
-
-    """
-
-    @property
-    def levels(self):
-        """Metatile levels in the storage.
-
-        :return: The level limits of the stored MetaTile.
-        :rtype: list
-
-        """
-        raise NotImplementedError
-
-    @property
-    def stride(self):
-        """Stride of metatiles in the storage
-
-        :return: The stride of the stored MetaTile.
-        :rtype: int
-
-        """
-        raise NotImplementedError
-
-    def has(self, index):
-        """ Check whether given index exists in the storage.
-
-        :param index: MetaTile index.
-        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
-
-        :return: Whether the metatile exists.
-        :rtype: bool
-
-        """
-        raise NotImplementedError
-
-    def get(self, index):
-        """Retrieve a `MetaTile` from the storage.
-
-        Retrieve a `MetaTile` from the storage, returns ``None`` if not found.
-
-        :param index: MetaTile index of the MetaTile.
-        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
-
-        :returns: Retrieved tile cluster.
-        :rtype: :class:`~stonemason.tilestorage.MetaTile` or ``None``
-
-        """
-        raise NotImplementedError
-
-    def put(self, metatile):
-        """Store a `MetaTile` in the storage.
-
-        Store a `MetaTile` in the storage, overriding any existing one.
-
-        :param metatile: The MetaTile to store.
-        :type metatile: :class:`~stonemason.pyramid.MetaTile`
-
-        """
-        raise NotImplementedError
-
-    def retire(self, index):
-        """Delete `MetaTile` with given index.
-
-        If `MetaTile` does not present in cache, this operation has no effect.
-
-        :param index: MetaTile index of the tile cluster.
-        :type index: :class:`~stonemason.tilestorage.MetaTileIndex`
-
-        """
-        raise NotImplementedError
-
-    def close(self):
-        """Close underlying connection to storage backend"""
-        raise NotImplementedError
-
-
-class MetaTileStorageImpl(MetaTileStorageConcept):  # pragma: no cover
-    """MetaTile Storage Implementation
-
-    The default implementation of a MetaTile storage.
-
-    :param key_concept: Instance of implementation of MetaTileKeyConcept.
-    :type key_concept: :class:`~stonemason.storage.tilestorage.MetaTileKeyConcept`
-
-    :param serializer_concept: Instance of MetaTileSerializerConcept.
-    :type serializer_concept: :class:`~stonemason.storage.tilestorage.MetaTileSerializeConcept`
-
-    :param storage_concept: Instance of PersistentStorageConcept.
-    :type storage_concept: :class:`~stonemason.storage.PersistentStorageConcept`
-
-    :param levels: The level limits of the stored MetaTile.
-    :type levels: list
-
-    :param stride: The stride of the stored MetaTile.
-    :type stride: int
-
-    :param readonly: Disable write access of the storage.
-    :type readonly: bool
-
-    """
-
-    def __init__(self, key_mode, serializer, storage,
-                 levels=range(0, 23), stride=1, readonly=False):
-        assert isinstance(key_mode, MetaTileKeyConcept)
-        assert isinstance(serializer, MetaTileSerializeConcept)
-        assert isinstance(storage, PersistentStorageConcept)
-
-        self._levels = levels
-        self._stride = stride
-
-        self._readonly = readonly
-
-        self._storage = GenericStorageImpl(key_concept=key_mode,
-                                           serializer_concept=serializer,
-                                           storage_concept=storage)
-
-    @property
-    def levels(self):
-        """Metatile levels in the storage."""
-        return self._levels
-
-    @property
-    def stride(self):
-        """Stride of metatiles in the storage"""
-        return self._stride
-
-    def has(self, index):
-        """Check whether given index exists in the storage."""
-        assert isinstance(index, MetaTileIndex)
-
-        return self._storage.has(index)
-
-    def get(self, index):
-        """Retrieve a `MetaTile` from the storage."""
-        assert isinstance(index, MetaTileIndex)
-
-        return self._storage.get(index)
-
-    def put(self, metatile):
-        """Store a `MetaTile` in the storage."""
-        assert isinstance(metatile, MetaTile)
-
-        if self._readonly:
-            raise ReadOnlyStorage
-
-        if metatile.index.z not in self._levels:
-            raise InvalidMetaTileIndex('Invalid MetaTile level.')
-        if metatile.index.stride != self._stride:
-            if metatile.index.z >> metatile.index.stride > 0:
-                raise InvalidMetaTileIndex('Invalid MetaTile stride.')
-
-        self._storage.put(metatile.index, metatile)
-
-    def retire(self, index):
-        """Delete `MetaTile` with given index."""
-        assert isinstance(index, MetaTileIndex)
-
-        if self._readonly:
-            raise ReadOnlyStorage
-
-        self._storage.delete(index)
-
-    def close(self):
-        """Close underlying connection to storage backend."""
-        self._storage.close()
+from stonemason.storage.backends.s3 import S3Storage
+from stonemason.storage.backends.disk import DiskStorage
+from stonemason.storage.concept import GenericStorageImpl
+from .mapper import create_key_mode
+from .serializer import MetaTileSerializer, TileClusterSerializer
+from .concept import MetaTileStorageError, MetaTileStorageConcept, \
+    MetaTileStorageImpl
 
 
 class S3MetaTileStorage(MetaTileStorageImpl):
@@ -239,7 +58,7 @@ class S3MetaTileStorage(MetaTileStorageImpl):
     :param reduced_redundancy: Set storage class to REDUCED_REDUNDANCY
         if set to `True`, default is `False`
 
-    :type reduced_redundancy: bool
+    :type reduced_redundancy: str
 
     :param key_mode: Specifies how the s3 key is calculated from
         metatile index, possible values are:
@@ -296,17 +115,17 @@ class S3MetaTileStorage(MetaTileStorageImpl):
         key_mode = create_key_mode(key_mode, prefix=prefix,
                                    extension=format.tile_format.extension,
                                    sep='/')
+        serializer = MetaTileSerializer(mimetype=format.tile_format.mimetype)
 
-        object_persistence = MetaTileSerializer(
-            gzip=False, mimetype=format.tile_format.mimetype)
+        persistent = S3Storage(access_key=access_key, secret_key=secret_key,
+                               bucket=bucket, policy=policy,
+                               reduced_redundancy=reduced_redundancy)
 
-        s3storage = S3Storage(access_key=access_key, secret_key=secret_key,
-                              bucket=bucket, policy=policy,
-                              reduced_redundancy=reduced_redundancy)
+        storage = GenericStorageImpl(key_concept=key_mode,
+                                     serializer_concept=serializer,
+                                     storage_concept=persistent)
 
-        MetaTileStorageImpl.__init__(self, key_mode,
-                                     object_persistence,
-                                     s3storage,
+        MetaTileStorageImpl.__init__(self, storage,
                                      levels=levels, stride=stride,
                                      readonly=readonly)
 
@@ -378,14 +197,16 @@ class DiskMetaTileStorage(MetaTileStorageImpl):
                                    extension=format.tile_format.extension,
                                    sep=os.sep, gzip=gzip)
 
-        object_persistence = MetaTileSerializer(
+        serializer = MetaTileSerializer(
             gzip=gzip, mimetype=format.tile_format.mimetype)
 
-        storage = DiskStorage()
+        persistent = DiskStorage()
 
-        MetaTileStorageImpl.__init__(self, key_mode,
-                                     object_persistence,
-                                     storage,
+        storage = GenericStorageImpl(key_concept=key_mode,
+                                     serializer_concept=serializer,
+                                     storage_concept=persistent)
+
+        MetaTileStorageImpl.__init__(self, storage,
                                      levels=levels, stride=stride,
                                      readonly=readonly)
 
@@ -422,7 +243,7 @@ class S3ClusterStorage(MetaTileStorageImpl):
     :param reduced_redundancy: Set storage class to REDUCED_REDUNDANCY
         if set to `True`, default is `False`
 
-    :type reduced_redundancy: bool
+    :type reduced_redundancy: str
 
     :param key_mode: Specifies how the s3 key is calculated from
         metatile index, possible values are:
@@ -484,18 +305,20 @@ class S3ClusterStorage(MetaTileStorageImpl):
                                    extension='.zip',
                                    sep='/')
 
-        object_persistence = TileClusterSerializer(
+        serializer = TileClusterSerializer(
             compressed=compressed,
             writer=format.writer,
             mimetype=format.tile_format.mimetype)
 
-        s3storage = S3Storage(access_key=access_key, secret_key=secret_key,
-                              bucket=bucket, policy=policy,
-                              reduced_redundancy=reduced_redundancy)
+        persistent = S3Storage(access_key=access_key, secret_key=secret_key,
+                               bucket=bucket, policy=policy,
+                               reduced_redundancy=reduced_redundancy)
 
-        MetaTileStorageImpl.__init__(self, key_mode,
-                                     object_persistence,
-                                     s3storage,
+        storage = GenericStorageImpl(key_concept=key_mode,
+                                     serializer_concept=serializer,
+                                     storage_concept=persistent)
+
+        MetaTileStorageImpl.__init__(self, storage,
                                      levels=levels, stride=stride,
                                      readonly=readonly)
 
@@ -567,15 +390,18 @@ class DiskClusterStorage(MetaTileStorageImpl):
                                    extension='.zip',
                                    sep=os.sep)
 
-        object_persistence = TileClusterSerializer(
+        serializer = TileClusterSerializer(
             compressed=compressed,
             writer=format.writer,
             mimetype=format.tile_format.mimetype)
 
-        storage = DiskStorage()
+        persistent = DiskStorage()
 
-        MetaTileStorageImpl.__init__(self, key_mode,
-                                     object_persistence, storage,
+        storage = GenericStorageImpl(key_concept=key_mode,
+                                     serializer_concept=serializer,
+                                     storage_concept=persistent)
+
+        MetaTileStorageImpl.__init__(self, storage,
                                      levels=levels, stride=stride,
                                      readonly=readonly)
 
@@ -608,8 +434,3 @@ class NullMetaTileStorage(MetaTileStorageConcept):  # pragma: no cover
 
     def close(self):
         pass
-
-
-# XXX: for backward compatible
-ClusterStorage = MetaTileStorageConcept
-NullClusterStorage = NullMetaTileStorage

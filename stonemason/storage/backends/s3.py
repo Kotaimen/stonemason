@@ -58,7 +58,7 @@ class S3Storage(PersistentStorageConcept):
     :param reduced_redundancy: Set storage class to REDUCED_REDUNDANCY
         if set to `True`, default is `False`
 
-    :type reduced_redundancy: bool
+    :type reduced_redundancy: str
 
     """
 

@@ -15,6 +15,14 @@ class InvalidFeatureIndex(FeatureStorageError):
     pass
 
 
+class ReadOnlyFeatureStorage(FeatureStorageError):
+    """Read Only Storage
+
+    Raise when storage is read only.
+    """
+    pass
+
+
 class FeatureKeyConcept(StorageKeyConcept):  # pragma: no cover
     """Feature Key Concept
 

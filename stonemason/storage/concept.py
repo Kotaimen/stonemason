@@ -62,14 +62,6 @@ class PersistentStorageError(StorageError):
     pass
 
 
-class ReadOnlyStorage(StorageError):
-    """Read Only Storage Error
-
-    Raise when storage is read only.
-    """
-    pass
-
-
 # ==============================================================================
 # Storage Concepts
 # ==============================================================================
@@ -89,6 +81,7 @@ class StorageKeyConcept(object):  # pragma: no cover
         :rtype: str
 
         """
+
         pass
 
 

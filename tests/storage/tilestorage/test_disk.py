@@ -7,11 +7,11 @@ import os
 import unittest
 import shutil
 import tempfile
-
 from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.storage.tilestorage import DiskClusterStorage, DiskMetaTileStorage, \
-    InvalidMetaTile, InvalidMetaTileIndex, ReadOnlyStorage
+from stonemason.storage.tilestorage import DiskClusterStorage, \
+    DiskMetaTileStorage, \
+    InvalidMetaTile, InvalidMetaTileIndex, ReadOnlyMetaTileStorage
 from tests import DATA_DIRECTORY
 
 
@@ -71,8 +71,9 @@ class TestDiskClusterStorage(unittest.TestCase):
             root=self.root,
             format=self.format,
             readonly=True)
-        self.assertRaises(ReadOnlyStorage, storage.put, self.metatile)
-        self.assertRaises(ReadOnlyStorage, storage.retire, self.metatile.index)
+        self.assertRaises(ReadOnlyMetaTileStorage, storage.put, self.metatile)
+        self.assertRaises(ReadOnlyMetaTileStorage, storage.retire,
+                          self.metatile.index)
 
     def test_pathmode_simple(self):
         storage = DiskClusterStorage(

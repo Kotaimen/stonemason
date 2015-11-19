@@ -6,8 +6,9 @@ __date__ = '11/4/15'
 import os
 from stonemason.storage.backends.s3 import S3Storage, S3HttpStorage
 from stonemason.storage.backends.disk import DiskStorage
-from stonemason.storage.concept import GenericStorageImpl, ReadOnlyStorage
-from stonemason.storage.featurestorage.concept import FeatureStorageImpl
+from stonemason.storage.concept import GenericStorageImpl
+from stonemason.storage.featurestorage.concept import FeatureStorageImpl, \
+    ReadOnlyFeatureStorage
 from .mapper import SimpleFeatureKeyMode
 from .serializer import RasterFeatureSerializer
 from .indexer import ShpSpatialIndex
@@ -16,11 +17,11 @@ from .indexer import ShpSpatialIndex
 class RasterStorageConcept(FeatureStorageImpl):
     def put(self, key, feature):
         """Do not allow write access for now."""
-        raise ReadOnlyStorage
+        raise ReadOnlyFeatureStorage
 
     def delete(self, key):
         """Do not allow write access for now."""
-        raise ReadOnlyStorage
+        raise ReadOnlyFeatureStorage
 
 
 class DiskRasterStorage(RasterStorageConcept):
@@ -72,8 +73,8 @@ class S3HttpRasterStorage(RasterStorageConcept):
         key_mode = SimpleFeatureKeyMode(prefix=prefix, sep=sep)
         serializer = RasterFeatureSerializer()
         persistent = S3HttpStorage(access_key=access_key, secret_key=secret_key,
-                               bucket=bucket, policy=policy,
-                               reduced_redundancy=reduced_redundancy)
+                                   bucket=bucket, policy=policy,
+                                   reduced_redundancy=reduced_redundancy)
 
         storage = GenericStorageImpl(key_concept=key_mode,
                                      serializer_concept=serializer,

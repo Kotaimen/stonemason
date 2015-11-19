@@ -11,7 +11,7 @@ except ImportError:
 
 from .concept import FeatureKeyConcept, FeatureSerializeConcept, \
     SpatialIndexConcept, FeatureStorageConcept, FeatureStorageImpl, \
-    FeatureStorageError
+    FeatureStorageError, ReadOnlyFeatureStorage, InvalidFeatureIndex
 from .raster import RasterStorageConcept, S3RasterStorage, DiskRasterStorage, \
     S3HttpRasterStorage
 

@@ -8,8 +8,8 @@ import tempfile
 import unittest
 import shutil
 from osgeo import gdal
-from stonemason.storage.featurestorage import create_feature_storage
-from stonemason.storage import ReadOnlyStorage
+from stonemason.storage.featurestorage import create_feature_storage, \
+    ReadOnlyFeatureStorage
 from tests import DATA_DIRECTORY
 
 TEST_BUCKET_NAME = 'rasterstorage'
@@ -38,8 +38,8 @@ class TestDiskRasterFeatureStorage(unittest.TestCase):
         self.assertTrue(storage.has(test_key))
         self.assertIsInstance(storage.get(test_key), gdal.Dataset)
 
-        self.assertRaises(ReadOnlyStorage, storage.put, test_key, None)
-        self.assertRaises(ReadOnlyStorage, storage.delete, test_key)
+        self.assertRaises(ReadOnlyFeatureStorage, storage.put, test_key, None)
+        self.assertRaises(ReadOnlyFeatureStorage, storage.delete, test_key)
 
         storage.close()
 
