@@ -3,8 +3,6 @@
 __author__ = 'ray'
 __date__ = '11/2/15'
 
-import os
-import six
 from osgeo import gdal, gdalconst
 from stonemason.util.tempfn import generate_temp_filename
 from stonemason.storage.featurestorage.concept import FeatureSerializeConcept
@@ -12,39 +10,36 @@ from stonemason.storage.featurestorage.concept import FeatureSerializeConcept
 
 class RasterFeatureSerializer(FeatureSerializeConcept):
     def load(self, index, blob, metadata):
-        temp_filename = generate_temp_filename()
-
+        temp_filename = '/vsimem/%s' % generate_temp_filename()
         try:
-            with open(temp_filename, 'wb') as fp:
-                fp.write(blob)
-
+            gdal.FileFromMemBuffer(temp_filename, blob)
             source = gdal.OpenShared(temp_filename, gdalconst.GA_ReadOnly)
         finally:
-            if os.path.exists(temp_filename):
-                os.remove(temp_filename)
+            gdal.Unlink(temp_filename)
 
         return source
 
     def save(self, index, obj):
         assert isinstance(obj, gdal.Dataset)
 
-        driver = gdal.GetDriverByName('GTIFF')
-        temp_filename = generate_temp_filename()
+        temp_filename = '/vsimem/%s' % generate_temp_filename()
 
+        driver = gdal.GetDriverByName('GTIFF')
         source = driver.CreateCopy(temp_filename, obj)
+        del source
 
         try:
-            assert isinstance(source, gdal.Dataset)
-            source.FlushCache()
-
-            with open(temp_filename, 'rb') as fp:
-                blob = six.b(fp.read())
-            metadata = dict()
+            statBuf = gdal.VSIStatL(temp_filename,
+                                    gdal.VSI_STAT_EXISTS_FLAG |
+                                    gdal.VSI_STAT_NATURE_FLAG |
+                                    gdal.VSI_STAT_SIZE_FLAG)
+            f = gdal.VSIFOpenL(temp_filename, 'rb')
+            blob = gdal.VSIFReadL(1, statBuf.size, f)
+            gdal.VSIFCloseL(f)
 
         finally:
-            if os.path.exists(temp_filename):
-                os.remove(temp_filename)
+            gdal.Unlink(temp_filename)
 
-            del source
+        metadata = dict()
 
         return blob, metadata
