@@ -7,6 +7,7 @@
 __author__ = 'ray'
 __date__ = '10/22/15'
 
+import os
 import time
 import six
 import requests
@@ -21,6 +22,7 @@ except ImportError:
     from urllib import urlencode
 
 from stonemason.util.timer import timestamp2mtime
+from stonemason.util.guesstypes import guess_mimetype
 from stonemason.storage.concept import PersistentStorageConcept, \
     PersistentStorageError
 
@@ -113,6 +115,7 @@ class S3Storage(PersistentStorageConcept):
         item.put(
             ACL=self._policy,
             Body=blob,
+            ContentType=guess_mimetype(os.path.splitext(key)[1]),
             Metadata=metadata,
             StorageClass=self._storage_class,
         )
