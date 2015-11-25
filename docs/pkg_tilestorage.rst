@@ -30,15 +30,10 @@ More backends will be added in the future.
 Exceptions
 ==========
 
-.. automodule:: stonemason.tilestorage.exceptions
-    :members:
-    :undoc-members:
-
-
 Tile Cluster
 ============
 
-.. autoclass:: stonemason.tilestorage.TileCluster
+.. autoclass:: stonemason.pyramid.TileCluster
     :members: __getitem__
 
 Cluster File Format
@@ -118,37 +113,3 @@ JSON fields:
     Optional fields are designed to work with legacy renders, current
     cluster will always write these fields.
 
-
-MetaTile Storage
-================
-
-.. autoclass:: stonemason.tilestorage.MetaTileStorage
-    :members:
-
-.. autoclass:: stonemason.tilestorage.NullMetaTileStorage
-    :members:
-
-.. autoclass:: stonemason.tilestorage.DiskMetaTileStorage
-    :members:
-
-.. autoclass:: stonemason.tilestorage.S3MetaTileStorage
-    :members:
-
-
-Cluster Storage
-===============
-
-.. autoclass:: stonemason.tilestorage.ClusterStorage
-    :members:
-
-.. autoclass:: stonemason.tilestorage.NullClusterStorage
-    :members:
-
-.. autoclass:: stonemason.tilestorage.DiskClusterStorage
-    :members:
-
-.. autoclass:: stonemason.tilestorage.S3ClusterStorage
-    :members:
-
-.. autoclass:: stonemason.tilestorage.Clusterfier
-    :members:
