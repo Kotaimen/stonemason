@@ -83,7 +83,7 @@ class TestGridCrop(ImageTestCase):
         self.assertImageEqual(Image.open(io.BytesIO(grids[(0, 0)])),
                               self.grid_image.crop((256, 256, 512, 512)))
 
-    def test_grid_crop_into_data2(self):
+    def test_grid_crop_into_data_paletted(self):
 
         grids = dict(gridcrop.grid_crop_into_data(self.grid_data,
                                                   stride=2,
@@ -96,13 +96,14 @@ class TestGridCrop(ImageTestCase):
                                                       optimized=True
                                                   )))
 
-        self.assertImageEqual(Image.open(io.BytesIO(grids[(0, 0)])),
-                              self.grid_image.crop(
-                                  (256, 256, 512, 512)).convert('RGB').convert(
-                                  'P',
-                                  colors=4,
-                                  palette=1)
-                              )
+        self.assertImageNotEqual(Image.open(io.BytesIO(grids[(0, 0)])),
+                                 self.grid_image.crop(
+                                     (256, 256, 512, 512)).convert(
+                                     'RGB').convert(
+                                     'P',
+                                     colors=4,
+                                     palette=1)
+                                 )
 
         if __name__ == '__main__':
             unittest.main()
