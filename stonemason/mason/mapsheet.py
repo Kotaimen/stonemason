@@ -169,7 +169,7 @@ class MetaTileMapSheet(MapSheet):
         return feature
 
     def render_metatile(self, meta_index):
-        if self._storage.get(meta_index) is not None:
+        if self._storage.has(meta_index):
             return True
 
         feature = self.get_feature(meta_index)

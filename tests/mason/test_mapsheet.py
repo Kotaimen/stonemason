@@ -100,6 +100,9 @@ class MockMetaTileStorage(MetaTileStorageConcept):
     def stride(self):
         return 2
 
+    def has(self, index):
+        return index in self._storage
+
     def get(self, index):
         return self._storage.get(index)
 
