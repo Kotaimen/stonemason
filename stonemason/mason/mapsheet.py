@@ -59,6 +59,10 @@ class ClusterMapSheet(MapSheet):
                                            meta_index.y,
                                            self._storage.stride)
         cluster = self._storage.get(storage_meta_index)
+        # TODO: This is a patch caused by storage refactoring. Need to fix.
+        if isinstance(cluster, MetaTile):
+            cluster = TileCluster.from_metatile(cluster, self.bundle.writer)
+
         if cluster is not None:
             return cluster
 
