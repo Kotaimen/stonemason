@@ -1,4 +1,4 @@
-FROM        kotaimen/stonemason-base:mapnik3
+FROM        kotaimen/stonemason-base:mapnik3.0.9
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
 
