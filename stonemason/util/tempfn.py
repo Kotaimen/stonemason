@@ -16,6 +16,9 @@ import tempfile
 import six
 
 
+STONEMASON_TEMP_ROOT = 'stonemason'
+
+
 def generate_temp_filename(dirname=None, prefix='tmp', suffix=''):
     """Generate a temporary file name with specified suffix and prefix.
 
@@ -37,7 +40,9 @@ def generate_temp_filename(dirname=None, prefix='tmp', suffix=''):
     assert isinstance(prefix, six.string_types)
 
     if not dirname:
-        dirname = tempfile.gettempdir()
+        dirname = os.path.join(tempfile.gettempdir(), STONEMASON_TEMP_ROOT)
+        if not os.path.exists(dirname):
+            os.mkdir(dirname)
 
     for n, temp in enumerate(tempfile._get_candidate_names()):
         basename = '%s%s%s' % (prefix, temp, suffix)

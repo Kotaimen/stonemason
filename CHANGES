@@ -43,3 +43,13 @@ Release date: 2015-10-13
 - Supports docker-compose and AWS ECS deployment
 - Rearranged unittest sources
 
+
+v0.3.0rc1
+----------
+
+Release date: 2015-12-31
+
+- Use boto3 as AWS driver, replaces boto.
+- Refactored tilestorage package, now tile storage and raster feature storage
+  shares a common implement.
+- Use mapnik3's PNG quantalizer instead of pillow for better image quality.

@@ -10,8 +10,23 @@
 __author__ = 'kotaimen'
 __date__ = '5/7/12'
 
-import time
 import sys
+import time
+import email
+
+
+def timestamp2mtime(timestamp):
+    """Convert RFC 2822 datetime string used by s3 to mtime."""
+    modified = email.utils.parsedate_tz(timestamp)
+    if modified is None:
+        return None
+    mtime = email.utils.mktime_tz(modified)
+    return float(mtime)
+
+
+def mtime2timestamp(mtime):
+    """Convert mtime to RFC 2822 datetime string."""
+    return email.utils.formatdate(mtime)
 
 
 def human_duration(d):

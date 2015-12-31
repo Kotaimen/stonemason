@@ -14,7 +14,7 @@ from stonemason.pyramid import Pyramid
 from stonemason.formatbundle import MapType, TileFormat
 from stonemason.mason.metadata import Metadata
 from stonemason.mason.builder import MapBookBuilder, MapSheetBuilder
-from stonemason.tilestorage import ClusterStorage
+from stonemason.storage.tilestorage import ClusterStorage
 from stonemason.renderer import MasonRenderer
 
 

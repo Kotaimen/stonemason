@@ -46,7 +46,7 @@ for scale in [1, 2, 3, 4]:
             # projection coordinate system
             projcs='EPSG:3857',
             # zoom levels
-            levels=range(0, scale + 9)
+            levels=list(range(0, scale + 9))
         ),
         # maptype
         maptype=maptype,

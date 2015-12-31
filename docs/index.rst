@@ -15,14 +15,14 @@ Stonemason
    :alt: Mt. Kurohime
    :align: center
 
-   Shaded relief map near Mt. Kurohime.
+   Shaded relief map near Mt. Kurohime.  Data: GSI.
 
 .. figure:: _static/newspaper.png
    :width: 100 %
    :alt: Newspaper
    :align: center
 
-   Mimics a halftone printed newspaper.
+   Mimics a halftone printed newspaper.  Data: OSM.
 
 
 User's Guide

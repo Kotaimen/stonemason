@@ -8,11 +8,12 @@ import unittest
 
 from PIL import Image
 
-from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, MetaTileIndex
+from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, \
+    MetaTileIndex, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer import MasonRenderer
 from stonemason.renderer.cartographer import ImageFeature
-from stonemason.tilestorage import ClusterStorage, MetaTileStorage, TileCluster
+from stonemason.storage.tilestorage import ClusterStorage, MetaTileStorageConcept
 from stonemason.mason.mapsheet import ClusterMapSheet, MetaTileMapSheet
 
 from tests import skipUnlessHasGDAL
@@ -86,7 +87,7 @@ def mock_metatile():
     return meta_tile
 
 
-class MockMetaTileStorage(MetaTileStorage):
+class MockMetaTileStorage(MetaTileStorageConcept):
     def __init__(self, bundle):
         self._storage = dict()
         self._bundle = bundle
@@ -98,6 +99,9 @@ class MockMetaTileStorage(MetaTileStorage):
     @property
     def stride(self):
         return 2
+
+    def has(self, index):
+        return index in self._storage
 
     def get(self, index):
         return self._storage.get(index)

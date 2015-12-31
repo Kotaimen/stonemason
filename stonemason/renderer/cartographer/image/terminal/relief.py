@@ -9,20 +9,17 @@ __author__ = 'ray'
 __date__ = '6/17/15'
 
 import math
-
+import logging
 import numpy as np
-from PIL import Image, ImageOps
-from scipy import ndimage
 import skimage
 import skimage.exposure
-import skimage.filters
-import skimage.segmentation
-import skimage.morphology
-
+from PIL import Image, ImageOps
+from scipy import ndimage
+from osgeo import gdal, osr, gdalconst
+from stonemason.pyramid.geo import Envelope
 from stonemason.renderer.engine.rendernode import TermNode
 from stonemason.renderer.engine.context import RenderContext
-from stonemason.renderer.datasource import ElevationData, RGBImageData
-
+from stonemason.storage.featurestorage import create_feature_storage
 from ..feature import ImageFeature
 
 __all__ = ['SimpleRelief', 'SwissRelief', 'ColorRelief']
@@ -31,43 +28,6 @@ __all__ = ['SimpleRelief', 'SwissRelief', 'ColorRelief']
 #
 # Helper functions
 #
-
-def aspect_and_slope(elevation, resolution, scale, z_factor=1.0):
-    """Generate aspect and slope map from given elevation raster.
-
-    :return: Aspect and slope map in a tuple ``(aspect, slope)``.
-    :rtype: tuple
-    """
-
-    res_x, res_y = resolution
-    kernel = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
-    dx = ndimage.convolve(elevation, kernel / (8. * res_x), mode='nearest')
-
-    kernel = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
-    dy = ndimage.convolve(elevation, kernel / (8. * res_y), mode='nearest')
-
-    slope = np.arctan(float(z_factor) / float(scale) * np.hypot(dx, dy))
-    aspect = math.pi / 2. - np.arctan2(dy, -dx)
-
-    return aspect, slope
-
-
-def hill_shading(aspect, slope, azimuth=315, altitude=45):
-    """Generate hill shading map from aspect and slope, which are the result of
-    :func:`~stonemason.renderer.cartographer.image.relief.aspect_and_slope`.
-
-    :return: Generated shaded relief.
-    :rtype: numpy.array
-    """
-    zenith = math.radians(90. - float(altitude) % 360.)
-    azimuth = math.radians(float(azimuth))
-
-    shade = ((math.cos(zenith) * np.cos(slope)) +
-             (math.sin(zenith) * np.sin(slope) * np.cos(azimuth - aspect)))
-
-    shade[shade < 0] = 0.
-    return shade
-
 
 def array2pillow(array, width, height, buffer=0):
     """ Convert a numpy array image to PIL image, note only greyscale image is
@@ -99,6 +59,43 @@ def array2pillow(array, width, height, buffer=0):
     pil_image = Image.fromarray(image, mode='L')
 
     return pil_image
+
+
+def aspect_and_slope(elevation, resolution, scale, z_factor=1.0):
+    """Generate aspect and slope map from given elevation raster.
+
+    :return: Aspect and slope map in a tuple ``(aspect, slope)``.
+    :rtype: tuple
+    """
+
+    res_x, res_y = resolution
+    kernel = np.array([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
+    dx = ndimage.convolve(elevation, kernel / (8. * res_x), mode='nearest')
+
+    kernel = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+    dy = ndimage.convolve(elevation, kernel / (8. * res_y), mode='nearest')
+
+    slope = np.arctan(float(z_factor) / float(scale) * np.hypot(dx, dy))
+    aspect = math.pi / 2. - np.arctan2(dy, -dx)
+
+    return aspect, slope
+
+
+def hill_shading(aspect, slope, azimuth=315., altitude=45.):
+    """Generate hill shading map from aspect and slope, which are the result of
+    :func:`~stonemason.renderer.cartographer.image.relief.aspect_and_slope`.
+
+    :return: Generated shaded relief.
+    :rtype: numpy.array
+    """
+    zenith = math.radians(90. - float(altitude) % 360.)
+    azimuth = math.radians(float(azimuth))
+
+    shade = ((math.cos(zenith) * np.cos(slope)) +
+             (math.sin(zenith) * np.sin(slope) * np.cos(azimuth - aspect)))
+
+    shade[shade < 0] = 0.
+    return shade
 
 
 def simple_shaded_relief(elevation, resolution, scale=111120,
@@ -301,7 +298,396 @@ class Parameter(object):
             return self._value
 
 
-class SimpleRelief(TermNode):
+class PostProcessor(object):
+    def __call__(self, array):
+        raise NotImplementedError
+
+
+class SimpleReliefProcessor(PostProcessor):
+    def __init__(self, resolution, **params):
+        self._resolution = resolution
+        self._params = params
+
+    def __call__(self, array):
+        array = array[0]
+        relief = simple_shaded_relief(
+            array, self._resolution, **self._params)
+        return relief
+
+
+class SwissReliefProcessor(PostProcessor):
+    def __init__(self, resolution, **params):
+        self._resolution = resolution
+        self._params = params
+
+    def __call__(self, array):
+        array = array[0]
+        relief = swiss_shaded_relief(
+            array, self._resolution, **self._params)
+        return relief
+
+
+class ColorReliefProcessor(PostProcessor):
+    def __init__(self, resolution, **params):
+        self._resolution = resolution
+        self._params = params
+
+    def __call__(self, array):
+        rgb_array = np.dstack(array).astype(np.ubyte)
+        return rgb_array
+
+
+class Rasterizer(object):
+    def __call__(self, array):
+        raise NotImplementedError
+
+
+class GrayScaleRasterizer(Rasterizer):
+    def __init__(self, buffer=0):
+        self._buffer = buffer
+
+    def __call__(self, array):
+        assert len(array.shape) == 2
+        image_array = skimage.img_as_ubyte(array)
+
+        image = Image.fromarray(image_array, mode='L')
+        image = ImageOps.crop(image, self._buffer)
+
+        image = image.convert('RGBA')
+
+        return image
+
+
+class RGBRasterizer(Rasterizer):
+    def __init__(self, buffer=0):
+        self._buffer = buffer
+
+    def __call__(self, array):
+        assert len(array.shape) == 3 and array.shape[2] == 3
+        image_array = skimage.img_as_ubyte(array)
+
+        image = Image.fromarray(image_array, 'RGB')
+        image = ImageOps.crop(image, self._buffer)
+
+        image = image.convert('RGBA')
+
+        return image
+
+
+class GeoTransform(object):
+    def __init__(self, origin, resolution, skew=(0, 0)):
+        self._origin = origin
+        self._resolution = resolution
+        self._skew = skew
+
+    @property
+    def origin(self):
+        return self._origin
+
+    @property
+    def resolution(self):
+        return self._resolution
+
+    @property
+    def skew(self):
+        return self._skew
+
+    def make_tuple(self):
+        transform = self._origin[0], self._resolution[0], self._skew[0], \
+                    self._origin[1], self._skew[1], -self._resolution[1]
+        return transform
+
+    def make_envelope(self, size):
+        minx, maxy = self.origin
+        resx, resy = self.resolution
+        sizex, sizey = size
+
+        maxx = minx + resx * sizex
+        miny = maxy - resy * sizey
+
+        return minx, miny, maxx, maxy
+
+    @staticmethod
+    def from_tuple(transform):
+        origin = transform[0], transform[3]
+        resolution = transform[1], -transform[5]
+        skew = transform[2], transform[4]
+
+        return GeoTransform(origin, resolution, skew)
+
+    @staticmethod
+    def from_envelope(envelope, size):
+        left, bottom, right, top = envelope
+        width, height = size
+
+        res_x = (right - left) / width
+        res_y = (top - bottom) / height
+        resolution = res_x, res_y
+
+        origin = left, top
+
+        return GeoTransform(origin, resolution)
+
+
+class RasterDataDomain(object):
+    """Base Raster Data Domain
+
+    Data traits of raster data source. Difference raster data have different
+    data type. For example, elevation data  may have a data type of Float32
+    while image data may have it of Byte.
+
+    Available raster data type:
+
+        ============    =============================
+        ``byte``        :data:`gdalconst.GDT_Byte`
+        ``uint16``      :data:`gdalconst.GDT_UInt16`
+        ``int16``       :data:`gdalconst.GDT_Int16`
+        ``uint32``      :data:`gdalconst.GDT_UInt32`
+        ``int32``       :data:`gdalconst.GDT_Int32`
+        ``float32``     :data:`gdalconst.GDT_Float32`
+        ``float64``     :data:`gdalconst.GDT_Float64`
+        ``cint16``      :data:`gdalconst.GDT_CInt16`
+        ``cint32``      :data:`gdalconst.GDT_CInt32`
+        ``cfloat32``    :data:`gdalconst.GDT_CFloat32`
+        ``cfloat64``    :data:`gdalconst.GDT_CFloat64`
+        ============    =============================
+
+    """
+
+    #: Number of data bands. Default value is ``1``.
+    DIMENSION = 1
+
+    #: Value for invalid data in the raster data source. Default value is ``-1``.
+    NODATAVALUE = -9999
+
+    #: Data type of pixel value. Default value is ``int32``.
+    DATA_TYPE = 'int32'
+
+
+class RGBDataDomain(RasterDataDomain):
+    """RGB Data Domain
+
+    Attributes of a data source with Red, Green, and Blue bands.
+    """
+
+    #: Number of data bands.
+    DIMENSION = 3
+
+    #: Value for invalid data in the raster data source.
+    NODATAVALUE = 0
+
+    #: Data type of pixel value.
+    DATA_TYPE = 'byte'
+
+
+class ElevationDataDomain(RasterDataDomain):
+    """Elevation Data Domain
+
+    Attributes of a data source with elevation data.
+    """
+
+    #: Number of data bands.
+    DIMENSION = 1
+
+    #: Value for invalid data in the raster data source.
+    NODATAVALUE = np.finfo(np.float32).min.item()
+
+    #: Data type of pixel value.
+    DATA_TYPE = 'float32'
+
+
+class ReliefNodeImpl(TermNode):
+    def __init__(self, name,
+                 domain,
+                 postprocessor,
+                 render_parameters,
+                 datasource,
+                 rasterizer,
+                 buffer):
+        assert isinstance(render_parameters, dict)
+        TermNode.__init__(self, name)
+
+        self._render_parameters = dict(
+            (k, Parameter(v)) for k, v in render_parameters.items())
+        self._connection_string = Parameter(datasource)
+
+        self._domain = domain
+
+        self._postprocessor = postprocessor
+        self._rasterizer = rasterizer
+
+        self._buffer = buffer
+        self._storage_cache = dict()
+
+    def _create_storage(self, resolution):
+        connection_string = self._connection_string(resolution)
+
+        if connection_string in self._storage_cache:
+            storage = self._storage_cache[connection_string]
+        else:
+            storage = create_feature_storage(connection_string)
+            self._storage_cache[connection_string] = storage
+
+        return storage
+
+    def _create_postprocessor(self, resolution):
+        render_parameters = dict(
+            (k, v(resolution)) for k, v in self._render_parameters.items())
+        return self._postprocessor(resolution, **render_parameters)
+
+    def _create_rasterizer(self, resolution):
+        return self._rasterizer(self._buffer)
+
+    def _mosaic(self, crs, envelope, size, storage):
+
+        """Get raster data of the specific area.
+
+        :param crs: coordinate reference system of the return data.
+        :type crs: str
+
+        :param envelope: data bounding box represented by a tuple of four
+            coordinates ``(left, bottom, right, top)``.
+        :type envelope: tuple
+
+        :param size: pixel size of output envelope represented by a tuple
+            of width and height. For example, ``(width, height)``
+
+        :return: a array of raster data with a shape like:
+
+            .. math::
+
+                (domain.DIMENSION \\times height \\times width)
+
+        :rtype: numpy.array
+
+        """
+        domain = self._domain
+
+        # create target raster dataset
+        driver = gdal.GetDriverByName('MEM')
+
+        target_crs = osr.SpatialReference()
+        target_crs.SetFromUserInput(crs)
+        target_projection = target_crs.ExportToWkt()
+
+        target_transform = GeoTransform.from_envelope(envelope, size)
+        target_width, target_height = size
+        target_band_num = domain.DIMENSION
+
+        data_type = gdal.GetDataTypeByName(domain.DATA_TYPE)
+        if data_type == gdalconst.GDT_Unknown:
+            raise RuntimeError('Unknown data type %s' % domain.DATA_TYPE)
+
+        target = driver.Create(
+            '', target_width, target_height, target_band_num, data_type)
+
+        try:
+            # initialize
+            assert isinstance(target, gdal.Dataset)
+            target.SetGeoTransform(target_transform.make_tuple())
+            target.SetProjection(target_projection)
+            for band_no in range(1, target_band_num + 1):
+                band = target.GetRasterBand(band_no)
+                assert isinstance(band, gdal.Band)
+                band.SetNoDataValue(domain.NODATAVALUE)
+                band.Fill(domain.NODATAVALUE)
+
+            # set query bounding geometry
+            ctl_envelope = Envelope(*target_transform.make_envelope(size))
+            ctl_envelope_geom = ctl_envelope.to_geometry(srs=target_crs)
+            if not target_crs.IsSame(storage.crs):
+                ctl_envelope_geom.TransformTo(storage.crs)
+            ctl_envelope = Envelope.from_ogr(ctl_envelope_geom.GetEnvelope())
+            ctl_transform = GeoTransform.from_envelope(ctl_envelope, size)
+
+            # retrieve source data
+            for raster_key in storage.intersection(ctl_envelope):
+                logging.debug('Reading: %s' % raster_key)
+
+                source = storage.get(raster_key)
+                if source is None:
+                    continue
+
+                try:
+                    source_projection = source.GetProjection()
+                    source_transform = GeoTransform.from_tuple(
+                        source.GetGeoTransform())
+
+                    # find resample method.
+                    resample_method = self._find_resample_method(
+                        source_transform.resolution,
+                        ctl_transform.resolution)
+
+                    ret = gdal.ReprojectImage(source,
+                                              target,
+                                              source_projection,
+                                              target_projection,
+                                              resample_method,
+                                              1024)
+                    if ret != 0:
+                        logging.debug('Warp Error: %s' % raster_key)
+
+                finally:
+                    # close source data
+                    source = None
+
+            result = []
+            for band_no in range(1, target.RasterCount + 1):
+                band = target.GetRasterBand(band_no)
+                # TODO: consider removing this
+                # try:
+                #     gdal.FillNodata(band, None, 100, 0)
+                # except RuntimeError:
+                #     # gdal raises exception if failed to remove temporary files,
+                #     # however FillNodata still works if we just ignore it.
+                #     pass
+                result.append(band.ReadAsArray())
+
+            return np.array(result)
+
+        finally:
+            # close target data
+            target = None
+
+    def _find_resample_method(self, resolution_a, resolution_b):
+        # find resample method.
+        if resolution_a[0] > resolution_b[0]:
+            # scale down
+            resample_method = gdalconst.GRA_CubicSpline
+        else:
+            # scale up
+            resample_method = gdalconst.GRA_Bilinear
+        return resample_method
+
+    def render(self, context):
+        assert isinstance(context, RenderContext)
+        crs = context.map_proj
+        envelope = context.map_bbox
+        size = context.map_size
+        resolution = _calc_resolution(envelope, size)
+
+        buffer_envelope = _buffer_envelope(envelope, resolution, self._buffer)
+        buffer_envelope_size = _buffer_size(size, self._buffer)
+
+        storage = self._create_storage(resolution)
+        array = self._mosaic(crs=crs, envelope=buffer_envelope,
+                             size=buffer_envelope_size, storage=storage)
+
+        postprocessor = self._create_postprocessor(resolution)
+        array = postprocessor(array)
+
+        rasterizer = self._create_rasterizer(resolution)
+        image = rasterizer(array)
+
+        feature = ImageFeature(crs=context.map_proj,
+                               bounds=context.map_bbox,
+                               size=context.map_size,
+                               data=image)
+
+        return feature
+
+
+class SimpleRelief(ReliefNodeImpl):
     """Simple Shaded Relief Render Node
 
     `SimpleRelief` produces shaded relief in a simple fast way. Hill shade is
@@ -373,7 +759,8 @@ class SimpleRelief(TermNode):
     :rtype: numpy.array
 
     """
-    def __init__(self, name, index,
+
+    def __init__(self, name, datasource,
                  zfactor=1,
                  scale=111120,
                  azimuth=315,
@@ -381,73 +768,24 @@ class SimpleRelief(TermNode):
                  cutoff=0.707,
                  gain=4,
                  buffer=0):
-        TermNode.__init__(self, name)
-
-        self._index = Parameter(index)
-
-        self._zfactor = Parameter(zfactor)
-        self._scale = Parameter(scale)
-        self._azimuth = Parameter(azimuth)
-        self._altitude = Parameter(altitude)
-        self._cutoff = Parameter(cutoff)
-        self._gain = Parameter(gain)
-
-        self._buffer = buffer
-
-    def render(self, context):
-        """Render a image feature.
-
-        :param context: requirements and conditions for feature rendering.
-        :type context: :class:`~stonemason.renderer.engine.RenderContext`
-
-        :return: a image feature.
-        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
-
-        """
-        assert isinstance(context, RenderContext)
-        crs = context.map_proj
-        envelope = context.map_bbox
-        size = context.map_size
-
-        resolution = _calc_resolution(envelope, size)
-
-        buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
-        buffered_envelope_size = _buffer_size(size, self._buffer)
-
-        with ElevationData(self._index(resolution)) as source:
-            elevation = source.query(
-                crs, buffered_envelope, buffered_envelope_size)[0]
-
-            zfactor = self._zfactor(resolution)
-            scale = self._scale(resolution)
-            azimuth = self._azimuth(resolution)
-            altitude = self._altitude(resolution)
-            cutoff = self._cutoff(resolution)
-            gain = self._gain(resolution)
-
-            relief = simple_shaded_relief(elevation,
-                                          resolution,
-                                          scale=scale,
-                                          z_factor=zfactor,
-                                          azimuth=azimuth,
-                                          altitude=altitude,
-                                          cutoff=cutoff,
-                                          gain=gain)
-
-            image = skimage.img_as_ubyte(relief)
-
-            pil_image = Image.fromarray(image, mode='L')
-            pil_image = ImageOps.crop(pil_image, self._buffer)
-
-            feature = ImageFeature(crs=context.map_proj,
-                                   bounds=context.map_bbox,
-                                   size=context.map_size,
-                                   data=pil_image)
-
-            return feature
+        render_parameters = dict(z_factor=zfactor,
+                                 scale=scale,
+                                 azimuth=azimuth,
+                                 altitude=altitude,
+                                 cutoff=cutoff,
+                                 gain=gain)
 
 
-class SwissRelief(TermNode):
+        ReliefNodeImpl.__init__(self, name,
+                                domain=ElevationDataDomain(),
+                                postprocessor=SimpleReliefProcessor,
+                                render_parameters=render_parameters,
+                                datasource=datasource,
+                                rasterizer=GrayScaleRasterizer,
+                                buffer=buffer)
+
+
+class SwissRelief(ReliefNodeImpl):
     """Swiss Relief Render Node
 
     Maps with coloured relief shading, modulated by elevation and by exposure
@@ -552,7 +890,8 @@ class SwissRelief(TermNode):
     :type buffer: int
 
     """
-    def __init__(self, name, index,
+
+    def __init__(self, name, datasource,
                  zfactor=1,
                  scale=111120,
                  azimuth=315,
@@ -565,89 +904,28 @@ class SwissRelief(TermNode):
                  height_mask_gamma=0.5,
                  blend=(0.65, 0.75),
                  buffer=0):
-        TermNode.__init__(self, name)
+        render_parameters = dict(z_factor=zfactor,
+                                 scale=scale,
+                                 azimuth=azimuth,
+                                 altitude=altitude,
+                                 high_relief_cutoff=high_relief_cutoff,
+                                 high_relief_gain=high_relief_gain,
+                                 low_relief_cutoff=low_relief_cutoff,
+                                 low_relief_gain=low_relief_gain,
+                                 height_mask_range=height_mask_range,
+                                 height_mask_gamma=height_mask_gamma,
+                                 blend=blend)
 
-        self._index = Parameter(index)
-
-        self._zfactor = Parameter(zfactor)
-        self._scale = Parameter(scale)
-        self._azimuth = Parameter(azimuth)
-        self._altitude = Parameter(altitude)
-        self._high_relief_cutoff = Parameter(high_relief_cutoff)
-        self._high_relief_gain = Parameter(high_relief_gain)
-        self._low_relief_cutoff = Parameter(low_relief_cutoff)
-        self._low_relief_gain = Parameter(low_relief_gain)
-        self._height_mask_range = Parameter(height_mask_range)
-        self._height_mask_gamma = Parameter(height_mask_gamma)
-        self._blend = Parameter(blend)
-
-        self._buffer = buffer
-
-    def render(self, context):
-        """Render a image feature.
-
-        :param context: requirements and conditions for feature rendering.
-        :type context: :class:`~stonemason.renderer.engine.RenderContext`
-
-        :return: a image feature.
-        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
-
-        """
-        assert isinstance(context, RenderContext)
-        crs = context.map_proj
-        envelope = context.map_bbox
-        size = context.map_size
-
-        resolution = _calc_resolution(envelope, size)
-
-        buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
-        buffered_envelope_size = _buffer_size(size, self._buffer)
-
-        with ElevationData(self._index(resolution)) as source:
-            elevation = source.query(
-                crs, buffered_envelope, buffered_envelope_size)[0]
-
-            zfactor = self._zfactor(resolution)
-            scale = self._scale(resolution)
-            azimuth = self._azimuth(resolution)
-            altitude = self._altitude(resolution)
-            high_relief_cutoff = self._high_relief_cutoff(resolution)
-            high_relief_gain = self._high_relief_gain(resolution)
-            low_relief_cutoff = self._low_relief_cutoff(resolution)
-            low_relief_gain = self._low_relief_gain(resolution)
-            height_mask_range = self._height_mask_range(resolution)
-            height_mask_gamma = self._height_mask_gamma(resolution)
-            blend = self._blend(resolution)
-
-            relief = swiss_shaded_relief(elevation,
-                                         resolution,
-                                         scale=scale,
-                                         z_factor=zfactor,
-                                         azimuth=azimuth,
-                                         altitude=altitude,
-                                         high_relief_cutoff=high_relief_cutoff,
-                                         low_relief_cutoff=low_relief_cutoff,
-                                         high_relief_gain=high_relief_gain,
-                                         low_relief_gain=low_relief_gain,
-                                         height_mask_range=height_mask_range,
-                                         height_mask_gamma=height_mask_gamma,
-                                         blend=blend
-                                         )
-
-            image = skimage.img_as_ubyte(relief)
-
-            pil_image = Image.fromarray(image, mode='L')
-            pil_image = ImageOps.crop(pil_image, self._buffer)
-
-            feature = ImageFeature(crs=context.map_proj,
-                                   bounds=context.map_bbox,
-                                   size=context.map_size,
-                                   data=pil_image)
-
-            return feature
+        ReliefNodeImpl.__init__(self, name,
+                                domain=ElevationDataDomain(),
+                                postprocessor=SwissReliefProcessor,
+                                render_parameters=render_parameters,
+                                datasource=datasource,
+                                rasterizer=GrayScaleRasterizer,
+                                buffer=buffer)
 
 
-class ColorRelief(TermNode):
+class ColorRelief(ReliefNodeImpl):
     """Image Raster Render Node
 
     The `ColorRelief` render node renders raster data set with RGB bands.
@@ -662,46 +940,14 @@ class ColorRelief(TermNode):
     :type buffer: int
 
     """
-    def __init__(self, name, index, buffer=0):
-        TermNode.__init__(self, name)
 
-        self._index = Parameter(index)
-        self._buffer = buffer
+    def __init__(self, name, datasource, buffer=0):
+        render_parameters = dict()
 
-    def render(self, context):
-        """Render a image feature.
-
-        :param context: requirements and conditions for feature rendering.
-        :type context: :class:`~stonemason.renderer.engine.RenderContext`
-
-        :return: a image feature.
-        :rtype: :class:`~stonemason.renderer.cartographer.image.ImageFeature`
-
-        """
-        assert isinstance(context, RenderContext)
-        crs = context.map_proj
-        envelope = context.map_bbox
-        size = context.map_size
-
-        resolution = _calc_resolution(envelope, size)
-
-        buffered_envelope = _buffer_envelope(envelope, resolution, self._buffer)
-        buffered_envelope_size = _buffer_size(size, self._buffer)
-
-        with RGBImageData(self._index(resolution)) as source:
-            channels = source.query(
-                crs, buffered_envelope, buffered_envelope_size)
-
-            rgb_array = np.dstack(channels).astype(np.ubyte)
-
-            pil_image = Image.fromarray(rgb_array, 'RGB')
-            pil_image = pil_image.convert('RGBA')
-
-            pil_image = ImageOps.crop(pil_image, self._buffer)
-
-            feature = ImageFeature(crs=context.map_proj,
-                                   bounds=context.map_bbox,
-                                   size=context.map_size,
-                                   data=pil_image)
-
-            return feature
+        ReliefNodeImpl.__init__(self, name,
+                                domain=RGBDataDomain(),
+                                postprocessor=ColorReliefProcessor,
+                                render_parameters=render_parameters,
+                                datasource=datasource,
+                                rasterizer=RGBRasterizer,
+                                buffer=buffer)

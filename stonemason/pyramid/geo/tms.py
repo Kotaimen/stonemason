@@ -25,7 +25,7 @@ class TileMapError(RuntimeError):
     pass
 
 
-_Envelope = collections.namedtuple('_Envelope', 'left bottom right top')
+_Envelope = collections.namedtuple('Envelope', 'left bottom right top')
 
 
 class Envelope(_Envelope):
@@ -65,7 +65,7 @@ class TileMapSystem(object):
     <osgeo.osr.CoordinateTransformation; proxy of <Swig Object of type 'OSRCoordinateTransformationShadow *' at ...> >
     >>> index = MetaTileIndex(4, 12, 12, 8)
     >>> tms.calc_tile_envelope(index)
-    _Envelope(left=0.0, bottom=-20037508.34, right=20037508.34, top=0.0)
+    Envelope(left=0.0, bottom=-20037508.34, right=20037508.34, top=0.0)
 
     .. note:: `TileMapSystem` uses `GDAL <http://www.gdal.org/>`_ for spatial
         calculations, the actual list of supported spatial references and

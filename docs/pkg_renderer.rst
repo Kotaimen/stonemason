@@ -7,7 +7,6 @@ Mason Renderer
     :maxdepth: 2
 
     pkg_renderer_engine
-    pkg_renderer_datasource
 
 
 .. toctree::

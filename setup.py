@@ -50,24 +50,27 @@ long_description = read('README.md')
 install_requires = [
     'six>=1.9.0',
     'Flask>=0.10',
-    'Pillow>=2.3.0,<3.0.0',
-    'boto>=2.35.0',
+    'Pillow>=3.0.0',
+    'Werkzeug>=0.11.1',
+    'boto3>=1.2.0',
     'Click>=4.0',
     'gunicorn>=19.0.0',
     'pylibmc>=1.5.0',
     'numpy>=1.6',
-    'scipy>=0.9'
+    'scipy>=0.9',
+    'scikit-image>=0.10.0',
+    'requests>=2.3.0'
 ]
 
 if IS_PY3:
     pass
 else:
-    install_requires.append('futures>=3.0.0')
+    install_requires.append('futures>=2.0.0,<3.0.0')
 
 tests_require = [
     'nose>=1.3.0',
     'coverage>=3.7.0',
-    'moto>=0.4.0',
+    'moto>=0.4.18',
 ]
 
 py_modules = []
@@ -178,6 +181,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
     ],
     keywords='map tile mapnik gdal tms',
     author='K&R',

@@ -1,18 +1,18 @@
 # -*- encoding: utf-8 -*-
-
 """
-    stonemason.tilestorage.clusterfier
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    stonemason.storage.tilestorage.clusterfier
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Convert a `MetaTileStorage` to a `ClusterStorage` on-the-fly.
 """
 
 __author__ = 'kotaimen'
 __date__ = '2/9/15'
 
-from .tilestorage import ClusterStorage, MetaTileStorage
-from .cluster import TileCluster
-
 from stonemason.formatbundle import MapWriter
+from stonemason.pyramid.cluster import TileCluster
+from .concept import MetaTileStorageConcept
+
+ClusterStorage = MetaTileStorageConcept
 
 
 class Clusterfier(ClusterStorage):
@@ -26,7 +26,7 @@ class Clusterfier(ClusterStorage):
     """
 
     def __init__(self, storage, writer):
-        assert isinstance(storage, MetaTileStorage)
+        assert isinstance(storage, MetaTileStorageConcept)
         assert isinstance(writer, MapWriter)
 
         self._storage = storage

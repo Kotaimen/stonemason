@@ -83,7 +83,7 @@ class Tile(_Tile):
     >>> tile
     Tile(3/4/5)
     >>> tile.data
-    'a tile'
+    b'a tile'
     >>> tile.mimetype
     'text/plain'
     >>> tile.etag

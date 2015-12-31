@@ -257,7 +257,7 @@ man_pages = [
 
 intersphinx_mapping = {
     'python': ('http://docs.python.org/', None),
-    'pillow': ('http://pillow.readthedocs.org/', None),
+    'pillow': ('http://pillow.readthedocs.org/en/3.0.x/', None),
     'pylibmc': ('http://sendapatch.se/projects/pylibmc/', None),
     'boto': ('http://boto.readthedocs.org/en/latest', None),
     'flask': ('http://flask.pocoo.org/docs/latest/', None),

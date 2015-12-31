@@ -5,10 +5,10 @@ __date__ = '4/9/15'
 
 import time
 
-from stonemason.pyramid import MetaTileIndex, MetaTile
+from stonemason.pyramid import MetaTileIndex, MetaTile, TileCluster
 from stonemason.pyramid.geo import TileMapSystem
 from stonemason.renderer import MasonRenderer, RenderContext
-from stonemason.tilestorage import ClusterStorage, MetaTileStorage, TileCluster
+from stonemason.storage.tilestorage import ClusterStorage, MetaTileStorageConcept
 
 
 class MapSheet(object):
@@ -59,6 +59,10 @@ class ClusterMapSheet(MapSheet):
                                            meta_index.y,
                                            self._storage.stride)
         cluster = self._storage.get(storage_meta_index)
+        # TODO: This is a patch caused by storage refactoring. Need to fix.
+        if isinstance(cluster, MetaTile):
+            cluster = TileCluster.from_metatile(cluster, self.bundle.writer)
+
         if cluster is not None:
             return cluster
 
@@ -120,7 +124,7 @@ class ClusterMapSheet(MapSheet):
 class MetaTileMapSheet(MapSheet):
     def __init__(self, tag, bundle, pyramid, storage, renderer):
         MapSheet.__init__(self, tag, bundle, pyramid)
-        assert isinstance(storage, MetaTileStorage)
+        assert isinstance(storage, MetaTileStorageConcept)
         assert isinstance(renderer, MasonRenderer)
         self._storage = storage
         self._renderer = renderer
@@ -169,7 +173,7 @@ class MetaTileMapSheet(MapSheet):
         return feature
 
     def render_metatile(self, meta_index):
-        if self._storage.get(meta_index) is not None:
+        if self._storage.has(meta_index):
             return True
 
         feature = self.get_feature(meta_index)

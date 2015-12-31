@@ -3,16 +3,15 @@
 __author__ = 'kotaimen'
 __date__ = '2/9/15'
 
-import unittest
 import os
 import shutil
 import tempfile
+import unittest
 
-from tests import DATA_DIRECTORY
-from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid
+from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.tilestorage import Clusterfier, \
-    DiskMetaTileStorage, TileCluster
+from stonemason.storage.tilestorage import Clusterfier, DiskMetaTileStorage
+from tests import DATA_DIRECTORY
 
 
 class TestClusterfier(unittest.TestCase):

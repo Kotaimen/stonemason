@@ -17,7 +17,7 @@ pyramid = dict(
     stride=1,
     geogcs="WGS84",
     projcs="EPSG:3857",
-    levels=range(0, 9)
+    levels=list(range(0, 9))
 )
 
 maptype = 'image'

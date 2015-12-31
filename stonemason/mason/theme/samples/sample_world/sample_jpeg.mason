@@ -45,7 +45,7 @@ for quality in QUALITIES:
             # projection coordinate system
             projcs='EPSG:3857',
             # zoom levels
-            levels=range(0, 9)
+            levels=list(range(0, 9))
         ),
         # maptype
         maptype=maptype,

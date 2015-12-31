@@ -16,19 +16,17 @@ Binary Packages
 
 Install binary packages first::
 
-     $ sudo apt-get install imagemagick \
-     >     python-dev python-pip \
-     >     python-scipy python-numpy python-matplotlib cython \
-     >     libboost-dev libboost-filesystem-dev libboost-program-options-dev \
-     >     libboost-python-dev libboost-regex-dev libboost-system-dev \
-     >     libboost-thread-dev \
-     >     libz-dev libfreetype6-dev libharfbuzz-dev \
-     >     libwebp-dev liblcms2-dev  libjpeg-dev libtiff-dev \
-     >     libproj-dev libgeos-dev libgdal-dev gdal-bin python-gdal \
-     >     libboost-all-dev libicu-dev \
-     >     libfreetype6-dev libsqlite3-dev libpq-dev libxml2-dev \
-     >     libmemcached-dev
-
+     $ sudo apt-get install install
+     >          python-dev \
+     >          python-pip \
+     >          libmemcachd-dev \
+     >          libgdal-dev \
+     >          python-gdal \
+     >          imagemagick \
+     >          libwebp-dev \
+     >          libpng-dev \
+     >          libjpeg-dev \
+     >          libtiff-dev
 
 GEOS/GDAL
 ~~~~~~~~~
@@ -41,26 +39,17 @@ data files included, this requires extra patching form source::
     $ sudo cp gdal-1.10.1/data/*extra.wkt /usr/share/gdal/1.10/
 
 
-
 Mapnik
 ~~~~~~
 
-For mapnik installation, check check the official installation_ manual.
+For ``mapnik``, check their official installation_ manual.
 
     .. _installation: <https://github.com/mapnik/mapnik/wiki/UbuntuInstallation>
 
-Mapnik 3 separates python binding from its main repository, and does not support
-``pip install mapnik`` yet, so recommended version is still ``2.3 nightly`` branch
-on their official repository::
+At the time of writing they provide pip distribution for python2.7 on
+debian/homebrew enviroment::
 
-    $ apt-get install -y software-properties-common
-    $ add-apt-repository ppa:mapnik/nightly-2.3
-    $ apt-get update
-    $ apt-get install -y libmapnik libmapnik-dev mapnik-utils python-mapnik \
-    >    mapnik-input-plugin-gdal mapnik-input-plugin-ogr \
-    >    mapnik-input-plugin-postgis \
-    >    mapnik-input-plugin-sqlite \
-    >    mapnik-input-plugin-osm
+    $ pip install mapnik
 
 
 Python Dependency
@@ -79,15 +68,6 @@ If you want running `stonemason` without installing you must build all
 `Cython` extensions in place::
 
     $ python setup.py build_ext --inplace
-
-.. warning::
-
-    Cython extension do not work across Python versions, if you compile
-    using Python2, they won't work under Python3, you have to clean
-    compiled extension first, then rebuild::
-
-        removing 'stonemason/util/geo/_hilbert.'so
-        $ python3 setup.py build_ext --inplace --force
 
 `stonemason` uses `nose` for testing::
 
@@ -119,29 +99,12 @@ To build PDF version `textlive` is required::
 Docker Image
 ============
 
-A official docker image with all dependencies installed,  which can be used
-to quickly build a sample tile service:
+A docker image with all dependencies installed is provided which can be used
+to quickly build a sample tile map service::
 
-.. code-block:: Dockerfile
-
-    FROM        kotaimen/stonemason-dev
-    MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
-
-    ENV         DEBIAN_FRONTEND noninteractive
-
-    WORKDIR     /var/stonemason
-    # Or, COPY your gallery here
-    RUN         stonemason init
-
-    EXPOSE      80
-    ENTRYPOINT  ["stonemason", "tileserver", "--bind=0.0.0.0:80"]
-
-
-To start tileserver in docker container, use::
-
-    $ docker build -t stonemason-sample .
-    $ docker run -p 0.0.0.0:8080:80 stonemason-sample
+    $ docker run -p 0.0.0.0:80:80 kotaimen/stonemason
     [2015-03-02 18:10:00 +0800] [43027] [INFO] Starting gunicorn 19.2.1
     [2015-03-02 18:10:00 +0800] [43027] [INFO] Listening at: http://0.0.0.0:7086 (43027)
     [2015-03-02 18:10:00 +0800] [43027] [INFO] Using worker: threads
     [2015-03-02 18:10:00 +0800] [43054] [INFO] Booting worker with pid: 43054
+
