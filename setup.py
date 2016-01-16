@@ -71,6 +71,7 @@ tests_require = [
     'nose>=1.3.0',
     'coverage>=3.7.0',
     'moto>=0.4.18',
+    'httpretty!=0.8.11,!=0.8.12'
 ]
 
 py_modules = []
