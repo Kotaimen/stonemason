@@ -53,3 +53,10 @@ Release date: 2015-12-31
 - Refactored tilestorage package, now tile storage and raster feature storage
   shares a common implement.
 - Use mapnik3's PNG quantalizer instead of pillow for better image quality.
+
+v0.3.0
+------
+
+Release date: 2015-01-25
+
+- Fixes unittest error under python3.5 caused by httpretty.
