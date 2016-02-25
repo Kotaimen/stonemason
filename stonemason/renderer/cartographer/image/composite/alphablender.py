@@ -15,7 +15,7 @@ from stonemason.renderer.engine.context import RenderContext
 
 from ..feature import ImageFeature
 
-__all__ = ['AlphaBlender']
+__all__ = ['AlphaBlender', 'AlphaComposer']
 
 
 class AlphaBlender(CompositeNode):
@@ -64,7 +64,50 @@ class AlphaBlender(CompositeNode):
             if dst.mode != 'RGBA':
                 dst = dst.convert(mode='RGBA')
 
-        pil_image = Image.blend(src, dst, self._alpha)
+        pil_image = Image.alpha_composite(dst, src)
+
+        if pil_image.mode != 'RGBA':
+            pil_image = pil_image.convert(mode='RGBA')
+
+        feature = ImageFeature(
+            crs=context.map_proj,
+            bounds=context.map_bbox,
+            size=context.map_size,
+            data=pil_image
+        )
+
+        return feature
+
+
+class AlphaComposer(CompositeNode):
+    """Compose two imagery sources.
+
+    :param name: a string literal that identifies the node.
+    :type name: str
+
+    :param nodes: a list of two source render nodes.
+    :type nodes: list
+
+    """
+
+    def __init__(self, name, nodes):
+        CompositeNode.__init__(self, name, nodes)
+        if len(nodes) != 2:
+            raise ValueError('Compose only operates on two sources.')
+
+    def render(self, context):
+        assert isinstance(context, RenderContext)
+
+        src = self._nodes[0].render(context).data
+        dst = self._nodes[1].render(context).data
+
+        if src.mode != dst.mode:
+            if src.mode != 'RGBA':
+                src = src.convert(mode='RGBA')
+            if dst.mode != 'RGBA':
+                dst = dst.convert(mode='RGBA')
+
+        pil_image = Image.alpha_composite(dst, src)
 
         if pil_image.mode != 'RGBA':
             pil_image = pil_image.convert(mode='RGBA')

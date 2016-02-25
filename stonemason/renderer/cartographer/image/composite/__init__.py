@@ -9,6 +9,11 @@ except ImportError:
     AlphaBlender = None
 
 try:
+    from .alphablender import AlphaComposer
+except ImportError:
+    AlphaComposer = None
+
+try:
     from .imblender import IMComposer
 except ImportError:
     IMComposer = None

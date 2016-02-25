@@ -95,6 +95,7 @@ class ImageNodeFactory(RenderNodeFactory):
 
         # load composite nodes
         self.register_node('image.composite.alphablender', AlphaBlender)
+        self.register_node('image.composite.alphacomposer', AlphaComposer)
         self.register_node('image.composite.imagemagick', IMComposer)
 
         # TODO: To be deprecated in the future release
