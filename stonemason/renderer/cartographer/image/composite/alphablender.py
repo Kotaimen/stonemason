@@ -43,6 +43,7 @@ class AlphaBlender(CompositeNode):
     :type alpha: float
 
     """
+
     def __init__(self, name, nodes, alpha=0.5):
         CompositeNode.__init__(self, name, nodes)
         if len(nodes) != 2:
@@ -57,7 +58,16 @@ class AlphaBlender(CompositeNode):
         src = self._nodes[0].render(context).data
         dst = self._nodes[1].render(context).data
 
-        pil_image = Image.blend(src, dst, self._alpha).convert('RGBA')
+        if src.mode != dst.mode:
+            if src.mode != 'RGBA':
+                src = src.convert(mode='RGBA')
+            if dst.mode != 'RGBA':
+                dst = dst.convert(mode='RGBA')
+
+        pil_image = Image.blend(src, dst, self._alpha)
+
+        if pil_image.mode != 'RGBA':
+            pil_image = pil_image.convert(mode='RGBA')
 
         feature = ImageFeature(
             crs=context.map_proj,
