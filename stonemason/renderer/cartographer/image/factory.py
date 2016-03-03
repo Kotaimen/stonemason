@@ -49,7 +49,7 @@ class ImageNodeFactory(RenderNodeFactory):
         .. code-block:: javascript
 
             "composite": {
-                "prototype" : "image.composite.alphablender",
+                "prototype" : "image.composite.alphacomposer",
                 "sources": ["source1", "source2"],
                 "alpha": 0.5
             }
@@ -73,7 +73,7 @@ class ImageNodeFactory(RenderNodeFactory):
 
         composite nodes:
 
-            'image.composite.alphablender'
+            'image.composite.alphacomposer'
             'image.composite.imagemagick'
 
 
@@ -94,14 +94,12 @@ class ImageNodeFactory(RenderNodeFactory):
         self.register_node('image.transform.filter.min', MinFilter)
 
         # load composite nodes
-        self.register_node('image.composite.alphablender', AlphaBlender)
         self.register_node('image.composite.alphacomposer', AlphaComposer)
         self.register_node('image.composite.imagemagick', IMComposer)
 
         # TODO: To be deprecated in the future release
         # load legacy names
         self.register_node('basic.color', Color)
-        self.register_node('basic.blend', AlphaBlender)
         self.register_node('mapnik', Mapnik_)
         self.register_node('mapnik.composer', MapnikComposer)
         self.register_node('imagemagick', IMComposer)

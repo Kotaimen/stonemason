@@ -8,7 +8,7 @@ import unittest
 from stonemason.renderer.cartographer.image import ImageNodeFactory
 from stonemason.renderer.cartographer.image.terminal import Color
 from stonemason.renderer.cartographer.image.transform import MinFilter
-from stonemason.renderer.cartographer.image.composite import AlphaBlender
+from stonemason.renderer.cartographer.image.composite import AlphaComposer
 
 
 class TestImageNodeFactory(unittest.TestCase):
@@ -35,6 +35,5 @@ class TestImageNodeFactory(unittest.TestCase):
             'test', 'image.input.color', color='#000')
 
         layer = self.factory.create_composite_node(
-            'test', 'image.composite.alphablender', sources=[source1, source2],
-            alpha=0.5)
-        self.assertIsInstance(layer, AlphaBlender)
+            'test', 'image.composite.alphacomposer', sources=[source1, source2])
+        self.assertIsInstance(layer, AlphaComposer)

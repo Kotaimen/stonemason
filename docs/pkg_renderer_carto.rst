@@ -69,7 +69,7 @@ Transform Node
 Composite Node
 --------------
 
-.. autoclass:: stonemason.renderer.cartographer.image.composite.AlphaBlender
+.. autoclass:: stonemason.renderer.cartographer.image.composite.AlphaComposer
     :members:
 
 .. autoclass:: stonemason.renderer.cartographer.image.composite.IMComposer
