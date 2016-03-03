@@ -272,7 +272,14 @@ class IMComposer(CompositeNode):
     def render(self, context):
         assert isinstance(context, RenderContext)
 
-        sources = dict((l.name, l.render(context).data) for l in self._nodes)
+        sources = dict()
+        for node in self._nodes:
+            name = node.name
+            feature = node.render(context)
+            if feature is None:
+                raise RuntimeError('Render Failed, Node: %s, Context: %r',
+                                   name, context)
+            sources[name] = feature.data
 
         result = self._composer.compose(sources)
 
