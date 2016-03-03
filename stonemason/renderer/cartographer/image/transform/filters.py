@@ -26,7 +26,12 @@ class _FilterNode(TransformNode):
     def render(self, context):
         assert isinstance(context, RenderContext)
 
-        src = self._node.render(context).data
+        feature = self._node.render(context)
+        if feature is None:
+            raise RuntimeError('Render Failed, Node: %s, Context: %r',
+                                self._node.name, context)
+
+        src = feature.data
 
         pil_image = src.filter(self._filter)
 

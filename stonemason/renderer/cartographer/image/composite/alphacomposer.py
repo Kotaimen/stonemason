@@ -36,8 +36,17 @@ class AlphaComposer(CompositeNode):
     def render(self, context):
         assert isinstance(context, RenderContext)
 
-        src = self._nodes[0].render(context).data
-        dst = self._nodes[1].render(context).data
+        feature1 = self._nodes[0].render(context)
+        if feature1 is None:
+            raise RuntimeError('Render Failed, Node: %s, Context: %r',
+                                self._nodes[0].name, context)
+        src = feature1.data
+
+        feature2 = self._nodes[1].render(context)
+        if feature2 is None:
+            raise RuntimeError('Render Failed, Node: %s, Context: %r',
+                                self._nodes[1].name, context)
+        dst = feature2.data
 
         if src.mode != dst.mode:
             if src.mode != 'RGBA':

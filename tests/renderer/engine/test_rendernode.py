@@ -26,7 +26,7 @@ class TestTransformNode(unittest.TestCase):
         self.name = 'test'
         self.node = TransformNode('test', TermNode('test1'))
 
-    def test_nama(self):
+    def test_name(self):
         self.assertEqual(self.name, self.node.name)
 
     def test_repr(self):
