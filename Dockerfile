@@ -1,6 +1,13 @@
-FROM        kotaimen/stonemason-base:mapnik3.0.9-freetype2.6.3
+#FROM        kotaimen/stonemason-base:mapnik3.0.9-freetype2.6.3
+FROM	    kotaimen/mapnik:3.0.9-ubuntu
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
+
+RUN         locale-gen en_US.UTF-8
+ENV         LANG=en_US.UTF-8 \
+            LANGUAGE=en_US:en \
+            LC_ALL=en_US.UTF-8
+
 
 #
 # Install stonemason and run tests
