@@ -19,7 +19,7 @@ from osgeo import gdal, osr, gdalconst
 from stonemason.pyramid.geo import Envelope
 from stonemason.renderer.engine.rendernode import TermNode
 from stonemason.renderer.engine.context import RenderContext
-from stonemason.storage.featurestorage import create_feature_storage
+from stonemason.storage import create_feature_storage
 from ..feature import ImageFeature
 
 __all__ = ['SimpleRelief', 'SwissRelief', 'ColorRelief']

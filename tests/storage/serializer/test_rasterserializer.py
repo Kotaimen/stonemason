@@ -6,17 +6,16 @@ __date__ = '11/23/15'
 import os
 import unittest
 from osgeo import gdal, gdalconst, gdalnumeric
-from stonemason.storage.featurestorage.raster.serializer import \
-    RasterFeatureSerializer
+from stonemason.storage.serializer import RasterSerializer
 from tests import DATA_DIRECTORY
 
 
-class TestRasterFeatureSerializer(unittest.TestCase):
+class TestRasterSerializer(unittest.TestCase):
     def setUp(self):
         self.filename = os.path.join(DATA_DIRECTORY, 'raster', 'fujisan_5m.tif')
 
     def test_load(self):
-        serializer = RasterFeatureSerializer()
+        serializer = RasterSerializer()
         with open(self.filename, 'rb') as fp:
             blob = fp.read()
             obj = serializer.load('test_index', blob=blob, metadata={})
@@ -30,7 +29,7 @@ class TestRasterFeatureSerializer(unittest.TestCase):
             expected.ReadAsArray(), obj.ReadAsArray()))
 
     def test_save(self):
-        serializer = RasterFeatureSerializer()
+        serializer = RasterSerializer()
 
         obj = gdal.Open(self.filename, gdalconst.GA_ReadOnly)
         print(obj.RasterCount)
@@ -48,7 +47,7 @@ class TestRasterFeatureSerializer(unittest.TestCase):
 
 
     def test_load_save(self):
-        serializer = RasterFeatureSerializer()
+        serializer = RasterSerializer()
 
         expected = gdal.Open(self.filename, gdalconst.GA_ReadOnly)
 

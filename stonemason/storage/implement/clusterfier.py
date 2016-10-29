@@ -1,16 +1,11 @@
 # -*- encoding: utf-8 -*-
-"""
-    stonemason.storage.tilestorage.clusterfier
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Convert a `MetaTileStorage` to a `ClusterStorage` on-the-fly.
-"""
 
 __author__ = 'kotaimen'
 __date__ = '2/9/15'
 
 from stonemason.formatbundle import MapWriter
 from stonemason.pyramid.cluster import TileCluster
-from .concept import MetaTileStorageConcept
+from .metatilestorage import MetaTileStorageConcept
 
 ClusterStorage = MetaTileStorageConcept
 

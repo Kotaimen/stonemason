@@ -8,8 +8,7 @@ import unittest
 import moto
 import boto3
 from osgeo import gdal
-from stonemason.storage.featurestorage import create_feature_storage, \
-    ReadOnlyFeatureStorage
+from stonemason.storage import create_feature_storage
 from tests import DATA_DIRECTORY
 
 TEST_BUCKET_NAME = 'rasterstorage'
@@ -46,8 +45,8 @@ class TestS3RasterFeatureStorage(unittest.TestCase):
         self.assertTrue(storage.has(test_key))
         self.assertIsInstance(storage.get(test_key), gdal.Dataset)
 
-        self.assertRaises(ReadOnlyFeatureStorage, storage.put, test_key, None)
-        self.assertRaises(ReadOnlyFeatureStorage, storage.delete, test_key)
+        self.assertRaises(NotImplementedError, storage.put, test_key, None)
+        self.assertRaises(NotImplementedError, storage.delete, test_key)
 
         storage.close()
 

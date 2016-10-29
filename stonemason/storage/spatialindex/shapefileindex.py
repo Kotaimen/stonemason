@@ -1,16 +1,16 @@
 # -*- encoding: utf-8 -*-
 
 __author__ = 'ray'
-__date__ = '11/2/15'
+__date__ = '10/28/16'
 
 import os
 import six
 from osgeo import gdal, ogr, gdalconst
+
 from stonemason.pyramid.geo import Envelope
 from stonemason.util.tempfn import generate_temp_filename
 from stonemason.storage.concept import PersistentStorageConcept
-from stonemason.storage.featurestorage.concept import SpatialIndexConcept, \
-    InvalidFeatureIndex
+from stonemason.storage.concept import SpatialIndexConcept
 
 SHAPEFILE_EXTENSIONS = ['.shp', '.dbf', '.prj', '.shx']
 
@@ -31,7 +31,7 @@ class ShpSpatialIndex(SpatialIndexConcept):
 
         self._index = self._index_data.GetLayer(0)
         if self._index is None:
-            raise InvalidFeatureIndex('Index layer not found!')
+            raise RuntimeError('Index layer not found!')
 
     @property
     def crs(self):
@@ -72,7 +72,7 @@ class ShpSpatialIndex(SpatialIndexConcept):
             key = basename + ext
             blob, metadata = storage.retrieve(key)
             if blob is None:
-                raise InvalidFeatureIndex(
+                raise IOError(
                     'Failed to get shapefile index "%s!"' % key)
             return blob
 

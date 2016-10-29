@@ -1,23 +1,21 @@
 # -*- encoding: utf-8 -*-
-"""
-    stonemason.storage.tilestorage.serializer
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Implements metatile serializer.
-"""
+
 __author__ = 'ray'
-__date__ = '10/26/15'
+__date__ = '10/28/16'
+
 
 import io
 import gzip
+
 from stonemason.formatbundle import MapWriter
+from stonemason.storage.concept import ObjectSerializeConcept, ObjectSerializeError
 from stonemason.pyramid import MetaTileIndex, MetaTile, TileCluster
-from .concept import InvalidMetaTile, MetaTileSerializeConcept
 
 
-class MetaTileSerializer(MetaTileSerializeConcept):
+class MetaTileSerializer(ObjectSerializeConcept):
     """MetaTile Serializer
 
-    The ``MetaTileSerializer`` implements details of how a metatile is
+    The ``MetaTileSerializer`` implement details of how a metatile is
     serialized to a binary data and how it is recovered from a binary dump.
 
     :param gzip: Whether compress or decompress data.
@@ -53,7 +51,7 @@ class MetaTileSerializer(MetaTileSerializeConcept):
         assert isinstance(obj, MetaTile)
 
         if obj.mimetype != self._mimetype:
-            raise InvalidMetaTile('MetaTile mimetype inconsistent with storage')
+            raise ObjectSerializeError('MetaTile mimetype inconsistent with storage')
 
         blob = obj.data
 
@@ -71,7 +69,7 @@ class MetaTileSerializer(MetaTileSerializeConcept):
         return blob, metadata
 
 
-class TileClusterSerializer(MetaTileSerializeConcept):
+class TileClusterSerializer(ObjectSerializeConcept):
     """TileCluster Serializer
 
     The ``TileClusterSerializer`` dumps a metatile into a binary data in
@@ -115,7 +113,7 @@ class TileClusterSerializer(MetaTileSerializeConcept):
         assert isinstance(obj, MetaTile)
 
         if obj.mimetype != self._mimetype:
-            raise InvalidMetaTile('MetaTile mimetype inconsistent with storage')
+            raise ObjectSerializeError('MetaTile mimetype inconsistent with storage')
 
         metadata = dict(mimetype='application/zip',
                         mtime=str(obj.mtime),

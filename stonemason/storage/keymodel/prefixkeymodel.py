@@ -1,14 +1,15 @@
 # -*- encoding: utf-8 -*-
 
 __author__ = 'ray'
-__date__ = '11/2/15'
+__date__ = '10/29/16'
 
 import os
 import six
-from stonemason.storage.featurestorage.concept import FeatureKeyConcept
+
+from stonemason.storage.concept import StorageKeyConcept
 
 
-class SimpleFeatureKeyMode(FeatureKeyConcept):
+class PrefixKeyMode(StorageKeyConcept):
     def __init__(self, prefix='', sep='/'):
         assert isinstance(prefix, six.string_types)
         self._prefix = prefix

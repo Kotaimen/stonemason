@@ -62,6 +62,9 @@ class PersistentStorageError(StorageError):
     pass
 
 
+class ReadOnlyStorageError(StorageError):
+    pass
+
 # ==============================================================================
 # Storage Concepts
 # ==============================================================================
@@ -184,10 +187,20 @@ class PersistentStorageConcept(object):  # pragma: no cover
         raise NotImplementedError
 
 
+class SpatialIndexConcept(object):
+
+    def intersection(self, envelope):
+        raise NotImplementedError
+
+
 # ==============================================================================
-# Generic Storage Implementation
+# Geographic Storage
 # ==============================================================================
-class GenericStorageConcept(object):
+class GeographicStorageConcept(object):
+
+    def index(self):
+        raise NotImplementedError
+
     def has(self, index):
         """Check whether given index exists.
 
@@ -232,10 +245,10 @@ class GenericStorageConcept(object):
         raise NotImplementedError
 
 
-class GenericStorageImpl(GenericStorageConcept):
+class GeographicStorageImpl(GeographicStorageConcept):
     """Generic Storage Implementation
 
-    A generic storage implemented by composing various implements of key,
+    A generic storage implemented by composing various implement of key,
     serializer and storage concepts.
 
     :param key_concept: Instance of implementation of StorageKeyConcept.
@@ -249,39 +262,47 @@ class GenericStorageImpl(GenericStorageConcept):
 
     """
 
-    def __init__(self, key_concept, serializer_concept, storage_concept):
-        assert isinstance(key_concept, StorageKeyConcept)
-        assert isinstance(serializer_concept, ObjectSerializeConcept)
-        assert isinstance(storage_concept, PersistentStorageConcept)
+    def __init__(self, keymodel, serializer, backend, spatialindex=None):
+        assert isinstance(keymodel, StorageKeyConcept)
+        assert isinstance(serializer, ObjectSerializeConcept)
+        assert isinstance(backend, PersistentStorageConcept)
+        if spatialindex:
+            assert isinstance(spatialindex, SpatialIndexConcept)
 
-        self._key_mode = key_concept
-        self._serializer = serializer_concept
-        self._storage = storage_concept
+
+        self._keymode = keymodel
+        self._serializer = serializer
+        self._spatialindex = spatialindex
+        self._backend = backend
 
         self._logger = logging.getLogger(__name__)
+
+    @property
+    def index(self):
+        return self._spatialindex
 
     def has(self, index):
         """Check whether given index exists."""
         self._logger.debug('Has object with index %s.' % repr(index))
-        storage_key = self._key_mode(index)
-        return self._storage.exists(storage_key)
+        storage_key = self._keymode(index)
+        return self._backend.exists(storage_key)
 
     def put(self, index, obj):
         """Store a given object into the storage with a given index."""
         self._logger.debug('Put object with index %s.' % repr(index))
 
-        storage_key = self._key_mode(index)
+        storage_key = self._keymode(index)
         blob, metadata = self._serializer.save(index, obj)
 
-        self._storage.store(storage_key, blob, metadata)
+        self._backend.store(storage_key, blob, metadata)
 
     def get(self, index):
         """Get the object with a given index."""
         self._logger.debug('Get object with index %s.' % repr(index))
 
-        storage_key = self._key_mode(index)
+        storage_key = self._keymode(index)
 
-        blob, metadata = self._storage.retrieve(storage_key)
+        blob, metadata = self._backend.retrieve(storage_key)
         if blob is None:
             return None
 
@@ -293,20 +314,22 @@ class GenericStorageImpl(GenericStorageConcept):
         """Delete the object with a given index."""
         self._logger.debug('Delete object with index %s.' % repr(index))
 
-        storage_key = self._key_mode(index)
-        self._storage.retire(storage_key)
+        storage_key = self._keymode(index)
+        self._backend.retire(storage_key)
 
     def close(self):
         """Close the storage"""
         self._logger.debug('Closing storage.')
-        self._storage.close()
+        self._backend.close()
 
 
-class NullStorage(GenericStorageConcept):
+class NullStorage(GeographicStorageConcept):
     """Null Storage
 
     A dummy storage that stores nothing.
     """
+    def index(self):
+        raise None
 
     def has(self, index):
         return False

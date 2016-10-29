@@ -9,9 +9,8 @@ import shutil
 import tempfile
 from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.storage.tilestorage import DiskClusterStorage, \
-    DiskMetaTileStorage, \
-    InvalidMetaTile, InvalidMetaTileIndex, ReadOnlyMetaTileStorage
+from stonemason.storage import DiskClusterStorage, DiskMetaTileStorage, \
+    InvalidMetaTileIndex, ReadOnlyStorageError, ObjectSerializeError
 from tests import DATA_DIRECTORY
 
 
@@ -54,13 +53,13 @@ class TestDiskClusterStorage(unittest.TestCase):
             root=self.root,
             format=FormatBundle(MapType('image'), TileFormat('JPEG')))
 
-        self.assertRaises(InvalidMetaTile,
+        self.assertRaises(ObjectSerializeError,
                           storage.put,
                           MetaTile(MetaTileIndex(3, 4, 5, 2)))
         self.assertRaises(InvalidMetaTileIndex,
                           storage.put,
                           MetaTile(MetaTileIndex(100, 4, 5, 2)))
-        self.assertRaises(InvalidMetaTile,
+        self.assertRaises(ObjectSerializeError,
                           storage.put,
                           self.metatile)
 
@@ -71,8 +70,8 @@ class TestDiskClusterStorage(unittest.TestCase):
             root=self.root,
             format=self.format,
             readonly=True)
-        self.assertRaises(ReadOnlyMetaTileStorage, storage.put, self.metatile)
-        self.assertRaises(ReadOnlyMetaTileStorage, storage.retire,
+        self.assertRaises(ReadOnlyStorageError, storage.put, self.metatile)
+        self.assertRaises(ReadOnlyStorageError, storage.retire,
                           self.metatile.index)
 
     def test_pathmode_simple(self):

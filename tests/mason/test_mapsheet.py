@@ -13,7 +13,7 @@ from stonemason.pyramid import Pyramid, Tile, TileIndex, MetaTile, \
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
 from stonemason.renderer import MasonRenderer
 from stonemason.renderer.cartographer import ImageFeature
-from stonemason.storage.tilestorage import ClusterStorage, MetaTileStorageConcept
+from stonemason.storage import ClusterStorage, MetaTileStorageConcept
 from stonemason.mason.mapsheet import ClusterMapSheet, MetaTileMapSheet
 
 from tests import skipUnlessHasGDAL

@@ -1,25 +1,30 @@
 # -*- encoding: utf-8 -*-
 
 __author__ = 'ray'
-__date__ = '11/2/15'
+__date__ = '10/28/16'
 
 from osgeo import gdal, gdalconst
 from stonemason.util.tempfn import generate_temp_filename
-from stonemason.storage.featurestorage.concept import FeatureSerializeConcept
+from stonemason.storage.concept import ObjectSerializeConcept
 
 
-class RasterFeatureSerializer(FeatureSerializeConcept):
+class RasterSerializer(ObjectSerializeConcept):
     def load(self, index, blob, metadata):
         temp_filename = '/vsimem/%s' % generate_temp_filename()
         try:
             gdal.FileFromMemBuffer(temp_filename, blob)
             source = gdal.OpenShared(temp_filename, gdalconst.GA_ReadOnly)
+        except Exception as e:
+            raise ValueError('RasterSerializer fails to load the object. %s' % str(e))
         finally:
             gdal.Unlink(temp_filename)
 
         return source
 
     def save(self, index, obj):
+        if not obj:
+            raise ValueError('RasterSerializer fails to save the object.')
+
         assert isinstance(obj, gdal.Dataset)
 
         temp_filename = '/vsimem/%s' % generate_temp_filename()

@@ -10,7 +10,7 @@ import unittest
 
 from stonemason.pyramid import MetaTile, MetaTileIndex, Pyramid, TileCluster
 from stonemason.formatbundle import MapType, TileFormat, FormatBundle
-from stonemason.storage.tilestorage import Clusterfier, DiskMetaTileStorage
+from stonemason.storage import Clusterfier, DiskMetaTileStorage
 from tests import DATA_DIRECTORY
 
 
