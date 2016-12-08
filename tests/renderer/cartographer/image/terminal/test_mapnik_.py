@@ -40,7 +40,7 @@ class TestMapnikLayer(ImageTestCase):
 
         test_data_root = os.path.join(DATA_DIRECTORY, 'cartographer')
         test_file = os.path.join(test_data_root, 'mapnik_sample_world.png')
-        # image.save(test_file, 'png')
+        image.save(test_file, 'png')
 
         expected = Image.open(test_file)
         self.assertImageEqual(expected, image)
@@ -122,11 +122,11 @@ class TestMapnikComposer(ImageTestCase):
 
         test_data_root = os.path.join(DATA_DIRECTORY, 'cartographer')
         test_file = os.path.join(test_data_root, 'mapnik_compose_two.png')
-        # image.save(test_file, 'png')
+        image.save(test_file, 'png')
 
         expected = Image.open(test_file)
         self.assertImageEqual(expected, image)
-
+    
     def test_compose_with_three(self):
         layer = MapnikComposer(
             'mapnik.composer',
@@ -149,7 +149,7 @@ class TestMapnikComposer(ImageTestCase):
 
         test_data_root = os.path.join(DATA_DIRECTORY, 'cartographer')
         test_file = os.path.join(test_data_root, 'mapnik_compose_three.png')
-        # image.save(test_file, 'png')
+        image.save(test_file, 'png')
 
         expected = Image.open(test_file)
         self.assertImageEqual(expected, image)
