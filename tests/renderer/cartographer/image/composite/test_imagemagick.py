@@ -30,7 +30,7 @@ class TestImageMagickComposer(unittest.TestCase):
         output = subprocess.check_output(['convert', '-version'])
 
         match = re.search(r'ImageMagick (\d\.\d+\.\d+)-\d+',
-                          output.decode('ascii'))
+                          output.decode('utf-8'))
 
         if match:
             self.assertGreaterEqual(LooseVersion(match.group(1)),

@@ -24,9 +24,9 @@ class TestTileMapSystem(unittest.TestCase):
         self.assertListEqual(tms.pyramid.levels, pyramid.levels)
         self.assertEqual(tms.pyramid.stride, pyramid.stride)
         self.assertEqual(tms.pyramid.projcs.strip(),
-            "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs +over")
+            "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over")
         self.assertEqual(tms.pyramid.geogcs.strip(),
-            "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs")
+            "+proj=longlat +datum=WGS84 +no_defs")
         self.assertTupleEqual(tms.pyramid.geogbounds,
                               (-180, -85.0511, 180, 85.0511))
         # XXX: It seems gdal.osr produces slight different value than

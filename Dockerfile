@@ -1,4 +1,4 @@
-FROM	    kotaimen/mapnik:3.0.9-ubuntu
+FROM	    kotaimen/mapnik:3.0.12-ubuntu
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
 
@@ -21,8 +21,6 @@ ADD         . ./
 RUN         set -x \
                 && pip3 install -rrequirements-dev.txt \
                 && pip3 install . \
-                && python3 setup.py build_ext -i \
-                && python3 -m nose -v \
                 && rm -rf /tmp/stonemason
 
 #

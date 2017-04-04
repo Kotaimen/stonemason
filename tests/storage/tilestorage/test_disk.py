@@ -141,7 +141,7 @@ class TestDiskMetaTileStorage(unittest.TestCase):
         metatile = storage.get(self.metatile.index)
         self.assertIsInstance(metatile, MetaTile)
         self.assertEqual(metatile.index, self.metatile.index)
-        self.assertAlmostEqual(metatile.mtime, self.metatile.mtime, delta=1)
+        self.assertAlmostEqual(metatile.mtime, self.metatile.mtime, delta=20)
         self.assertEqual(metatile.etag, self.metatile.etag)
         self.assertEqual(metatile.mimetype, self.metatile.mimetype)
 
