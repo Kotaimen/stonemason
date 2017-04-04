@@ -10,7 +10,7 @@ services:
 before_install:
   - docker build -t stonemason .
   - docker pull memcached
-  - docker run -d --name memcache memcached-alpine
+  - docker run -d --name memcache memcached
 
 script:
   - docker run --rm -v `pwd`:/tmp/ --workdir /tmp/ --link memcache:localhost --entrypoint python3 stonemason -m tox
