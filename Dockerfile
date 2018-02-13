@@ -1,4 +1,4 @@
-FROM	    kotaimen/mapnik:3.0.12-ubuntu
+FROM	    kotaimen/mapnik:3.0.18-ubuntu
 MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV         DEBIAN_FRONTEND noninteractive
 
