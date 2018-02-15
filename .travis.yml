@@ -1,7 +1,6 @@
 #Travis-ci config file
 
 sudo: required
-dist: trusty
 
 
 services:
