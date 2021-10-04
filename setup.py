@@ -11,9 +11,6 @@ from distutils.command.clean import clean as clean_
 from distutils import log
 
 
-# Can't use six here
-IS_PY3 = sys.version_info.major == 3
-
 # Check Cython availability
 try:
     from Cython.Distutils import build_ext
@@ -48,30 +45,26 @@ long_description = read('README.md')
 # Requirements
 #
 install_requires = [
-    'six>=1.9.0',
-    'Flask>=0.10',
-    'Pillow>=3.0.0',
-    'Werkzeug>=0.11.1',
-    'boto3>=1.3.0',
-    'botocore>=1.4.0',
-    'Click>=4.0',
-    'gunicorn>=19.0.0',
-    'pylibmc>=1.5.0',
-    'numpy>=1.6',
-    'scipy>=0.9',
-    'scikit-image>=0.10.0',
-    'requests>=2.3.0'
+    'six',
+    'Flask',
+    'Pillow',
+    'Werkzeug',
+    'boto3',
+    'botocore',
+    'Click',
+    'gunicorn',
+    'pylibmc',
+    'numpy',
+    'scipy',
+    'scikit-image',
+    'requests',
+    'jinja2'
 ]
 
-if IS_PY3:
-    pass
-else:
-    install_requires.append('futures>=2.0.0,<3.0.0')
-
 tests_require = [
-    'nose>=1.3.0',
-    'coverage>=3.7.0',
-    'moto>=0.4.18'
+    'nose',
+    'coverage',
+    'moto'
 ]
 
 py_modules = []
