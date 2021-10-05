@@ -1,4 +1,4 @@
-FROM mapnik:bionic
+FROM 889515947644.dkr.ecr.us-west-2.amazonaws.com/mapnik:bionic
 
 # Install stonemason
 WORKDIR /tmp/workdir
@@ -12,7 +12,7 @@ RUN set -eux; \
 WORKDIR /var/lib/stonemason/
 RUN set -eux; \
   stonemason init
-#RUN  stonemason check
+RUN  stonemason check
 
 
 # Entry

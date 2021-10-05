@@ -4,7 +4,7 @@ LABEL MAINTAINER  Kotaimen <kotaimen.c@gmail.com>
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
-
+RUN sed -i 's/ports.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 
 RUN set -eux; \
       apt-get update; \
