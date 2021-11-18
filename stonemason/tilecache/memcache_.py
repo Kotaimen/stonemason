@@ -12,7 +12,7 @@ __date__ = '1/12/15'
 import re
 import json
 import random
-
+import threading
 import pylibmc
 
 from stonemason.pyramid import Tile, TileIndex
@@ -23,7 +23,7 @@ class MemTileCacheError(TileCacheError):
     pass
 
 
-class MemTileCache(TileCache):
+class MemTileCache(TileCache, threading.local):
     """A tile cache based on `memcached` protocol backend.
 
     Tile cache based on `pylibmc`_ protocol backend. The backend does not
